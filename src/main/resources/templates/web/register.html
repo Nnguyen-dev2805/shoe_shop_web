@@ -1,0 +1,185 @@
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title> Register || James </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- favicon
+        ============================================ -->
+        <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+
+        <!-- Google Fonts
+        ============================================ -->
+        <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/font-awesome.min.css">
+        <!-- owl.carousel CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/owl.carousel.css">
+        <link rel="stylesheet" href="css/owl.theme.css">
+        <link rel="stylesheet" href="css/owl.transitions.css">
+        <!-- jquery-ui CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/jquery-ui.css">
+        <!-- meanmenu CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/meanmenu.min.css">
+        <!-- nivoslider CSS
+        ============================================ -->
+        <link rel="stylesheet" href="lib/css/nivo-slider.css">
+        <link rel="stylesheet" href="lib/css/preview.css">
+        <!-- animate CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/animate.css">
+        <!-- magic CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/magic.css">
+        <!-- normalize CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/normalize.css">
+        <!-- main CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/main.css">
+        <!-- style CSS
+        ============================================ -->
+        <link rel="stylesheet" href="style.css">
+        <!-- responsive CSS
+        ============================================ -->
+        <link rel="stylesheet" href="css/responsive.css">
+        <!-- modernizr JS
+        ============================================ -->
+        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+<body>
+        <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <!-- header area start -->
+        <header th:replace="/fragments/user/header :: header"></header>
+        <!-- header area end -->
+        <!-- cart item area start -->
+        <div class="shopping-cart">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="location">
+                            <ul>
+                                <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
+                                <li><strong>Register page</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:if="${mess}" style="color: red; text-align: center; font-size: larger">
+            <p th:text="${mess}"></p>
+        </div>
+        <div class="login-area ptb-120">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-6 offset-md-3 text-center">
+                        <div class="login">
+                            <div class="login-form-container">
+                                <div class="login-text">
+                                    <h2>Register</h2>
+                                    <span>Please Register using account detail bellow.</span>
+                                </div>
+                                <div class="login-form">
+                                    <form action="/register" method="post">
+                                        <input name="email" placeholder="Email" type="email" required>
+                                        <input type="text" name="fullname" placeholder="Fullname" required>
+                                        <input type="text" name="address" placeholder="Address" required>
+                                        <input type="text" name="phone" placeholder="Phone Number" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
+                                        <input type="password" name="password" placeholder="Password" required minlength="6" title="Password must be at least 6 characters long">
+                                        <div class="align-items-center gap-3" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+                                            <button type="button" onclick="sendVerificationEmail()" class="default-btn" style="padding: 10px; font-size: 16px; width: 100%; height: 40px; border: 1px solid #ccc; border-radius: 5px; display: block;">Send code</button>
+                                            <input type="text" name="verity" placeholder="Verify code" required pattern="^\d{6}$" title="Please enter exactly 6 digits" style="padding: 10px; margin-bottom: 4px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; width: 100%; height: 40px;">
+                                        </div>
+
+                                        <div class="button-box">
+                                            <button type="submit" class="default-btn" style="margin: 0 auto; margin-top: 10px;display: block">Register</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- footer area start -->
+        <div th:include="~{fragments/web/footer.html}"></div>
+        <!-- footer area end -->
+        <!-- jquery
+        ============================================ -->
+        <script src="js/vendor/jquery-1.12.4.min.js"></script>
+        <!-- bootstrap JS
+        ============================================ -->
+        <script src="js/bootstrap.min.js"></script>
+        <!-- wow JS
+        ============================================ -->
+        <script src="js/wow.min.js"></script>
+        <!-- price-slider JS
+        ============================================ -->
+        <script src="js/jquery-price-slider.js"></script>
+        <!-- nivoslider JS
+        ============================================ -->
+        <script src="lib/js/jquery.nivo.slider.js"></script>
+        <script src="lib/home.js"></script>
+        <!-- meanmenu JS
+        ============================================ -->
+        <script src="js/jquery.meanmenu.js"></script>
+        <!-- owl.carousel JS
+        ============================================ -->
+        <script src="js/owl.carousel.min.js"></script>
+        <!-- elevatezoom JS
+        ============================================ -->
+        <script src="js/jquery.elevatezoom.js"></script>
+        <!-- scrollUp JS
+        ============================================ -->
+        <script src="js/jquery.scrollUp.min.js"></script>
+        <!-- plugins JS
+        ============================================ -->
+        <script src="js/plugins.js"></script>
+        <!-- main JS
+        ============================================ -->
+        <script src="js/main.js"></script>
+        <script>
+            function sendVerificationEmail() {
+                var email = document.querySelector("input[name='email']").value;
+
+                if (email) {
+                    fetch("/send-code?email=" + email, {
+                        method: "POST"
+                    })
+                        .then(response => response.text())
+                        .then(message => {
+                            if (message === "success") {
+                                alert("Đã gửi mã xác minh thành công! Vui lòng kiểm tra email của bạn.");
+                            }
+                            else if (message === "email_exists") {
+                                alert("Email đã đăng kí. Vui lòng chọn email khác");
+                            }
+                            else{
+                                alert("Có lỗi. Vui lòng tử lại!")
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
+                } else {
+                    alert("Please enter a valid email.");
+                }
+            }
+        </script>
+    </body>
+</html>

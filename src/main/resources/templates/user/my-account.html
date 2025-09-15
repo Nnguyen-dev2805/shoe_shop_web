@@ -1,0 +1,542 @@
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>My account || James </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+        <!-- favicon
+        ============================================ -->
+        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+        <!-- Google Fonts
+        ============================================ -->
+        <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <!-- owl.carousel CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/owl.carousel.css">
+        <link rel="stylesheet" href="/css/owl.theme.css">
+        <link rel="stylesheet" href="/css/owl.transitions.css">
+        <!-- jquery-ui CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/jquery-ui.css">
+        <!-- meanmenu CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/meanmenu.min.css">
+        <!-- nivoslider CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+        <link rel="stylesheet" href="/lib/css/preview.css">
+        <!-- animate CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/animate.css">
+        <!-- magic CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/magic.css">
+        <!-- normalize CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/normalize.css">
+        <!-- main CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/main.css">
+        <!-- style CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/style.css">
+        <!-- responsive CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/responsive.css">
+        <!-- modernizr JS
+        ============================================ -->
+        <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- header area start -->
+        <div th:include="~{fragments/user/header.html}"></div>
+        <!-- header area end -->
+        <!-- my account area start -->
+        <div class="account-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="location">
+                            <ul>
+                                <li><a href="/user/shop" title="go to homepage">Home<span>/</span></a>  </li>
+                                <li><strong> my account</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" style="display: flex; justify-content: center; align-items: center;" >
+                    <div class="col-lg-9">
+                        <div class="my-account-accordion">
+                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingOne">
+                                        <h4 class="panel-title">
+                                            <a role="button" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                <i class="fa fa-list-ol"></i>
+                                                Order history and details
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="account-title">
+                                                        <h4>Here are the orders you've placed since your account was created.</h4>
+                                                    </div>
+                                                    <div class="order-history">
+                                                        <p>You have not placed any orders.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingTwo">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                <i class="fa fa-file-o"></i>
+                                                My credit slips
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="account-title">
+                                                        <h4>Credit slips you have received after canceled orders. </h4>
+                                                    </div>
+                                                    <div class="credit-slids">
+                                                        <p>You have not received any credit slips.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingThree">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                <i class="fa fa-building-o"></i>
+                                                My addresses
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="my-address">
+                                                        <p>Please configure your default billing and delivery addresses when placing an order. You may also add additional addresses, which can be useful for sending gifts or receiving an order at your office.</p>
+                                                        <div class="account-title">
+                                                            <h4>Your addresses are listed below. </h4>
+                                                        </div>
+                                                        <p>Be sure to update your personal information if it has changed.</p>
+                                                        <div class="row">
+                                                            <div class="col-md-6 col-sm-12">
+                                                                <form th:action="@{/user/submitAddress}" method="post">
+                                                                    <div th:if="${er}" class="alert alert-danger">
+                                                                        <span th:text="${er}"></span>
+                                                                    </div>
+                                                                    <div th:if="${adr != null}">
+                                                                        <th:block th:each="address : ${adr}">
+                                                                            <!-- Radio button cho từng địa chỉ -->
+                                                                            <div class="form-check">
+                                                                                <input class="form-check-input" type="radio"
+                                                                                       th:id="'address-' + ${address.id}"
+                                                                                       th:name="selectedAddressId"
+                                                                                       th:value="${address.id}"
+                                                                                       th:checked="${address.isDefault} ? true : false" />
+                                                                                <label class="form-check-label" th:for="'address-' + ${address.id}"
+                                                                                       th:text="${address.address}"></label>
+                                                                            </div>
+                                                                        </th:block>
+                                                                        <div class="add-address" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                                                                            <!-- Trường hidden để xác định hành động -->
+                                                                            <input type="hidden" name="action" id="action" value="">
+
+                                                                            <!-- Nút Set Default -->
+                                                                            <button type="submit"
+                                                                                    style="background-color: #4CAF50; color: white; padding: 5px 10px;
+                           font-size: 14px; border: none; border-radius: 4px; cursor: pointer;
+                           transition: background-color 0.3s ease, transform 0.2s ease;"
+                                                                                    onmouseover="this.style.backgroundColor='#45a049';"
+                                                                                    onmouseout="this.style.backgroundColor='#4CAF50';"
+                                                                                    onclick="setAction('setDefault')">
+                                                                                Set Default
+                                                                            </button>
+
+                                                                            <!-- Nút Delete -->
+                                                                            <button type="submit"
+                                                                                    style="background-color: #f44336; color: white; padding: 5px 10px;
+                           font-size: 14px; border: none; border-radius: 4px; cursor: pointer;
+                           transition: background-color 0.3s ease, transform 0.2s ease;"
+                                                                                    onmouseover="this.style.backgroundColor='#d32f2f';"
+                                                                                    onmouseout="this.style.backgroundColor='#f44336';"
+                                                                                    onclick="setAction('delete')">
+                                                                                Delete
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div th:if="${adr == null}">
+                                                                        <p>No addresses available</p>
+                                                                    </div>
+                                                                </form>
+
+                                                            </div>
+                                                        </div>
+                                                        <div class="add-address">
+                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal">add new address</button>
+                                                        </div>
+                                                        <!-- Modal -->
+                                                        <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+                                                            <div class="modal-dialog modal-lg" style="max-width: 800px;">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header" style="border-bottom: 1px solid #ddd; padding: 25px 30px;">
+                                                                        <h5 class="modal-title" id="addAddressModalLabel" style="font-size: 20px; font-weight: bold;">Add New Address</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;"></button>
+                                                                    </div>
+                                                                    <div class="modal-body" style="padding: 20px;">
+                                                                        <form id="addAddressForm" action="/user/addresses" method="POST">
+                                                                            <div class="form-name" style="margin-bottom: 20px;">
+                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">New Address <em style="color: red;">*</em></label>
+                                                                                <input type="text" id="newAddress" name="newAddress" placeholder="New Address" readonly
+                                                                                       style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px;">
+                                                                            </div>
+                                                                            <div class="form-name" style="margin-bottom: 15px;">
+                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Street <em style="color: red;">*</em></label>
+                                                                                <input type="text" id="street" placeholder="Street" required
+                                                                                       style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px;">
+                                                                            </div>
+                                                                            <div class="form-name" style="margin-bottom: 15px;">
+                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">City <em style="color: red;">*</em></label>
+                                                                                <select id="city"
+                                                                                        style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px;" required>
+                                                                                    <option value="1">---Please select---</option>
+                                                                                    <option value="ha-noi">Hà Nội</option>
+                                                                                    <option value="ho-chi-minh">Hồ Chí Minh</option>
+                                                                                    <option value="da-nang">Đà Nẵng</option>
+                                                                                    <option value="hai-phong">Hải Phòng</option>
+                                                                                    <option value="long-khanh">Long Khánh</option>
+                                                                                    <option value="bien-hoa">Biên Hòa</option>
+                                                                                    <option value="nha-trang">Nha Trang</option>
+                                                                                    <option value="quang-ninh">Quảng Ninh</option>
+                                                                                    <option value="vung-tau">Vũng Tàu</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="form-name" style="margin-bottom: 15px;">
+                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">Country <em style="color: red;">*</em></label>
+                                                                                <select id="country"
+                                                                                        style="width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px;" required>
+                                                                                    <option value="1">---Please select---</option>
+                                                                                    <option value="vn">Việt Nam</option>
+                                                                                </select>
+                                                                            </div>
+                                                                            <div class="modal-footer" style="border-top: 1px solid #ddd; padding: 15px 20px;">
+                                                                                <button type="submit" class="add-address"
+                                                                                        style="padding: 5px 10px; font-size: 16px; border-radius: 5px;">Save Address</button>
+                                                                            </div>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingFour">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                <i class="fa fa-user"></i>
+                                                My personal information
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="col-md-12">
+                                                <div class="delivery-details">
+                                                    <form action="/user/changeInformation" method="post">
+                                                        <div class="list-style">
+                                                            <div class="account-title">
+                                                                <h4>Please be sure to update your personal information if it has changed. </h4>
+                                                            </div>
+                                                            <div th:if="${success1}" class="alert alert-success">
+                                                                <span th:text="${success1}"></span>
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>Email</label>
+                                                                <input type="email" name="email" placeholder="Email" th:value="${user.email}"  readonly required>
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>Full Name <em>*</em> </label>
+                                                                <input type="text" name="fullname" placeholder="First Name" th:value="${user.fullname}" required>
+                                                            </div>
+
+                                                            <div class="form-name">
+                                                                <label>Phone <em>*</em> </label>
+                                                                <input type="text" name="phone" placeholder="Phone" th:value="${user.phone}" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>Address</label>
+                                                                <input type="text" name="address" placeholder="Address" th:value="${user.address}" readonly>
+                                                            </div>
+                                                            <div class="save-button">
+                                                                <button type="submit">save</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingResetPassword">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseResetPassword" aria-expanded="false" aria-controls="collapseFour">
+                                                <i class="fa fa-lock"></i>
+                                                Reset password
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseResetPassword" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingResetPassword" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="col-md-12">
+                                                <div class="delivery-details">
+                                                    <form action="/user/resetPassword" method="post">
+                                                        <div class="list-style">
+                                                            <div class="account-title">
+                                                                <h4>Please enter your current and new password to reset.</h4>
+                                                            </div>
+                                                            <div th:if="${error}" class="alert alert-danger">
+                                                                <span th:text="${error}"></span>
+                                                            </div>
+                                                            <div th:if="${success}" class="alert alert-success">
+                                                                <span th:text="${success}"></span>
+                                                            </div>
+
+                                                            <div class="form-name">
+                                                                <label>Email</label>
+                                                                <input type="email" name="email" placeholder="Email" th:value="${user.email}"  readonly required>
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>Current Password<em>*</em></label>
+                                                                <input type="password" name="currentPassword" placeholder="Current Password" required minlength="6" title="Password must be at least 6 characters long">
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>New Password <em>*</em></label>
+                                                                <input type="password" name="newPassword" placeholder="New Password" required minlength="6" title="Password must be at least 6 characters long">
+                                                            </div>
+                                                            <div class="form-name">
+                                                                <label>Confirm New Password <em>*</em></label>
+                                                                <input type="password" name="confirmPassword" placeholder="Confirm New Password" required minlength="6" title="Password must match the new password">
+                                                            </div>
+                                                            <div class="save-button">
+                                                                <button type="submit">Save</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading" role="tab" id="headingFive">
+                                        <h4 class="panel-title">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                                <i class="bi bi-cart"></i>
+                                                Viewed Products
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" data-bs-parent="#accordion">
+                                        <div class="panel-body">
+                                            <div class="col-sm-12">
+                                                <div class="wishlist-container">
+                                                    <h3>Viewed Products</h3>
+                                                    <div th:if="${viewedProducts != null and !viewedProducts.isEmpty()}">
+                                                        <div class="wishlist-container">
+                                                            <div class="d-flex flex-column">
+                                                                <!-- Lặp qua các sản phẩm trong viewedProducts -->
+                                                                <div th:each="product : ${viewedProducts}" class="product-item d-flex align-items-center mb-4">
+                                                                    <!-- Hình ảnh sản phẩm -->
+                                                                    <img th:src="@{${product.image}}" alt="product image" class="product-image img-fluid" style="width: 120px; height: auto;">
+
+                                                                    <!-- Thông tin sản phẩm -->
+                                                                    <div class="product-info ms-3" style="flex: 1;">
+                                                                        <h4 th:text="${product.title}"></h4>
+                                                                        <p th:text="${product.description}"></p>
+                                                                        <p th:text="'$' + ${product.price}"></p>
+                                                                    </div>
+
+                                                                    <!-- Nút View -->
+                                                                    <a th:href="@{/product/details/{id}(id=${product.id})}" class="save-button">View Product</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+
+                                                    <!-- Nếu không có sản phẩm đã xem -->
+                                                    <div th:if="${viewedProducts == null or viewedProducts.isEmpty()}">
+                                                        <p>No products viewed yet.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="account-button">
+                                <div class="back-btn"> <a href="/user/my_account">Back to your Account</a> </div>
+                                <div class="home"> <a href="/user/shop"> home</a> </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- my account area end -->
+        <div th:include="~{fragments/web/footer.html}"></div>
+        <!-- footer area start -->
+        <footer class="footer-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="footer-copyright">
+                            <p>Copyright &copy; 2022 <a href="#"> Bootexperts</a>. All Rights Reserved</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="payment-icon">
+                            <img src="/img/payment.png" alt="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" id="scrollUp"><i class="fa fa fa-arrow-up"></i></a>
+        </footer>
+        <!-- footer area end -->
+
+        <!-- jquery
+        ============================================ -->
+        <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+        <!-- bootstrap JS
+        ============================================ -->
+        <script src="/js/bootstrap.min.js"></script>
+        <!-- wow JS
+        ============================================ -->
+        <script src="/js/wow.min.js"></script>
+        <!-- price-slider JS
+        ============================================ -->
+        <script src="/js/jquery-price-slider.js"></script>
+        <!-- nivoslider JS
+        ============================================ -->
+        <script src="/lib/js/jquery.nivo.slider.js"></script>
+        <script src="/lib/home.js"></script>
+        <!-- meanmenu JS
+        ============================================ -->
+        <script src="/js/jquery.meanmenu.js"></script>
+        <!-- owl.carousel JS
+        ============================================ -->
+        <script src="/js/owl.carousel.min.js"></script>
+        <!-- elevatezoom JS
+        ============================================ -->
+        <script src="/js/jquery.elevatezoom.js"></script>
+        <!-- scrollUp JS
+        ============================================ -->
+        <script src="/js/jquery.scrollUp.min.js"></script>
+        <!-- plugins JS
+        ============================================ -->
+        <script src="/js/plugins.js"></script>
+        <!-- main JS
+        ============================================ -->
+        <script src="/js/main.js"></script>
+        <script>
+            function setAction(action) {
+                document.getElementById('action').value = action;
+            }
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const streetInput = document.getElementById("street");
+                const citySelect = document.getElementById("city");
+                const countrySelect = document.getElementById("country");
+                const newAddressInput = document.getElementById("newAddress");
+                const form = document.getElementById("addAddressForm");
+                const modal = new bootstrap.Modal(document.getElementById('addAddressModal'));
+
+                // Cập nhật giá trị newAddress
+                function updateNewAddress() {
+                    const street = streetInput.value.trim();
+                    const city = citySelect.options[citySelect.selectedIndex].text;
+                    const country = countrySelect.options[countrySelect.selectedIndex].text;
+
+                    if (street && city !== "---Please select---" && country !== "---Please select---") {
+                        newAddressInput.value = `${street}, ${city} city, ${country}`;
+                    } else {
+                        newAddressInput.value = "";
+                    }
+                }
+
+                // Kiểm tra form trước khi submit
+                form.addEventListener("submit", function (e) {
+                    const city = citySelect.value;
+                    const country = countrySelect.value;
+
+                    if (city === "1" || country === "1") {
+                        e.preventDefault(); // Ngăn gửi form
+                        alert("Vui lòng chọn City và Country hợp lệ."); // Thông báo lỗi
+                    }
+                });
+
+                // Lắng nghe sự kiện để cập nhật địa chỉ mới
+                streetInput.addEventListener("input", updateNewAddress);
+                citySelect.addEventListener("change", updateNewAddress);
+                countrySelect.addEventListener("change", updateNewAddress);
+
+                // Reset form khi modal đóng
+                $('#addAddressModal').on('hidden.bs.modal', function () {
+                    resetForm();
+                });
+
+                // Reset dữ liệu form khi modal đóng
+                function resetForm() {
+                    streetInput.value = "";         // Reset Street
+                    citySelect.selectedIndex = 0;   // Reset City (giá trị mặc định là ---Please select---)
+                    countrySelect.selectedIndex = 0; // Reset Country (giá trị mặc định là ---Please select---)
+                    newAddressInput.value = "";     // Reset New Address
+                }
+            });
+
+        </script>
+    </body>
+</html>

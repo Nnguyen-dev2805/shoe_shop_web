@@ -1,0 +1,64 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="d-flex align-items-center gap-2 mb-2" th:fragment="edit">
+  <button class="open-popup-btn" onclick="openPopup()">Edit profile</button>
+
+  <!-- Popup -->
+  <div id="confirmModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            <p>Full name:</p>
+            <input id="fullname" class="input-group" th:value="${user.fullname}">
+          </div>
+          <div>
+            <p>Address:</p>
+            <input id="address" class="input-group" th:value="${user.address}">
+          </div>
+          <div>
+            <p>Phone</p>
+            <input id="phone" class="input-group" th:value="${user.phone}">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button onclick="sendData()" id="confirmCancelBtn" type="button" class="btn btn-danger">Enter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Open popup
+    function openPopup() {
+      $("#confirmModal").modal("show");
+    }
+
+    // Submit form
+    function sendData() {
+      const name = document.getElementById('fullname').value;
+      const address = document.getElementById('address').value;
+      const phone = document.getElementById('phone').value;
+
+      // Gửi dữ liệu bằng jQuery Ajax
+      $.ajax({
+        url: '/api/user/update', // Thay URL API tại đây
+        method: 'POST',
+        data: {fullname: name, address: address, phone: phone},
+        success: function (response) {
+          alert('Updated successfully');
+          location.reload();
+        },
+        error: function (xhr, status, error) {
+          alert('Some error: ' + error);
+        }
+      });
+    }
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</div>

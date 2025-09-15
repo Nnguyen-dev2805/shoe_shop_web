@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Mirrored from techzaa.in/larkon/admin/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:37 GMT -->
+<head>
+     <!-- Title Meta -->
+     <meta charset="utf-8" />
+     <title>Profile | Larkon - Responsive Admin Dashboard Template</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="description" content="A fully responsive premium admin dashboard template" />
+     <meta name="author" content="Techzaa" />
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+     <!-- App favicon -->
+     <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+     <!-- Vendor css (Require in all Page) -->
+     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- Icons css (Require in all Page) -->
+     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- App css (Require in all Page) -->
+     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- Theme Config js (Require in all Page) -->
+     <script src="/assets/js/config.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+     <!-- START Wrapper -->
+     <div class="wrapper">
+
+          <!-- ========== Topbar Start ========== -->
+          <div th:include="~{fragments/shipper/header.html}"></div>
+          <!-- ========== Topbar End ========== -->
+
+          <!--               Start menu app-->
+          <div th:include="~{fragments/shipper/menu_app.html}"></div>
+
+          <!-- ==================================================== -->
+          <!-- Start right Content here -->
+          <!-- ==================================================== -->
+          <div class="page-content">
+
+               <!-- Start Container xxl -->
+               <div class="container-xxl">
+
+                    <div class="row">
+                         <div class="col-xl-9 col-lg-8">
+                              <div class="card overflow-hidden">
+                                   <div class="card-body">
+                                        <div class="bg-primary profile-bg rounded-top position-relative mx-n3 mt-n3">
+                                             <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar-xl border border-light border-3 rounded-circle position-absolute top-100 start-0 translate-middle ms-5">
+                                        </div>
+                                        <div class="mt-5 d-flex flex-wrap align-items-center justify-content-between">
+                                             <div>
+                                                  <h4 th:text="${user.fullname}" class="mb-1"><i class='bx bxs-badge-check text-success align-middle'></i></h4>
+                                                  <p class="mb-0">Project Head Manager</p>
+                                             </div>
+                                             <div class="d-flex align-items-center gap-2 my-2 my-lg-0">
+<!--                                                  <a href="#!" class="btn btn-info"><i class='bx bx-message-dots'></i> Message</a>-->
+<!--                                                  <a href="#!" class="btn btn-outline-primary"><i class="bx bx-plus"></i> Follow</a>-->
+                                             </div>
+                                        </div>
+
+                                   </div>
+                              </div>
+                         </div>
+                         <div class="col-xl-3 col-lg-4">
+                              <div class="card">
+                                   <div class="card-header">
+                                        <h4 class="card-title">Personal Information</h4>
+                                   </div>
+                                   <div class="card-body">
+                                        <div class="">
+                                             <div class="d-flex align-items-center gap-2 mb-2">
+                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                       <iconify-icon icon="solar:backpack-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
+                                                  </div>
+                                                  <p th:text="${user.role.roleName}" class="mb-0 fs-14"></p>
+                                             </div>
+                                             <div class="d-flex align-items-center gap-2 mb-2">
+                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                       <iconify-icon icon="solar:map-point-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
+                                                  </div>
+                                                  <p class="mb-0 fs-14">Lives in <span th:text="${user.address}" class="text-dark fw-semibold"></span></p>
+                                             </div>
+                                             <div class="d-flex align-items-center gap-2 mb-2">
+                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                       <iconify-icon icon="solar:letter-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
+                                                  </div>
+                                                  <p th:text="${user.email}" class="mb-0 fs-14">Email <a href="#!" class="text-primary fw-semibold"></a></p>
+                                             </div>
+
+                                             <div class="d-flex align-items-center gap-2 mb-2">
+                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
+                                                       <iconify-icon icon="solar:phone-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
+                                                  </div>
+                                                  <p th:text="${user.phone}" class="mb-0 fs-14">Email <a href="#!" class="text-primary fw-semibold"></a></p>
+                                             </div>
+                                            <div th:include="~{fragments/user/user_edit.html}"></div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+               </div>
+               <!-- End Container Fluid -->
+
+               <!-- ========== Footer Start ========== -->
+               <footer class="footer">
+                   <div class="container-fluid">
+                       <div class="row">
+                           <div class="col-12 text-center">
+                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                           </div>
+                       </div>
+                   </div>
+               </footer>
+               <!-- ========== Footer End ========== -->
+
+          </div>
+          <!-- ==================================================== -->
+          <!-- End Page Content -->
+          <!-- ==================================================== -->
+
+     </div>
+     <!-- END Wrapper -->
+
+     <!-- Vendor Javascript (Require in all Page) -->
+     <script src="/assets/js/vendor.js"></script>
+
+     <!-- App Javascript (Require in all Page) -->
+     <script src="/assets/js/app.js"></script>
+
+     <!-- Page Js -->
+     <!-- <script src="/assets/js/pages/profile.js"></script> -->
+
+
+</body>
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:38 GMT -->
+</html>

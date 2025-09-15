@@ -1,0 +1,24 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+  <div style="display: flex;justify-content: flex-end; align-items: center; font-family: Arial, sans-serif;">
+     <span style="font-size: 16px; color: rgba(51,51,51,0.87);">
+<!--        Hello, <span th:text="${user.fullname}"></span>-->
+    </span>
+    <a href="/logout" class="logout-btn" style="margin-left: 15px; padding: 8px 15px; background-color: rgba(103,101,101,0.77); color: white; border-radius: 5px; text-decoration: none; display: inline-block;">
+      Logout
+    </a>
+  </div>
+</div>
+<style>
+    .logout-btn:hover {
+        background-color: #0056b3;
+        transform: scale(1.1);
+        transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .logout-btn:active {
+        background-color: #004085;
+        transform: scale(0.95);
+        transition: background-color 0.1s ease, transform 0.1s ease;
+    }
+</style>
