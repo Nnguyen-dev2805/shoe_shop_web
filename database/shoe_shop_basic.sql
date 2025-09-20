@@ -1,19 +1,15 @@
-create database shoe_shop_basic
-go 
+CREATE DATABASE shoe_shop_basic;
 
-use shoe_shop_basic
-go
+USE shoe_shop_basic;
 
--- 1. Role : Phân quyền , user nào chức năng nào (khách, admin, shipper, ... )
-CREATE TABLE roles (
+-- 1. Roles
+CREATE TABLE Roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,
     role_name VARCHAR(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-go
-
--- 2. User : Lưu tài khoản , mật khẩu , thông tin và chức vụ 
-CREATE TABLE users (
+-- 2. Users
+CREATE TABLE Users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
@@ -21,31 +17,36 @@ CREATE TABLE users (
     address VARCHAR(255),
     phone VARCHAR(255),
     role_id INT NOT NULL,
-    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES roles(role_id)
+    CONSTRAINT fk_user_role FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-go
+-- Dữ liệu mẫu
+INSERT INTO Roles (role_name) VALUES ('admin');
 
-INSERT INTO roles (role_name) VALUES ('admin');
-INSERT INTO users (email, password, full_name, address, phone, role_id)
-VALUES ('tnhatnguyen.dev2805@gmail.com',
-        '$2a$10$Hb8AASrv81xAk4CiXMlX0ebTlS1NMhUaTnUFaf.CnHUQcVHv9rgLm',
-        'Nhất Nguyên',
-        'HCM City',
-        '0123456789',
-        1);
-        
--------------------------------
+INSERT INTO Users (email, password, full_name, address, phone, role_id)
+VALUES (
+    'tnhatnguyen.dev2805@gmail.com',
+    '$2a$10$Hb8AASrv81xAk4CiXMlX0ebTlS1NMhUaTnUFaf.CnHUQcVHv9rgLm',
+    'Nhất Nguyên',
+    'HCM City',
+    '0123456789',
+    1
+);
 
-
--- 3. Category : Mô tả loại giày
+-- 3. Category
 CREATE TABLE Category (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description VARCHAR(255)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4; 
 
--- 4. Product
+-- 4. Brand
+CREATE TABLE Brand (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- 5. Product
 CREATE TABLE Product (
     id INT AUTO_INCREMENT PRIMARY KEY,
     category_id INT NOT NULL,
@@ -60,15 +61,7 @@ CREATE TABLE Product (
     FOREIGN KEY (brand_id) REFERENCES Brand(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-
--- 5. Brand
-CREATE TABLE Brand (
-    id INT AUTO_INCREMENT PRIMARY KEY,  -- Mã thương hiệu
-    name VARCHAR(100) NOT NULL UNIQUE         -- Tên thương hiệu
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
--- 6. Product Detail
+-- 6. ProductDetail
 CREATE TABLE ProductDetail (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,
@@ -84,10 +77,10 @@ CREATE TABLE Cart (
     user_id INT NOT NULL,
     total_price DECIMAL(18,2) DEFAULT 0,
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 8. Cart Detail
+-- 8. CartDetail
 CREATE TABLE CartDetail (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cart_id INT NOT NULL,
@@ -108,37 +101,37 @@ CREATE TABLE Address (
     country VARCHAR(50) DEFAULT 'VietNam'
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 10. User_Address
-CREATE TABLE User_Address (
+-- 10. UserAddress
+CREATE TABLE UserAddress (
     user_id INT NOT NULL,
     address_id INT NOT NULL,
-    is_default BOOLEAN NOT NULL DEFAULT 0,  -- 0 = không mặc định, 1 = mặc định
-    PRIMARY KEY (user_id, address_id),      -- khóa chính kép
-    FOREIGN KEY (user_id) REFERENCES users(id),
+    is_default BOOLEAN NOT NULL DEFAULT 0,
+    PRIMARY KEY (user_id, address_id),
+    FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (address_id) REFERENCES Address(id)
 );
 
--- 11. Order
-CREATE TABLE `Order` (
+-- 11. Orders
+CREATE TABLE Orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     customer_id INT NOT NULL,
     delivery_address_id INT NOT NULL,
     total_price DECIMAL(18,2) NOT NULL,
     status VARCHAR(50) DEFAULT 'pending',
-    pay_option VARCHAR(50) NOT NULL default 'tiền mặt',
+    pay_option VARCHAR(50) NOT NULL DEFAULT 'tiền mặt',
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES users(id),
+    FOREIGN KEY (customer_id) REFERENCES Users(id),
     FOREIGN KEY (delivery_address_id) REFERENCES Address(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- 12. Order Detail
+-- 12. OrderDetail
 CREATE TABLE OrderDetail (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     productdetail_id INT NOT NULL,
     quantity INT NOT NULL CHECK (quantity >= 1),
     price DECIMAL(18,2) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES `Order`(id),
+    FOREIGN KEY (order_id) REFERENCES Orders(id),
     FOREIGN KEY (productdetail_id) REFERENCES ProductDetail(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -147,11 +140,11 @@ CREATE TABLE Shipment (
     id INT AUTO_INCREMENT PRIMARY KEY,
     order_id INT NOT NULL,
     shipper_id INT NOT NULL,
-    shipment_address_id INT NULL, -- địa chỉ giao hàng khác với Order
+    shipment_address_id INT NULL,
     status VARCHAR(50) DEFAULT 'shipping',
     update_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (order_id) REFERENCES `Order`(id),
-    FOREIGN KEY (shipper_id) REFERENCES users(id),
+    FOREIGN KEY (order_id) REFERENCES Orders(id),
+    FOREIGN KEY (shipper_id) REFERENCES Users(id),
     FOREIGN KEY (shipment_address_id) REFERENCES Address(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -162,15 +155,8 @@ CREATE TABLE Rating (
     user_id INT NOT NULL,
     star INT CHECK (star >= 1 AND star <= 5),
     description TEXT,
-    image varchar(255),
+    image VARCHAR(255),
     created_date DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (product_id) REFERENCES Product(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES Users(id)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-
-
-
-
-
-
