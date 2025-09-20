@@ -702,26 +702,26 @@
                                                   <th>Action</th>
                                              </tr>
                                              </thead>
-                                             <tbody>
-                                             <tr th:each="order: ${listOrder.content}">
-                                                  <td th:text="${order.id}">
-                                                  </td>
-                                                  <td th:text="${order.createdDate}"></td>
-                                                  <td th:text="${order.user.fullname}"></td>
-                                                  <td th:text="${order.totalPrice}"></td>
-                                                  <td> <span th:text="${order.payOption}" class="badge bg-light text-dark  px-2 py-1 fs-13"></span></td>
-                                                  <td th:text="${order.status}"> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13"></span></td>
-                                                  <td>
-                                                       <div class="d-flex gap-2">
-                                                            <a th:href="@{/admin/order/detail/{id}(id=${order.id})}" href="" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                            <!--                                                                 <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>-->
-                                                            <div th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
-                                                                 <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                            </div>
-                                                       </div>
-                                                  </td>
-                                             </tr>
-                                             </tbody>
+<!--                                             <tbody>-->
+<!--                                             <tr th:each="order: ${listOrder.content}">-->
+<!--                                                  <td th:text="${order.id}">-->
+<!--                                                  </td>-->
+<!--                                                  <td th:text="${order.createdDate}"></td>-->
+<!--                                                  <td th:text="${order.user.fullname}"></td>-->
+<!--                                                  <td th:text="${order.totalPrice}"></td>-->
+<!--                                                  <td> <span th:text="${order.payOption}" class="badge bg-light text-dark  px-2 py-1 fs-13"></span></td>-->
+<!--                                                  <td th:text="${order.status}"> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13"></span></td>-->
+<!--                                                  <td>-->
+<!--                                                       <div class="d-flex gap-2">-->
+<!--                                                            <a th:href="@{/admin/order/detail/{id}(id=${order.id})}" href="" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>-->
+<!--                                                            &lt;!&ndash;                                                                 <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>&ndash;&gt;-->
+<!--                                                            <div th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">-->
+<!--                                                                 <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>-->
+<!--                                                            </div>-->
+<!--                                                       </div>-->
+<!--                                                  </td>-->
+<!--                                             </tr>-->
+<!--                                             </tbody>-->
                                         </table>
                                         <!-- end table -->
                                    </div>

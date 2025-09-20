@@ -51,4 +51,9 @@ public class HomeController {
 //        model.addAttribute("ratedProducts", ratedProducts);
         return "web/index";
     }
+
+    @GetMapping("/blog")
+    public String blog(){
+        return "/user/blog";
+    }
 }
