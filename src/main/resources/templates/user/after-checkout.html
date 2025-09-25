@@ -1,0 +1,228 @@
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title> Blog || James </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- favicon
+    ============================================ -->
+    <link rel="shortcut icon" type="image/x-icon" href="img/favicon.ico">
+
+    <!-- Google Fonts
+    ============================================ -->
+    <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!-- Bootstrap CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <!-- owl.carousel CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/owl.carousel.css">
+    <link rel="stylesheet" href="/css/owl.theme.css">
+    <link rel="stylesheet" href="/css/owl.transitions.css">
+    <!-- jquery-ui CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/jquery-ui.css">
+    <!-- meanmenu CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/meanmenu.min.css">
+    <!-- nivoslider CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+    <link rel="stylesheet" href="/lib/css/preview.css">
+    <!-- animate CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/animate.css">
+    <!-- magic CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/magic.css">
+    <!-- normalize CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <!-- main CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- style CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/style.css">
+    <!-- responsive CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/responsive.css">
+    <!-- modernizr JS
+    ============================================ -->
+    <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- header area start -->
+<div th:include="~{fragments/user/header.html}"></div>
+<!-- header area end -->
+<!-- blog  banner start -->
+<div class="blog-banner">
+    <img src="/img/product/banner.jpg" alt="">
+</div>
+<!-- blog banner end -->
+<!-- blog area start -->
+<div class="blog-main">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="location">
+                    <ul>
+                        <th:block th:unless="${session.user}">
+                            <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
+                        </th:block>
+                        <th:block th:if="${session.user}">
+                            <li><a href="/user/shop" title="go to homepage">Home<span>/</span></a>  </li>
+                        </th:block>
+                        <li><strong> blog</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div th:if="${orderSuccess}">
+                <script th:inline="javascript">
+                    alert("Đơn hàng đã được tạo thành công!");
+                </script>
+            </div>
+
+            <!-- Thông báo không thành công -->
+            <div th:unless="${orderSuccess}">
+                <script th:inline="javascript">
+                    alert("Không thể tạo đơn hàng!");
+                </script>
+            </div>
+            <section class="my-5">
+                <div class="container">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-6">
+                            <div class="thankyou">
+                                <div class="logo text-center mb5">
+                                    <img src="img/logo.png" alt="">
+                                </div>
+                                <div class="top-section mt-5">
+                                    <div class="row ">
+                                        <div class="col-lg-2">
+                                            <span class="lar la-check-circle"></span>
+                                        </div>
+                                        <div class="col-lg-10">
+                                            <p>Đơn hàng <span th:text="${'#' + orderInfo}"></span></p>
+                                            <h3 class="heading-3" th:if="${orderSuccess}">Cảm ơn <span th:text="${customer.fullName}"></span> !</h3>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="map-location mt-5 mb-5s">
+                                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7449.057577233779!2d105.52522339491696!3d21.01151768801886!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31345bb9d76a7e03%3A0x244a83c591357341!2zRlBUIFNvZnR3YXJlIEjDsmEgTOG6oWM!5e0!3m2!1svi!2s!4v1709995329174!5m2!1svi!2s"
+                                            width="600" height="300" frameborder="0" style="border: 0" allowfullscreen=""
+                                            aria-hidden="false" tabindex="0"></iframe>
+                                    <h3 class="heading-3" th:if="${transactionNo != '0'}">Đơn hàng của bạn đã được tạo thành công!</h3>
+                                    <h3 class="heading-3" th:if="${transactionNo == '0'}">Đơn hàng của bạn đã bị huỷ bỏ do lỗi</h3>
+                                </div>
+
+                                <div class="map-location mt-5 mb-5s">
+                                    <div class="heading-section">
+                                        <h5>Thông tin khách hàng</h5>
+                                    </div>
+                                    <div class="row ">
+                                        <div class="col-lg-6">
+                                            <h6 class="heading-3">Thông tin liên lạc</h6>
+                                            <p th:text="${email}"></p>
+                                            <h6 class="heading-3">Địa chỉ giao hàng</h6>
+                                            <address class="address">
+                                                <span th:text="${customer.fullName}"></span><br>
+                                                <span th:text="${detail + ','}"></span><br>
+                                                <span th:text="${ward + ','}"></span> <br>
+                                                <span th:text="${district + ','}"></span> <br>
+                                                <span th:text="${province + ','}"></span> <br>
+                                                <span th:text="${customer.phone}"></span>
+                                            </address>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <h6 class="heading-3">Phương thức trả tiền</h6>
+                                            <p>Trả tiền khi giao(COD) - <span
+                                                    th:text="${#numbers.formatDecimal(total, 0, 'POINT', 0, 'COMMA') + ' VND'}"></span></p>
+                                            <h6 class="heading-3">Địa chỉ trả tiền</h6>
+                                            <address class="address">
+                                                <span th:text="${customer.fullName}"></span><br>
+                                                <span th:text="${detail + ','}"></span><br>
+                                                <span th:text="${ward + ','}"></span> <br>
+                                                <span th:text="${district + ','}"></span> <br>
+                                                <span th:text="${province + ','}"></span> <br>
+                                                <span th:text="${customer.phone}"></span>
+                                            </address>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="map-location mt-5 mb-5s">
+                                    <div class="row ">
+                                        <div class="col-lg-6 text-center">
+                                            <a th:href="@{/client/product}" class="btn btn-outline-primary">Tiếp tục mua hàng
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<!-- blog area end -->
+<!-- footer area start -->
+<div th:include="~{fragments/web/footer.html}"></div>
+<!-- footer area end -->
+
+<!-- jquery
+============================================ -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<!-- bootstrap JS
+============================================ -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- wow JS
+============================================ -->
+<script src="/js/wow.min.js"></script>
+<!-- price-slider JS
+============================================ -->
+<script src="/js/jquery-price-slider.js"></script>
+<!-- nivoslider JS
+============================================ -->
+<script src="/lib/js/jquery.nivo.slider.js"></script>
+<script src="/lib/home.js"></script>
+<!-- meanmenu JS
+============================================ -->
+<script src="/js/jquery.meanmenu.js"></script>
+<!-- owl.carousel JS
+============================================ -->
+<script src="/js/owl.carousel.min.js"></script>
+<!-- elevatezoom JS
+============================================ -->
+<script src="/js/jquery.elevatezoom.js"></script>
+<!-- scrollUp JS
+============================================ -->
+<script src="/js/jquery.scrollUp.min.js"></script>
+<!-- plugins JS
+============================================ -->
+<script src="/js/plugins.js"></script>
+<!-- main JS
+============================================ -->
+<script src="/js/main.js"></script>
+</body>
+
+</html>

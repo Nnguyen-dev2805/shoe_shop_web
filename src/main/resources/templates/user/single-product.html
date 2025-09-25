@@ -1,0 +1,1000 @@
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+
+<!-- Mirrored from htmldemo.net/james/james/single-product.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 05 Nov 2024 02:19:15 GMT -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Single Shop || James </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- favicon
+    ============================================ -->
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+    <!-- Google Fonts
+    ============================================ -->
+    <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <!-- Bootstrap CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <!-- owl.carousel CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/owl.carousel.css">
+    <link rel="stylesheet" href="/css/owl.theme.css">
+    <link rel="stylesheet" href="/css/owl.transitions.css">
+    <!-- jquery-ui CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/jquery-ui.css">
+    <!-- meanmenu CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/meanmenu.min.css">
+    <!-- nivoslider CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+    <link rel="stylesheet" href="/lib/css/preview.css">
+    <!-- animate CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/animate.css">
+    <!-- magic CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/magic.css">
+    <!-- normalize CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/normalize.css">
+    <!-- main CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/main.css">
+    <!-- style CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/style.css">
+    <!-- responsive CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/responsive.css">
+    <!-- modernizr JS
+    ============================================ -->
+    <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+    <style>
+        .fa-heart {
+            color: red; /* Trái tim đỏ khi yêu thích */
+        }
+
+        .fa-heart-o {
+            color: #ccc; /* Trái tim xám khi chưa yêu thích */
+        }
+
+        .rating-container {
+            display: flex;
+            gap: 5px;
+        }
+
+        .star {
+            font-size: 30px;
+            color: #ccc; /* Màu sao chưa được chọn */
+            cursor: pointer;
+        }
+
+        .star.selected, .star.hover {
+            color: gold; /* Màu sao được chọn hoặc hover */
+        }
+    </style>
+</head>
+<body>
+<!--[if lt IE 8]>
+<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- header area start -->
+<header th:replace="/fragments/user/header :: header"></header>
+<!-- header area end -->
+
+<!-- single product area start -->
+<div class="Single-product-location home2">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="location">
+                    <ul>
+                        <li><a th:href="${session.user != null ? '/user/shop' : '/'}" title="go to homepage">Home<span>/</span></a></li>
+                        <li><strong> Product details</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- single product area end -->
+<!-- single product details start -->
+<div class="single-product-details">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="single-product-img tab-content">
+                    <div class="single-pro-main-image tab-pane active" id="pro-large-img-1">
+                        <a href="#"><img class="optima_zoom" th:src="${product.image}"
+                                         data-zoom-image="img/product/7.png" alt="optima"/></a>
+                    </div>
+                    <div class="single-pro-main-image tab-pane" id="pro-large-img-2">
+                        <a href="#"><img class="optima_zoom" src="img/product/2.png" data-zoom-image="img/product/2.png"
+                                         alt="optima"/></a>
+                    </div>
+                    <div class="single-pro-main-image tab-pane" id="pro-large-img-3">
+                        <a href="#"><img class="optima_zoom" src="img/product/8.png" data-zoom-image="img/product/8.png"
+                                         alt="optima"/></a>
+                    </div>
+                    <div class="single-pro-main-image tab-pane" id="pro-large-img-4">
+                        <a href="#"><img class="optima_zoom" src="img/product/1.png" data-zoom-image="img/product/1.png"
+                                         alt="optima"/></a>
+                    </div>
+                    <div class="single-pro-main-image tab-pane" id="pro-large-img-5">
+                        <a href="#"><img class="optima_zoom" src="img/product/9.png" data-zoom-image="img/product/9.png"
+                                         alt="optima"/></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <form th:action="@{/cart/add}" method="post">
+                    <div class="single-product-details">
+                        <a href="#" class="product-name" th:text="${product.title}"></a>
+                        <div class="list-product-info">
+                            <div class="price-rating">
+                                <div class="ratings">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <strong th:text="'Avg rating: ' + ${avgrating}"></strong>
+                                    <br>
+                                    <strong th:text="${totalRating} + ' reviews'"></strong>
+<!--                                    <i class="fa fa-star-half-o"></i>-->
+<!--                                    <a href="#tab3" class="review" id="reviewsLink"><em ></em></a>-->
+
+<!--                                    <a href="#" class="add-review">Add Your Review</a>-->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="avalable">
+                            <p>Availability:<span> In stock</span></p>
+                        </div>
+                        <div class="item-price">
+                            <span th:text="${product.price}"></span>
+                        </div>
+                        <div class="single-product-info">
+                            <p>Description: <span th:text="${product.description}"></span></p>
+                            <div class="share">
+                                <img src="img/product/share.png" alt="">
+                            </div>
+                        </div>
+                        <!-- them vao danh sach yeu thich-->
+                        <div class="action" th:if="${session.user != null}">
+                            <ul class="add-to-links">
+                                <li >
+                                    <a href="#" class="add-to-wishlist" th:attr="data-product-id=${product.id}">
+                                        <i class="fa"
+                                           th:class="${wishlist.contains(product) ? ' fa fa-heart' : 'fa fa-heart-o'}">
+                                        </i>
+                                    </a>
+                                </li>
+<!--                                <li th:if="${session.user == null}">-->
+<!--                                    <a href="#" class="add-to-wishlist">-->
+<!--                                        <i class="fa" class="fa fa-heart-o"></i>-->
+<!--                                    </a>-->
+<!--                                </li>-->
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-refresh"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-envelope"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="action" th:if="${session.user == null}">
+                            <ul class="add-to-links">
+                                <li >
+                                    <a href="#" class="add-to-wishlist" th:attr="data-product-id=${product.id}">
+                                        <i class="fa fa-heart-o"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-refresh"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">
+                                        <i class="fa fa-envelope"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="select-catagory">
+                            <div class="size-select">
+                                <label class="required">
+                                    <em>*</em> Size
+                                </label>
+                                <div class="input-box">
+                                    <select id="select-2" name="productDetailId" required>
+                                        <option value="" disabled selected>-- Please choose size --</option>
+                                        <option th:each="productDetail : ${productDetails}"
+                                                th:value="${productDetail.id}"
+                                                th:data-priceadd="${productDetail.priceadd}"
+                                                th:text="'Size: ' + ${productDetail.size} + ' + $' + ${productDetail.priceadd}">
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="cart-item">
+                            <div class="price-box">
+                                <!-- Giá cuối cùng sẽ được hiển thị ở đây -->
+                                <span id="final-price" th:text="${product.price}"></span>
+                            </div>
+                            <div class="single-cart">
+                                <div class="cart-plus-minus">
+                                    <label>Qty: </label>
+                                    <input class="cart-plus-minus-box" type="text" name="quantity" value="1">
+                                </div>
+                                <!-- Hidden input để lưu productDetailId -->
+                                <input type="hidden" id="productDetailId" name="productDetailId" value="">
+                                <button class="cart-btn" type="submit">Add to cart</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div>
+                <h5 th:if="${alert} != null" th:text="${alert}"></h5>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- single product details end -->
+<!-- single product tab start -->
+<div class="single-product-tab-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="single-product-tab">
+                    <ul class="nav single-product-tab-navigation" role="tablist">
+<!--                        <li role="presentation">-->
+<!--                            <a class="active" href="#tab1" aria-controls="tab1" role="tab" data-bs-toggle="tab">Product-->
+<!--                                Description</a>-->
+<!--                        </li>-->
+                        <li role="presentation">
+                            <a href="#tab2" aria-controls="tab2" role="tab" data-bs-toggle="tab">Reviews</a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#tab3" aria-controls="tab3" role="tab" data-bs-toggle="tab" id="viewAllReview" th:attr="data-product-id=${product.id}">View all review</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content single-product-page">
+<!--                        <div role="tabpanel" class="tab-pane fade show active" id="tab1">-->
+<!--                            <div class="single-p-tab-content">-->
+<!--                                <p>Nunc facilisis sagittis ullamcorper. Proin lectus ipsum, gravida et mattis vulputate,-->
+<!--                                    tristique ut lectus. Sed et lorem nunc. Vestibulum ante ipsum primis in faucibus-->
+<!--                                    orci luctus et ultrices posuere cubilia Curae; Aenean eleifend laoreet congue.-->
+<!--                                    Vivamus adipiscing nisl ut dolor dignissim semper. Nulla luctus malesuada tincidunt.-->
+<!--                                    Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos-->
+<!--                                    himenaeos. Integer enim purus, posuere at ultricies eu, placerat a felis.-->
+<!--                                    Suspendisse aliquet urna pretium eros convallis interdum. Quisque in arcu id dui-->
+<!--                                    vulputate mollis eget non arcu. Aenean et nulla purus. Mauris vel tellus non nunc-->
+<!--                                    mattis lobortis. </p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <div role="tabpanel" class="tab-pane fade" id="tab2" aria-labelledby="tab2-tab">
+                            <div class="single-p-tab-content">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="rate-product hidden-xs">
+                                            <div class="rate-product-heading">
+                                                <h3 th:text=" 'You are reviewing: ' + ${product.title}"></h3>
+                                                <h3>How do you rate this product? <em>*</em></h3>
+                                            </div>
+                                            <form id="ratingForm" th:action="@{/rating/add}" method="post" enctype="multipart/form-data">
+                                                <div class="rating-container">
+                                                    <span class="star" data-value="1"><i class="fa fa-star" title="Rất tệ"></i></span>
+                                                    <span class="star" data-value="2"><i class="fa fa-star" title="Không hài lòng"></i></span>
+                                                    <span class="star" data-value="3"><i class="fa fa-star" title="Bình thường"></i></span>
+                                                    <span class="star" data-value="4"><i class="fa fa-star" title="Hài lòng"></i></span>
+                                                    <span class="star" data-value="5"><i class="fa fa-star" title="Rất hài lòng"></i></span>
+                                                </div>
+                                                <input type="hidden" id="rating" name="star" value="" required>
+                                                <ul class="form-list">
+                                                    <li>
+                                                        <label>Nickname <em>*</em></label>
+                                                        <input type="hidden" th:value="${product.id}" name="productId">
+                                                        <input type="text" th:value="${session.user != null ? session.user.fullname : ''}" name="fullname" readonly>
+                                                        <input type="hidden" th:value="${session.user != null ? session.user.email : ''}" name="email">
+                                                    </li>
+                                                    <li>
+                                                        <label for="image">Thêm hình ảnh kèm theo(nếu có)</label>
+                                                        <input type="file" id="image" name="image" placeholder="Ảnh kèm theo">
+                                                    </li>
+                                                    <li>
+                                                        <label>Review description<em>*</em></label>
+                                                        <textarea cols="3" rows="5" name="comment"></textarea>
+                                                    </li>
+                                                </ul>
+                                                <button type="submit">Submit Review</button>
+                                            </form>
+
+
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane fade" id="tab3">
+                            <div class="single-p-tab-content" id="reviewsContent">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- single product tab end -->
+<!-- upsell product area start-->
+<!--        <div class="upsell-product home2">-->
+<!--            <div class="container">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="product-title">-->
+<!--                            <h2>upsell products</h2>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="row">-->
+<!--                    <div class="upsell-slider">-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/25.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/26.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/23.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/24.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/21.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/22.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/19.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/20.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/17.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/18.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/15.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/16.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/13.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/14.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/11.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/12.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="list-product-info">-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <div class="ratings">-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star"></i>-->
+<!--                                            <i class="fa fa-star-half-o"></i>-->
+<!--                                            <a href="#" class="review">1 Review(s)</a>-->
+<!--                                            <a href="#" class="add-review">Add Your Review</a>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!-- upsell product area end-->
+<!-- related product area start-->
+<!--        <div class="related-product home2">-->
+<!--            <div class="container">-->
+<!--                <div class="row">-->
+<!--                    <div class="col-md-12">-->
+<!--                        <div class="product-title">-->
+<!--                            <h2>related products</h2>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--                <div class="row">-->
+<!--                    <div class="related-slider">-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/25.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/26.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/23.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/24.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/21.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/22.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/19.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/20.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/17.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/18.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/15.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/16.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/13.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/14.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-12">-->
+<!--                            <div class="single-product">-->
+<!--                                <div class="product-img">-->
+<!--                                    <a href="single-product.html">-->
+<!--                                        <img src="img/product/11.png" alt="" class="primary-img">-->
+<!--                                        <img src="img/product/12.png" alt="" class="secondary-img">-->
+<!--                                    </a>-->
+<!--                                </div>-->
+<!--                                <div class="product-price">-->
+<!--                                    <div class="product-name">-->
+<!--                                        <a href="single-product.html" title="Fusce aliquam">Fusce aliquam</a>-->
+<!--                                    </div>-->
+<!--                                    <div class="price-rating">-->
+<!--                                        <span>$170.00</span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!-- related product area end-->
+
+<!-- footer area start -->
+<div th:include="~{fragments/web/footer.html}"></div>
+<!-- footer area end -->
+
+<!-- jquery
+============================================ -->
+<script src="/js/vendor/jquery-1.12.4.min.js"></script>
+<!-- bootstrap JS
+============================================ -->
+<script src="/js/bootstrap.min.js"></script>
+<!-- wow JS
+============================================ -->
+<script src="/js/wow.min.js"></script>
+<!-- price-slider JS
+============================================ -->
+<script src="/js/jquery-price-slider.js"></script>
+<!-- nivoslider JS
+============================================ -->
+<script src="/lib/js/jquery.nivo.slider.js"></script>
+<script src="/lib/home.js"></script>
+<!-- meanmenu JS
+============================================ -->
+<script src="/js/jquery.meanmenu.js"></script>
+<!-- owl.carousel JS
+============================================ -->
+<script src="/js/owl.carousel.min.js"></script>
+<!-- elevatezoom JS
+============================================ -->
+<script src="/js/jquery.elevatezoom.js"></script>
+<!-- scrollUp JS
+============================================ -->
+<script src="/js/jquery.scrollUp.min.js"></script>
+<!-- plugins JS
+============================================ -->
+<script src="/js/plugins.js"></script>
+<!-- main JS
+============================================ -->
+<script src="/js/main.js"></script>
+<script>
+    // Lấy giá sản phẩm gốc từ HTML
+    const basePrice = parseFloat(document.getElementById('final-price').textContent);  // Giá ban đầu
+    const selectBox = document.getElementById('select-2');  // Select box chứa các lựa chọn size
+    const finalPriceSpan = document.getElementById('final-price');  // Span hiển thị giá cuối cùng
+    const hiddenInputProductDetailId = document.getElementById('productDetailId'); // Hidden input để lưu id sản phẩm
+
+    // Xử lý sự kiện thay đổi size
+    selectBox.addEventListener('change', function () {
+        const selectedOption = this.options[this.selectedIndex];  // Lấy option được chọn
+        const priceAdd = parseFloat(selectedOption.getAttribute('data-priceadd')) || 0;  // Giá cộng thêm từ attribute 'data-priceadd'
+        const productDetailId = selectedOption.value;  // Lấy id của productDetail từ 'value' của option
+
+        // Cập nhật giá hiển thị
+        const totalPrice = basePrice + priceAdd;  // Tính tổng giá (giá gốc + giá cộng thêm)
+        finalPriceSpan.textContent = totalPrice.toFixed(1);  // Hiển thị giá cuối cùng
+
+        // Lưu id của productDetail vào hidden input để gửi về server
+        hiddenInputProductDetailId.value = productDetailId;
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Bắt sự kiện khi nhấn vào liên kết "add-to-wishlist"
+        $('.add-to-wishlist').click(function (e) {
+            e.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+
+            var productIdStr = $(this).data('product-id'); // Lấy productId từ thuộc tính data-product-id
+            var productId = parseInt(productIdStr, 10); // Chuyển đổi productId sang số nguyên
+            if (isNaN(productId) || productId <= 0) {
+                alert('ID sản phẩm không hợp lệ');
+                return;
+            }
+
+            var heartIcon = $(this).find('i'); // Lấy thẻ <i> chứa biểu tượng trái tim
+
+            // Gửi yêu cầu AJAX đến server
+            $.ajax({
+                url: '/wishlist/toggle', // URL của endpoint thêm/xóa sản phẩm vào wishlist
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({productId: productId}), // Gửi productId dưới dạng JSON
+                success: function (response) {
+                    if (response === 'ADDED') {
+                        // Nếu thêm thành công, thay đổi biểu tượng trái tim thành màu đỏ
+                        heartIcon.removeClass('fa-heart-o').addClass('fa-heart');
+                        heartIcon.css('color', 'red');
+                    } else if (response === 'REMOVED') {
+                        // Nếu bị xóa, đổi biểu tượng trái tim thành không màu
+                        heartIcon.removeClass('fa-heart').addClass('fa-heart-o');
+                        heartIcon.css('color', '');
+                    } else if (response === 'LOGIN_REQUIRED') {
+                        alert('Vui lòng đăng nhập để thêm sản phẩm vào wishlist');
+                    } else if (response === 'ALREADY_EXISTS') {
+                        alert('Sản phẩm đã có trong wishlist');
+                    }
+                },
+                error: function () {
+                    alert('Đã có lỗi xảy ra, vui lòng thử lại sau');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Hàm lấy ProductID từ URL
+        function getProductIdFromUrl() {
+            var path = window.location.pathname; // Lấy đường dẫn hiện tại
+            var parts = path.split('/'); // Tách đường dẫn thành mảng
+            return parts[parts.length - 1]; // Phần cuối cùng là ProductID
+        }
+
+        // Hàm load review dựa vào ProductID và số trang
+        function loadReviews(page) {
+            var productId = getProductIdFromUrl(); // Lấy ProductID từ URL
+
+            // Debug: kiểm tra giá trị
+            console.log('Product ID:', productId, 'Page:', page);
+
+            // Gửi request Ajax
+            $.get("/rating", { productId: productId, page: page }, function (data) {
+                // Cập nhật nội dung của reviewsContent
+                $('#reviewsContent').html(data);
+
+                // Gán lại sự kiện click cho các nút phân trang sau khi nội dung được cập nhật
+                bindPaginationLinks();
+            }).fail(function (error) {
+                console.error('Error loading reviews:', error);
+            });
+        }
+
+        // Hàm gắn sự kiện click cho các link phân trang
+        function bindPaginationLinks() {
+            // Lấy các link phân trang
+            $('.pagination-link').off('click').on('click', function (e) {
+                e.preventDefault(); // Ngăn chuyển hướng mặc định
+                var page = $(this).data('page'); // Lấy số trang từ thuộc tính data-page
+
+                // Kiểm tra số trang hợp lệ
+                if (!isNaN(page)) {
+                    loadReviews(page); // Gọi loadReviews để tải dữ liệu của trang mới
+                } else {
+                    console.error('Invalid page number');
+                }
+            });
+        }
+
+        // Sự kiện khi bấm vào nút "View all review"
+        $('#viewAllReview').click(function (e) {
+            e.preventDefault(); // Ngăn chuyển hướng mặc định
+
+            // Tải dữ liệu review từ trang đầu tiên (page = 0)
+            loadReviews(0);
+        });
+
+        // Gắn sự kiện click cho các nút phân trang (trường hợp nội dung ban đầu đã có sẵn)
+        bindPaginationLinks();
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const stars = document.querySelectorAll('.star');
+        const ratingInput = document.getElementById('rating');
+        const form = document.getElementById('ratingForm');  // Lấy form theo id
+        if (!form) return;
+
+        form.addEventListener("submit", function (e) {
+            // Kiểm tra nếu ratingInput không có giá trị
+            if (!ratingInput.value) {
+                e.preventDefault(); // Ngừng gửi form
+                alert("Vui lòng chọn số sao trước khi gửi đánh giá!");
+            }
+        });
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                // Kiểm tra nếu sao đã được chọn rồi
+                if (ratingInput.value === star.dataset.value) {
+                    // Nếu đã chọn, reset lại trạng thái sao và giá trị rating
+                    ratingInput.value = '';
+                    stars.forEach(s => s.classList.remove('selected'));
+                } else {
+                    // Nếu chưa chọn, gán giá trị rating và thay đổi trạng thái sao
+                    ratingInput.value = star.dataset.value;
+                    stars.forEach((s, i) => {
+                        if (i <= index) {
+                            s.classList.add('selected');
+                        } else {
+                            s.classList.remove('selected');
+                        }
+                    });
+                }
+            });
+
+            // Tạo hiệu ứng hover từ trái sang phải
+            star.addEventListener('mouseover', () => {
+                stars.forEach((s, i) => {
+                    if (i <= index) {
+                        s.classList.add('hover');
+                    } else {
+                        s.classList.remove('hover');
+                    }
+                });
+            });
+
+            // Khôi phục trạng thái khi chuột rời
+            star.addEventListener('mouseout', () => {
+                stars.forEach((s) => s.classList.remove('hover'));
+            });
+        });
+    });
+</script>
+
+</body>
+
+<!-- Mirrored from htmldemo.net/james/james/single-product.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 05 Nov 2024 02:19:16 GMT -->
+</html>

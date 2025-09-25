@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/orders-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
+<head>
+     <!-- Title Meta -->
+     <meta charset="utf-8" />
+     <title>Orders List | Larkon - Responsive Admin Dashboard Template</title>
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta name="description" content="A fully responsive premium admin dashboard template" />
+     <meta name="author" content="Techzaa" />
+     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+     <!-- App favicon -->
+     <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+     <!-- Vendor css (Require in all Page) -->
+     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- Icons css (Require in all Page) -->
+     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- App css (Require in all Page) -->
+     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+     <!-- Theme Config js (Require in all Page) -->
+     <script src="/assets/js/config.js"></script>
+<!--     css bootstrap-->
+<!--     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
+     <!-- ajax-->
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+     <!-- ========== Topbar Start ========== -->
+     <div th:include="~{fragments/shipper/header.html}"></div>
+     <!-- ========== Topbar End ========== -->
+
+     <!--               Start menu app-->
+     <div th:include="~{fragments/shipper/menu_app.html}"></div>
+     <!-- ==================================================== -->
+     <!-- Start right Content here -->
+     <!-- ==================================================== -->
+     <div>
+
+          <div class="page-content">
+
+               <!-- Start Container Fluid -->
+               <div class="container-xxl">
+
+                    <div class="row">
+                         <div class="col-md-6 col-xl-3">
+                              <div class="card">
+                                   <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                  <h4 class="card-title mb-2">Order Cancel</h4>
+                                                  <p th:text="${static.cancel}" class="text-muted fw-medium fs-22 mb-0"></p>
+                                             </div>
+                                             <div>
+                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                       <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+
+                         <div class="col-md-6 col-xl-3">
+                              <div class="card">
+                                   <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                  <h4 class="card-title mb-2">Order Shipping</h4>
+                                                  <p th:text="${static.shipping}" class="text-muted fw-medium fs-22 mb-0">630</p>
+                                             </div>
+                                             <div>
+                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                       <iconify-icon icon="solar:box-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <div class="col-md-6 col-xl-3">
+                              <div class="card">
+                                   <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                  <h4 class="card-title mb-2">Delivered</h4>
+                                                  <p th:text="${static.delivered}" class="text-muted fw-medium fs-22 mb-0"></p>
+                                             </div>
+                                             <div>
+                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                       <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                         <div class="col-md-6 col-xl-3">
+                              <div class="card">
+                                   <div class="card-body">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                             <div>
+                                                  <h4 class="card-title mb-2">Return</h4>
+                                                  <p th:text="${static.preturn}" class="text-muted fw-medium fs-22 mb-0">656</p>
+                                             </div>
+                                             <div>
+                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                                       <iconify-icon icon="solar:inbox-line-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <div class="row">
+                         <div class="col-xl-12">
+                              <div class="card">
+                                   <div class="d-flex card-header justify-content-between align-items-center">
+                                        <div>
+                                             <h4 class="card-title">All</h4>
+                                        </div>
+                                        <div style="display: flex; align-content: center">
+                                             <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()" style="margin-left: 10px">
+                                                  <option value="">All</option>
+                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">Shipped</option>
+                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).DELIVERED}">Delivered</option>
+                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).RETURN}">Return</option>
+                                             </select>
+                                             <script>
+                                                  window.onload = function () {
+                                                       const urlParams = new URLSearchParams(window.location.search);
+                                                       const status = urlParams.get('status'); // Lấy giá trị 'status' từ URL
+
+                                                       if (status) {
+                                                            const selectElement = document.getElementById("orderStatus");
+                                                            selectElement.value = status; // Đặt lại giá trị cho combobox
+                                                       }
+
+                                                  };
+                                                  function getOrderStatus() {
+                                                       // Lấy phần tử combobox
+                                                       const selectElement = document.getElementById("orderStatus");
+
+                                                       // Lấy giá trị trạng thái được chọn
+                                                       const selectedValue = selectElement.value;
+
+                                                       // Chuyển hướng đến trang web khác
+                                                       window.location.href = `/shipper/order/list?status=${selectedValue}`;
+                                                  }
+
+                                             </script>
+                                        </div>
+                                   </div>
+                                   <div class="card-body p-0">
+                                        <div class="table-responsive">
+                                             <table class="table align-middle mb-0 table-hover table-centered">
+                                                  <thead class="bg-light-subtle">
+                                                       <tr>
+                                                            <th>Order ID</th>
+                                                            <th>Created at</th>
+                                                            <th>Full name</th>
+                                                            <th>Price</th>
+                                                            <th>Pay option</th>
+                                                            <th>Order Status</th>
+     <!--                                                       <th>Delivery Number</th>-->
+                                                            <th>Action</th>
+                                                       </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                  <tr th:each="order: ${listOrder.content}">
+                                                       <td th:text="${order.id}">
+                                                       </td>
+                                                       <td th:text="${order.createdDate}"></td>
+                                                       <td th:text="${order.user.fullname}"></td>
+                                                       <td th:text="${order.totalPrice}"></td>
+                                                       <td> <span th:text="${order.payOption}" class="badge bg-light text-dark  px-2 py-1 fs-13"></span></td>
+                                                       <td th:text="${order.status}"> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13"></span></td>
+                                                       <td>
+                                                            <div class="d-flex gap-2">
+                                                                 <a th:href="@{/shipper/order/detail/{id}(id=${order.id})}" href="" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
+<!--                                                                 <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>-->
+                                                            </div>
+                                                       </td>
+                                                  </tr>
+                                                  </tbody>
+                                             </table>
+                                        </div>
+                                        <!-- end table-responsive -->
+                                   </div>
+                                   <div class="card-footer border-top" th:if="${totalPages > 0}">
+                                        <nav aria-label="Page navigation example">
+                                             <ul class="pagination justify-content-end mb-0">
+                                                  <li th:if="${listOrder.number > 0}" class="page-item"><a class="page-link" th:href="@{/shipper/order/list(page-num=${listOrder.number - 1}, status=${stt})}">Previous</a></li>
+                                                  <li  th:each="pageNumber: ${pageNumbers}" th:class="${pageNumber == listOrder.number + 1} ? 'page-item active' : 'page-item'">
+                                                       <a th:text="${pageNumber}" class="page-link" th:href="@{/shipper/order/list(page-num=${pageNumber - 1}, status=${stt})}"></a>
+                                                  </li>
+<!--                                                  <li th:if="${pageNumber != listOrder.number + 1}" class="page-item"><a th:text="${pageNumber}" class="page-link" href="javascript:void(0);"></a></li>-->
+                                                  <li th:if="${totalPages > listOrder.number + 1}" class="page-item"><a class="page-link" th:href="@{/shipper/order/list(page-num=${listOrder.number + 1}, status=${stt})}">Next</a></li>
+
+                                             </ul>
+                                        </nav>
+                                   </div>
+                              </div>
+                         </div>
+
+                    </div>
+
+               </div>
+               <!-- End Container Fluid -->
+
+               <!-- Order cancel fragment-->
+               <div th:include="~{fragments/order/order_cancel.html}"></div>
+
+               <!-- ========== Footer Start ========== -->
+               <footer class="footer">
+                    <div class="container-fluid">
+                         <div class="row">
+                              <div class="col-12 text-center">
+                                   <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                      href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                              </div>
+                         </div>
+                    </div>
+               </footer>
+               <!-- ========== Footer End ========== -->
+
+          </div>
+          <!-- ==================================================== -->
+          <!-- End Page Content -->
+          <!-- ==================================================== -->
+
+
+     </div>
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script src="/assets/js/vendor.js"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script src="/assets/js/app.js"></script>
+
+</body>
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/orders-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
+</html>

@@ -1,0 +1,30 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<header class="topbar" th:fragment="header" >
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <div class="d-flex align-items-center">
+                <!-- Menu Toggle Button -->
+                <div class="topbar-item">
+                    <button type="button" class="button-toggle-menu me-2">
+                        <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                    </button>
+                </div>
+
+                <!-- Menu Toggle Button -->
+                <div class="topbar-item">
+                    <h4 th:text="${title}" class="fw-bold topbar-button pe-none text-uppercase mb-0"></h4>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-1">
+
+                <!-- Theme Color (Light/Dark) -->
+                <div class="topbar-item">
+                    <button type="button" class="topbar-button" id="light-dark-mode">
+                        <iconify-icon icon="solar:moon-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>

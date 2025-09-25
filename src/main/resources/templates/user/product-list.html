@@ -1,0 +1,54 @@
+<div class="row">
+    <div class="col-lg-4 col-md-6" th:each="product : ${products}">
+        <div class="single-product">
+            <div class="level-pro-new">
+                <span>new</span>
+            </div>
+            <div class="product-img">
+                <a th:href="@{/product/details/{id}(id=${product.id})}">
+                    <img th:src="${product.image}" alt="Image" class="primary-img">
+                </a>
+            </div>
+                <div class="product-name">
+                    <a th:href="@{/product/details/{id}(id=${product.id})}" th:title="${product.title}"
+                       th:text="${product.title}"></a>
+                    <!--                                                            <p th:text="${product.description}"></p>-->
+                </div>
+                <div class="price-rating">
+                    <span class="formatted-price" th:text="${product.price}"></span>
+                    <div class="ratings">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                </div>
+        </div>
+    </div>
+    <!-- Phân trang -->
+    <ul class="pagination justify-content-center" style="margin-top: 50px">
+        <!-- Nút Previous -->
+        <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+            <a class="page-link pagination-link" href="#" th:data-page="${currentPage - 1}">Previous</a>
+        </li>
+
+        <!-- Các số trang -->
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+            th:classappend="${i == currentPage ? 'active' : ''}">
+            <a class="page-link pagination-link" href="#" th:data-page="${i}" th:text="${i + 1}"></a>
+        </li>
+
+        <!-- Nút Next -->
+        <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+            <a class="page-link pagination-link" href="#" th:data-page="${currentPage + 1}">Next</a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    document.querySelectorAll('.formatted-price').forEach(function(priceElement) {
+        var price = parseFloat(priceElement.textContent);
+        priceElement.textContent = new Intl.NumberFormat().format(price);
+    });
+</script>

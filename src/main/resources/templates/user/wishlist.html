@@ -1,0 +1,243 @@
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Wishlist || James </title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- favicon
+        ============================================ -->
+        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+        <!-- Google Fonts
+        ============================================ -->
+        <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <!-- Bootstrap CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <!-- owl.carousel CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/owl.carousel.css">
+        <link rel="stylesheet" href="/css/owl.theme.css">
+        <link rel="stylesheet" href="/css/owl.transitions.css">
+        <!-- jquery-ui CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/jquery-ui.css">
+        <!-- meanmenu CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/meanmenu.min.css">
+        <!-- nivoslider CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+        <link rel="stylesheet" href="/lib/css/preview.css">
+        <!-- animate CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/animate.css">
+        <!-- magic CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/magic.css">
+        <!-- normalize CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/normalize.css">
+        <!-- main CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/main.css">
+        <!-- style CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/style.css">
+        <!-- responsive CSS
+        ============================================ -->
+        <link rel="stylesheet" href="/css/responsive.css">
+        <!-- modernizr JS
+        ============================================ -->
+        <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+<!--        <div th:include="~{fragments/user/begin_header.html}"></div>-->
+        <!-- header area start -->
+        <div th:include="~{fragments/user/header.html}"></div>
+        <!-- header area end -->
+        <!-- wishlist area start -->
+        <div class="wishlist-area">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="location">
+                            <ul>
+                                <li><a href="/user/shop" title="go to homepage">Home<span>/</span></a>  </li>
+                                <li><strong> wishlist </strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="product-sidebar">
+                            <div class="sidebar-title">
+                                <h2>Shopping Options</h2>
+                            </div>
+                            <div class="single-sidebar">
+                                <div class="single-sidebar-title">
+                                    <h3>Category</h3>
+                                </div>
+                                <div class="single-sidebar-content">
+                                    <ul>
+                                        <li><a href="#">Dresses (4)</a></li>
+                                        <li><a href="#">shoes (6)</a></li>
+                                        <li><a href="#">Handbags (1)</a></li>
+                                        <li><a href="#">Clothing (3)</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="wishlist-banner">
+                            <a href="#">
+                                <img src="/img/checkout/checkout_banner.jpg" alt="">
+                            </a>
+                        </div>
+                        <div class="wishlist-heading">
+                            <h2>Wishlist</h2>
+                        </div>
+                        <div class="wishlist-content">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr style="text-align: center;">
+                                            <th>Image</th>
+                                            <th>Product Name</th>
+                                            <th>Unit Price</th>
+                                            <th>Description</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody style="text-align: center;">
+                                    <!-- Lặp qua danh sách sản phẩm trong wishlist -->
+                                    <tr th:each="product : ${wishlist}">
+                                        <td style="text-align: center;">
+                                            <!-- Hiển thị hình ảnh sản phẩm -->
+                                            <img th:src="${product.image}" alt="Product Image" style="max-width: 100px; max-height: 100px; object-fit: cover;">
+                                        </td>
+                                        <td>
+                                            <!-- Hiển thị tên sản phẩm -->
+                                            <span th:text="${product.title}"></span>
+                                        </td>
+                                        <td>
+                                            <!-- Hiển thị giá sản phẩm -->
+                                            <span th:text="'$' + ${product.price}"></span>
+                                        </td>
+                                        <td>
+                                            <!-- Hiển thị mô tả sản phẩm -->
+                                            <span th:text="${product.description}"></span>
+                                        </td>
+                                        <td >
+                                            <div class="wishlist-actions" >
+                                                <button type="button" data-bs-toggle="tooltip" title="Add to Cart"> <i class="fa fa-shopping-cart"></i> </button>
+                                                <button type="button" class="remove-from-wishlist" th:attr="data-product-id=${product.id}" title="Remove" onclick="deleteProductFromWishlist(this)">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button type="submit" value="Continue" class="check-button">Continue</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- wishlist area end -->
+        <!-- footer area start -->
+        <div th:include="~{fragments/web/footer.html}"></div>
+        <!-- footer area end -->
+
+        <!-- jquery
+        ============================================ -->
+        <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+        <!-- bootstrap JS
+        ============================================ -->
+        <script src="/js/bootstrap.min.js"></script>
+        <!-- wow JS
+        ============================================ -->
+        <script src="/js/wow.min.js"></script>
+        <!-- price-slider JS
+        ============================================ -->
+        <script src="/js/jquery-price-slider.js"></script>
+        <!-- nivoslider JS
+        ============================================ -->
+        <script src="/lib/js/jquery.nivo.slider.js"></script>
+        <script src="/lib/home.js"></script>
+        <!-- meanmenu JS
+        ============================================ -->
+        <script src="/js/jquery.meanmenu.js"></script>
+        <!-- owl.carousel JS
+        ============================================ -->
+        <script src="/js/owl.carousel.min.js"></script>
+        <!-- elevatezoom JS
+        ============================================ -->
+        <script src="/js/jquery.elevatezoom.js"></script>
+        <!-- scrollUp JS
+        ============================================ -->
+        <script src="/js/jquery.scrollUp.min.js"></script>
+        <!-- plugins JS
+        ============================================ -->
+        <script src="/js/plugins.js"></script>
+        <!-- main JS
+        ============================================ -->
+        <script src="/js/main.js"></script>
+        <script>
+            function deleteProductFromWishlist(buttonElement) {
+                var productId = parseInt(buttonElement.getAttribute('data-product-id'), 10);
+
+                // Kiểm tra nếu productId không phải là số
+                if (isNaN(productId)) {
+                    alert('Invalid product ID');
+                    return;
+                }
+                // Gửi yêu cầu POST với productId
+                fetch('/wishlist/delete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ productId: productId })
+                })
+                    .then(response => response.text())  // Nhận kết quả trả về từ server
+                    .then(data => {
+                        if (data === "SUCCESS") {
+                            alert("Product removed successfully!");
+                            var trElement = buttonElement.closest('tr');
+                            if (trElement) {
+                                trElement.remove();  // Xóa dòng <tr>
+                            }
+                            // Bạn có thể thực hiện hành động khác, ví dụ: xóa sản phẩm khỏi giao diện
+                        } else if (data === "LOGIN_REQUIRED") {
+                            alert("Please log in first.");
+                        } else {
+                            alert("Failed to remove product.");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while trying to delete the product.');
+                    });
+            }
+
+        </script>
+    </body>
+</html>

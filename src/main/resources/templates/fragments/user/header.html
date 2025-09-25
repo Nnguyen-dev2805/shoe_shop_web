@@ -1,0 +1,285 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header">
+    <header>
+        <div class="top-link">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-7 offset-lg-3 col-md-9 d-none d-md-block">
+                        <div class="site-option">
+                            <ul>
+                                <li class="currency"><a href="#">USD <i class="fa fa-angle-down"></i> </a>
+                                    <ul class="sub-site-option">
+                                        <li><a href="#">Usd</a></li>
+                                    </ul>
+                                </li>
+                                <li class="language"><a href="#">English <i class="fa fa-angle-down"></i> </a>
+                                    <ul class="sub-site-option">
+                                        <li><a href="#">English</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="call-support">
+                            <p>Hello, <span th:text="${session.user != null ? session.user.fullname : 'Welcome to my shop   '}"></span></p>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-2 col-md-3 position-relative">
+                        <div class="dashboard" >
+                            <div class="account-menu">
+                                <ul>
+                                    <li>
+                                        <a href="">
+                                            <i class="fa fa-bars"></i>
+                                        </a>
+                                        <ul>
+                                            <div th:if="${session.user != null}">
+                                                <li><a href="/user/my_account">my account</a></li>
+                                                <li><a href="/user/wishlist">my wishlist</a></li>
+                                                <li><a href="/cart/view">my cart</a></li>
+                                                <li><a href="/order">Checkout</a></li>
+                                                <li><a href="/user/blog">Blog</a></li>
+                                                <li><a href="/logout">Logout</a></li>
+                                            </div>
+
+                                            <div th:if="${session.user == null}">
+                                                <li><a href="/user/my_account">my account</a></li>
+                                                <li><a href="/user/wishlist">my wishlist</a></li>
+                                                <li><a href="/cart/view">my cart</a></li>
+                                                <li><a href="/order">Checkout</a></li>
+                                                <li><a href="/blog">Blog</a></li>
+                                                <li><a href="/login">Login</a></li>
+                                                <li><a href="/register">Register</a></li>
+                                            </div>
+
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="cart-menu">
+                                <ul>
+                                    <li>
+                                        <a th:href="@{/cart/view}"> <img src="/img/icon-cart.png" alt=""></a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mainmenu-area product-items">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <div class="logo">
+                            <a href="">
+                                <img src="/img/logo.png" alt="">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="mainmenu">
+                            <nav>
+                                <ul>
+<!--                                    <th:block th:unless="${session.user}">-->
+<!--                                        <li><a href="/">Home</a></li>-->
+<!--                                    </th:block>-->
+<!--                                    <th:block th:if="${session.user}">-->
+<!--                                        <li><a href="/user/shop">Home</a></li>-->
+<!--                                    </th:block>-->
+                                    <li><a href="/">Home</a></li>
+
+                                    <li class="mega-women"><a href="/user/shop">Shop</a>
+
+                                    </li>
+                                    <li class="mega-men"><a href="shop.html">Men</a>
+                                        <div class="mega-menu men">
+                                                <span>
+                                                    <a href="#">Bags</a>
+                                                    <a href="#">Bootees  Bags</a>
+                                                    <a href="#">Blazers</a>
+                                                </span>
+                                            <span>
+                                                    <a href="#">Clothing</a>
+                                                    <a href="#">coats</a>
+                                                    <a href="#">T-shirts</a>
+                                                </span>
+                                            <span>
+                                                    <a href="#">Lingerie</a>
+                                                    <a href="#">Bands</a>
+                                                    <a href="#">Furniture</a>
+                                                </span>
+                                        </div>
+                                    </li>
+                                    <li class="mega-footwear"><a href="shop.html">Footwear</a>
+                                        <div class="mega-menu footwear">
+                                                <span>
+                                                    <a href="#">Footwear Man</a>
+                                                    <a href="#">gifts</a>
+                                                </span>
+                                            <span>
+                                                    <a href="#">Footwear Womens</a>
+                                                    <a href="#">boots</a>
+                                                </span>
+                                        </div>
+                                    </li>
+                                    <li class="mega-jewellery"><a href="shop.html">Jewellery</a>
+                                        <div class="mega-menu jewellery">
+                                                <span>
+                                                    <a href="#">Rings</a>
+                                                </span>
+                                        </div>
+                                    </li>
+                                    <li><a href="shop.html">accessories</a></li>
+                                    <li><a href="#">Pages</a>
+                                        <div class="sub-menu pages">
+                                                <span>
+                                                    <a href="about-us.html">About us</a>
+                                                </span>
+                                            <span>
+                                                    <a href="/blog">Blog</a>
+                                                </span>
+                                            <span>
+                                                    <a href="blog-details.html">Blog Details</a>
+                                                </span>
+                                            <span>
+                                                    <a href="cart.html">Cart</a>
+                                                </span>
+                                            <span>
+                                                    <a href="checkout.html">Checkout</a>
+                                                </span>
+                                            <span>
+                                                    <a href="contact.html">Contact</a>
+                                                </span>
+                                            <span>
+                                                    <a href="/user/my_account">My account</a>
+                                                </span>
+                                            <span>
+                                                    <a href="shop.html">Shop</a>
+                                                </span>
+                                            <span>
+                                                    <a href="shop-list.html">Shop list</a>
+                                                </span>
+                                            <span>
+                                                    <a href="single-product.html">Single Shop</a>
+                                                </span>
+                                            <span>
+                                                    <a href="wishlist.html">Wishlist</a>
+                                                </span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="mobile-menu">
+                            <nav>
+                                <ul>
+                                    <li><a href="/user/shop">Home</a>
+                                    </li>
+                                    <li><a href="shop.html">Women</a>
+                                        <ul>
+                                            <li><a href="#">Dresses</a>
+                                                <ul>
+                                                    <li><a href="#">Coctail</a></li>
+                                                    <li><a href="#">day</a></li>
+                                                    <li><a href="#">evening</a></li>
+                                                    <li><a href="#">sports</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">shoes</a>
+                                                <ul>
+                                                    <li><a href="#">Sports</a></li>
+                                                    <li><a href="#">run</a></li>
+                                                    <li><a href="#">sandals</a></li>
+                                                    <li><a href="#">boots</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">handbags</a>
+                                                <ul>
+                                                    <li><a href="#">Blazers</a></li>
+                                                    <li><a href="#">table</a></li>
+                                                    <li><a href="#">coats</a></li>
+                                                    <li><a href="#">kids</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">clothing</a>
+                                                <ul>
+                                                    <li><a href="#">T-shirts</a></li>
+                                                    <li><a href="#">coats</a></li>
+                                                    <li><a href="#">Jackets</a></li>
+                                                    <li><a href="#">jeans</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="shop.html">Men</a>
+                                        <ul>
+                                            <li><a href="#">Bags</a>
+                                                <ul>
+                                                    <li><a href="#">Bootees bag</a></li>
+                                                    <li><a href="#">Blazers</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">clothing</a>
+                                                <ul>
+                                                    <li><a href="#">coats</a></li>
+                                                    <li><a href="#">T-shirts</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">Lingerie</a>
+                                                <ul>
+                                                    <li><a href="#">Bands</a></li>
+                                                    <li><a href="#">Furniture</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="shop.html">Foorwear</a>
+                                        <ul>
+                                            <li><a href="#">footwear men</a>
+                                                <ul>
+                                                    <li><a href="#">gifts</a></li>
+                                                </ul>
+                                            </li>
+                                            <li><a href="#">footwear women</a>
+                                                <ul>
+                                                    <li><a href="#">boots</a></li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="shop.html">Jewellery</a>
+                                        <ul>
+                                            <li><a href="#">Rings</a></li>
+                                        </ul>
+                                    </li>
+                                    <li><a href="shop.html">Accessories</a></li>
+                                    <li><a href="#">Pages</a>
+                                        <ul>
+                                            <li><a href="about-us.html">About us</a></li>
+                                            <li><a href="/blog">Blog</a></li>
+                                            <li><a href="blog-details.html">Blog Details</a></li>
+                                            <li><a href="cart.html">Cart</a></li>
+                                            <li><a href="checkout.html">Checkout</a></li>
+                                            <li><a href="contact.html">Contact</a></li>
+                                            <li><a href="/user/my_account">My account</a></li>
+                                            <li><a href="shop.html">Shop</a></li>
+                                            <li><a href="shop-list.html">Shop list</a></li>
+                                            <li><a href="single-product.html">Single Shop</a></li>
+                                            <li><a href="wishlist.html">Wishlist</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
