@@ -4,7 +4,7 @@
 <head>
     <!-- Title Meta -->
     <meta charset="utf-8" />
-    <title>Categories List</title>
+    <title>Danh Sách Thương Hiệu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fully responsive premium admin dashboard template" />
     <meta name="author" content="Techzaa" />
@@ -47,7 +47,7 @@
 
                     <!-- Menu Toggle Button -->
                     <div class="topbar-item">
-                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Categories List</h4>
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Danh Sách Thương Hiệu</h4>
                     </div>
                 </div>
 
@@ -468,99 +468,51 @@
         <div class="container-xxl">
 
             <div class="row">
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-secondary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="/assets/images/product/p-1.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Fashion Categories</h4>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-primary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="/assets/images/product/p-6.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Electronics Headphone</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-warning-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="/assets/images/product/p-7.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Foot Wares</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-info-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="/assets/images/product/p-9.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Eye Ware & Sunglass</h4>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                            <h4 class="card-title flex-grow-1">All Categories List</h4>
+                            <h4 class="card-title flex-grow-1">Danh Sách Thương Hiệu</h4>
 
-                            <a th:href="@{/admin/category/insert}" class="btn btn-sm btn-primary">
-                                Thêm loại sản phẩm
+                            <a th:href="@{/admin/brand/insert}" class="btn btn-sm btn-primary">
+                                Thêm thương hiệu
                             </a>
                         </div>
 
                         <div>
                             <div class="table-responsive">
                                 <div>
-                                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name" onkeyup="searchCategoryTable()">
+<!--                                    Chú ý hàm này searchBrandTable chưa có -->
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Search by name" onkeyup="searchBrandTable()">
                                 </div>
                                 <table class="table align-middle mb-0 table-hover table-centered">
                                     <thead class="bg-light-subtle">
                                     <tr>
                                         <th>ID</th>
-                                        <th>Tên loại</th>
-                                        <th>Mô tả</th>
-                                        <th>Số sản phẩm</th>
+                                        <th>Tên thương hiệu</th>
                                         <th>Hành động</th>
                                     </tr>
                                     </thead>
-                                    <!-- Tbody: Rỗng ban đầu, AJAX sẽ append rows -->
                                     <tbody id="categoryTbody">
-                                    <!-- Rows sẽ được thêm động bởi jQuery -->
                                     </tbody>
-<!--                                    <tbody>-->
-<!--                                    &lt;!&ndash; Thymeleaf loop to iterate over categories &ndash;&gt;-->
-<!--                                    <tr th:each="category : ${categories}">-->
-<!--                                        <td th:text="${category.id}"></td>-->
-<!--                                        <td th:text="${category.type}"></td>-->
-<!--                                        <td th:text="${category.description}"></td>-->
-<!--                                        <td th:text="${category.products.size()}"></td>-->
-<!--                                        <td>-->
-<!--                                            <div class="d-flex gap-2">-->
-<!--                                                <a th:href="@{'/admin/category/updateCategory/' + ${category.id}}" class="btn btn-light btn-sm">-->
-<!--                                                    <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon> Sửa-->
-<!--                                                </a>-->
-<!--                                                <a th:href="@{'/admin/category/deleteCategory/' + ${category.id}}" class="btn btn-soft-primary btn-sm">-->
-<!--                                                    <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon> Xoá-->
-<!--                                                </a>-->
-<!--                                            </div>-->
-<!--                                        </td>-->
-<!--                                    </tr>-->
-<!--                                    </tbody>-->
+                                    <!--                                    <tbody>-->
+                                    <!--                                    &lt;!&ndash; Thymeleaf loop to iterate over categories &ndash;&gt;-->
+                                    <!--                                    <tr th:each="category : ${categories}">-->
+                                    <!--                                        <td th:text="${category.id}"></td>-->
+                                    <!--                                        <td th:text="${category.type}"></td>-->
+                                    <!--                                        <td th:text="${category.description}"></td>-->
+                                    <!--                                        <td th:text="${category.products.size()}"></td>-->
+                                    <!--                                        <td>-->
+                                    <!--                                            <div class="d-flex gap-2">-->
+                                    <!--                                                <a th:href="@{'/admin/category/updateCategory/' + ${category.id}}" class="btn btn-light btn-sm">-->
+                                    <!--                                                    <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon> Sửa-->
+                                    <!--                                                </a>-->
+                                    <!--                                                <a th:href="@{'/admin/category/deleteCategory/' + ${category.id}}" class="btn btn-soft-primary btn-sm">-->
+                                    <!--                                                    <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon> Xoá-->
+                                    <!--                                                </a>-->
+                                    <!--                                            </div>-->
+                                    <!--                                        </td>-->
+                                    <!--                                    </tr>-->
+                                    <!--                                    </tbody>-->
                                 </table>
                             </div>
                             <!-- end table-responsive -->
@@ -589,125 +541,125 @@
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
 
-<script>
-    function searchCategoryTable() {
-        var input, filter, table, tr, td, i, txtValue, match;
-        input = document.getElementById("searchInput");
-        filter = input.value.toLowerCase();
-        table = document.querySelector("table");
-        tr = table.getElementsByTagName("tr");
+<!--<script>-->
+<!--    function searchCategoryTable() {-->
+<!--        var input, filter, table, tr, td, i, txtValue, match;-->
+<!--        input = document.getElementById("searchInput");-->
+<!--        filter = input.value.toLowerCase();-->
+<!--        table = document.querySelector("table");-->
+<!--        tr = table.getElementsByTagName("tr");-->
 
-        for (i = 1; i < tr.length; i++) { // Bắt đầu từ 1 để bỏ qua tiêu đề
-            tr[i].style.display = "none"; // Ẩn tất cả các hàng
-            td = tr[i].getElementsByTagName("td");
+<!--        for (i = 1; i < tr.length; i++) { // Bắt đầu từ 1 để bỏ qua tiêu đề-->
+<!--            tr[i].style.display = "none"; // Ẩn tất cả các hàng-->
+<!--            td = tr[i].getElementsByTagName("td");-->
 
-            match = false; // Đặt mặc định là không có kết quả
+<!--            match = false; // Đặt mặc định là không có kết quả-->
 
-            // Kiểm tra chỉ trong cột "Tên loại" (cột thứ 2)
-            if (td[1]) {
-                txtValue = td[1].textContent || td[1].innerText;
-                if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                    match = true; // Nếu tìm thấy, thay đổi trạng thái
-                }
-            }
+<!--            // Kiểm tra chỉ trong cột "Tên loại" (cột thứ 2)-->
+<!--            if (td[1]) {-->
+<!--                txtValue = td[1].textContent || td[1].innerText;-->
+<!--                if (txtValue.toLowerCase().indexOf(filter) > -1) {-->
+<!--                    match = true; // Nếu tìm thấy, thay đổi trạng thái-->
+<!--                }-->
+<!--            }-->
 
-            if (match) {
-                tr[i].style.display = ""; // Hiển thị hàng nếu có kết quả
-            }
-        }
-    }
-</script>
+<!--            if (match) {-->
+<!--                tr[i].style.display = ""; // Hiển thị hàng nếu có kết quả-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+<!--</script>-->
 
-<script>
-    $(document).ready(function() {
-        loadCategories();
-        function loadCategories() {
-        $.ajax({
-            url: '/api/category',
-            type: 'GET',
-            dataType: 'json',
-            success: function(categories) {
-                const tbody = $('#categoryTbody');
-                tbody.empty();
-                if (categories.length === 0) {
-                    tbody.append('<tr><td colspan="5" class="text-center text-muted">Không có dữ liệu category nào.</td></tr>');
-                    return;
-                }
-                categories.forEach(function(cat) {
-                    cat.productCount = undefined;
-                    const row = `
-                        <tr data-category-name="${cat.name.toLowerCase()}">
-                            <td>${cat.id || ''}</td>
-                            <td>${cat.name || ''}</td>
-                            <td>${cat.description || ''}</td>
-                            <td>${cat.productCount || 0}</td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <a href="/admin/category/update/${cat.id}" class="btn btn-light btn-sm">
-                                        <iconify-icon icon="solar:pen-bold" class="align-middle fs-18"></iconify-icon> Sửa
-                                    </a>
-                                    <button onclick="deleteCategory(${cat.id})" class="btn btn-soft-danger btn-sm delete-btn">
-                                        <iconify-icon icon="solar:trash-broken" class="align-middle fs-18"></iconify-icon> Xoá
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                    tbody.append(row);
-                });
-            },
-            error: function(xhr, status, error) {
-                const tbody = $('#categoryTbody');
-                let msg = 'Lỗi load dữ liệu: ';
-                if (xhr.status === 401) {  // Unauthorized (Security)
-                    msg += 'Chưa đăng nhập. Đang chuyển hướng...';
-                    setTimeout(function() { window.location.href = '/login'; }, 1000);
-                } else if (xhr.status === 403) {  // Forbidden
-                    msg += 'Không có quyền truy cập.';
-                } else if (xhr.status === 500) {  // Server error
-                    msg += 'Lỗi server. Vui lòng thử lại.';
-                } else {
-                    msg += xhr.status + ' - ' + error;
-                }
-                tbody.html('<tr><td colspan="5" class="text-center text-danger">' + msg + '</td></tr>');
-            }
-        });
-        }
+<!--<script>-->
+<!--    $(document).ready(function() {-->
+<!--        loadCategories();-->
+<!--        function loadCategories() {-->
+<!--            $.ajax({-->
+<!--                url: '/api/category',-->
+<!--                type: 'GET',-->
+<!--                dataType: 'json',-->
+<!--                success: function(categories) {-->
+<!--                    const tbody = $('#categoryTbody');-->
+<!--                    tbody.empty();-->
+<!--                    if (categories.length === 0) {-->
+<!--                        tbody.append('<tr><td colspan="5" class="text-center text-muted">Không có dữ liệu category nào.</td></tr>');-->
+<!--                        return;-->
+<!--                    }-->
+<!--                    categories.forEach(function(cat) {-->
+<!--                        cat.productCount = undefined;-->
+<!--                        const row = `-->
+<!--                        <tr data-category-name="${cat.name.toLowerCase()}">-->
+<!--                            <td>${cat.id || ''}</td>-->
+<!--                            <td>${cat.name || ''}</td>-->
+<!--                            <td>${cat.description || ''}</td>-->
+<!--                            <td>${cat.productCount || 0}</td>-->
+<!--                            <td>-->
+<!--                                <div class="d-flex gap-2">-->
+<!--                                    <a href="/admin/category/update/${cat.id}" class="btn btn-light btn-sm">-->
+<!--                                        <iconify-icon icon="solar:pen-bold" class="align-middle fs-18"></iconify-icon> Sửa-->
+<!--                                    </a>-->
+<!--                                    <button onclick="deleteCategory(${cat.id})" class="btn btn-soft-danger btn-sm delete-btn">-->
+<!--                                        <iconify-icon icon="solar:trash-broken" class="align-middle fs-18"></iconify-icon> Xoá-->
+<!--                                    </button>-->
+<!--                                </div>-->
+<!--                            </td>-->
+<!--                        </tr>-->
+<!--                    `;-->
+<!--                        tbody.append(row);-->
+<!--                    });-->
+<!--                },-->
+<!--                error: function(xhr, status, error) {-->
+<!--                    const tbody = $('#categoryTbody');-->
+<!--                    let msg = 'Lỗi load dữ liệu: ';-->
+<!--                    if (xhr.status === 401) {  // Unauthorized (Security)-->
+<!--                        msg += 'Chưa đăng nhập. Đang chuyển hướng...';-->
+<!--                        setTimeout(function() { window.location.href = '/login'; }, 1000);-->
+<!--                    } else if (xhr.status === 403) {  // Forbidden-->
+<!--                        msg += 'Không có quyền truy cập.';-->
+<!--                    } else if (xhr.status === 500) {  // Server error-->
+<!--                        msg += 'Lỗi server. Vui lòng thử lại.';-->
+<!--                    } else {-->
+<!--                        msg += xhr.status + ' - ' + error;-->
+<!--                    }-->
+<!--                    tbody.html('<tr><td colspan="5" class="text-center text-danger">' + msg + '</td></tr>');-->
+<!--                }-->
+<!--            });-->
+<!--        }-->
 
-        window.deleteCategory = function(id) {
-            if (!confirm('Bạn có chắc muốn xóa category ID ' + id + '? Dữ liệu sẽ không thể khôi phục!')) {
-                return;  // Hủy nếu không confirm
-            }
-            // Hiển thị loading (tùy chọn: disable button)
-            var deleteBtn = event.target.closest('.delete-btn');
-            var originalText = deleteBtn.innerHTML;
-            deleteBtn.innerHTML = '<iconify-icon icon="solar:loader-circle-bold" class="align-middle fs-18"></iconify-icon> Đang xóa...';
-            deleteBtn.disabled = true;
-            $.ajax({
-                url: '/api/category/' + id,  // Endpoint DELETE
-                type: 'DELETE',
-                success: function(response) {  // 200 OK
-                    alert('Xóa thành công!');  // Hoặc dùng Bootstrap alert đẹp hơn
-                    loadCategories();  // Reload table để cập nhật (xóa row)
-                },
-                error: function(xhr) {
-                    var msg = 'Lỗi xóa: ';
-                    if (xhr.status === 404) {
-                        msg += 'Category không tồn tại.';
-                    } else if (xhr.status === 500) {
-                        msg += xhr.responseText || 'Lỗi server.';
-                    } else {
-                        msg += xhr.status;
-                    }
-                    alert(msg);  // Hoặc hiển thị trong UI
-                    // Restore button
-                    deleteBtn.innerHTML = originalText;
-                    deleteBtn.disabled = false;
-                }
-            });
-        };
-    });
-</script>
+<!--        window.deleteCategory = function(id) {-->
+<!--            if (!confirm('Bạn có chắc muốn xóa category ID ' + id + '? Dữ liệu sẽ không thể khôi phục!')) {-->
+<!--                return;  // Hủy nếu không confirm-->
+<!--            }-->
+<!--            // Hiển thị loading (tùy chọn: disable button)-->
+<!--            var deleteBtn = event.target.closest('.delete-btn');-->
+<!--            var originalText = deleteBtn.innerHTML;-->
+<!--            deleteBtn.innerHTML = '<iconify-icon icon="solar:loader-circle-bold" class="align-middle fs-18"></iconify-icon> Đang xóa...';-->
+<!--            deleteBtn.disabled = true;-->
+<!--            $.ajax({-->
+<!--                url: '/api/category/' + id,  // Endpoint DELETE-->
+<!--                type: 'DELETE',-->
+<!--                success: function(response) {  // 200 OK-->
+<!--                    alert('Xóa thành công!');  // Hoặc dùng Bootstrap alert đẹp hơn-->
+<!--                    loadCategories();  // Reload table để cập nhật (xóa row)-->
+<!--                },-->
+<!--                error: function(xhr) {-->
+<!--                    var msg = 'Lỗi xóa: ';-->
+<!--                    if (xhr.status === 404) {-->
+<!--                        msg += 'Category không tồn tại.';-->
+<!--                    } else if (xhr.status === 500) {-->
+<!--                        msg += xhr.responseText || 'Lỗi server.';-->
+<!--                    } else {-->
+<!--                        msg += xhr.status;-->
+<!--                    }-->
+<!--                    alert(msg);  // Hoặc hiển thị trong UI-->
+<!--                    // Restore button-->
+<!--                    deleteBtn.innerHTML = originalText;-->
+<!--                    deleteBtn.disabled = false;-->
+<!--                }-->
+<!--            });-->
+<!--        };-->
+<!--    });-->
+<!--</script>-->
 
 </body>
 </html>
