@@ -10,15 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
     @Bean
     public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-
-        // rule cho Category
-        modelMapper.typeMap(Category.class, CategoryResponse.class).addMappings(mapper -> {
-            mapper.map(src -> src.getProducts() != null ? src.getProducts().size() : 0,
-                    CategoryResponse::setProductCount);
-        });
-
-
-        return modelMapper;
+        return new ModelMapper();
     }
 }

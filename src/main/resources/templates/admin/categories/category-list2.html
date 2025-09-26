@@ -618,39 +618,34 @@
     }
 </script>
 
-<!-- Script AJAX + jQuery: Toàn bộ script đầy đủ (thay thế script cũ) -->
 <script>
     $(document).ready(function() {
-        // Bước 1: Load categories qua AJAX khi trang load
         loadCategories();
-        // Function load categories từ API (GET /api/category)
         function loadCategories() {
         $.ajax({
-            url: '/api/category',  // Endpoint GET
+            url: '/api/category',
             type: 'GET',
-            dataType: 'json',  // Expect JSON array [ {id, name, description, productCount}, ... ]
-            success: function(categories) {  // categories = List<CategoryResponse>
-                var tbody = $('#categoryTbody');
-                tbody.empty();  // Xóa placeholder/loading
+            dataType: 'json',
+            success: function(categories) {
+                const tbody = $('#categoryTbody');
+                tbody.empty();
                 if (categories.length === 0) {
                     tbody.append('<tr><td colspan="5" class="text-center text-muted">Không có dữ liệu category nào.</td></tr>');
                     return;
                 }
-                // Bước 2: Append rows động từ JSON data
                 categories.forEach(function(cat) {
-                    var row = `
-                        <tr data-category-name="${cat.name.toLowerCase()}">  <!-- Data attr cho search -->
+                    cat.productCount = undefined;
+                    const row = `
+                        <tr data-category-name="${cat.name.toLowerCase()}">
                             <td>${cat.id || ''}</td>
-                            <td>${cat.name || ''}</td>  <!-- Sửa từ type → name (khớp DTO) -->
+                            <td>${cat.name || ''}</td>
                             <td>${cat.description || ''}</td>
-                            <td>${cat.productCount || 0}</td>  <!-- Từ DTO mới thêm -->
+                            <td>${cat.productCount || 0}</td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <!-- Edit: Link đến edit page (sau này có thể AJAX PUT để update inline) -->
                                     <a href="/admin/category/update/${cat.id}" class="btn btn-light btn-sm">
                                         <iconify-icon icon="solar:pen-bold" class="align-middle fs-18"></iconify-icon> Sửa
                                     </a>
-                                    <!-- Delete: Button trigger AJAX DELETE -->
                                     <button onclick="deleteCategory(${cat.id})" class="btn btn-soft-danger btn-sm delete-btn">
                                         <iconify-icon icon="solar:trash-broken" class="align-middle fs-18"></iconify-icon> Xoá
                                     </button>
@@ -662,8 +657,8 @@
                 });
             },
             error: function(xhr, status, error) {
-                var tbody = $('#categoryTbody');
-                var msg = 'Lỗi load dữ liệu: ';
+                const tbody = $('#categoryTbody');
+                let msg = 'Lỗi load dữ liệu: ';
                 if (xhr.status === 401) {  // Unauthorized (Security)
                     msg += 'Chưa đăng nhập. Đang chuyển hướng...';
                     setTimeout(function() { window.location.href = '/login'; }, 1000);
@@ -679,39 +674,38 @@
         });
         }
 
-        // Function delete category (DELETE /api/category/{id})
-        // window.deleteCategory = function(id) {
-        //     if (!confirm('Bạn có chắc muốn xóa category ID ' + id + '? Dữ liệu sẽ không thể khôi phục!')) {
-        //         return;  // Hủy nếu không confirm
-        //     }
-        //     // Hiển thị loading (tùy chọn: disable button)
-        //     var deleteBtn = event.target.closest('.delete-btn');
-        //     var originalText = deleteBtn.innerHTML;
-        //     deleteBtn.innerHTML = '<iconify-icon icon="solar:loader-circle-bold" class="align-middle fs-18"></iconify-icon> Đang xóa...';
-        //     deleteBtn.disabled = true;
-        //     $.ajax({
-        //         url: '/api/category/' + id,  // Endpoint DELETE
-        //         type: 'DELETE',
-        //         success: function(response) {  // 200 OK
-        //             alert('Xóa thành công!');  // Hoặc dùng Bootstrap alert đẹp hơn
-        //             loadCategories();  // Reload table để cập nhật (xóa row)
-        //         },
-        //         error: function(xhr) {
-        //             var msg = 'Lỗi xóa: ';
-        //             if (xhr.status === 404) {
-        //                 msg += 'Category không tồn tại.';
-        //             } else if (xhr.status === 500) {
-        //                 msg += xhr.responseText || 'Lỗi server.';
-        //             } else {
-        //                 msg += xhr.status;
-        //             }
-        //             alert(msg);  // Hoặc hiển thị trong UI
-        //             // Restore button
-        //             deleteBtn.innerHTML = originalText;
-        //             deleteBtn.disabled = false;
-        //         }
-        //     });
-        // };
+        window.deleteCategory = function(id) {
+            if (!confirm('Bạn có chắc muốn xóa category ID ' + id + '? Dữ liệu sẽ không thể khôi phục!')) {
+                return;  // Hủy nếu không confirm
+            }
+            // Hiển thị loading (tùy chọn: disable button)
+            var deleteBtn = event.target.closest('.delete-btn');
+            var originalText = deleteBtn.innerHTML;
+            deleteBtn.innerHTML = '<iconify-icon icon="solar:loader-circle-bold" class="align-middle fs-18"></iconify-icon> Đang xóa...';
+            deleteBtn.disabled = true;
+            $.ajax({
+                url: '/api/category/' + id,  // Endpoint DELETE
+                type: 'DELETE',
+                success: function(response) {  // 200 OK
+                    alert('Xóa thành công!');  // Hoặc dùng Bootstrap alert đẹp hơn
+                    loadCategories();  // Reload table để cập nhật (xóa row)
+                },
+                error: function(xhr) {
+                    var msg = 'Lỗi xóa: ';
+                    if (xhr.status === 404) {
+                        msg += 'Category không tồn tại.';
+                    } else if (xhr.status === 500) {
+                        msg += xhr.responseText || 'Lỗi server.';
+                    } else {
+                        msg += xhr.status;
+                    }
+                    alert(msg);  // Hoặc hiển thị trong UI
+                    // Restore button
+                    deleteBtn.innerHTML = originalText;
+                    deleteBtn.disabled = false;
+                }
+            });
+        };
     });
 </script>
 

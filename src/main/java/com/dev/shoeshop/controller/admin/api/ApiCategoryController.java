@@ -23,12 +23,13 @@ public class ApiCategoryController {
 
     @PostMapping
     public ResponseEntity<?> createCategory(@Valid @RequestBody  CategoryCreateRequest request, BindingResult result){
+        System.out.println("HAHAHAHAHAHAHAHAH");
         if (result.hasErrors()) {
             String errorMsg = "Lỗi validation: ";
             for (var error : result.getFieldErrors()) {
                 errorMsg += error.getField() + " - " + error.getDefaultMessage() + "; ";
             }
-            return ResponseEntity.badRequest().body(errorMsg);  // 400 Bad Request với message
+            return ResponseEntity.badRequest().body(errorMsg);
         }
 
         Category category = new Category();
@@ -42,17 +43,15 @@ public class ApiCategoryController {
                     savedCategory.getDescription(),
                     0
             );
-            // Return 200 OK với JSON response
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Lỗi server: " + e.getMessage());  // 500 Internal Server Error
+                    .body("Lỗi server: " + e.getMessage());
         }
     }
 
     @GetMapping
     public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-        System.out.println("ahhahhahaahahhhhhhhhhhhha");
         try {
             List<CategoryResponse> categories = categoryService.getAllCategories();
             return ResponseEntity.ok(categories);
