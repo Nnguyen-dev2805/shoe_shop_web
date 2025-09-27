@@ -18,14 +18,4 @@ public class AdminProductController {
         return "/admin/products/product-list";
     }
 
-//    @GetMapping("")
-//    public String getAllProduct(@RequestParam(defaultValue = "0") int page,
-//                                @RequestParam(defaultValue = "3") int size,
-//                                Model model) {
-//        Page<Product> productPage = productService.getPaginatedProducts(PageRequest.of(page, size));
-//        model.addAttribute("products", productPage.getContent());
-//        model.addAttribute("currentPage", page);
-//        model.addAttribute("totalPages", productPage.getTotalPages());
-//        return "/admin/products/product-list";
-//    }
 }

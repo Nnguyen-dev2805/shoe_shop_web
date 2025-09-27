@@ -12,7 +12,7 @@ import lombok.*;
 public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "full_name", nullable = false, length = 100)
     private String fullname;

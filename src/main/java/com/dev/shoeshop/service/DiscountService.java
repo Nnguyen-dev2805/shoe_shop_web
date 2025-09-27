@@ -19,12 +19,12 @@ public interface DiscountService {
     /**
      * Tạo discount mới từ DiscountCreateRequest
      */
-    Discount createDiscount(DiscountCreateRequest request, Integer createdBy);
+    Discount createDiscount(DiscountCreateRequest request, Long createdBy);
     
     /**
      * Cập nhật discount từ DiscountUpdateRequest
      */
-    Discount updateDiscount(Long id, DiscountUpdateRequest request, Integer updatedBy);
+    Discount updateDiscount(Long id, DiscountUpdateRequest request, Long updatedBy);
     
     /**
      * Lấy tất cả discount với pagination

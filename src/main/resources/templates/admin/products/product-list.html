@@ -38,6 +38,8 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+
 </head>
 
 <body>
@@ -572,54 +574,8 @@
                                         <th>Hành động</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    <!-- Thymeleaf loop to iterate over products -->
-                                    <tr th:each="product : ${products}">
-                                        <td th:text="${product.id}"></td>
-
-                                        <td>
-                                            <div class="d-flex align-items-center gap-2">
-                                                <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                                    <img th:src="@{{fileName}(fileName=${product.image})}" alt="" class="avatar-img">
-                                                </div>
-
-                                                <div>
-                                                    <a th:href="@{'/admin/product/detail/' + ${product.id}}"
-                                                       class="text-dark fw-medium fs-15" th:text="${product.title}"></a>
-<!--                                                    <p class="text-muted mb-0 mt-1 fs-13"><span>Size: </span>-->
-<!--                                                        S, M, L, XL</p>-->
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <!-- Product price -->
-                                        <td th:text="${product.price}"></td>
-                                        <td>
-                                            <p class="mb-1 text-muted"><span class="text-dark fw-medium"
-                                                                             th:text="${product.category.type}">Fashion</span>
-                                            </p>
-                                        </td>
-<!--                                        <td>-->
-<!--                <span class="badge p-1 bg-light text-dark fs-12 me-1">-->
-<!--                    <i class="bx bxs-star align-text-top fs-14 text-warning me-1"></i> 4.5-->
-<!--                </span>-->
-<!--                                            55 Review-->
-<!--                                        </td>-->
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <a th:href="@{'/admin/product/updateProduct/' + ${product.id}}"
-                                                   class="btn btn-soft-primary btn-sm">
-                                                    <iconify-icon icon="solar:pen-2-broken"
-                                                                  class="align-middle fs-18"></iconify-icon>
-                                                </a>
-                                                <!-- Delete button -->
-                                                <a th:href="@{'/admin/product/deleteProduct/' + ${product.id}}"
-                                                   class="btn btn-soft-danger btn-sm">
-                                                    <iconify-icon icon="solar:trash-bin-minimalistic-2-broken"
-                                                                  class="align-middle fs-18"></iconify-icon>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <tbody id="productBody">
+<!--                                    ajax render-->
                                     </tbody>
                                 </table>
 
@@ -628,21 +584,8 @@
                         </div>
                         <div class="card-footer border-top">
                             <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-end mb-0">
-                                    <!-- Previous button -->
-                                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/product?page=' + ${currentPage - 1}}" href="javascript:void(0);">Previous</a>
-                                    </li>
-
-                                    <!-- Page numbers -->
-                                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-                                        <a class="page-link" th:href="@{'/admin/product?page=' + ${i}}" th:text="${i + 1}"></a>
-                                    </li>
-
-                                    <!-- Next button -->
-                                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
-                                        <a class="page-link" th:href="@{'/admin/product?page=' + ${currentPage + 1}}" href="javascript:void(0);">Next</a>
-                                    </li>
+                                <ul class="pagination justify-content-end mb-0" id="pagination">
+                                    <!-- Ajax render -->
                                 </ul>
                             </nav>
                         </div>
@@ -690,6 +633,179 @@
         }
     }
 </script>
+
+
+<script>
+    let currentPage = 0;
+    let totalPages = 0;
+    let searchQuery = '';
+
+    function loadProducts(page = 0, query = '') {
+        $.ajax({
+            url: `/api/admin/product?page=${page}&size=10&search=${encodeURIComponent(query)}`,
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                const products = response.content;
+                totalPages = response.totalPages;
+                currentPage = response.number;
+
+                $('#productBody').empty();
+                if (products.length === 0) {
+                    $('#productBody').html('<tr><td colspan="5" class="text-center">Không có dữ liệu</td></tr>');
+                    buildPagination();
+                    return;
+                }
+
+                // Xây dựng rows (lưu ý: dùng category.name thay vì type, format giá)
+                // Render row
+                products.forEach(product => {
+                    const row = `
+                             <tr>
+                                 <td>${product.id}</td>
+                                 <td>
+                                     <div class="d-flex align-items-center gap-2">
+                                         <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
+                                             <img src="/images/${product.image || 'default.jpg'}" alt="" class="avatar-img" onerror="this.src='/assets/images/users/avatar-1.jpg';">
+                                         </div>
+                                         <div>
+                                             <a href="/admin/product/detail/${product.id}"
+                                                class="text-dark fw-medium fs-15">${product.title}</a>
+                                         </div>
+                                     </div>
+                                 </td>
+                                 <td>${product.price.toLocaleString('vi-VN')} VNĐ</td>
+                                 <td>
+                                     <p class="mb-1 text-muted">
+                                         <span class="text-dark fw-medium">${product.category ? product.category.name : 'N/A'}</span>
+                                     </p>
+                                 </td>
+                                 <td>
+                                     <div class="d-flex gap-2">
+                                         <a href="/admin/product/update/${product.id}"
+                                            class="btn btn-soft-primary btn-sm">
+                                             <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
+                                         </a>
+                                         <!-- Delete button với AJAX -->
+                                         <button onclick="deleteProduct(${product.id})" class="btn btn-soft-danger btn-sm">
+                                             <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon>
+                                         </button>
+                                     </div>
+                                 </td>
+                             </tr>
+                         `;
+                    $('#productBody').append(row);
+                });
+
+                buildPagination();
+            },
+            error: function(xhr, status, error) {
+                $('#productBody').html('<tr><td colspan="5" class="text-center text-danger">Lỗi tải dữ liệu: ' + error + '</td></tr>');
+                console.error('AJAX Error:', error);
+            }
+        });
+    }
+
+    // Xây dựng pagination động
+    // function buildPagination() {
+    //     $('#pagination').empty();
+    //     // Previous
+    //     const prevClass = currentPage === 0 ? 'disabled' : '';
+    //     let prevOnClick = prevClass ? '' : `loadProducts(${currentPage - 1}, '${searchQuery}')`;
+    //     $('#pagination').append(`<li class="page-item ${prevClass}">
+    //              <a class="page-link" href="javascript:void(0);" onclick="${prevOnClick}">Previous</a>
+    //          </li>`);
+    //
+    //     // Pages
+    //     for (let i = 0; i < totalPages; i++) {
+    //         const activeClass = i === currentPage ? 'active' : '';
+    //         $('#pagination').append(`<li class="page-item ${activeClass}">
+    //                  <a class="page-link" href="javascript:void(0);" onclick="loadProducts(${i}, '${searchQuery}')">${i + 1}</a>
+    //              </li>`);
+    //     }
+    //
+
+    // Pagination
+    function buildPagination() {
+        $('#pagination').empty();
+
+        // Previous
+        const prevClass = currentPage === 0 ? 'disabled' : '';
+        $('#pagination').append(`
+            <li class="page-item ${prevClass}">
+                <a class="page-link" href="javascript:void(0);"
+                   onclick="${prevClass ? '' : `loadProducts(${currentPage - 1}, '${searchQuery}')`}">Previous</a>
+            </li>
+        `);
+
+        // Pages
+        for (let i = 0; i < totalPages; i++) {
+            const activeClass = i === currentPage ? 'active' : '';
+            $('#pagination').append(`
+                <li class="page-item ${activeClass}">
+                    <a class="page-link" href="javascript:void(0);"
+                       onclick="loadProducts(${i}, '${searchQuery}')">${i + 1}</a>
+                </li>
+            `);
+        }
+        // Next
+        // const nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
+        // let nextOnClick = nextClass ? '' : `loadProducts(${currentPage + 1}, '${searchQuery}')`;
+        // $('#pagination').append(`<li class="page-item ${nextClass}">
+        //          <a class="page-link" href="javascript:void(0);" onclick="${nextOnClick}">Next</a>
+        //      </li>`);
+
+        // Next
+        const nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
+        $('#pagination').append(`
+            <li class="page-item ${nextClass}">
+                <a class="page-link" href="javascript:void(0);"
+                   onclick="${nextClass ? '' : `loadProducts(${currentPage + 1}, '${searchQuery}')`}">Next</a>
+            </li>
+        `);
+    }
+
+    // Tìm kiếm (AJAX với debounce 500ms để tránh gọi API liên tục)
+    // function searchTable() {
+    //     searchQuery = $('#searchInput').val();
+    //     clearTimeout(window.searchTimeout);
+    //     window.searchTimeout = setTimeout(() => {
+    //         loadProducts(0, searchQuery);  // Reset về page 0 khi search
+    //     }, 500);
+    // }
+
+    // Tìm kiếm (debounce 500ms)
+    function searchTable() {
+        searchQuery = $('#searchInput').val();
+        clearTimeout(window.searchTimeout);
+        window.searchTimeout = setTimeout(() => {
+            loadProducts(0, searchQuery); // reset về page 0 khi search
+        }, 500);
+    }
+
+    // Xóa sản phẩm qua AJAX
+    function deleteProduct(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
+            $.ajax({
+                url: `/api/admin/products/${id}`,
+                type: 'DELETE',
+                success: function(response) {
+                    alert('Xóa thành công!');
+                    loadProducts(currentPage, searchQuery);  // Reload trang hiện tại
+                },
+                error: function(xhr, status, error) {
+                    alert('Lỗi xóa sản phẩm: ' + (xhr.responseJSON ? xhr.responseJSON.message : error));
+                }
+            });
+        }
+    }
+
+    // Tải dữ liệu khi trang load
+    $(document).ready(function() {
+        loadProducts();
+    });
+</script>
+
 
 </body>
 </html>

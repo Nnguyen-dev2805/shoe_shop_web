@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PermissionUpdateRequest {
     @NotNull(message = "User ID không được để trống")
-    private Integer userId;
+    private Long userId;
     
     @NotNull(message = "Role ID không được để trống")
-    private Integer roleId;
+    private Long roleId;
 }
