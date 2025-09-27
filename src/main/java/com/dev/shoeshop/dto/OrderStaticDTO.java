@@ -1,4 +1,4 @@
-package com.dev.shoeshop.entity;
+package com.dev.shoeshop.dto;
 
 
 import lombok.Data;

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -33,6 +35,10 @@ public class addressEntity {
 
     @Column(name = "country")
     private String country;
+
+    @OneToMany(mappedBy = "address",cascade = CascadeType.ALL)
+    private Set<Order>Orders;
+
 
 
 }

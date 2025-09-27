@@ -57,24 +57,26 @@
                                         <div>
                                             <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
                                                 <span>Order id:</span>
-                                                <span ></span>
-                                                <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" >hehe</span>
+                                                <span id="orderId"></span>
+                                                <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" ></span>
                                                 <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" ></span>
                                             </h4>
-                                            <p class="mb-0">Created date: <span ></span></p>
-                                        </div>
-                                        <a  class="btn btn-primary" style="margin-right: 100%">Cancel</a>
-                                        <!-- Order cancel fragment-->
-                                        <div ></div>
+                                            <p class="mb-0">Created date: <span id="orderCreatedDate"></span></p>
+                                            <p class="mb-0">Pay Option: <span id="orderPayOption"></span></p>
+
                                     </div>
 
                                 </div>
                                 <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
                                     <p class="border rounded mb-0 px-2 py-1 bg-body">
                                         <i class='bx bx-arrow-from-left align-middle fs-16'>
-                                        </i> Last updated date: <span class="text-dark fw-medium" ></span>
+                                        </i> Status: <span class="text-dark fw-medium" id="orderStatus"></span>
+                                </div>
+                                    <a  class="btn btn-primary" style="margin-right: 100%">Cancel</a>
+                                    <!-- Order cancel fragment-->
+                                    <div ></div>
                                     </p>
-                                    <div>
+                                    <div  style="display: flex; justify-content: flex-end;">
                                         <button onclick="turnOnSearch()" href="#!" class="btn btn-primary" >Make as ready ship</button>
                                     </div>
 
@@ -167,7 +169,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
-                                        <table class="table align-middle mb-0 table-hover table-centered">
+                                        <table class="table align-middle mb-0 table-hover table-centered" id = "orderDetailTable">
                                             <thead class="bg-light-subtle border-bottom">
                                             <tr>
                                                 <th>Product Name & Size</th>
@@ -177,7 +179,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-
+<!--                                                se lay duoc bang Ajax-->
                                             </tbody>
                                         </table>
                                     </div>
@@ -192,11 +194,11 @@
                                         <div>
                                             <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
                                             <h5 class="">Shipper ID:</h5>
-                                            <p class="mb-1"></p>
+                                            <p class="mb-1" id = "shipperId"></p>
                                             <h5 class="">Shipper name:</h5>
-                                            <p class="mb-1" >binh</p>
+                                            <p class="mb-1" id ="shipperName" ></p>
                                             <h5 class="">Shipper note</h5>
-                                            <p class="mb-1" ></p>
+                                            <p class="mb-1" id = "shipperNote"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -220,15 +222,19 @@
                                     <tbody>
                                     <tr>
                                         <td class="px-0">
-                                            <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total : </p>
+                                            <p class="d-flex mb-0 align-items-center gap-1">
+                                                <iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total :
+                                            </p>
                                         </td>
-                                        <td class="text-end text-dark fw-medium px-0"></td>
+                                        <td class="text-end text-dark fw-medium px-0" id="subtotal"></td>
                                     </tr>
                                     <tr>
                                         <td class="px-0">
-                                            <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount : </p>
+                                            <p class="d-flex mb-0 align-items-center gap-1">
+                                                <iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount :
+                                            </p>
                                         </td>
-                                        <td class="text-end text-dark fw-medium px-0"></td>
+                                        <td class="text-end text-dark fw-medium px-0" id="discount"></td>
                                     </tr>
 
                                     </tbody>
@@ -240,7 +246,7 @@
                                 <p class="fw-medium text-dark mb-0">Total Amount</p>
                             </div>
                             <div>
-                                <p class="fw-medium text-dark mb-0" ></p>
+                                <p class="fw-medium text-dark mb-0"  id="total"></p>
                             </div>
 
                         </div>
@@ -254,7 +260,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar rounded-3 border border-light border-3">
                                 <div>
-                                    <p class="mb-1"></p>
+                                    <p class="mb-1" id="customerName"></p>
                                     <a href="#!" class="link-primary fw-medium"></a>
                                 </div>
                             </div>
@@ -264,7 +270,7 @@
                                     <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
                                 </div>
                             </div>
-                            <p class="mb-1">0968543251</p>
+                            <p class="mb-1" id="customerPhone">0968543251</p>
 
                             <div class="d-flex justify-content-between mt-3">
                                 <h5 class="">Shipping Address</h5>
@@ -274,7 +280,7 @@
                             </div>
 
                             <div>
-                                <p class="mb-1" ></p>
+                                <p class="mb-1" id="customerAddress"></p>
                             </div>
                         </div>
                     </div>
@@ -308,6 +314,80 @@
 
 <!-- Vendor Javascript (Require in all Page) -->
 <script src="/assets/js/vendor.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Lấy orderId từ URL
+        var currentUrl = window.location.pathname;
+        var orderId = currentUrl.split('/')[4];
+
+        $.ajax({
+            url: "/admin/order/detail/" + orderId,
+            type: "GET",
+            dataType : "json",
+            success: function (response) {
+                var list = response.listOrderDetail;
+
+                // clear bảng cũ
+                $("#orderDetailTable tbody").empty();
+
+                if (list && list.length > 0) {
+                    list.forEach(function (item) {
+                        $("#orderDetailTable tbody").append(
+                            "<tr>" +
+                            "<td><img src='" + item.image + "' width='50' class='me-2'/> " + item.product_name + " (Size " + item.size + ")</td>" +
+                            "<td>" + item.quantity + "</td>" +
+                            "<td>$" + item.price.toFixed(2) + "</td>" +
+                            "<td>$" + item.amount.toFixed(2) + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    document.querySelector("#subtotal").textContent = response.orderPayment.subtotal;
+                    document.querySelector("#discount").textContent = response.orderPayment.discount;
+                    document.querySelector("#total").textContent = response.orderPayment.totalpay;
+
+                    // Fill du lieu Customer Detail
+                    var order = response.order;
+
+
+
+
+                    if (order) {
+                        $("#orderId").text(order.id || "");
+                        $("#orderStatus").text(order.status || "");
+                        $("#orderPayOption").text(order.payOption || "");
+                        $("#orderCreatedDate").text(order.createdDate ? new Date(order.createdDate).toLocaleString() : "");
+                        $("#orderUpdatedDate").text(order.updatedDate ? new Date(order.updatedDate).toLocaleString() : "");
+
+                        // Fill Customer Detail
+                        if (order.user) {
+                            $("#customerName").text(order.user.fullname || "");
+                            $("#customerPhone").text(order.user.phone || "");
+                            $("#customerAddress").text(order.user.address || "");
+
+                            if (order.user.avatar) {
+                                $("#customerAvatar").attr("src", order.user.avatar);
+                            }
+                        }
+
+                    }
+                    if (response.shipment) {
+                        $("#shipperId").text(response.shipment.shipperId || "");
+                        $("#shipperName").text(response.shipment.shipperName || "");
+                        // $("#shipperNote").text(response.shipment.note || ""); // nếu bạn có trường note trong DTO
+                    }
+
+                } else {
+                    $(".table tbody").append("<tr><td colspan='4'>No order details found</td></tr>");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading order details:", error);
+            }
+        });
+    });
+</script>
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>

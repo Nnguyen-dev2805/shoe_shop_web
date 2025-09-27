@@ -5,7 +5,6 @@ import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
 import java.util.Set;
@@ -16,7 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "orders")
 @Builder
-public class OrderEntity {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,10 +37,10 @@ public class OrderEntity {
     @Column(name = "status", columnDefinition = "ENUM('IN_STOCK', 'SHIPPED', 'DELIVERED', 'CANCEL', 'RETURN')", nullable = false)
     private ShipmentStatus status;
 
-//    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<OrderDetail> orderDetailSet;
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<OrderDetail> orderDetailSet;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "pay_option", columnDefinition = "ENUM('COD', 'VNPAY')", nullable = false)
