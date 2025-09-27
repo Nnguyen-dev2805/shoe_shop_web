@@ -1,6 +1,6 @@
 package com.dev.shoeshop.security;
 
-import com.dev.shoeshop.service.impl.CustomUserDetailService;
+import com.dev.shoeshop.service.impl.CustomUserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationProvider implements AuthenticationProvider {
 
-    private final CustomUserDetailService userDetailService;
+    private final CustomUserDetailServiceImpl userDetailService;
 
     private final PasswordEncoder passwordEncoder;
 

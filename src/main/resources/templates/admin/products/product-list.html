@@ -36,6 +36,8 @@
     <!-- Theme Config JS (Require in all Page) -->
     <script th:src="@{/assets/js/config.js}"></script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 </head>
 
 <body>
@@ -549,9 +551,9 @@
                 <div class="col-xl-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                            <h4 class="card-title flex-grow-1">All Product List</h4>
+                            <h4 class="card-title flex-grow-1">Danh sách sản phẩm</h4>
 
-                            <a th:href="@{/admin/product/insertProductPage}" class="btn btn-sm btn-primary">
+                            <a th:href="@{/admin/product/insert}" class="btn btn-sm btn-primary">
                                 Thêm sản phầm
                             </a>
                         </div>

@@ -1,4 +1,4 @@
-package com.dev.shoeshop.utils;
+package com.dev.shoeshop.enums;
 
 public enum PayOption {
     VNPAY,

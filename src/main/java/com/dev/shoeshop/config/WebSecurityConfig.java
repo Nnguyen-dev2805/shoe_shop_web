@@ -75,13 +75,12 @@ package com.dev.shoeshop.config;
 
 import com.dev.shoeshop.security.CustomAuthenticationSuccessHandler;
 import com.dev.shoeshop.security.CustomAuthenticationProvider;
-import com.dev.shoeshop.service.impl.CustomUserDetailService;
+import com.dev.shoeshop.service.impl.CustomUserDetailServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -100,7 +99,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class WebSecurityConfig {
 
     private final CustomAuthenticationSuccessHandler successHandler;
-    private final CustomUserDetailService userDetailService; // service bạn đã viết
+    private final CustomUserDetailServiceImpl userDetailService; // service bạn đã viết
 
     private final String[] PUBLIC_ENDPOINT = {"/", "/login", "/register", "/product/**", "/category/**", "/send-code", "/reset_password", "/sendcode",
             "/verifycode", "/resetPassword"};
