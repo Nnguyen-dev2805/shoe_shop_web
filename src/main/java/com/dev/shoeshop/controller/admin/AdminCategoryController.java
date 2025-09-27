@@ -26,7 +26,7 @@ public class AdminCategoryController {
     }
 
     @GetMapping("/update/{id}")
-    public String updateCategoryPage(@PathVariable Integer id) {
+    public String updateCategoryPage(@PathVariable Long id) {
         Category category = categoryService.getCategoryById(id);
         return "admin/categories/category-edit";
     }

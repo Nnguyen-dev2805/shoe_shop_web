@@ -13,17 +13,17 @@ public interface PermissionService {
     // User management
     Page<PermissionResponse> getAllUsers(Pageable pageable);
     List<PermissionResponse> getAllUsers();
-    PermissionResponse getUserById(Integer id);
+    PermissionResponse getUserById(Long id);
     PermissionResponse getUserByEmail(String email);
     
     // Role management
     List<Role> getAllRoles();
-    Role getRoleById(Integer id);
+    Role getRoleById(Long id);
     Role getRoleByName(String roleName);
     
     // Permission management
     PermissionResponse updateUserRole(PermissionUpdateRequest request);
-    PermissionResponse updateUserRole(Integer userId, Integer roleId);
+    PermissionResponse updateUserRole(Long userId, Long roleId);
     
     // Statistics
     long countUsersByRole(String roleName);

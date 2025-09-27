@@ -100,7 +100,7 @@ public class DiscountMapper {
     /**
      * Cập nhật existing Discount Entity với dữ liệu từ DiscountCreateRequest
      */
-    public void updateEntityFromCreate(Discount existingDiscount, DiscountCreateRequest request, Integer createdBy) {
+    public void updateEntityFromCreate(Discount existingDiscount, DiscountCreateRequest request, Long createdBy) {
         if (existingDiscount == null || request == null) {
             return;
         }
@@ -121,7 +121,7 @@ public class DiscountMapper {
      * Tạo Discount Entity từ thông tin cơ bản
      */
     public Discount createBasicDiscount(String name, Double percent, String status, 
-                                       LocalDate startDate, LocalDate endDate, Integer createdBy) {
+                                       LocalDate startDate, LocalDate endDate, Long createdBy) {
         Discount discount = new Discount();
         discount.setName(name);
         discount.setPercent(percent);

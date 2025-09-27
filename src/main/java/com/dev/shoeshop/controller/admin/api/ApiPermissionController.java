@@ -58,7 +58,7 @@ public class ApiPermissionController {
      * URL: GET /api/permission/{id}
      */
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Integer id) {
+    public ResponseEntity<?> getUserById(@PathVariable Long id) {
         try {
             PermissionResponse user = permissionService.getUserById(id);
             return ResponseEntity.ok(user);
@@ -74,7 +74,7 @@ public class ApiPermissionController {
      */
     @PutMapping("/{id}/role")
     public ResponseEntity<?> updateUserRole(
-            @PathVariable Integer id,
+            @PathVariable Long id,
             @Valid @RequestBody PermissionUpdateRequest request,
             BindingResult result) {
 

@@ -95,8 +95,8 @@ public class AdminPermissionController {
      */
     @PostMapping("/permission/assignRole")
     @ResponseBody
-    public String assignRole(@RequestParam Integer userId, 
-                           @RequestParam Integer roleId,
+    public String assignRole(@RequestParam Long userId,
+                           @RequestParam Long roleId,
                            HttpSession session) {
         
         // Kiểm tra đăng nhập

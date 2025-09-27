@@ -6,6 +6,9 @@ import com.dev.shoeshop.entity.Category;
 import com.dev.shoeshop.repository.CategoryRepository;
 import com.dev.shoeshop.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,9 +40,29 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
+    // phân trang + tìm kiếm theo tên
+    @Override
+    public Page<CategoryResponse> getAllCategories(Pageable pageable, String search) {
+        Page<Category> categoryPage;
+        if (search != null && !search.trim().isEmpty()) {
+            categoryPage = categoryRepository.findByNameContainingIgnoreCase(search, pageable);
+        } else {
+            categoryPage = categoryRepository.findAll(pageable);
+        }
+        List<CategoryResponse> responses = categoryPage.getContent().stream()
+                .map(cat -> new CategoryResponse(
+                        cat.getId(),
+                        cat.getName(),
+                        cat.getDescription(),
+                        cat.getProducts() != null ? cat.getProducts().size() : 0
+                ))
+                .collect(Collectors.toList());
+        return new PageImpl<>(responses, pageable, categoryPage.getTotalElements());
+    }
+
 
     @Override
-    public Category updateCategory(Integer id, CategoryRequest request) {
+    public Category updateCategory(Long id, CategoryRequest request) {
         Category existing = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category không tồn tại với ID: " + id));
 
@@ -53,13 +76,13 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category getCategoryById(Integer id) {
+    public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category không tồn tại với ID: " + id));
     }
 
     @Override
-    public void deleteCategoryById(Integer id) {
+    public void deleteCategoryById(Long id) {
         Category existing = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category không tồn tại với ID: " + id));
         categoryRepository.delete(existing);
