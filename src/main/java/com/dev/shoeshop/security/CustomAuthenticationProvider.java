@@ -24,20 +24,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         String username = authentication.getName();
         String password = (String) authentication.getCredentials();
 
-        System.out.println("HAHAHAHHA");
-        System.out.println(username);
-        System.out.println(password);
-
         UserDetails user = userDetailService.loadUserByUsername(username);
-
-        // In ra user để kiểm tra
-//        System.out.println("UserDetails: " + user);
-//        System.out.println("Username: " + user.getUsername());
-//        System.out.println("Password (hashed): " + user.getPassword());
-//        System.out.println("Authorities: " + user.getAuthorities());
-        if(user == null) {
-            System.out.println("Hahahahahahah");
-        }
 
         if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             throw new BadCredentialsException("Invalid username or password");

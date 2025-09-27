@@ -29,16 +29,15 @@ public class ProductDetail {
     @Column(name = "price_add")
     private double priceadd;
 
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<OrderDetail> orderDetailSet;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<OrderDetail> orderDetailSet;
 
 //    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 //    @EqualsAndHashCode.Exclude
 //    @ToString.Exclude
 //    private Set<CartDetail> cartDetailSet;
-
 //    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL)
 //    @EqualsAndHashCode.Exclude
 //    @ToString.Exclude

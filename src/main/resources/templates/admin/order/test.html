@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fully responsive premium admin dashboard template" />
+    <meta name="author" content="Techzaa" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- Vendor css (Require in all Page) -->
+    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Icons css (Require in all Page) -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- App css (Require in all Page) -->
+    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config js (Require in all Page) -->
+    <script src="/assets/js/config.js"></script>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+
+    <div class="page-content">
+
+        <!-- Start Container -->
+        <div class="container-xxl">
+
+            <div class="row">
+                <div class="col-xl-9 col-lg-8">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                        <div>
+                                            <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
+                                                <span>Order id:</span>
+                                                <span id="orderId"></span>
+                                                <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" ></span>
+                                                <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" ></span>
+                                            </h4>
+                                            <p class="mb-0">Created date: <span id="orderCreatedDate"></span></p>
+                                            <p class="mb-0">Pay Option: <span id="orderPayOption"></span></p>
+
+                                    </div>
+
+                                </div>
+                                <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
+                                    <p class="border rounded mb-0 px-2 py-1 bg-body">
+                                        <i class='bx bx-arrow-from-left align-middle fs-16'>
+                                        </i> Status: <span class="text-dark fw-medium" id="orderStatus"></span>
+                                </div>
+                                    <a  class="btn btn-primary" style="margin-right: 100%">Cancel</a>
+                                    <!-- Order cancel fragment-->
+                                    <div ></div>
+                                    </p>
+                                    <div  style="display: flex; justify-content: flex-end;">
+                                        <button onclick="turnOnSearch()" href="#!" class="btn btn-primary" >Make as ready ship</button>
+                                    </div>
+
+                                    <script>
+                                        function turnOnSearch(){
+                                            const myDiv = document.getElementById('searchBox')
+                                            myDiv.style.display='block'
+                                        }
+                                    </script>
+                                </div>
+                            </div>
+                            <div class="card" style="display: none" id="searchBox">
+                                <div class="card-body">
+                                    <!-- App Search-->
+                                    <div class="position-relative">
+                                        <input id="searchInput" type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
+                                        <!--                                                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>-->
+                                        <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Search</button>
+                                    </div>
+                                    <!-- search result -->
+                                    <div class="table-responsive" >
+                                        <table id="resultSearch" class="table align-middle mb-0 table-hover table-centered">
+                                            <thead class="bg-light-subtle border-bottom">
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <!--                                                  script get api-->
+                                    <script>
+                                        $(document).ready(function() {
+                                            // Khi người dùng nhấn nút Tìm kiếm
+                                            var currentUrl = window.location.pathname;  // Lấy đường dẫn hiện tại
+                                            var orderid = currentUrl.split('/')[4];
+                                            $("#searchButton").click(function() {
+                                                // Lấy giá trị nhập vào ô tìm kiếm
+                                                var fullname = $("#searchInput").val();
+
+                                                // Kiểm tra nếu ô tìm kiếm không rỗng
+                                                if (fullname.trim() !== "") {
+                                                    // Gửi yêu cầu AJAX tới API của Spring Boot
+                                                    $.ajax({
+                                                        url: "/api/shipper/search",   // Đường dẫn tới API
+                                                        type: "GET",               // Phương thức HTTP là GET
+                                                        data: {
+                                                            name: fullname    // Gửi tham số fullname qua API
+                                                        },
+                                                        success: function(response) {   // Hàm xử lý khi API trả về dữ liệu thành công
+                                                            // Làm sạch kết quả cũ mỗi lần người dùng tìm kiếm
+                                                            $("#resultSearch tbody").empty();
+
+                                                            // Kiểm tra nếu có kết quả trả về
+                                                            if (response.length > 0) {
+                                                                // Lặp qua danh sách người dùng trả về từ API
+                                                                response.forEach(function(user) {
+                                                                    // Thêm từng người dùng vào phần tử #result
+                                                                    $("#resultSearch tbody")
+                                                                        .append("<tr>\n" +
+                                                                            "<td>" + user.id + "</td>\n" +
+                                                                            "<td>" + user.name +"</td>\n" +
+                                                                            "<td><a class=\"btn btn-primary\" href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +  // Thêm thẻ <a> với orderid lấy từ URL
+                                                                            " </tr>");
+                                                                });
+                                                            } else {
+                                                                // Nếu không có người dùng nào, hiển thị thông báo không tìm thấy
+                                                                $("#resultSearch tbody").append("<tr><td colspan='2'>Không tìm thấy người dùng nào.</td></tr>");
+                                                            }
+                                                        },
+                                                        error: function(error) {    // Hàm xử lý khi có lỗi xảy ra khi gọi API
+                                                            console.error("Lỗi khi gọi API", error);
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Product</h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table align-middle mb-0 table-hover table-centered" id = "orderDetailTable">
+                                            <thead class="bg-light-subtle border-bottom">
+                                            <tr>
+                                                <th>Product Name & Size</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Amount</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+<!--                                                se lay duoc bang Ajax-->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h4 class="card-title">Shipping detail</h4>
+                                </div>
+                                <div class="card-body" >
+                                    <div class="position-relative ms-2">
+                                        <div>
+                                            <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
+                                            <h5 class="">Shipper ID:</h5>
+                                            <p class="mb-1" id = "shipperId"></p>
+                                            <h5 class="">Shipper name:</h5>
+                                            <p class="mb-1" id ="shipperName" ></p>
+                                            <h5 class="">Shipper note</h5>
+                                            <p class="mb-1" id = "shipperNote"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body" >
+                                    <div class="position-relative ms-2">
+                                        <p class="mb-1" >Need shipper for this order</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Order Summary</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <tbody>
+                                    <tr>
+                                        <td class="px-0">
+                                            <p class="d-flex mb-0 align-items-center gap-1">
+                                                <iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total :
+                                            </p>
+                                        </td>
+                                        <td class="text-end text-dark fw-medium px-0" id="subtotal"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-0">
+                                            <p class="d-flex mb-0 align-items-center gap-1">
+                                                <iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount :
+                                            </p>
+                                        </td>
+                                        <td class="text-end text-dark fw-medium px-0" id="discount"></td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
+                            <div>
+                                <p class="fw-medium text-dark mb-0">Total Amount</p>
+                            </div>
+                            <div>
+                                <p class="fw-medium text-dark mb-0"  id="total"></p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Customer Details</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar rounded-3 border border-light border-3">
+                                <div>
+                                    <p class="mb-1" id="customerName"></p>
+                                    <a href="#!" class="link-primary fw-medium"></a>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <h5 class="">Contact Number</h5>
+                                <div>
+                                    <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
+                                </div>
+                            </div>
+                            <p class="mb-1" id="customerPhone">0968543251</p>
+
+                            <div class="d-flex justify-content-between mt-3">
+                                <h5 class="">Shipping Address</h5>
+                                <div>
+                                    <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p class="mb-1" id="customerAddress"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- End Container Fluid -->
+
+    <!-- ========== Footer Start ========== -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                        href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- ========== Footer End ========== -->
+
+</div>
+<!-- ==================================================== -->
+<!-- End Page Content -->
+<!-- ==================================================== -->
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script src="/assets/js/vendor.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Lấy orderId từ URL
+        var currentUrl = window.location.pathname;
+        var orderId = currentUrl.split('/')[4];
+
+        $.ajax({
+            url: "/admin/order/detail/" + orderId,
+            type: "GET",
+            dataType : "json",
+            success: function (response) {
+                var list = response.listOrderDetail;
+
+                // clear bảng cũ
+                $("#orderDetailTable tbody").empty();
+
+                if (list && list.length > 0) {
+                    list.forEach(function (item) {
+                        $("#orderDetailTable tbody").append(
+                            "<tr>" +
+                            "<td><img src='" + item.image + "' width='50' class='me-2'/> " + item.product_name + " (Size " + item.size + ")</td>" +
+                            "<td>" + item.quantity + "</td>" +
+                            "<td>$" + item.price.toFixed(2) + "</td>" +
+                            "<td>$" + item.amount.toFixed(2) + "</td>" +
+                            "</tr>"
+                        );
+                    });
+
+                    document.querySelector("#subtotal").textContent = response.orderPayment.subtotal;
+                    document.querySelector("#discount").textContent = response.orderPayment.discount;
+                    document.querySelector("#total").textContent = response.orderPayment.totalpay;
+
+                    // Fill du lieu Customer Detail
+                    var order = response.order;
+
+
+
+
+                    if (order) {
+                        $("#orderId").text(order.id || "");
+                        $("#orderStatus").text(order.status || "");
+                        $("#orderPayOption").text(order.payOption || "");
+                        $("#orderCreatedDate").text(order.createdDate ? new Date(order.createdDate).toLocaleString() : "");
+                        $("#orderUpdatedDate").text(order.updatedDate ? new Date(order.updatedDate).toLocaleString() : "");
+
+                        // Fill Customer Detail
+                        if (order.user) {
+                            $("#customerName").text(order.user.fullname || "");
+                            $("#customerPhone").text(order.user.phone || "");
+                            $("#customerAddress").text(order.user.address || "");
+
+                            if (order.user.avatar) {
+                                $("#customerAvatar").attr("src", order.user.avatar);
+                            }
+                        }
+
+                    }
+                    if (response.shipment) {
+                        $("#shipperId").text(response.shipment.shipperId || "");
+                        $("#shipperName").text(response.shipment.shipperName || "");
+                        // $("#shipperNote").text(response.shipment.note || ""); // nếu bạn có trường note trong DTO
+                    }
+
+                } else {
+                    $(".table tbody").append("<tr><td colspan='4'>No order details found</td></tr>");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error loading order details:", error);
+            }
+        });
+    });
+</script>
+
+<!-- App Javascript (Require in all Page) -->
+<script src="/assets/js/app.js"></script>
+
+</body>
+
+
+<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:47 GMT -->
+</html>

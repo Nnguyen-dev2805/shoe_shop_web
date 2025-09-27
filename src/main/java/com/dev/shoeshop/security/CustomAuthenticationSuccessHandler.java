@@ -26,10 +26,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         String email = authentication.getName();
         HttpSession session = request.getSession();
 
-        System.out.println("kakakakka"+email);
         Users user = userService.findUserByEmail(email);
-
-        System.out.println("kakakakka"+user);
 
         session.setAttribute(Constant.SESSION_USER, user);
 
