@@ -9,7 +9,7 @@ import lombok.*;
 @Getter
 @Setter
 @Builder
-public class CategoryCreateRequest {
+public class CategoryRequest {
     @NotNull(message = "Tên không được để trống")
     @Size(min = 1, max = 255, message = "Tên phải có độ dài từ 1 đến 255 ký tự")
     private String name;

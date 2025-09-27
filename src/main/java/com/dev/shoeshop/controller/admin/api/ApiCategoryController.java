@@ -3,7 +3,8 @@ package com.dev.shoeshop.controller.admin.api;
 import com.dev.shoeshop.dto.category.CategoryResponse;
 import com.dev.shoeshop.entity.Category;
 
-import com.dev.shoeshop.dto.category.CategoryCreateRequest;
+import org.springframework.dao.DataIntegrityViolationException;
+import com.dev.shoeshop.dto.category.CategoryRequest;
 import com.dev.shoeshop.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,15 +22,37 @@ public class ApiCategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+        try {
+            List<CategoryResponse> categories = categoryService.getAllCategories();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Integer id) {
+        try {
+            Category cat = categoryService.getCategoryById(id);
+            CategoryResponse response = new CategoryResponse(cat.getId(), cat.getName(), cat.getDescription(), cat.getProducts() !=null ?  cat.getProducts().size() : 0);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @PostMapping
-    public ResponseEntity<?> createCategory(@Valid @RequestBody  CategoryCreateRequest request, BindingResult result){
-        System.out.println("HAHAHAHAHAHAHAHAH");
+    public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryRequest request, BindingResult result){
         if (result.hasErrors()) {
-            String errorMsg = "Lỗi validation: ";
+            StringBuilder errorMsg = new StringBuilder("Lỗi validation: ");
             for (var error : result.getFieldErrors()) {
-                errorMsg += error.getField() + " - " + error.getDefaultMessage() + "; ";
+                errorMsg.append(error.getField()).append(" - ").append(error.getDefaultMessage()).append("; ");
             }
-            return ResponseEntity.badRequest().body(errorMsg);
+            return ResponseEntity.badRequest().body(errorMsg.toString());
         }
 
         Category category = new Category();
@@ -41,7 +64,7 @@ public class ApiCategoryController {
                     savedCategory.getId(),
                     savedCategory.getName(),
                     savedCategory.getDescription(),
-                    0
+                    savedCategory.getProducts() != null ? savedCategory.getProducts().size() : 0
             );
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -50,24 +73,54 @@ public class ApiCategoryController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCategory(@PathVariable Integer id, @Valid @RequestBody CategoryRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder("Lỗi validation: ");
+            for (var error : result.getFieldErrors()) {
+                errorMsg.append(error.getField()).append(" - ").append(error.getDefaultMessage()).append("; ");
+            }
+            return ResponseEntity.badRequest().body(errorMsg.toString());
+        }
         try {
-            List<CategoryResponse> categories = categoryService.getAllCategories();
-            return ResponseEntity.ok(categories);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            Category updatedCategory = categoryService.updateCategory(id, request);
+            CategoryResponse response = new CategoryResponse(
+                    updatedCategory.getId(),
+                    updatedCategory.getName(),
+                    updatedCategory.getDescription(),
+                    updatedCategory.getProducts().size()
+            );
+            return ResponseEntity.ok(response);
+        }
+        catch (DataIntegrityViolationException ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Danh mục với tên này đã tồn tại. Vui lòng nhập tên khác.");
+        }
+        catch (RuntimeException e) {
+            if (e.getMessage().contains("không tồn tại")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category không tồn tại: " + e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi: " + e.getMessage());
+        }
+        catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi server: " + e.getMessage());
         }
     }
 
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<?> deleteCategory(@PathVariable Long id) {
-//        try {
-//            categoryService.deleteCategoryById(id);
-//            return ResponseEntity.ok("Xóa thành công!");  // 200 OK với message
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Lỗi server: " + e.getMessage());
-//        }
-//    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategory(@PathVariable Integer id) {
+        try {
+            categoryService.deleteCategoryById(id);
+            return ResponseEntity.ok("Xóa thành công!");
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("không tồn tại")) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category không tồn tại: " + id);
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi server: " + e.getMessage());
+        }
+    }
 }
