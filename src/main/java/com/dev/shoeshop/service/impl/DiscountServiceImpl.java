@@ -42,7 +42,7 @@ public class DiscountServiceImpl implements DiscountService {
      */
     @Override
     @Transactional
-    public Discount createDiscount(DiscountCreateRequest request, Integer createdBy) {
+    public Discount createDiscount(DiscountCreateRequest request, Long createdBy) {
         log.info("Creating new discount: {}", request.getName());
         
         // Kiểm tra tên discount đã tồn tại chưa
@@ -65,7 +65,7 @@ public class DiscountServiceImpl implements DiscountService {
      */
     @Override
     @Transactional
-    public Discount updateDiscount(Long id, DiscountUpdateRequest request, Integer updatedBy) {
+    public Discount updateDiscount(Long id, DiscountUpdateRequest request, Long updatedBy) {
         log.info("Updating discount: {} with ID: {}", request.getName(), id);
         
         // Lấy discount hiện tại

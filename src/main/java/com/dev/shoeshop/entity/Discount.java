@@ -60,10 +60,10 @@ public class Discount {
     private Boolean isDelete = false;
 
     @Column(name = "created_by")
-    private Integer createdBy;
+    private Long createdBy;
 
     @Column(name = "updated_by")
-    private Integer updatedBy;
+    private Long updatedBy;
 
     @Column(name = "updated_date")
     private LocalDate updatedDate;
@@ -212,7 +212,7 @@ public class Discount {
      */
     public static Discount createFull(String name, Integer quantity, Double percent, 
                                      String status, Double minOrderValue,
-                                     LocalDate startDate, LocalDate endDate, Integer createdBy) {
+                                     LocalDate startDate, LocalDate endDate, Long createdBy) {
         Discount discount = new Discount();
         discount.setName(name);
         discount.setQuantity(quantity);

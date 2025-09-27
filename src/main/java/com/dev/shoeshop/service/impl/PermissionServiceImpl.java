@@ -51,7 +51,7 @@ public class PermissionServiceImpl implements PermissionService {
     
     @Override
     @Transactional(readOnly = true)
-    public PermissionResponse getUserById(Integer id) {
+    public PermissionResponse getUserById(Long id) {
         log.info("Getting user by id: {}", id);
         
         Users user = userRepository.findById(id)
@@ -80,7 +80,7 @@ public class PermissionServiceImpl implements PermissionService {
     
     @Override
     @Transactional(readOnly = true)
-    public Role getRoleById(Integer id) {
+    public Role getRoleById(Long id) {
         log.info("Getting role by id: {}", id);
         return roleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Role not found with id: " + id));
@@ -101,7 +101,7 @@ public class PermissionServiceImpl implements PermissionService {
     }
     
     @Override
-    public PermissionResponse updateUserRole(Integer userId, Integer roleId) {
+    public PermissionResponse updateUserRole(Long userId, Long roleId) {
         log.info("Updating user role: userId={}, roleId={}", userId, roleId);
         
         // Get user

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 // cầu nối giữa database và Spring Security
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+public class CustomUserDetailServiceImpl implements UserDetailsService {
 
     private final UserServiceImpl userService;
 

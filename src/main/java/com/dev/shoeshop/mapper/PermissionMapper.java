@@ -24,7 +24,7 @@ public class PermissionMapper {
                 .build();
     }
     
-    public PermissionUpdateRequest toUpdateRequest(Integer userId, Integer roleId) {
+    public PermissionUpdateRequest toUpdateRequest(Long userId, Long roleId) {
         return new PermissionUpdateRequest(userId, roleId);
     }
 }

@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class PermissionResponse {
-    private Integer id;
+    private Long id;
     private String fullname;
     private String email;
     private String address;
     private String phone;
-    private Integer roleId;
+    private Long roleId;
     private String roleName;
     
     // Helper methods for display
