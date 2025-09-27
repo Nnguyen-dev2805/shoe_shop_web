@@ -1,30 +1,200 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 
-
 <head>
-  <!-- Title Meta -->
-  <meta charset="utf-8" />
-  <title>Discount</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="A fully responsive premium admin dashboard template" />
-  <meta name="author" content="Techzaa" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Danh Sách Voucher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A fully responsive premium admin dashboard template" />
+    <meta name="author" content="Techzaa" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <!-- App favicon -->
-  <link rel="shortcut icon" href="/assets/images/favicon.ico">
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
 
-  <!-- Vendor css (Require in all Page) -->
-  <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+    <!-- Vendor CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
 
-  <!-- Icons css (Require in all Page) -->
-  <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <!-- Icons CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
 
-  <!-- App css (Require in all Page) -->
-  <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <!-- App CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
 
-  <!-- Theme Config js (Require in all Page) -->
-  <script src="/assets/js/config.js"></script>
+    <!-- Theme Config JS (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+
+    <!-- JetBrains Mono Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        
+        /* Hiệu ứng cho card */
+        .card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Hiệu ứng cho table */
+        .table {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(13, 110, 253, 0.05);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Hiệu ứng cho buttons */
+        .btn {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Hiệu ứng ripple cho button */
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        /* Hiệu ứng cho form controls */
+        .form-control, .form-select {
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            transform: scale(1.02);
+        }
+        
+        /* Hiệu ứng cho badges */
+        .badge {
+            transition: all 0.3s ease;
+        }
+        
+        .badge:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Hiệu ứng cho pagination */
+        .pagination .page-link {
+            transition: all 0.3s ease;
+        }
+        
+        .pagination .page-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Hiệu ứng loading cho AJAX */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #0d6efd;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hiệu ứng cho search và filter */
+        .mb-3 {
+            transition: all 0.3s ease;
+        }
+        
+        .mb-3:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Hiệu ứng cho table header */
+        .table thead th {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .table thead th:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+        
+        /* Hiệu ứng cho action buttons */
+        .d-flex.gap-2 .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .d-flex.gap-2 .btn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Hiệu ứng cho delete button */
+        .delete-btn:hover {
+            background-color: #dc3545 !important;
+            color: white !important;
+        }
+        
+        /* Hiệu ứng cho edit button */
+        .btn-light:hover {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 </head>
 
@@ -47,7 +217,7 @@
 
           <!-- Menu Toggle Button -->
           <div class="topbar-item">
-            <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Discount</h4>
+            <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Danh Sách Voucher</h4>
           </div>
         </div>
 
@@ -210,7 +380,7 @@
           <!-- App Search-->
           <form class="app-search d-none d-md-block ms-2">
             <div class="position-relative">
-              <input type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
+              <input type="search" class="form-control" placeholder="Tìm kiếm..." autocomplete="off" value="">
               <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>
             </div>
           </form>
@@ -470,90 +640,58 @@
       <div class="row">
         <div class="col-xl-12">
           <div class="card">
-            <div class="d-flex card-header justify-content-between align-items-center">
-              <div>
-                <h4 class="card-title">Discount list</h4>
-
-              </div>
-              <div class="dropdown">
-                <a th:href="@{/admin/discount-add}" class="btn btn-sm btn-primary">
-                  Add discount
-                </a>
-              </div>
-            </div>
-            <div class="mb-3 d-flex ">
-              <select id="statusSelect" class="form-control" style="width: 200px;" onchange="filterByStatus()">
-                <option value="">Select Status</option>
-                <option value="ACTIVE">Active</option>
-                <option value="INACTIVE">Inactive</option>
-                <option value="COMING">Coming</option>
-              </select>
+            <div class="card-header d-flex justify-content-between align-items-center gap-1">
+              <h4 class="card-title flex-grow-1">Danh Sách Tất Cả Voucher</h4>
+              <a th:href="@{/admin/discount-add}" class="btn btn-sm btn-primary">
+                Thêm Voucher
+              </a>
             </div>
             <div>
               <div class="table-responsive">
+                <div>
+                  <div class="mb-3 d-flex gap-2 align-items-center">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên" onkeyup="searchDiscountTable()" style="width: 300px;">
+                    <select id="statusSelect" class="form-control" style="width: 200px;" onchange="filterByStatus()">
+                      <option value="">Tất cả trạng thái</option>
+                      <option value="ACTIVE">Đang hoạt động</option>
+                      <option value="INACTIVE">Không hoạt động</option>
+                      <option value="COMING">Sắp diễn ra</option>
+                      <option value="EXPIRED">Đã hết hạn</option>
+                    </select>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="clearFilter()">
+                      <iconify-icon icon="solar:refresh-bold-duotone" class="align-middle fs-18"></iconify-icon>
+                      Xóa bộ lọc
+                    </button>
+                  </div>
+                </div>
                 <table class="table align-middle mb-0 table-hover table-centered" id="discountTable">
                   <thead class="bg-light-subtle">
                   <tr>
-                      <th>Discount Name</th>
-                      <th>Discount Percent</th>
-                      <th>Status</th>
-                      <th>Minimum Order Value</th>
-                      <th>Created Date</th>
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Action</th>
+                      <th>ID</th>
+                      <th>Tên voucher</th>
+                      <th>Phần trăm giảm</th>
+                      <th>Trạng thái</th>
+                      <th>Giá trị đơn hàng tối thiểu</th>
+                      <th>Ngày tạo</th>
+                      <th>Ngày bắt đầu</th>
+                      <th>Ngày kết thúc</th>
+                      <th>Thao tác</th>
                   </tr>
                   </thead>
-                  <tbody>
-                  <tr th:each="discount : ${disco}" th:if="${discount.status != 'EXPIRED'}">
-                      <td><p class="fs-15 mb-0" th:text="${discount.name}"></p></td>
-                      <td><p class="fs-15 mb-0" th:text="${discount.percent* 100}+ '%' "></p></td>
-                      <td>
-                        <p class="fs-15 mb-0" th:text="${discount.status}"></p>
-                      </td>
-                      <td><p class="fs-15 mb-0" th:text="${discount.minOrderValue}"></p></td>
-                      <td><p class="fs-15 mb-0" th:text="${discount.createdDate}"></p></td>
-                      <td><p class="fs-15 mb-0" th:text="${discount.startDate}"></p></td>
-                      <td><p class="fs-15 mb-0" th:text="${discount.endDate}"></p></td>
-                      <td><div class="d-flex gap-2">
-                        <a th:href="@{'/admin/discount-edit/' + ${discount.id}}" class="btn btn-light btn-sm">
-                          <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon> Edit
-                        </a>
-                        <a th:href="@{'/admin/discount-delete/' + ${discount.id}}" class="btn btn-soft-primary btn-sm">
-                          <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon> Delete
-                        </a>
-                      </div>
-                      </td>
-                  </tr>
+                  <!-- Tbody: Rỗng ban đầu, AJAX sẽ append rows -->
+                  <tbody id="discountTbody">
+                  <!-- Rows sẽ được thêm động bởi jQuery -->
                   </tbody>
                 </table>
-
-                <!-- Notification Area -->
-                <div id="notification" class="alert alert-success" style="display: none;"></div>
-
-
               </div>
               <!-- end table-responsive -->
             </div>
-            <!-- Phân trang -->
-            <div class="col-md-12">
-              <ul class="pagination justify-content-center">
-                <!-- Nút Previous -->
-                <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                  <a class="page-link" th:href="@{/admin/discount-list(page=${currentPage - 1}, size=4)}">Previous</a>
-                </li>
-
-                <!-- Các số trang -->
-                <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                    th:classappend="${i == currentPage ? 'active' : ''}">
-                  <a class="page-link" th:href="@{/admin/discount-list(page=${i}, size=4)}" th:text="${i + 1}"></a>
-                </li>
-
-                <!-- Nút Next -->
-                <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                  <a class="page-link" th:href="@{/admin/discount-list(page=${currentPage + 1}, size=4)}">Next</a>
-                </li>
-              </ul>
+            <div class="card-footer border-top">
+              <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-end mb-0" id="pagination">
+                  <!-- Pagination sẽ được thêm động bởi jQuery -->
+                </ul>
+              </nav>
             </div>
 
           </div>
@@ -564,27 +702,256 @@
 </div>
 <!-- END Wrapper -->
 <!-- Vendor Javascript (Require in all Page) -->
-<script src="/assets/js/vendor.js"></script>
+<script th:src="@{/assets/js/vendor.js}"></script>
 
 <!-- App Javascript (Require in all Page) -->
-<script src="/assets/js/app.js"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
 <script>
-  function filterByStatus() {
-    var selectedStatus = document.getElementById("statusSelect").value; // Lấy giá trị được chọn từ dropdown
-    var tableRows = document.querySelectorAll("#discountTable tbody tr"); // Lấy tất cả các dòng trong bảng
+    function searchDiscountTable() {
+        var input, filter, table, tr, td, i, txtValue, match;
+        input = document.getElementById("searchInput");
+        filter = input.value.toLowerCase();
+        table = document.querySelector("#discountTable");
+        tr = table.getElementsByTagName("tr");
 
-    tableRows.forEach(function(row) {
-      var statusCell = row.cells[3]; // Trạng thái nằm ở cột thứ 4 (index 3)
-      var status = statusCell ? statusCell.textContent.trim() : "";
+        for (i = 1; i < tr.length; i++) { // Bắt đầu từ 1 để bỏ qua tiêu đề
+            tr[i].style.display = "none"; // Ẩn tất cả các hàng
+            td = tr[i].getElementsByTagName("td");
 
-      // Kiểm tra xem trạng thái có phù hợp với lựa chọn của người dùng không
-      if (selectedStatus === "" || status === selectedStatus) {
-        row.style.display = ""; // Hiển thị dòng nếu trạng thái khớp
-      } else {
-        row.style.display = "none"; // Ẩn dòng nếu trạng thái không khớp
-      }
+            match = false; // Đặt mặc định là không có kết quả
+
+            // Kiểm tra chỉ trong cột "Tên voucher" (cột thứ 2)
+            if (td[1]) {
+                txtValue = td[1].textContent || td[1].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    match = true; // Nếu tìm thấy, thay đổi trạng thái
+                }
+            }
+
+            if (match) {
+                tr[i].style.display = ""; // Hiển thị hàng nếu có kết quả
+            }
+        }
+    }
+
+    function filterByStatus() {
+        var selectedStatus = document.getElementById("statusSelect").value;
+        loadDiscounts(0, selectedStatus); // Reload với status filter
+    }
+
+    function clearFilter() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("statusSelect").value = "";
+        loadDiscounts(0, ""); // Reload tất cả
+    }
+</script>
+
+<!-- Script AJAX + jQuery: Toàn bộ script đầy đủ -->
+<script>
+    $(document).ready(function() {
+        // Bước 1: Load discounts qua AJAX khi trang load
+        loadDiscounts(0, "");
+        
+        // Function load discounts từ API (GET /api/discount)
+        function loadDiscounts(page, status) {
+            var url = '/api/discount?page=' + page + '&size=10';
+            if (status) {
+                url += '&status=' + status;
+            }
+            
+            // Thêm loading effect
+            $('#discountTbody').addClass('loading');
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    // Xóa loading effect
+                    $('#discountTbody').removeClass('loading');
+                    console.log('Load discounts response:', response);
+                    var discounts = response.content || response; // Handle both paginated and non-paginated response
+                    var tbody = $('#discountTbody');
+                    tbody.empty();
+                    
+                    if (discounts.length === 0) {
+                        tbody.append('<tr><td colspan="9" class="text-center text-muted py-4">Không có dữ liệu voucher nào.</td></tr>');
+                        return;
+                    }
+                    
+                    // Bước 2: Append rows động từ JSON data
+                    discounts.forEach(function(discount) {
+                        var statusBadge = getStatusBadge(discount.status);
+                        var minOrderDisplay = discount.minOrderValue && discount.minOrderValue > 0 
+                            ? formatCurrency(discount.minOrderValue) + ' VNĐ' 
+                            : '<span class="text-muted">Không giới hạn</span>';
+                        
+                        var row = `
+                            <tr data-discount-name="${discount.name.toLowerCase()}">
+                                <td>${discount.id || ''}</td>
+                                <td>
+                                    <p class="fs-15 mb-0 fw-semibold">${discount.name || ''}</p>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success fs-12">${formatPercent(discount.percent)}</span>
+                                </td>
+                                <td>${statusBadge}</td>
+                                <td>${minOrderDisplay}</td>
+                                <td>${formatDate(discount.createdDate)}</td>
+                                <td>${formatDate(discount.startDate)}</td>
+                                <td>${formatDate(discount.endDate)}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <a href="/admin/discount-edit/${discount.id}" class="btn btn-light btn-sm" title="Chỉnh sửa">
+                                            <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
+                                        </a>
+                                        <button onclick="deleteDiscount(${discount.id})" class="btn btn-soft-danger btn-sm delete-btn" title="Xóa">
+                                            <iconify-icon icon="solar:trash-bin-minimalistic-broken" class="align-middle fs-18"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+                    
+                    // Update pagination if response has pagination info
+                    if (response.totalPages) {
+                        updatePagination(response.number, response.totalPages, status);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Xóa loading effect
+                    $('#discountTbody').removeClass('loading');
+                    console.log('Load discounts error:', xhr, status, error);
+                    var tbody = $('#discountTbody');
+                    var msg = 'Lỗi load dữ liệu: ';
+                    if (xhr.status === 401) {
+                        msg += 'Chưa đăng nhập. Đang chuyển hướng...';
+                        setTimeout(function() { window.location.href = '/login'; }, 1000);
+                    } else if (xhr.status === 403) {
+                        msg += 'Không có quyền truy cập.';
+                    } else if (xhr.status === 500) {
+                        msg += 'Lỗi server. Vui lòng thử lại.';
+                    } else if (xhr.status === 0) {
+                        msg += 'Không thể kết nối đến server.';
+                    } else {
+                        msg += 'Status: ' + xhr.status + ' - Error: ' + error;
+                    }
+                    tbody.html('<tr><td colspan="9" class="text-center text-danger">' + msg + '</td></tr>');
+                }
+            });
+        }
+        
+        // Helper functions
+        function getStatusBadge(status) {
+            var badgeClass = 'bg-secondary-subtle text-secondary';
+            var statusText = status;
+            switch(status) {
+                case 'ACTIVE': 
+                    badgeClass = 'bg-success-subtle text-success'; 
+                    statusText = 'Đang hoạt động'; 
+                    break;
+                case 'COMING': 
+                    badgeClass = 'bg-warning-subtle text-warning'; 
+                    statusText = 'Sắp diễn ra'; 
+                    break;
+                case 'INACTIVE': 
+                    badgeClass = 'bg-secondary-subtle text-secondary'; 
+                    statusText = 'Không hoạt động'; 
+                    break;
+                case 'EXPIRED': 
+                    badgeClass = 'bg-danger-subtle text-danger'; 
+                    statusText = 'Đã hết hạn'; 
+                    break;
+            }
+            return `<span class="badge ${badgeClass}">${statusText}</span>`;
+        }
+        
+        function formatPercent(percent) {
+            return (percent * 100).toFixed(1) + '%';
+        }
+        
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN').format(amount);
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            var date = new Date(dateString);
+            return date.toLocaleDateString('vi-VN');
+        }
+        
+        function updatePagination(currentPage, totalPages, status) {
+            var pagination = $('#pagination');
+            pagination.empty();
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            var prevClass = currentPage === 0 ? 'disabled' : '';
+            var prevClick = currentPage === 0 ? 'javascript:void(0);' : `loadDiscounts(${currentPage - 1}, '${status}')`;
+            pagination.append(`<li class="page-item ${prevClass}"><a class="page-link" href="${prevClick}">Trước</a></li>`);
+            
+            // Page numbers
+            for (var i = 0; i < totalPages; i++) {
+                var activeClass = i === currentPage ? 'active' : '';
+                var pageClick = i === currentPage ? 'javascript:void(0);' : `loadDiscounts(${i}, '${status}')`;
+                pagination.append(`<li class="page-item ${activeClass}"><a class="page-link" href="${pageClick}">${i + 1}</a></li>`);
+            }
+            
+            // Next button
+            var nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
+            var nextClick = currentPage === totalPages - 1 ? 'javascript:void(0);' : `loadDiscounts(${currentPage + 1}, '${status}')`;
+            pagination.append(`<li class="page-item ${nextClass}"><a class="page-link" href="${nextClick}">Tiếp</a></li>`);
+        }
+        
+        // Make loadDiscounts globally accessible
+        window.loadDiscounts = loadDiscounts;
     });
-  }
+
+    // Function delete discount (DELETE /api/discount/{id})
+    function deleteDiscount(id) {
+        if (!confirm('Bạn có chắc muốn xóa voucher ID ' + id + '? Dữ liệu sẽ không thể khôi phục!')) {
+            return;
+        }
+        
+        // Thêm loading effect cho delete button
+        var deleteBtn = event.target.closest('.delete-btn');
+        if (deleteBtn) {
+            deleteBtn.disabled = true;
+            deleteBtn.innerHTML = '<iconify-icon icon="solar:loading-bold-duotone" class="align-middle fs-18"></iconify-icon>';
+        }
+        
+        $.ajax({
+            url: '/api/discount/' + id,
+            type: 'DELETE',
+            success: function(response) {
+                alert('Xóa thành công!');
+                loadDiscounts(0, document.getElementById("statusSelect").value); // Reload table
+            },
+            error: function(xhr, status, error) {
+                // Khôi phục delete button
+                if (deleteBtn) {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = '<iconify-icon icon="solar:trash-bin-minimalistic-broken" class="align-middle fs-18"></iconify-icon>';
+                }
+                console.log('AJAX Error:', xhr, status, error);
+                var msg = 'Lỗi xóa: ';
+                if (xhr.status === 404) {
+                    msg += 'Voucher không tồn tại.';
+                } else if (xhr.status === 500) {
+                    msg += xhr.responseText || 'Lỗi server.';
+                } else if (xhr.status === 0) {
+                    msg += 'Không thể kết nối đến server.';
+                } else {
+                    msg += 'Status: ' + xhr.status + ', Error: ' + error;
+                }
+                alert(msg);
+            }
+        });
+    }
 </script>
 
 </body>

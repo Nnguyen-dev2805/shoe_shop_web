@@ -1,30 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Permissions | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Quản Lý Quyền | Hệ Thống Quản Lý</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
      <!-- App favicon -->
-     <link rel="shortcut icon" href="/assets/images/favicon.ico">
+     <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
 
      <!-- Vendor css (Require in all Page) -->
-     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
 
      <!-- Icons css (Require in all Page) -->
-     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
 
      <!-- App css (Require in all Page) -->
-     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
 
      <!-- Theme Config js (Require in all Page) -->
-     <script src="/assets/js/config.js"></script>
+     <script th:src="@{/assets/js/config.js}"></script>
+
+     <!-- JetBrains Mono Font -->
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+     
+     <style>
+         body {
+             font-family: 'JetBrains Mono', monospace;
+         }
+         
+         /* Hiệu ứng cho card */
+         .card {
+             transition: all 0.3s ease;
+             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+         }
+         
+         .card:hover {
+             transform: translateY(-5px);
+             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+         }
+         
+         /* Hiệu ứng cho table */
+         .table {
+             transition: all 0.3s ease;
+         }
+         
+         .table tbody tr {
+             transition: all 0.3s ease;
+         }
+         
+         .table tbody tr:hover {
+             background-color: rgba(13, 110, 253, 0.05);
+             transform: scale(1.01);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+         }
+         
+         /* Hiệu ứng cho buttons */
+         .btn {
+             transition: all 0.3s ease;
+             position: relative;
+             overflow: hidden;
+         }
+         
+         .btn:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+         }
+         
+         .btn:active {
+             transform: translateY(0);
+         }
+         
+         /* Hiệu ứng cho form controls */
+         .form-control, .form-select {
+             transition: all 0.3s ease;
+             border: 2px solid #e9ecef;
+         }
+         
+         .form-control:focus, .form-select:focus {
+             border-color: #0d6efd;
+             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+             transform: scale(1.02);
+         }
+         
+         /* Hiệu ứng cho badges */
+         .badge {
+             transition: all 0.3s ease;
+         }
+         
+         .badge:hover {
+             transform: scale(1.1);
+         }
+         
+         /* Hiệu ứng cho pagination */
+         .pagination .page-link {
+             transition: all 0.3s ease;
+         }
+         
+         .pagination .page-link:hover {
+             transform: translateY(-2px);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+         }
+         
+         /* Hiệu ứng loading cho AJAX */
+         .loading {
+             position: relative;
+             pointer-events: none;
+         }
+         
+         .loading::after {
+             content: '';
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             width: 20px;
+             height: 20px;
+             margin: -10px 0 0 -10px;
+             border: 2px solid #f3f3f3;
+             border-top: 2px solid #0d6efd;
+             border-radius: 50%;
+             animation: spin 1s linear infinite;
+         }
+         
+         @keyframes spin {
+             0% { transform: rotate(0deg); }
+             100% { transform: rotate(360deg); }
+         }
+         
+         /* Hiệu ứng cho search và filter */
+         .mb-3 {
+             transition: all 0.3s ease;
+         }
+         
+         .mb-3:hover {
+             transform: translateY(-2px);
+         }
+         
+         /* Hiệu ứng cho table header */
+         .table thead th {
+             transition: all 0.3s ease;
+             position: relative;
+         }
+         
+         .table thead th:hover {
+             background-color: rgba(13, 110, 253, 0.1);
+         }
+         
+         /* Hiệu ứng cho action buttons */
+         .d-flex.gap-2 .btn {
+             transition: all 0.3s ease;
+         }
+         
+         .d-flex.gap-2 .btn:hover {
+             transform: scale(1.1);
+         }
+     </style>
+
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 </head>
 
@@ -47,7 +185,7 @@
 
                          <!-- Menu Toggle Button -->
                          <div class="topbar-item">
-                              <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Permissions</h4>
+                              <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Quản Lý Quyền</h4>
                          </div>
                     </div>
 
@@ -456,7 +594,7 @@
      <!-- ========== Topbar End ========== -->
 
      <!-- ========== App Menu Start ========== -->
-     <div th:include="~{fragments/admin/panel_menu.html}"></div>
+     <div th:insert="~{fragments/admin/panel_menu.html}"></div>
      <!-- ========== App Menu End ========== -->
 
      <!-- ==================================================== -->
@@ -473,7 +611,7 @@
                                    <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                              <h4 class="card-title mb-2 d-flex align-items-center gap-2">Admin</h4>
-                                             <p class="text-muted fw-medium fs-22 mb-0" th:text="${admin}">0</p>
+                                             <p class="text-muted fw-medium fs-22 mb-0" id="adminCount" th:text="${admin}">0</p>
                                         </div>
                                         <div>
                                              <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -490,7 +628,7 @@
                                    <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                              <h4 class="card-title mb-2 d-flex align-items-center gap-2">Manager</h4>
-                                             <p class="text-muted fw-medium fs-22 mb-0" th:text="${manager}">0</p>
+                                             <p class="text-muted fw-medium fs-22 mb-0" id="managerCount" th:text="${manager}">0</p>
                                         </div>
                                         <div>
                                              <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -507,7 +645,7 @@
                                    <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                              <h4 class="card-title mb-2 d-flex align-items-center gap-2">User</h4>
-                                             <p class="text-muted fw-medium fs-22 mb-0" th:text="${user}">0</p>
+                                             <p class="text-muted fw-medium fs-22 mb-0" id="userCount" th:text="${user}">0</p>
                                         </div>
                                         <div>
                                              <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -524,7 +662,7 @@
                                    <div class="d-flex align-items-center justify-content-between">
                                         <div>
                                              <h4 class="card-title mb-2 d-flex align-items-center gap-2">Shipper</h4>
-                                             <p class="text-muted fw-medium fs-22 mb-0" th:text="${shipper}">0</p>
+                                             <p class="text-muted fw-medium fs-22 mb-0" id="shipperCount" th:text="${shipper}">0</p>
                                         </div>
                                         <div>
                                              <div class="avatar-md bg-primary bg-opacity-10 rounded">
@@ -543,118 +681,58 @@
                          <div class="card">
                               <div class="d-flex card-header justify-content-between align-items-center">
                                    <div>
-                                        <h4 class="card-title">All Permissions List</h4>
+                                        <h4 class="card-title">Danh Sách Tất Cả Người Dùng</h4>
                                    </div>
                                    <div class="dropdown">
                                         <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                             This Month
+                                             Tháng này
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end">
                                              <!-- item-->
-                                             <a href="#!" class="dropdown-item">Download</a>
+                                             <a href="#!" class="dropdown-item">Tải xuống</a>
                                              <!-- item-->
-                                             <a href="#!" class="dropdown-item">Export</a>
+                                             <a href="#!" class="dropdown-item">Xuất file</a>
                                              <!-- item-->
-                                             <a href="#!" class="dropdown-item">Import</a>
+                                             <a href="#!" class="dropdown-item">Nhập file</a>
                                         </div>
                                    </div>
                               </div>
-                              <div class="mb-3">
-                                   <input type="text" id="searchInput" class="form-control" placeholder="Search by name or email" onkeyup="searchTable()">
+                              <div class="mb-3 d-flex gap-2 align-items-center">
+                                   <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên hoặc email" onkeyup="searchPermissionTable()" style="width: 300px;">
+                                   <select id="roleSelect" class="form-control" style="width: 200px;" onchange="filterByRole()">
+                                        <option value="">Tất cả vai trò</option>
+                                        <option value="admin">Quản trị viên</option>
+                                        <option value="manager">Quản lý</option>
+                                        <option value="user">Người dùng</option>
+                                        <option value="shipper">Người giao hàng</option>
+                                   </select>
+                                   <button type="button" class="btn btn-outline-primary btn-sm" onclick="clearFilter()">
+                                        <iconify-icon icon="solar:refresh-bold-duotone" class="align-middle fs-18"></iconify-icon>
+                                        Xóa bộ lọc
+                                   </button>
                               </div>
                               <div>
                                    <div class="table-responsive">
                                         <table class="table align-middle mb-0 table-hover table-centered" id="userTable">
                                              <thead class="bg-light-subtle">
                                              <tr>
-                                                  <th style="width: 20px;">
-                                                       <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" id="customCheck1">
-                                                            <label class="form-check-label" for="customCheck1"></label>
-                                                       </div>
-                                                  </th>
-                                                  <th>Name</th>
+                                                  <th>ID</th>
+                                                  <th>Tên</th>
                                                   <th>Email</th>
-                                                  <th>Address</th>
-                                                  <th>Role</th>
+                                                  <th>Địa chỉ</th>
+                                                  <th>Số điện thoại</th>
+                                                  <th>Vai trò</th>
+                                                  <th>Thao tác</th>
                                              </tr>
                                              </thead>
-                                             <tbody>
-                                             <tr th:each="user : ${users}">
-                                                  <td>
-                                                       <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" th:id="'customCheck' + ${user.id}">
-                                                            <label class="form-check-label" for="customCheck1">&nbsp;</label>
-                                                       </div>
-                                                  </td>
-                                                  <td><p class="fs-15 mb-0" th:text="${user.fullname}"></p></td>
-                                                  <td><p class="fs-15 mb-0" th:text="${user.email}"></p></td>
-                                                  <td><p class="fs-15 mb-0" th:text="${user.address}"></p></td>
-                                                  <td>
-                                                       <!-- Dropdown for selecting role -->
-                                                       <select class="form-select role-select" th:data-user-id="${user.id}">
-                                                            <option th:each="role : ${roles}" th:value="${role.roleId}" th:text="${role.roleName}"
-                                                                    th:selected="${user.role.roleId == role.roleId}"></option>
-                                                       </select>
-                                                  </td>
-                                             </tr>
+                                             <!-- Tbody: Rỗng ban đầu, AJAX sẽ append rows -->
+                                             <tbody id="permissionTbody">
+                                             <!-- Rows sẽ được thêm động bởi jQuery -->
                                              </tbody>
                                         </table>
 
                                         <!-- Notification Area -->
                                         <div id="notification" class="alert alert-success" style="display: none;"></div>
-
-                                        <!-- Include jQuery and AJAX script -->
-                                        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                                        <script>
-                                             // When the user selects a new role, submit the form via AJAX
-                                             $('select.role-select').on('change', function() {
-                                                  var userId = $(this).data('user-id');  // Get the user ID from the data attribute
-                                                  var roleId = $(this).val();  // Get the selected role ID
-
-                                                  $.ajax({
-                                                       url: '/admin/permission/assignRole',  // Your controller endpoint
-                                                       method: 'POST',
-                                                       data: {
-                                                            userId: userId,
-                                                            roleId: roleId
-                                                       },
-                                                       success: function(response) {
-                                                            // Show success message
-                                                            $('#notification').removeClass('alert-danger').addClass('alert-success');
-                                                            $('#notification').text('Vai trò đã được cập nhật thành công!'); // Success message in Vietnamese
-                                                            $('#notification').show();
-                                                       },
-                                                       error: function() {
-                                                            // Show error message
-                                                            $('#notification').removeClass('alert-success').addClass('alert-danger');
-                                                            $('#notification').text('Có lỗi xảy ra khi cập nhật vai trò.'); // Error message in Vietnamese
-                                                            $('#notification').show();
-                                                       }
-                                                  });
-                                             });
-                                             // Tìm kiếm trong bảng
-                                             function searchTable() {
-                                                  var input, filter, table, tr, td, i, txtValue;
-                                                  input = document.getElementById('searchInput');
-                                                  filter = input.value.toLowerCase();
-                                                  table = document.getElementById('userTable');
-                                                  tr = table.getElementsByTagName('tr');
-
-                                                  for (i = 0; i < tr.length; i++) {
-                                                       td = tr[i].getElementsByTagName('td');
-                                                       if (td.length > 0) {
-                                                            var name = td[1].textContent || td[1].innerText;
-                                                            var email = td[2].textContent || td[2].innerText;
-                                                            if (name.toLowerCase().indexOf(filter) > -1 || email.toLowerCase().indexOf(filter) > -1) {
-                                                                 tr[i].style.display = "";
-                                                            } else {
-                                                                 tr[i].style.display = "none";
-                                                            }
-                                                       }
-                                                  }
-                                             }
-                                        </script>
 
 
                                    </div>
@@ -662,12 +740,8 @@
                               </div>
                               <div class="card-footer border-top">
                                    <nav aria-label="Page navigation example">
-                                        <ul class="pagination justify-content-end mb-0">
-                                             <li class="page-item"><a class="page-link" href="javascript:void(0);">Previous</a></li>
-                                             <li class="page-item active"><a class="page-link" href="javascript:void(0);">1</a></li>
-                                             <li class="page-item"><a class="page-link" href="javascript:void(0);">2</a></li>
-                                             <li class="page-item"><a class="page-link" href="javascript:void(0);">3</a></li>
-                                             <li class="page-item"><a class="page-link" href="javascript:void(0);">Next</a></li>
+                                        <ul class="pagination justify-content-end mb-0" id="pagination">
+                                             <!-- Pagination sẽ được thêm động bởi jQuery -->
                                         </ul>
                                    </nav>
                               </div>
@@ -680,10 +754,297 @@
 <!-- END Wrapper -->
 
 <!-- Vendor Javascript (Require in all Page) -->
-<script src="/assets/js/vendor.js"></script>
+<script th:src="@{/assets/js/vendor.js}"></script>
 
 <!-- App Javascript (Require in all Page) -->
-<script src="/assets/js/app.js"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<script>
+    function searchPermissionTable() {
+        var input, filter, table, tr, td, i, txtValue, match;
+        input = document.getElementById("searchInput");
+        filter = input.value.toLowerCase();
+        table = document.querySelector("#userTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none";
+            td = tr[i].getElementsByTagName("td");
+            match = false;
+
+            if (td[1]) {
+                txtValue = td[1].textContent || td[1].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                }
+            }
+            if (td[2]) {
+                txtValue = td[2].textContent || td[2].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    match = true;
+                }
+            }
+
+            if (match) {
+                tr[i].style.display = "";
+            }
+        }
+    }
+
+    function filterByRole() {
+        var selectedRole = document.getElementById("roleSelect").value;
+        loadPermissions(0, selectedRole);
+    }
+
+    function clearFilter() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("roleSelect").value = "";
+        loadPermissions(0, "");
+    }
+</script>
+
+<!-- Script AJAX + jQuery: Toàn bộ script đầy đủ -->
+<script>
+    $(document).ready(function() {
+        // Bước 1: Load permissions và role stats qua AJAX khi trang load
+        loadPermissions(0, "");
+        loadRoleStats();
+        
+        // Function load permissions từ API (GET /api/permission)
+        function loadPermissions(page, role) {
+            var url = '/api/permission?page=' + page + '&size=10';
+            if (role) {
+                url += '&role=' + role;
+            }
+            
+            // Thêm loading effect
+            $('#permissionTbody').addClass('loading');
+            
+            $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    // Xóa loading effect
+                    $('#permissionTbody').removeClass('loading');
+                    console.log('Load permissions response:', response);
+                    var users = response.content || response;
+                    var tbody = $('#permissionTbody');
+                    tbody.empty();
+                    
+                    if (users.length === 0) {
+                        tbody.append('<tr><td colspan="7" class="text-center text-muted py-4">Không có dữ liệu người dùng nào.</td></tr>');
+                        return;
+                    }
+                    
+                    // Bước 2: Append rows động từ JSON data
+                    users.forEach(function(user) {
+                        var roleBadge = getRoleBadge(user.roleName);
+                        
+                        var row = `
+                            <tr data-user-name="${user.fullname.toLowerCase()}">
+                                <td>${user.id || ''}</td>
+                                <td>
+                                    <p class="fs-15 mb-0 fw-semibold">${user.fullname || ''}</p>
+                                </td>
+                                <td>
+                                    <p class="fs-15 mb-0">${user.email || ''}</p>
+                                </td>
+                                <td>
+                                    <p class="fs-15 mb-0">${user.address || ''}</p>
+                                </td>
+                                <td>
+                                    <p class="fs-15 mb-0">${user.phone || ''}</p>
+                                </td>
+                                <td>${roleBadge}</td>
+                                <td>
+                                    <div class="d-flex gap-2">
+                                        <select class="form-select role-select" data-user-id="${user.id}" onchange="updateUserRole(${user.id}, this.value)">
+                                            <option value="1" ${user.roleName === 'admin' ? 'selected' : ''}>Quản trị viên</option>
+                                            <option value="2" ${user.roleName === 'manager' ? 'selected' : ''}>Quản lý</option>
+                                            <option value="3" ${user.roleName === 'user' ? 'selected' : ''}>Người dùng</option>
+                                            <option value="4" ${user.roleName === 'shipper' ? 'selected' : ''}>Người giao hàng</option>
+                                        </select>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tbody.append(row);
+                    });
+                    
+                    // Update pagination if response has pagination info
+                    if (response.totalPages) {
+                        updatePagination(response.number, response.totalPages, role);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Xóa loading effect
+                    $('#permissionTbody').removeClass('loading');
+                    console.log('Load permissions error:', xhr, status, error);
+                    var tbody = $('#permissionTbody');
+                    var msg = 'Lỗi load dữ liệu: ';
+                    if (xhr.status === 401) {
+                        msg += 'Chưa đăng nhập. Đang chuyển hướng...';
+                        setTimeout(function() { window.location.href = '/login'; }, 1000);
+                    } else if (xhr.status === 403) {
+                        msg += 'Không có quyền truy cập.';
+                    } else if (xhr.status === 500) {
+                        msg += 'Lỗi server. Vui lòng thử lại.';
+                    } else if (xhr.status === 0) {
+                        msg += 'Không thể kết nối đến server.';
+                    } else {
+                        msg += 'Status: ' + xhr.status + ' - Error: ' + error;
+                    }
+                    tbody.html('<tr><td colspan="7" class="text-center text-danger">' + msg + '</td></tr>');
+                }
+            });
+        }
+        
+        // Helper functions
+        function getRoleBadge(roleName) {
+            if (!roleName) return '<span class="badge bg-secondary-subtle text-secondary">Chưa có vai trò</span>';
+            
+            var badgeClass = 'bg-secondary-subtle text-secondary';
+            var roleText = roleName;
+            
+            switch(roleName.toLowerCase()) {
+                case 'admin': 
+                    badgeClass = 'bg-danger-subtle text-danger'; 
+                    roleText = 'Quản trị viên'; 
+                    break;
+                case 'manager': 
+                    badgeClass = 'bg-warning-subtle text-warning'; 
+                    roleText = 'Quản lý'; 
+                    break;
+                case 'user': 
+                    badgeClass = 'bg-primary-subtle text-primary'; 
+                    roleText = 'Người dùng'; 
+                    break;
+                case 'shipper': 
+                    badgeClass = 'bg-info-subtle text-info'; 
+                    roleText = 'Người giao hàng'; 
+                    break;
+            }
+            return `<span class="badge ${badgeClass}">${roleText}</span>`;
+        }
+        
+        function updatePagination(currentPage, totalPages, role) {
+            var pagination = $('#pagination');
+            pagination.empty();
+            
+            if (totalPages <= 1) return;
+            
+            // Previous button
+            var prevClass = currentPage === 0 ? 'disabled' : '';
+            var prevClick = currentPage === 0 ? 'javascript:void(0);' : `loadPermissions(${currentPage - 1}, '${role}')`;
+            pagination.append(`<li class="page-item ${prevClass}"><a class="page-link" href="${prevClick}">Trước</a></li>`);
+            
+            // Page numbers
+            for (var i = 0; i < totalPages; i++) {
+                var activeClass = i === currentPage ? 'active' : '';
+                var pageClick = i === currentPage ? 'javascript:void(0);' : `loadPermissions(${i}, '${role}')`;
+                pagination.append(`<li class="page-item ${activeClass}"><a class="page-link" href="${pageClick}">${i + 1}</a></li>`);
+            }
+            
+            // Next button
+            var nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
+            var nextClick = currentPage === totalPages - 1 ? 'javascript:void(0);' : `loadPermissions(${currentPage + 1}, '${role}')`;
+            pagination.append(`<li class="page-item ${nextClass}"><a class="page-link" href="${nextClick}">Tiếp</a></li>`);
+        }
+        
+        // Make loadPermissions globally accessible
+        window.loadPermissions = loadPermissions;
+        
+        // Function to load role statistics
+        function loadRoleStats() {
+            $.ajax({
+                url: '/api/permission/stats',
+                type: 'GET',
+                dataType: 'json',
+                success: function(response) {
+                    console.log('Role stats response:', response);
+                    $('#adminCount').text(response.admin || 0);
+                    $('#managerCount').text(response.manager || 0);
+                    $('#userCount').text(response.user || 0);
+                    $('#shipperCount').text(response.shipper || 0);
+                },
+                error: function(xhr, status, error) {
+                    console.log('Load role stats error:', xhr, status, error);
+                }
+            });
+        }
+        
+        // Make loadRoleStats globally accessible
+        window.loadRoleStats = loadRoleStats;
+    });
+
+    // Function update user role (PUT /api/permission/{id}/role)
+    function updateUserRole(userId, roleId) {
+        if (!confirm('Bạn có chắc muốn thay đổi vai trò của người dùng ID ' + userId + '?')) {
+            return;
+        }
+        
+        // Thêm loading effect cho select
+        var selectElement = event.target;
+        var originalValue = selectElement.value;
+        selectElement.disabled = true;
+        
+        $.ajax({
+            url: '/api/permission/' + userId + '/role',
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                userId: userId,
+                roleId: parseInt(roleId)
+            }),
+            success: function(response) {
+                // Khôi phục select
+                selectElement.disabled = false;
+                
+                // Show success message
+                $('#notification').removeClass('alert-danger').addClass('alert-success');
+                $('#notification').text('Vai trò đã được cập nhật thành công!');
+                $('#notification').show();
+                
+                // Reload table and role statistics
+                loadPermissions(0, document.getElementById("roleSelect").value);
+                loadRoleStats();
+                
+                // Hide notification after 3 seconds
+                setTimeout(function() {
+                    $('#notification').hide();
+                }, 3000);
+            },
+            error: function(xhr, status, error) {
+                // Khôi phục select
+                selectElement.disabled = false;
+                selectElement.value = originalValue;
+                
+                console.log('AJAX Error:', xhr, status, error);
+                var msg = 'Lỗi cập nhật: ';
+                if (xhr.status === 404) {
+                    msg += 'Người dùng không tồn tại.';
+                } else if (xhr.status === 500) {
+                    msg += xhr.responseText || 'Lỗi server.';
+                } else if (xhr.status === 0) {
+                    msg += 'Không thể kết nối đến server.';
+                } else {
+                    msg += 'Status: ' + xhr.status + ', Error: ' + error;
+                }
+                
+                // Show error message
+                $('#notification').removeClass('alert-success').addClass('alert-danger');
+                $('#notification').text(msg);
+                $('#notification').show();
+                
+                // Hide notification after 5 seconds
+                setTimeout(function() {
+                    $('#notification').hide();
+                }, 5000);
+            }
+        });
+    }
+</script>
 
 </body>
 
