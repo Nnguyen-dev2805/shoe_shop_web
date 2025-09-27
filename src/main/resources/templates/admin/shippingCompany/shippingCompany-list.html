@@ -1,34 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <!-- Title Meta -->
-    <meta charset="utf-8"/>
-    <title>Product Edit | Larkon - Responsive Admin Dashboard Template</title>
+    <meta charset="utf-8" />
+    <title>Danh Sách Công Ty Vận Chuyển</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully responsive premium admin dashboard template"/>
-    <meta name="author" content="Techzaa"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content="A fully responsive premium admin dashboard template" />
+    <meta name="author" content="Techzaa" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!-- App favicon -->
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Favicon -->
-    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"/>
-
-    <!-- Google Fonts - JetBrains Mono -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
 
     <!-- Vendor CSS (Require in all Page) -->
-    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
 
     <!-- Icons CSS (Require in all Page) -->
-    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
 
     <!-- App CSS (Require in all Page) -->
-    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
 
     <!-- Theme Config JS (Require in all Page) -->
     <script th:src="@{/assets/js/config.js}"></script>
 
-    <!-- Custom Font Style -->
+    <!-- Custom CSS for JetBrains Mono Font -->
     <style>
         .font-16, .fw-semibold, .mb-3 {
             font-family: 'JetBrains Mono', monospace !important;
@@ -36,9 +37,7 @@
     </style>
 
 </head>
-
 <body>
-
 <!-- START Wrapper -->
 <div class="wrapper">
 
@@ -56,7 +55,7 @@
 
                     <!-- Menu Toggle Button -->
                     <div class="topbar-item">
-                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Product Edit</h4>
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Danh Sách Công Ty Vận Chuyển</h4>
                     </div>
                 </div>
 
@@ -71,15 +70,11 @@
 
                     <!-- Notification -->
                     <div class="dropdown topbar-item">
-                        <button type="button" class="topbar-button position-relative"
-                                id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
+                        <button type="button" class="topbar-button position-relative" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <iconify-icon icon="solar:bell-bing-bold-duotone" class="fs-24 align-middle"></iconify-icon>
-                            <span class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">3<span
-                                    class="visually-hidden">unread messages</span></span>
+                            <span class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">3<span class="visually-hidden">unread messages</span></span>
                         </button>
-                        <div class="dropdown-menu py-0 dropdown-lg dropdown-menu-end"
-                             aria-labelledby="page-header-notifications-dropdown">
+                        <div class="dropdown-menu py-0 dropdown-lg dropdown-menu-end" aria-labelledby="page-header-notifications-dropdown">
                             <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
                                 <div class="row align-items-center">
                                     <div class="col">
@@ -97,13 +92,10 @@
                                 <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom text-wrap">
                                     <div class="d-flex">
                                         <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-1.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-1"/>
+                                            <img src="/assets/images/users/avatar-1.jpg" class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-1" />
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-0"><span class="fw-medium">Josephine Thompson </span>commented
-                                                on admin panel
-                                                <span>" Wow 😍! this admin looks good and awesome design"</span></p>
+                                            <p class="mb-0"><span class="fw-medium">Josephine Thompson </span>commented on admin panel <span>" Wow 😍! this admin looks good and awesome design"</span></p>
                                         </div>
                                     </div>
                                 </a>
@@ -129,13 +121,11 @@
                                 <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
                                     <div class="d-flex">
                                         <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-3.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-3"/>
+                                            <img src="/assets/images/users/avatar-3.jpg" class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-3" />
                                         </div>
                                         <div class="flex-grow-1">
                                             <p class="mb-0 fw-semibold">Jacob Gines</p>
-                                            <p class="mb-0 text-wrap">Answered to your comment on the cash flow
-                                                forecast's graph 🔔.</p>
+                                            <p class="mb-0 text-wrap">Answered to your comment on the cash flow forecast's graph 🔔.</p>
                                         </div>
                                     </div>
                                 </a>
@@ -145,14 +135,12 @@
                                         <div class="flex-shrink-0">
                                             <div class="avatar-sm me-2">
                                                                  <span class="avatar-title bg-soft-warning text-warning fs-20 rounded-circle">
-                                                                      <iconify-icon
-                                                                              icon="iconamoon:comment-dots-duotone"></iconify-icon>
+                                                                      <iconify-icon icon="iconamoon:comment-dots-duotone"></iconify-icon>
                                                                  </span>
                                             </div>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <p class="mb-0 fw-semibold text-wrap">You have received <b>20</b> new
-                                                messages in the
+                                            <p class="mb-0 fw-semibold text-wrap">You have received <b>20</b> new messages in the
                                                 conversation</p>
                                         </div>
                                     </div>
@@ -161,8 +149,7 @@
                                 <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
                                     <div class="d-flex">
                                         <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-5.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-5"/>
+                                            <img src="/assets/images/users/avatar-5.jpg" class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-5" />
                                         </div>
                                         <div class="flex-grow-1">
                                             <p class="mb-0 fw-semibold">Shawn Bunch</p>
@@ -174,57 +161,47 @@
                                 </a>
                             </div>
                             <div class="text-center py-3">
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">View All Notification <i
-                                        class="bx bx-right-arrow-alt ms-1"></i></a>
+                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">View All Notification <i class="bx bx-right-arrow-alt ms-1"></i></a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Theme Setting -->
                     <div class="topbar-item d-none d-md-flex">
-                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas"
-                                data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
+                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas" data-bs-target="#theme-settings-offcanvas" aria-controls="theme-settings-offcanvas">
                             <iconify-icon icon="solar:settings-bold-duotone" class="fs-24 align-middle"></iconify-icon>
                         </button>
                     </div>
 
                     <!-- Activity -->
                     <div class="topbar-item d-none d-md-flex">
-                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas"
-                                data-bs-target="#theme-activity-offcanvas" aria-controls="theme-settings-offcanvas">
-                            <iconify-icon icon="solar:clock-circle-bold-duotone"
-                                          class="fs-24 align-middle"></iconify-icon>
+                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas" data-bs-target="#theme-activity-offcanvas" aria-controls="theme-settings-offcanvas">
+                            <iconify-icon icon="solar:clock-circle-bold-duotone" class="fs-24 align-middle"></iconify-icon>
                         </button>
                     </div>
 
                     <!-- User -->
                     <div class="dropdown topbar-item">
-                        <a type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown"
-                           aria-haspopup="true" aria-expanded="false">
+                        <a type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <span class="d-flex align-items-center">
-                                             <img class="rounded-circle" width="32"
-                                                  src="/assets/images/users/avatar-1.jpg" alt="avatar-3">
+                                             <img class="rounded-circle" width="32" src="/assets/images/users/avatar-1.jpg" alt="avatar-3">
                                         </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <!-- item-->
                             <h6 class="dropdown-header">Welcome Gaston!</h6>
                             <a class="dropdown-item" href="pages-profile.html">
-                                <i class="bx bx-user-circle text-muted fs-18 align-middle me-1"></i><span
-                                    class="align-middle">Profile</span>
+                                <i class="bx bx-user-circle text-muted fs-18 align-middle me-1"></i><span class="align-middle">Profile</span>
                             </a>
                             <a class="dropdown-item" href="apps-chat.html">
-                                <i class="bx bx-message-dots text-muted fs-18 align-middle me-1"></i><span
-                                    class="align-middle">Messages</span>
+                                <i class="bx bx-message-dots text-muted fs-18 align-middle me-1"></i><span class="align-middle">Messages</span>
                             </a>
 
                             <a class="dropdown-item" href="pages-pricing.html">
-                                <i class="bx bx-wallet text-muted fs-18 align-middle me-1"></i><span
-                                    class="align-middle">Pricing</span>
+                                <i class="bx bx-wallet text-muted fs-18 align-middle me-1"></i><span class="align-middle">Pricing</span>
                             </a>
                             <a class="dropdown-item" href="pages-faqs.html">
-                                <i class="bx bx-help-circle text-muted fs-18 align-middle me-1"></i><span
-                                    class="align-middle">Help</span>
+                                <i class="bx bx-help-circle text-muted fs-18 align-middle me-1"></i><span class="align-middle">Help</span>
                             </a>
                             <a class="dropdown-item" href="auth-lock-screen.html">
                                 <i class="bx bx-lock text-muted fs-18 align-middle me-1"></i><span class="align-middle">Lock screen</span>
@@ -233,8 +210,7 @@
                             <div class="dropdown-divider my-1"></div>
 
                             <a class="dropdown-item text-danger" href="auth-signin.html">
-                                <i class="bx bx-log-out fs-18 align-middle me-1"></i><span
-                                    class="align-middle">Logout</span>
+                                <i class="bx bx-log-out fs-18 align-middle me-1"></i><span class="align-middle">Logout</span>
                             </a>
                         </div>
                     </div>
@@ -242,8 +218,7 @@
                     <!-- App Search-->
                     <form class="app-search d-none d-md-block ms-2">
                         <div class="position-relative">
-                            <input type="search" class="form-control" placeholder="Search..." autocomplete="off"
-                                   value="">
+                            <input type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
                             <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>
                         </div>
                     </form>
@@ -254,12 +229,10 @@
 
     <!-- Activity Timeline -->
     <div>
-        <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-activity-offcanvas"
-             style="max-width: 450px; width: 100%;">
+        <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-activity-offcanvas" style="max-width: 450px; width: 100%;">
             <div class="d-flex align-items-center bg-primary p-3 offcanvas-header">
                 <h5 class="text-white m-0 fw-semibold">Activity Stream</h5>
-                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"
-                        aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body p-0">
@@ -268,13 +241,10 @@
                         <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
                         <div class="position-relative ps-4">
                             <div class="mb-4">
-                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-danger d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon
-                                        icon="iconamoon:folder-check-duotone"></iconify-icon></span>
+                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-danger d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon icon="iconamoon:folder-check-duotone"></iconify-icon></span>
                                 <div class="ms-2">
                                     <h5 class="mb-1 text-dark fw-semibold fs-15 lh-base">Report-Fix / Update </h5>
-                                    <p class="d-flex align-items-center">Add 3 files to <span
-                                            class=" d-flex align-items-center text-primary ms-1"><iconify-icon
-                                            icon="iconamoon:file-light"></iconify-icon> Tasks</span></p>
+                                    <p class="d-flex align-items-center">Add 3 files to <span class=" d-flex align-items-center text-primary ms-1"><iconify-icon icon="iconamoon:file-light"></iconify-icon> Tasks</span></p>
                                     <div class="bg-light bg-opacity-50 rounded-2 p-2">
                                         <div class="row">
                                             <div class="col-lg-6 border-end border-light">
@@ -297,23 +267,15 @@
                         </div>
                         <div class="position-relative ps-4">
                             <div class="mb-4">
-                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-success d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon
-                                        icon="iconamoon:check-circle-1-duotone"></iconify-icon></span>
+                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-success d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon icon="iconamoon:check-circle-1-duotone"></iconify-icon></span>
                                 <div class="ms-2">
                                     <h5 class="mb-1 text-dark fw-semibold fs-15 lh-base">Project Status
                                     </h5>
-                                    <p class="d-flex align-items-center mb-0">Marked<span
-                                            class=" d-flex align-items-center text-primary mx-1"><iconify-icon
-                                            icon="iconamoon:file-light"></iconify-icon> Design </span> as <span
-                                            class="badge bg-success-subtle text-success px-2 py-1 ms-1"> Completed</span>
-                                    </p>
+                                    <p class="d-flex align-items-center mb-0">Marked<span class=" d-flex align-items-center text-primary mx-1"><iconify-icon icon="iconamoon:file-light"></iconify-icon> Design </span> as <span class="badge bg-success-subtle text-success px-2 py-1 ms-1"> Completed</span></p>
                                     <div class="d-flex align-items-center gap-3 mt-1 bg-light bg-opacity-50 p-2 rounded-2">
                                         <a href="#!" class="fw-medium text-dark">UI/UX Figma Design</a>
                                         <div class="ms-auto">
-                                            <a href="#!" class="fw-medium text-primary fs-18" data-bs-toggle="tooltip"
-                                               data-bs-title="Download" data-bs-placement="bottom">
-                                                <iconify-icon icon="iconamoon:cloud-download-duotone"></iconify-icon>
-                                            </a>
+                                            <a href="#!" class="fw-medium text-primary fs-18" data-bs-toggle="tooltip" data-bs-title="Download" data-bs-placement="bottom"><iconify-icon icon="iconamoon:cloud-download-duotone"></iconify-icon></a>
                                         </div>
                                     </div>
                                     <h6 class="mt-3 text-muted">Monday , 3:00 PM</h6>
@@ -324,11 +286,9 @@
                             <div class="mb-4">
                                 <span class="position-absolute start-0 avatar-sm translate-middle-x bg-primary d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-16">UI</span>
                                 <div class="ms-2">
-                                    <h5 class="mb-1 text-dark fw-semibold fs-15">Larkon Application UI v2.0.0 <span
-                                            class="badge bg-primary-subtle text-primary px-2 py-1 ms-1"> Latest</span>
+                                    <h5 class="mb-1 text-dark fw-semibold fs-15">Larkon Application UI v2.0.0 <span class="badge bg-primary-subtle text-primary px-2 py-1 ms-1"> Latest</span>
                                     </h5>
-                                    <p>Get access to over 20+ pages including a dashboard layout, charts, kanban board,
-                                        calendar, and pre-order E-commerce & Marketing pages.</p>
+                                    <p>Get access to over 20+ pages including a dashboard layout, charts, kanban board, calendar, and pre-order E-commerce & Marketing pages.</p>
                                     <div class="mt-2">
                                         <a href="#!" class="btn btn-light btn-sm">Download Zip</a>
                                     </div>
@@ -338,29 +298,24 @@
                         </div>
                         <div class="position-relative ps-4">
                             <div class="mb-4">
-                                <span class="position-absolute start-0 translate-middle-x bg-success bg-gradient d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><img
-                                        src="/assets/images/users/avatar-7.jpg" alt="avatar-5"
-                                        class="avatar-sm rounded-circle"></span>
+                                <span class="position-absolute start-0 translate-middle-x bg-success bg-gradient d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><img src="/assets/images/users/avatar-7.jpg" alt="avatar-5" class="avatar-sm rounded-circle"></span>
                                 <div class="ms-2">
                                     <h5 class="mb-0 text-dark fw-semibold fs-15 lh-base">Alex Smith Attached Photos
                                     </h5>
                                     <div class="row g-2 mt-2">
                                         <div class="col-lg-4">
                                             <a href="#!">
-                                                <img src="/assets/images/small/img-6.jpg" alt=""
-                                                     class="img-fluid rounded">
+                                                <img src="/assets/images/small/img-6.jpg" alt="" class="img-fluid rounded">
                                             </a>
                                         </div>
                                         <div class="col-lg-4">
                                             <a href="#!">
-                                                <img src="/assets/images/small/img-3.jpg" alt=""
-                                                     class="img-fluid rounded">
+                                                <img src="/assets/images/small/img-3.jpg" alt="" class="img-fluid rounded">
                                             </a>
                                         </div>
                                         <div class="col-lg-4">
                                             <a href="#!">
-                                                <img src="/assets/images/small/img-4.jpg" alt=""
-                                                     class="img-fluid rounded">
+                                                <img src="/assets/images/small/img-4.jpg" alt="" class="img-fluid rounded">
                                             </a>
                                         </div>
                                     </div>
@@ -370,34 +325,22 @@
                         </div>
                         <div class="position-relative ps-4">
                             <div class="mb-4">
-                                <span class="position-absolute start-0 translate-middle-x bg-success bg-gradient d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><img
-                                        src="/assets/images/users/avatar-6.jpg" alt="avatar-5"
-                                        class="avatar-sm rounded-circle"></span>
+                                <span class="position-absolute start-0 translate-middle-x bg-success bg-gradient d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><img src="/assets/images/users/avatar-6.jpg" alt="avatar-5" class="avatar-sm rounded-circle"></span>
                                 <div class="ms-2">
-                                    <h5 class="mb-0 text-dark fw-semibold fs-15 lh-base">Rebecca J. added a new team
-                                        member
+                                    <h5 class="mb-0 text-dark fw-semibold fs-15 lh-base">Rebecca J. added a new team member
                                     </h5>
-                                    <p class="d-flex align-items-center gap-1">
-                                        <iconify-icon icon="iconamoon:check-circle-1-duotone"
-                                                      class="text-success"></iconify-icon>
-                                        Added a new member to Front Dashboard
-                                    </p>
+                                    <p class="d-flex align-items-center gap-1"><iconify-icon icon="iconamoon:check-circle-1-duotone" class="text-success"></iconify-icon> Added a new member to Front Dashboard</p>
                                     <h6 class="mt-3 text-muted">Monday 10:00 AM</h6>
                                 </div>
                             </div>
                         </div>
                         <div class="position-relative ps-4">
                             <div class="mb-4">
-                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-warning d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon
-                                        icon="iconamoon:certificate-badge-duotone"></iconify-icon></span>
+                                <span class="position-absolute start-0 avatar-sm translate-middle-x bg-warning d-inline-flex align-items-center justify-content-center rounded-circle text-light fs-20"><iconify-icon icon="iconamoon:certificate-badge-duotone"></iconify-icon></span>
                                 <div class="ms-2">
                                     <h5 class="mb-0 text-dark fw-semibold fs-15 lh-base">Achievements
                                     </h5>
-                                    <p class="d-flex align-items-center gap-1 mt-1">Earned a
-                                        <iconify-icon icon="iconamoon:certificate-badge-duotone"
-                                                      class="text-danger fs-20"></iconify-icon>
-                                        " Best Product Award"
-                                    </p>
+                                    <p class="d-flex align-items-center gap-1 mt-1">Earned a <iconify-icon icon="iconamoon:certificate-badge-duotone" class="text-danger fs-20"></iconify-icon>" Best Product Award"</p>
                                     <h6 class="mt-3 text-muted">Monday 9:30 AM</h6>
                                 </div>
                             </div>
@@ -414,8 +357,7 @@
         <div class="offcanvas offcanvas-end border-0" tabindex="-1" id="theme-settings-offcanvas">
             <div class="d-flex align-items-center bg-primary p-3 offcanvas-header">
                 <h5 class="text-white m-0">Theme Settings</h5>
-                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas"
-                        aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
 
             <div class="offcanvas-body p-0">
@@ -426,14 +368,12 @@
                             <h5 class="mb-3 font-16 fw-semibold">Color Scheme</h5>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-bs-theme"
-                                       id="layout-color-light" value="light">
+                                <input class="form-check-input" type="radio" name="data-bs-theme" id="layout-color-light" value="light">
                                 <label class="form-check-label" for="layout-color-light">Light</label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-bs-theme" id="layout-color-dark"
-                                       value="dark">
+                                <input class="form-check-input" type="radio" name="data-bs-theme" id="layout-color-dark" value="dark">
                                 <label class="form-check-label" for="layout-color-dark">Dark</label>
                             </div>
                         </div>
@@ -442,13 +382,11 @@
                             <h5 class="my-3 font-16 fw-semibold">Topbar Color</h5>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-topbar-color"
-                                       id="topbar-color-light" value="light">
+                                <input class="form-check-input" type="radio" name="data-topbar-color" id="topbar-color-light" value="light">
                                 <label class="form-check-label" for="topbar-color-light">Light</label>
                             </div>
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-topbar-color"
-                                       id="topbar-color-dark" value="dark">
+                                <input class="form-check-input" type="radio" name="data-topbar-color" id="topbar-color-dark" value="dark">
                                 <label class="form-check-label" for="topbar-color-dark">Dark</label>
                             </div>
                         </div>
@@ -458,16 +396,14 @@
                             <h5 class="my-3 font-16 fw-semibold">Menu Color</h5>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-color"
-                                       id="leftbar-color-light" value="light">
+                                <input class="form-check-input" type="radio" name="data-menu-color" id="leftbar-color-light" value="light">
                                 <label class="form-check-label" for="leftbar-color-light">
                                     Light
                                 </label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-color"
-                                       id="leftbar-color-dark" value="dark">
+                                <input class="form-check-input" type="radio" name="data-menu-color" id="leftbar-color-dark" value="dark">
                                 <label class="form-check-label" for="leftbar-color-dark">
                                     Dark
                                 </label>
@@ -478,40 +414,35 @@
                             <h5 class="my-3 font-16 fw-semibold">Sidebar Size</h5>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-size"
-                                       id="leftbar-size-default" value="default">
+                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-size-default" value="default">
                                 <label class="form-check-label" for="leftbar-size-default">
                                     Default
                                 </label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-size"
-                                       id="leftbar-size-small" value="condensed">
+                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-size-small" value="condensed">
                                 <label class="form-check-label" for="leftbar-size-small">
                                     Condensed
                                 </label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-hidden"
-                                       value="hidden">
+                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-hidden" value="hidden">
                                 <label class="form-check-label" for="leftbar-hidden">
                                     Hidden
                                 </label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-size"
-                                       id="leftbar-size-small-hover-active" value="sm-hover-active">
+                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-size-small-hover-active" value="sm-hover-active">
                                 <label class="form-check-label" for="leftbar-size-small-hover-active">
                                     Small Hover Active
                                 </label>
                             </div>
 
                             <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="data-menu-size"
-                                       id="leftbar-size-small-hover" value="sm-hover">
+                                <input class="form-check-input" type="radio" name="data-menu-size" id="leftbar-size-small-hover" value="sm-hover">
                                 <label class="form-check-label" for="leftbar-size-small-hover">
                                     Small Hover
                                 </label>
@@ -533,7 +464,7 @@
     <!-- ========== Topbar End ========== -->
 
     <!-- ========== App Menu Start ========== -->
-    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <div th:insert="~{fragments/admin/panel_menu.html}"></div>
     <!-- ========== App Menu End ========== -->
 
     <!-- ==================================================== -->
@@ -543,145 +474,92 @@
 
         <!-- Start Container Fluid -->
         <div class="container-xxl">
-
             <div class="row">
-                <form th:object="${product}" method="post" th:action="@{/admin/product/update}"
-                      enctype="multipart/form-data">
-                    <input type="hidden" th:field="*{id}">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center gap-1">
+                            <h4 class="card-title flex-grow-1">Danh Sách Công Ty Vận Chuyển</h4>
 
-                    <div class="col-xl-9 col-lg-8">
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Thông tin</h4>
-                            </div>
-                            <div class="card-body">
-                                <!-- Product Title -->
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <div class="mb-3">
-                                            <label for="product-name" class="form-label">Tên sản phẩm</label>
-                                            <input type="text" id="product-name" class="form-control"
-                                                   placeholder="Tên sản phẩm" th:field="*{title}" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <label for="product-categories" class="form-label">Loại sản phẩm</label>
-                                        <select class="form-control" id="product-categories" data-choices
-                                                data-choices-groups data-placeholder="Chọn loại sản phẩm"
-                                                name="choices-single-groups" th:field="*{categoryId}">
-                                            <option th:each="category : ${categories}" th:value="${category.id}"
-                                                    th:text="${category.type}"
-                                                    th:selected="${product.categoryName == category.type}"/>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Product Image -->
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label for="image" class="form-label">Ảnh sản phẩm</label>
-                                            <input type="file" class="form-control bg-light-subtle"
-                                                   id="image" name="image" placeholder="Ảnh sản phẩm">
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Product Description -->
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <div class="mb-3">
-                                            <label for="description" class="form-label">Mô tả sản phẩm</label>
-                                            <textarea th:field="*{description}" class="form-control bg-light-subtle"
-                                                      id="description" rows="7" placeholder="Mô tả sản phẩm"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Product Voucher -->
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label for="voucher" class="form-label">Voucher</label>
-                                            <input type="number" id="voucher" class="form-control"
-                                                   th:field="*{voucher}" placeholder="Voucher code">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <a th:href="@{/admin/shipping_company/add}" class="btn btn-sm btn-primary">
+                                <iconify-icon icon="solar:add-circle-bold"></iconify-icon> Thêm Mới
+                            </a>
                         </div>
 
-                        <!-- Price and Size Details -->
-                        <div class="card">
-                            <div class="card-header">
-                                <h4 class="card-title">Giá và Size</h4>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <label for="product-price" class="form-label">Giá sản phẩm</label>
-                                        <div class="input-group mb-3">
-                                            <span class="input-group-text fs-20"><i class='bx bx-dollar'></i></span>
-                                            <input type="number" id="product-price" class="form-control"
-                                                   th:field="*{price}" placeholder="Giá sản phẩm">
+                        <!-- Statistics Cards -->
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-3">
+                                    <div class="card border-0 bg-primary-subtle">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-primary" id="totalCount">0</h5>
+                                            <p class="card-text mb-0">Tổng số công ty</p>
                                         </div>
                                     </div>
                                 </div>
-
-                                <!-- Size and Price Add Fields for each size -->
-                                <div class="row">
-                                    <div class="col-lg-12">
-                                        <h5>Chọn size và thêm giá cho từng size</h5>
-                                        <div class="form-group">
-                                            <label class="form-label">Size</label>
-                                            <table class="table table-bordered">
-                                                <thead>
-                                                <tr>
-                                                    <th>Size</th>
-                                                    <th>Giá thêm</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-
-                                                <!-- Loop through sizes from 38 to 45 -->
-                                                <tr th:each="size : ${#numbers.sequence(38, 45)}">
-                                                    <td th:text="${size}">38</td>
-                                                    <td>
-                                                        <!-- Correct format to dynamically set the field name -->
-                                                        <input type="number" class="form-control"
-                                                               th:value="${sizePriceMap[__${size}__]}"
-                                                               th:name="'productDetails[' + ${size} + '].priceadd'"
-                                                               placeholder="Giá thêm cho size" min="0"/>
-                                                    </td>
-                                                </tr>
-
-
-
-
-                                                </tbody>
-                                            </table>
+                                <div class="col-md-3">
+                                    <div class="card border-0 bg-success-subtle">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-success" id="activeCount">0</h5>
+                                            <p class="card-text mb-0">Đang hoạt động</p>
                                         </div>
                                     </div>
                                 </div>
-
-
-                            </div>
-                        </div>
-
-                        <!-- Save and Cancel Buttons -->
-                        <div class="p-3 bg-light mb-3 rounded">
-                            <div class="row justify-content-end g-2">
-                                <div class="col-lg-2">
-                                    <button type="submit" class="btn btn-outline-secondary w-100">Lưu thông tin</button>
-                                </div>
-                                <div class="col-lg-2">
-                                    <a href="#!" class="btn btn-primary w-100">Huỷ</a>
+                                <div class="col-md-3">
+                                    <div class="card border-0 bg-danger-subtle">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title text-danger" id="inactiveCount">0</h5>
+                                            <p class="card-text mb-0">Không hoạt động</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
+                            <!-- Search and Filter -->
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên công ty...">
+                                </div>
+                                <div class="col-md-3">
+                                    <select id="statusFilter" class="form-select">
+                                        <option value="">Tất cả trạng thái</option>
+                                        <option value="true">Hoạt động</option>
+                                        <option value="false">Không hoạt động</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" class="btn btn-outline-secondary w-100" onclick="clearFilter()">
+                                        <iconify-icon icon="solar:close-circle-bold"></iconify-icon> Xóa bộ lọc
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table align-middle mb-0 table-hover table-centered">
+                                    <thead class="bg-light-subtle">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Công Ty</th>
+                                        <th>Hotline</th>
+                                        <th>Email</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Hành Động</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="shippingCompanyTable">
+                                    <!-- Data will be loaded via AJAX -->
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <nav aria-label="Shipping Company pagination">
+                                <ul class="pagination justify-content-center" id="pagination">
+                                    <!-- Pagination will be generated via AJAX -->
+                                </ul>
+                            </nav>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -692,5 +570,181 @@
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    let currentPage = 0;
+    let currentSearch = '';
+    let currentStatus = '';
+
+    $(document).ready(function() {
+        loadShippingCompanies();
+        loadStats();
+        
+        // Search input event
+        $('#searchInput').on('keyup', function() {
+            currentSearch = $(this).val();
+            currentPage = 0;
+            loadShippingCompanies();
+        });
+        
+        // Status filter event
+        $('#statusFilter').on('change', function() {
+            currentStatus = $(this).val();
+            currentPage = 0;
+            loadShippingCompanies();
+        });
+    });
+
+    function loadShippingCompanies() {
+        $.ajax({
+            url: '/api/shipping-company',
+            method: 'GET',
+            data: {
+                page: currentPage,
+                size: 10,
+                search: currentSearch,
+                isActive: currentStatus || undefined
+            },
+            success: function(response) {
+                displayShippingCompanies(response.shippingCompanies);
+                generatePagination(response);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading shipping companies:', error);
+                $('#shippingCompanyTable').html('<tr><td colspan="6" class="text-center text-danger">Có lỗi xảy ra khi tải dữ liệu</td></tr>');
+            }
+        });
+    }
+
+    function displayShippingCompanies(shippingCompanies) {
+        let html = '';
+        
+        if (shippingCompanies.length === 0) {
+            html = '<tr><td colspan="6" class="text-center text-muted">Không có dữ liệu</td></tr>';
+        } else {
+            shippingCompanies.forEach(function(company) {
+                const statusBadge = company.isActive ? 
+                    '<span class="badge bg-success-subtle text-success">Hoạt động</span>' : 
+                    '<span class="badge bg-danger-subtle text-danger">Không hoạt động</span>';
+                
+                html += `
+                    <tr>
+                        <td>${company.id}</td>
+                        <td>${company.name}</td>
+                        <td>${company.hotlineDisplay}</td>
+                        <td>${company.emailDisplay}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="/admin/shipping_company/edit/${company.id}" class="btn btn-light btn-sm">
+                                    <iconify-icon icon="solar:edit-bold"></iconify-icon> Sửa
+                                </a>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteShippingCompany(${company.id})">
+                                    <iconify-icon icon="solar:trash-bin-trash-bold"></iconify-icon> Xóa
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+        
+        $('#shippingCompanyTable').html(html);
+    }
+
+    function generatePagination(response) {
+        let html = '';
+        const totalPages = response.totalPages;
+        const currentPageNum = response.currentPage;
+        
+        if (totalPages <= 1) {
+            $('#pagination').html('');
+            return;
+        }
+        
+        // Previous button
+        if (currentPageNum > 0) {
+            html += `<li class="page-item">
+                <a class="page-link" href="#" onclick="changePage(${currentPageNum - 1})">Trước</a>
+            </li>`;
+        }
+        
+        // Page numbers
+        for (let i = 0; i < totalPages; i++) {
+            const activeClass = i === currentPageNum ? 'active' : '';
+            html += `<li class="page-item ${activeClass}">
+                <a class="page-link" href="#" onclick="changePage(${i})">${i + 1}</a>
+            </li>`;
+        }
+        
+        // Next button
+        if (currentPageNum < totalPages - 1) {
+            html += `<li class="page-item">
+                <a class="page-link" href="#" onclick="changePage(${currentPageNum + 1})">Sau</a>
+            </li>`;
+        }
+        
+        $('#pagination').html(html);
+    }
+
+    function changePage(page) {
+        currentPage = page;
+        loadShippingCompanies();
+    }
+
+    function deleteShippingCompany(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa công ty vận chuyển này?')) {
+            $.ajax({
+                url: `/api/shipping-company/${id}`,
+                method: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Xóa công ty vận chuyển thành công!');
+                        loadShippingCompanies();
+                        loadStats();
+                    } else {
+                        alert('Lỗi xóa: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error deleting shipping company:', error);
+                    if (xhr.status === 0) {
+                        alert('Lỗi xóa: Không thể kết nối đến server');
+                    } else {
+                        alert('Lỗi xóa: ' + (xhr.responseJSON?.message || 'Có lỗi xảy ra'));
+                    }
+                }
+            });
+        }
+    }
+
+    function loadStats() {
+        $.ajax({
+            url: '/api/shipping-company/stats',
+            method: 'GET',
+            success: function(response) {
+                $('#totalCount').text(response.totalCount);
+                $('#activeCount').text(response.activeCount);
+                $('#inactiveCount').text(response.inactiveCount);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading stats:', error);
+            }
+        });
+    }
+
+    function clearFilter() {
+        $('#searchInput').val('');
+        $('#statusFilter').val('');
+        currentSearch = '';
+        currentStatus = '';
+        currentPage = 0;
+        loadShippingCompanies();
+    }
+</script>
+
 </body>
 </html>

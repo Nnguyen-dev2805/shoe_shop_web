@@ -1,24 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <!-- Title Meta -->
     <meta charset="utf-8"/>
-    <title>Product List</title>
+    <title>Sửa Công Ty Vận Chuyển</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fully responsive premium admin dashboard template"/>
     <meta name="author" content="Techzaa"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
-    <style>
-        .avatar-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Giữ tỷ lệ và cắt ảnh nếu cần */
-            border-radius: 50%; /* Để làm tròn ảnh */
-        }
-
-    </style>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- App favicon -->
     <!-- Favicon -->
@@ -35,10 +30,13 @@
 
     <!-- Theme Config JS (Require in all Page) -->
     <script th:src="@{/assets/js/config.js}"></script>
-  
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <!-- Custom CSS for JetBrains Mono Font -->
+    <style>
+        .font-16, .fw-semibold, .mb-3 {
+            font-family: 'JetBrains Mono', monospace !important;
+        }
+    </style>
 
 </head>
 
@@ -61,7 +59,7 @@
 
                     <!-- Menu Toggle Button -->
                     <div class="topbar-item">
-                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Product List</h4>
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Sửa Công Ty Vận Chuyển</h4>
                     </div>
                 </div>
 
@@ -538,7 +536,7 @@
     <!-- ========== Topbar End ========== -->
 
     <!-- ========== App Menu Start ========== -->
-    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <div th:insert="~{fragments/admin/panel_menu.html}"></div>
     <!-- ========== App Menu End ========== -->
 
     <!-- ==================================================== -->
@@ -547,265 +545,229 @@
     <div class="page-content">
 
         <!-- Start Container Fluid -->
-        <div class="container-fluid">
-
-            <div class="row">
-                <div class="col-xl-12">
+        <div class="container-xxl">
+            <div class="row justify-content-center">
+                <div class="col-xl-8 col-lg-10">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center gap-1">
-                            <h4 class="card-title flex-grow-1">Danh sách sản phẩm</h4>
+                        <div class="card-header">
+                            <h4 class="card-title">Sửa Công Ty Vận Chuyển</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="shippingCompanyForm">
+                                <input type="hidden" id="shippingCompanyId" th:value="${shippingCompany.id}">
+                                
+                                <div class="row">
+                                    <!-- Tên công ty -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="name" class="form-label">Tên công ty vận chuyển <span class="text-danger">*</span></label>
+                                            <input type="text" id="name" class="form-control" required
+                                                   placeholder="Nhập tên công ty vận chuyển" th:value="${shippingCompany.name}">
+                                            <div class="invalid-feedback" id="nameError"></div>
+                                        </div>
+                                    </div>
 
-                            <a th:href="@{/admin/product/insert}" class="btn btn-sm btn-primary">
-                                Thêm sản phầm
-                            </a>
-                        </div>
-                        <div class="mb-3">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name or category" onkeyup="searchTable()">
-                        </div>
-                        <div>
-                            <div class="table-responsive">
-                                <table class="table align-middle mb-0 table-hover table-centered">
-                                    <thead class="bg-light-subtle">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Tên sản phẩm</th>
-                                        <th>Giá</th>
-                                        <th>Loại</th>
-                                        <th>Hành động</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody id="productBody">
-<!--                                    ajax render-->
-                                    </tbody>
-                                </table>
+                                    <!-- Hotline -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="hotline" class="form-label">Hotline</label>
+                                            <input type="text" id="hotline" class="form-control"
+                                                   placeholder="Nhập số hotline" th:value="${shippingCompany.hotline}">
+                                            <div class="invalid-feedback" id="hotlineError"></div>
+                                        </div>
+                                    </div>
 
-                            </div>
-                            <!-- end table-responsive -->
-                        </div>
-                        <div class="card-footer border-top">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-end mb-0" id="pagination">
-                                    <!-- Ajax render -->
-                                </ul>
-                            </nav>
-                        </div>
+                                    <!-- Email -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" id="email" class="form-control"
+                                                   placeholder="Nhập email liên hệ" th:value="${shippingCompany.email}">
+                                            <div class="invalid-feedback" id="emailError"></div>
+                                        </div>
+                                    </div>
 
+                                    <!-- Website -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="website" class="form-label">Website</label>
+                                            <input type="url" id="website" class="form-control"
+                                                   placeholder="Nhập website (https://...)" th:value="${shippingCompany.website}">
+                                            <div class="invalid-feedback" id="websiteError"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Địa chỉ -->
+                                    <div class="col-lg-12">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Địa chỉ</label>
+                                            <textarea id="address" class="form-control" rows="3"
+                                                      placeholder="Nhập địa chỉ công ty" th:text="${shippingCompany.address}"></textarea>
+                                            <div class="invalid-feedback" id="addressError"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Trạng thái -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="isActive" class="form-label">Trạng thái hoạt động <span class="text-danger">*</span></label>
+                                            <select id="isActive" class="form-select" required>
+                                                <option value="true" th:selected="${shippingCompany.isActive == true}">Hoạt động</option>
+                                                <option value="false" th:selected="${shippingCompany.isActive == false}">Không hoạt động</option>
+                                            </select>
+                                            <div class="invalid-feedback" id="isActiveError"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="d-flex justify-content-end gap-2 mt-4">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="cancelForm()">
+                                        <iconify-icon icon="solar:close-circle-bold"></iconify-icon> Hủy
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                                        <iconify-icon icon="solar:check-circle-bold"></iconify-icon> Cập nhật
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
+
+
     </div>
 </div>
+<!-- END Wrapper -->
+
 <!-- Vendor Javascript (Require in all Page) -->
 <script src="/assets/js/vendor.js"></script>
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
-    function searchTable() {
-        var input, filter, table, tr, td, i, j, txtValue, match;
-        input = document.getElementById("searchInput");
-        filter = input.value.toLowerCase();
-        table = document.querySelector(".table");
-        tr = table.getElementsByTagName("tr");
-
-        for (i = 1; i < tr.length; i++) { // Bắt đầu từ 1 để bỏ qua tiêu đề
-            tr[i].style.display = "none"; // Ẩn tất cả các hàng
-            td = tr[i].getElementsByTagName("td");
-
-            match = false; // Đặt mặc định là không có kết quả
-
-            // Duyệt qua các cột (tên và loại)
-            for (j = 1; j < td.length; j++) {
-                if (td[j]) {
-                    txtValue = td[j].textContent || td[j].innerText;
-                    if (txtValue.toLowerCase().indexOf(filter) > -1) {
-                        match = true; // Nếu tìm thấy, thay đổi trạng thái
+$(document).ready(function() {
+    $('#shippingCompanyForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        // Clear previous errors
+        clearErrors();
+        
+        // Get form data
+        const formData = {
+            id: parseInt($('#shippingCompanyId').val()),
+            name: $('#name').val().trim(),
+            hotline: $('#hotline').val().trim(),
+            email: $('#email').val().trim(),
+            website: $('#website').val().trim(),
+            address: $('#address').val().trim(),
+            isActive: $('#isActive').val() === 'true'
+        };
+        
+        // Basic validation
+        let isValid = true;
+        
+        if (!formData.name) {
+            showError('name', 'Tên công ty vận chuyển không được để trống');
+            isValid = false;
+        }
+        
+        if (formData.hotline && !/^[0-9+\-\s()]*$/.test(formData.hotline)) {
+            showError('hotline', 'Số điện thoại không hợp lệ');
+            isValid = false;
+        }
+        
+        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+            showError('email', 'Email không hợp lệ');
+            isValid = false;
+        }
+        
+        if (formData.website && !/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/.test(formData.website)) {
+            showError('website', 'Website không hợp lệ');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            return;
+        }
+        
+        // Show loading
+        const submitBtn = $('#submitBtn');
+        const originalText = submitBtn.html();
+        submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang cập nhật...');
+        
+        // Submit via AJAX
+        $.ajax({
+            url: `/api/shipping-company/${formData.id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(formData),
+            success: function(response) {
+                if (response.success) {
+                    alert('Cập nhật công ty vận chuyển thành công!');
+                    window.location.href = '/admin/shipping_company/list';
+                } else {
+                    alert('Lỗi: ' + response.message);
+                    if (response.errors) {
+                        displayValidationErrors(response.errors);
                     }
                 }
-            }
-
-            if (match) {
-                tr[i].style.display = ""; // Hiển thị hàng nếu có kết quả
-            }
-        }
-    }
-</script>
-
-
-<script>
-    let currentPage = 0;
-    let totalPages = 0;
-    let searchQuery = '';
-
-    function loadProducts(page = 0, query = '') {
-        $.ajax({
-            url: `/api/admin/product?page=${page}&size=10&search=${encodeURIComponent(query)}`,
-            type: 'GET',
-            dataType: 'json',
-            success: function(response) {
-                const products = response.content;
-                totalPages = response.totalPages;
-                currentPage = response.number;
-
-                $('#productBody').empty();
-                if (products.length === 0) {
-                    $('#productBody').html('<tr><td colspan="5" class="text-center">Không có dữ liệu</td></tr>');
-                    buildPagination();
-                    return;
-                }
-
-                // Xây dựng rows (lưu ý: dùng category.name thay vì type, format giá)
-                // Render row
-                products.forEach(product => {
-                    const row = `
-                             <tr>
-                                 <td>${product.id}</td>
-                                 <td>
-                                     <div class="d-flex align-items-center gap-2">
-                                         <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                             <img src="/images/${product.image || 'default.jpg'}" alt="" class="avatar-img" onerror="this.src='/assets/images/users/avatar-1.jpg';">
-                                         </div>
-                                         <div>
-                                             <a href="/admin/product/detail/${product.id}"
-                                                class="text-dark fw-medium fs-15">${product.title}</a>
-                                         </div>
-                                     </div>
-                                 </td>
-                                 <td>${product.price.toLocaleString('vi-VN')} VNĐ</td>
-                                 <td>
-                                     <p class="mb-1 text-muted">
-                                         <span class="text-dark fw-medium">${product.category ? product.category.name : 'N/A'}</span>
-                                     </p>
-                                 </td>
-                                 <td>
-                                     <div class="d-flex gap-2">
-                                         <a href="/admin/product/update/${product.id}"
-                                            class="btn btn-soft-primary btn-sm">
-                                             <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
-                                         </a>
-                                         <!-- Delete button với AJAX -->
-                                         <button onclick="deleteProduct(${product.id})" class="btn btn-soft-danger btn-sm">
-                                             <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon>
-                                         </button>
-                                     </div>
-                                 </td>
-                             </tr>
-                         `;
-                    $('#productBody').append(row);
-                });
-
-                buildPagination();
             },
             error: function(xhr, status, error) {
-                $('#productBody').html('<tr><td colspan="5" class="text-center text-danger">Lỗi tải dữ liệu: ' + error + '</td></tr>');
-                console.error('AJAX Error:', error);
+                console.error('Error updating shipping company:', error);
+                if (xhr.status === 400 && xhr.responseJSON) {
+                    const response = xhr.responseJSON;
+                    if (response.errors) {
+                        displayValidationErrors(response.errors);
+                    } else {
+                        alert('Lỗi: ' + (response.message || 'Dữ liệu không hợp lệ'));
+                    }
+                } else if (xhr.status === 404) {
+                    alert('Lỗi: Không tìm thấy công ty vận chuyển');
+                } else {
+                    alert('Lỗi: Có lỗi xảy ra khi cập nhật công ty vận chuyển');
+                }
+            },
+            complete: function() {
+                submitBtn.prop('disabled', false).html(originalText);
             }
         });
-    }
-
-    // Xây dựng pagination động
-    // function buildPagination() {
-    //     $('#pagination').empty();
-    //     // Previous
-    //     const prevClass = currentPage === 0 ? 'disabled' : '';
-    //     let prevOnClick = prevClass ? '' : `loadProducts(${currentPage - 1}, '${searchQuery}')`;
-    //     $('#pagination').append(`<li class="page-item ${prevClass}">
-    //              <a class="page-link" href="javascript:void(0);" onclick="${prevOnClick}">Previous</a>
-    //          </li>`);
-    //
-    //     // Pages
-    //     for (let i = 0; i < totalPages; i++) {
-    //         const activeClass = i === currentPage ? 'active' : '';
-    //         $('#pagination').append(`<li class="page-item ${activeClass}">
-    //                  <a class="page-link" href="javascript:void(0);" onclick="loadProducts(${i}, '${searchQuery}')">${i + 1}</a>
-    //              </li>`);
-    //     }
-    //
-
-    // Pagination
-    function buildPagination() {
-        $('#pagination').empty();
-
-        // Previous
-        const prevClass = currentPage === 0 ? 'disabled' : '';
-        $('#pagination').append(`
-            <li class="page-item ${prevClass}">
-                <a class="page-link" href="javascript:void(0);"
-                   onclick="${prevClass ? '' : `loadProducts(${currentPage - 1}, '${searchQuery}')`}">Previous</a>
-            </li>
-        `);
-
-        // Pages
-        for (let i = 0; i < totalPages; i++) {
-            const activeClass = i === currentPage ? 'active' : '';
-            $('#pagination').append(`
-                <li class="page-item ${activeClass}">
-                    <a class="page-link" href="javascript:void(0);"
-                       onclick="loadProducts(${i}, '${searchQuery}')">${i + 1}</a>
-                </li>
-            `);
-        }
-        // Next
-        // const nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
-        // let nextOnClick = nextClass ? '' : `loadProducts(${currentPage + 1}, '${searchQuery}')`;
-        // $('#pagination').append(`<li class="page-item ${nextClass}">
-        //          <a class="page-link" href="javascript:void(0);" onclick="${nextOnClick}">Next</a>
-        //      </li>`);
-
-        // Next
-        const nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
-        $('#pagination').append(`
-            <li class="page-item ${nextClass}">
-                <a class="page-link" href="javascript:void(0);"
-                   onclick="${nextClass ? '' : `loadProducts(${currentPage + 1}, '${searchQuery}')`}">Next</a>
-            </li>
-        `);
-    }
-
-    // Tìm kiếm (AJAX với debounce 500ms để tránh gọi API liên tục)
-    // function searchTable() {
-    //     searchQuery = $('#searchInput').val();
-    //     clearTimeout(window.searchTimeout);
-    //     window.searchTimeout = setTimeout(() => {
-    //         loadProducts(0, searchQuery);  // Reset về page 0 khi search
-    //     }, 500);
-    // }
-
-    // Tìm kiếm (debounce 500ms)
-    function searchTable() {
-        searchQuery = $('#searchInput').val();
-        clearTimeout(window.searchTimeout);
-        window.searchTimeout = setTimeout(() => {
-            loadProducts(0, searchQuery); // reset về page 0 khi search
-        }, 500);
-    }
-
-    // Xóa sản phẩm qua AJAX
-    function deleteProduct(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            $.ajax({
-                url: `/api/admin/products/${id}`,
-                type: 'DELETE',
-                success: function(response) {
-                    alert('Xóa thành công!');
-                    loadProducts(currentPage, searchQuery);  // Reload trang hiện tại
-                },
-                error: function(xhr, status, error) {
-                    alert('Lỗi xóa sản phẩm: ' + (xhr.responseJSON ? xhr.responseJSON.message : error));
-                }
-            });
-        }
-    }
-
-    // Tải dữ liệu khi trang load
-    $(document).ready(function() {
-        loadProducts();
     });
-</script>
+});
 
+function showError(fieldName, message) {
+    const field = $('#' + fieldName);
+    const errorDiv = $('#' + fieldName + 'Error');
+    
+    field.addClass('is-invalid');
+    errorDiv.text(message).show();
+}
+
+function clearErrors() {
+    $('.form-control, .form-select').removeClass('is-invalid');
+    $('.invalid-feedback').hide();
+}
+
+function displayValidationErrors(errors) {
+    errors.forEach(function(error) {
+        const fieldName = error.field || error.property;
+        if (fieldName) {
+            showError(fieldName, error.message);
+        }
+    });
+}
+
+function cancelForm() {
+    if (confirm('Bạn có chắc chắn muốn hủy? Dữ liệu chưa lưu sẽ bị mất.')) {
+        window.location.href = '/admin/shipping_company/list';
+    }
+}
+</script>
 
 </body>
 </html>
