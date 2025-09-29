@@ -5,7 +5,7 @@
 <head>
     <!-- Title Meta -->
     <meta charset="utf-8"/>
-    <title>Create Product </title>
+    <title>Thêm Sản Phẩm </title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fully responsive premium admin dashboard template"/>
     <meta name="author" content="Techzaa"/>
@@ -14,9 +14,6 @@
     <!-- App favicon -->
     <!-- Favicon -->
     <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"/>
-
-    <!-- Google Fonts - JetBrains Mono -->
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Vendor CSS (Require in all Page) -->
     <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css"/>
@@ -30,12 +27,7 @@
     <!-- Theme Config JS (Require in all Page) -->
     <script th:src="@{/assets/js/config.js}"></script>
 
-    <!-- Custom Font Style -->
-    <style>
-        .font-16, .fw-semibold, .mb-3 {
-            font-family: 'JetBrains Mono', monospace !important;
-        }
-    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
 </head>
 
@@ -58,7 +50,7 @@
 
                     <!-- Menu Toggle Button -->
                     <div class="topbar-item">
-                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Create Product</h4>
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Thêm Sản Phẩm</h4>
                     </div>
                 </div>
 
@@ -72,115 +64,115 @@
                     </div>
 
                     <!-- Notification -->
-                    <div class="dropdown topbar-item">
-                        <button type="button" class="topbar-button position-relative"
-                                id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                            <iconify-icon icon="solar:bell-bing-bold-duotone" class="fs-24 align-middle"></iconify-icon>
-                            <span class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">3<span
-                                    class="visually-hidden">unread messages</span></span>
-                        </button>
-                        <div class="dropdown-menu py-0 dropdown-lg dropdown-menu-end"
-                             aria-labelledby="page-header-notifications-dropdown">
-                            <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <h6 class="m-0 fs-16 fw-semibold"> Notifications</h6>
-                                    </div>
-                                    <div class="col-auto">
-                                        <a href="javascript: void(0);" class="text-dark text-decoration-underline">
-                                            <small>Clear All</small>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div data-simplebar style="max-height: 280px;">
-                                <!-- Item -->
-                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom text-wrap">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-1.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-1"/>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0"><span class="fw-medium">Josephine Thompson </span>commented
-                                                on admin panel
-                                                <span>" Wow 😍! this admin looks good and awesome design"</span></p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- Item -->
-                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <div class="avatar-sm me-2">
-                                                                 <span class="avatar-title bg-soft-info text-info fs-20 rounded-circle">
-                                                                      D
-                                                                 </span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 fw-semibold">Donoghue Susan</p>
-                                            <p class="mb-0 text-wrap">
-                                                Hi, How are you? What about our next meeting
-                                            </p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- Item -->
-                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-3.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-3"/>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 fw-semibold">Jacob Gines</p>
-                                            <p class="mb-0 text-wrap">Answered to your comment on the cash flow
-                                                forecast's graph 🔔.</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- Item -->
-                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <div class="avatar-sm me-2">
-                                                                 <span class="avatar-title bg-soft-warning text-warning fs-20 rounded-circle">
-                                                                      <iconify-icon
-                                                                              icon="iconamoon:comment-dots-duotone"></iconify-icon>
-                                                                 </span>
-                                            </div>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 fw-semibold text-wrap">You have received <b>20</b> new
-                                                messages in the
-                                                conversation</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                <!-- Item -->
-                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="/assets/images/users/avatar-5.jpg"
-                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-5"/>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <p class="mb-0 fw-semibold">Shawn Bunch</p>
-                                            <p class="mb-0 text-wrap">
-                                                Commented on Admin
-                                            </p>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            <div class="text-center py-3">
-                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">View All Notification <i
-                                        class="bx bx-right-arrow-alt ms-1"></i></a>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="dropdown topbar-item">-->
+<!--                        <button type="button" class="topbar-button position-relative"-->
+<!--                                id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"-->
+<!--                                aria-expanded="false">-->
+<!--                            <iconify-icon icon="solar:bell-bing-bold-duotone" class="fs-24 align-middle"></iconify-icon>-->
+<!--                            <span class="position-absolute topbar-badge fs-10 translate-middle badge bg-danger rounded-pill">3<span-->
+<!--                                    class="visually-hidden">unread messages</span></span>-->
+<!--                        </button>-->
+<!--                        <div class="dropdown-menu py-0 dropdown-lg dropdown-menu-end"-->
+<!--                             aria-labelledby="page-header-notifications-dropdown">-->
+<!--                            <div class="p-3 border-top-0 border-start-0 border-end-0 border-dashed border">-->
+<!--                                <div class="row align-items-center">-->
+<!--                                    <div class="col">-->
+<!--                                        <h6 class="m-0 fs-16 fw-semibold"> Notifications</h6>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-auto">-->
+<!--                                        <a href="javascript: void(0);" class="text-dark text-decoration-underline">-->
+<!--                                            <small>Clear All</small>-->
+<!--                                        </a>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div data-simplebar style="max-height: 280px;">-->
+<!--                                &lt;!&ndash; Item &ndash;&gt;-->
+<!--                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom text-wrap">-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <div class="flex-shrink-0">-->
+<!--                                            <img src="/assets/images/users/avatar-1.jpg"-->
+<!--                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-1"/>-->
+<!--                                        </div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <p class="mb-0"><span class="fw-medium">Josephine Thompson </span>commented-->
+<!--                                                on admin panel-->
+<!--                                                <span>" Wow 😍! this admin looks good and awesome design"</span></p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                                &lt;!&ndash; Item &ndash;&gt;-->
+<!--                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <div class="flex-shrink-0">-->
+<!--                                            <div class="avatar-sm me-2">-->
+<!--                                                                 <span class="avatar-title bg-soft-info text-info fs-20 rounded-circle">-->
+<!--                                                                      D-->
+<!--                                                                 </span>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <p class="mb-0 fw-semibold">Donoghue Susan</p>-->
+<!--                                            <p class="mb-0 text-wrap">-->
+<!--                                                Hi, How are you? What about our next meeting-->
+<!--                                            </p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                                &lt;!&ndash; Item &ndash;&gt;-->
+<!--                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <div class="flex-shrink-0">-->
+<!--                                            <img src="/assets/images/users/avatar-3.jpg"-->
+<!--                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-3"/>-->
+<!--                                        </div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <p class="mb-0 fw-semibold">Jacob Gines</p>-->
+<!--                                            <p class="mb-0 text-wrap">Answered to your comment on the cash flow-->
+<!--                                                forecast's graph 🔔.</p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                                &lt;!&ndash; Item &ndash;&gt;-->
+<!--                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <div class="flex-shrink-0">-->
+<!--                                            <div class="avatar-sm me-2">-->
+<!--                                                                 <span class="avatar-title bg-soft-warning text-warning fs-20 rounded-circle">-->
+<!--                                                                      <iconify-icon-->
+<!--                                                                              icon="iconamoon:comment-dots-duotone"></iconify-icon>-->
+<!--                                                                 </span>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <p class="mb-0 fw-semibold text-wrap">You have received <b>20</b> new-->
+<!--                                                messages in the-->
+<!--                                                conversation</p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                                &lt;!&ndash; Item &ndash;&gt;-->
+<!--                                <a href="javascript:void(0);" class="dropdown-item py-3 border-bottom">-->
+<!--                                    <div class="d-flex">-->
+<!--                                        <div class="flex-shrink-0">-->
+<!--                                            <img src="/assets/images/users/avatar-5.jpg"-->
+<!--                                                 class="img-fluid me-2 avatar-sm rounded-circle" alt="avatar-5"/>-->
+<!--                                        </div>-->
+<!--                                        <div class="flex-grow-1">-->
+<!--                                            <p class="mb-0 fw-semibold">Shawn Bunch</p>-->
+<!--                                            <p class="mb-0 text-wrap">-->
+<!--                                                Commented on Admin-->
+<!--                                            </p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </a>-->
+<!--                            </div>-->
+<!--                            <div class="text-center py-3">-->
+<!--                                <a href="javascript:void(0);" class="btn btn-primary btn-sm">View All Notification <i-->
+<!--                                        class="bx bx-right-arrow-alt ms-1"></i></a>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <!-- Theme Setting -->
                     <div class="topbar-item d-none d-md-flex">
@@ -190,14 +182,14 @@
                         </button>
                     </div>
 
-                    <!-- Activity -->
-                    <div class="topbar-item d-none d-md-flex">
-                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas"
-                                data-bs-target="#theme-activity-offcanvas" aria-controls="theme-settings-offcanvas">
-                            <iconify-icon icon="solar:clock-circle-bold-duotone"
-                                          class="fs-24 align-middle"></iconify-icon>
-                        </button>
-                    </div>
+<!--                    &lt;!&ndash; Activity &ndash;&gt;-->
+<!--                    <div class="topbar-item d-none d-md-flex">-->
+<!--                        <button type="button" class="topbar-button" id="theme-settings-btn" data-bs-toggle="offcanvas"-->
+<!--                                data-bs-target="#theme-activity-offcanvas" aria-controls="theme-settings-offcanvas">-->
+<!--                            <iconify-icon icon="solar:clock-circle-bold-duotone"-->
+<!--                                          class="fs-24 align-middle"></iconify-icon>-->
+<!--                        </button>-->
+<!--                    </div>-->
 
                     <!-- User -->
                     <div class="dropdown topbar-item">
@@ -242,13 +234,13 @@
                     </div>
 
                     <!-- App Search-->
-                    <form class="app-search d-none d-md-block ms-2">
-                        <div class="position-relative">
-                            <input type="search" class="form-control" placeholder="Search..." autocomplete="off"
-                                   value="">
-                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>
-                        </div>
-                    </form>
+<!--                    <form class="app-search d-none d-md-block ms-2">-->
+<!--                        <div class="position-relative">-->
+<!--                            <input type="search" class="form-control" placeholder="Search..." autocomplete="off"-->
+<!--                                   value="">-->
+<!--                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>-->
+<!--                        </div>-->
+<!--                    </form>-->
                 </div>
             </div>
         </div>
@@ -535,788 +527,789 @@
     <!-- ========== Topbar End ========== -->
 
     <!-- ========== App Menu Start ========== -->
-    <div class="main-nav">
-        <!-- Sidebar Logo -->
-        <div class="logo-box">
-            <a href="index.html" class="logo-dark">
-                <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-                <img src="/assets/images/logo-dark.png" class="logo-lg" alt="logo dark">
-            </a>
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+<!--    <div class="main-nav">-->
+<!--        &lt;!&ndash; Sidebar Logo &ndash;&gt;-->
+<!--        <div class="logo-box">-->
+<!--            <a href="index.html" class="logo-dark">-->
+<!--                <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">-->
+<!--                <img src="/assets/images/logo-dark-1.png" class="logo-lg" alt="logo dark">-->
+<!--            </a>-->
 
-            <a href="index.html" class="logo-light">
-                <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-                <img src="/assets/images/logo-light.png" class="logo-lg" alt="logo light">
-            </a>
-        </div>
+<!--            <a href="index.html" class="logo-light">-->
+<!--                <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">-->
+<!--                <img src="/assets/images/logo-light-1.png" class="logo-lg" alt="logo light">-->
+<!--            </a>-->
+<!--        </div>-->
 
-        <!-- Menu Toggle Button (sm-hover) -->
-        <button type="button" class="button-sm-hover" aria-label="Show Full Sidebar">
-            <iconify-icon icon="solar:double-alt-arrow-right-bold-duotone" class="button-sm-hover-icon"></iconify-icon>
-        </button>
+<!--        &lt;!&ndash; Menu Toggle Button (sm-hover) &ndash;&gt;-->
+<!--        <button type="button" class="button-sm-hover" aria-label="Show Full Sidebar">-->
+<!--            <iconify-icon icon="solar:double-alt-arrow-right-bold-duotone" class="button-sm-hover-icon"></iconify-icon>-->
+<!--        </button>-->
 
-        <div class="scrollbar" data-simplebar>
-            <ul class="navbar-nav" id="navbar-nav">
+<!--        <div class="scrollbar" data-simplebar>-->
+<!--            <ul class="navbar-nav" id="navbar-nav">-->
 
-                <li class="menu-title">General</li>
+<!--                <li class="menu-title">General</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="/admin">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Dashboard </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="/admin">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Dashboard </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarProducts" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarProducts">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:t-shirt-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Products </span>
-                    </a>
-                    <div class="collapse" id="sidebarProducts">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/product">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/product/insertProductPage">Create</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarProducts" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarProducts">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:t-shirt-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Products </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarProducts">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/product">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/product/insertProductPage">Create</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarCategory" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarCategory">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:clipboard-list-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Category </span>
-                    </a>
-                    <div class="collapse" id="sidebarCategory">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/category">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/category/insertCategoryPage">Create</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarCategory" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarCategory">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:clipboard-list-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Category </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarCategory">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/category">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/category/insertCategoryPage">Create</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarInventory" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarInventory">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Inventory </span>
-                    </a>
-                    <div class="collapse" id="sidebarInventory">
-                        <ul class="nav sub-navbar-nav">
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarInventory" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarInventory">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Inventory </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarInventory">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
 
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="inventory-warehouse.html">Warehouse</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="inventory-received-orders.html">Received Orders</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="inventory-warehouse.html">Warehouse</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="inventory-received-orders.html">Received Orders</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarOrders" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarOrders">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Orders </span>
-                    </a>
-                    <div class="collapse" id="sidebarOrders">
-                        <ul class="nav sub-navbar-nav">
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarOrders" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarOrders">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Orders </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarOrders">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
 
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="orders-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="order-detail.html">Details</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="order-cart.html">Cart</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="order-checkout.html">Check Out</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="orders-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="order-detail.html">Details</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="order-cart.html">Cart</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="order-checkout.html">Check Out</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarPurchases" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarPurchases">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:card-send-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Purchases </span>
-                    </a>
-                    <div class="collapse" id="sidebarPurchases">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="purchase-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="purchase-order.html">Order</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="purchase-returns.html">Return</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarPurchases" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarPurchases">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:card-send-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Purchases </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarPurchases">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="purchase-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="purchase-order.html">Order</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="purchase-returns.html">Return</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarDiscount" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDiscount">
-                    <span class="nav-icon">
-                        <!-- Sử dụng biểu tượng giảm giá từ Iconify -->
-                        <iconify-icon icon="mdi:tag-heart-outline"></iconify-icon>
-                    </span>
-                        <span class="nav-text"> Discount </span>
-                    </a>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarDiscount" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDiscount">-->
+<!--                    <span class="nav-icon">-->
+<!--                        &lt;!&ndash; Sử dụng biểu tượng giảm giá từ Iconify &ndash;&gt;-->
+<!--                        <iconify-icon icon="mdi:tag-heart-outline"></iconify-icon>-->
+<!--                    </span>-->
+<!--                        <span class="nav-text"> Discount </span>-->
+<!--                    </a>-->
 
-                    <div class="collapse" id="sidebarDiscount">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/discount-list">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/discount-add">Create</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                    <div class="collapse" id="sidebarDiscount">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/discount-list">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="/admin/discount-add">Create</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarInvoice" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarInvoice">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:bill-list-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Invoices </span>
-                    </a>
-                    <div class="collapse" id="sidebarInvoice">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="invoice-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="invoice-details.html">Details</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="invoice-add.html">Create</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-title mt-2">Users</li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarInvoice" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarInvoice">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:bill-list-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Invoices </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarInvoice">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="invoice-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="invoice-details.html">Details</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="invoice-add.html">Create</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
+<!--                <li class="menu-title mt-2">Users</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="pages-profile.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Profile </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="pages-profile.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Profile </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarRoles" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarRoles">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:user-speak-rounded-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Roles </span>
-                    </a>
-                    <div class="collapse" id="sidebarRoles">
-                        <ul class="nav sub-navbar-nav">
-                            <ul class="nav sub-navbar-nav">
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="role-list.html">List</a>
-                                </li>
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="role-edit.html">Edit</a>
-                                </li>
-                                <li class="sub-nav-item">
-                                    <a class="sub-nav-link" href="role-add.html">Create</a>
-                                </li>
-                            </ul>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarRoles" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarRoles">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:user-speak-rounded-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Roles </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarRoles">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <ul class="nav sub-navbar-nav">-->
+<!--                                <li class="sub-nav-item">-->
+<!--                                    <a class="sub-nav-link" href="role-list.html">List</a>-->
+<!--                                </li>-->
+<!--                                <li class="sub-nav-item">-->
+<!--                                    <a class="sub-nav-link" href="role-edit.html">Edit</a>-->
+<!--                                </li>-->
+<!--                                <li class="sub-nav-item">-->
+<!--                                    <a class="sub-nav-link" href="role-add.html">Create</a>-->
+<!--                                </li>-->
+<!--                            </ul>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="pages-permissions.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:checklist-minimalistic-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Permissions </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="pages-permissions.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:checklist-minimalistic-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Permissions </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarCustomers" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarCustomers">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Customers </span>
-                    </a>
-                    <div class="collapse" id="sidebarCustomers">
-                        <ul class="nav sub-navbar-nav">
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarCustomers" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarCustomers">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:users-group-two-rounded-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Customers </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarCustomers">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
 
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="customer-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="customer-detail.html">Details</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="customer-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="customer-detail.html">Details</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarSellers" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarSellers">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:shop-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Sellers </span>
-                    </a>
-                    <div class="collapse" id="sidebarSellers">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="seller-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="seller-details.html">Details</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="seller-edit.html">Edit</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="seller-add.html">Create</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarSellers" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarSellers">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:shop-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Sellers </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarSellers">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="seller-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="seller-details.html">Details</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="seller-edit.html">Edit</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="seller-add.html">Create</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="menu-title mt-2">Other</li>
+<!--                <li class="menu-title mt-2">Other</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarCoupons" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarCoupons">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Coupons </span>
-                    </a>
-                    <div class="collapse" id="sidebarCoupons">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="coupons-list.html">List</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="coupons-add.html">Add</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarCoupons" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarCoupons">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:leaf-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Coupons </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarCoupons">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="coupons-list.html">List</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="coupons-add.html">Add</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="pages-review.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Reviews </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="pages-review.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Reviews </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="menu-title mt-2">Other Apps</li>
+<!--                <li class="menu-title mt-2">Other Apps</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="apps-chat.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:chat-round-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Chat </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="apps-chat.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:chat-round-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Chat </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="apps-email.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:mailbox-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Email </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="apps-email.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:mailbox-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Email </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="apps-calendar.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:calendar-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Calendar </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="apps-calendar.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:calendar-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Calendar </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="apps-todo.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:checklist-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Todo </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="apps-todo.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:checklist-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Todo </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="menu-title mt-2">Support</li>
+<!--                <li class="menu-title mt-2">Support</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="help-center.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:help-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Help Center </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="help-center.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:help-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Help Center </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="pages-faqs.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:question-circle-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> FAQs </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="pages-faqs.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:question-circle-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> FAQs </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="privacy-policy.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:document-text-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Privacy Policy </span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="privacy-policy.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:document-text-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Privacy Policy </span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="menu-title mt-2">Custom</li>
+<!--                <li class="menu-title mt-2">Custom</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarPages" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarPages">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:gift-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Pages </span>
-                    </a>
-                    <div class="collapse" id="sidebarPages">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-starter.html">Welcome</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-comingsoon.html">Coming Soon</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-timeline.html">Timeline</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-pricing.html">Pricing</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-maintenance.html">Maintenance</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-404.html">404 Error</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="pages-404-alt.html">404 Error (alt)</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarPages" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarPages">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:gift-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Pages </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarPages">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-starter.html">Welcome</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-comingsoon.html">Coming Soon</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-timeline.html">Timeline</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-pricing.html">Pricing</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-maintenance.html">Maintenance</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-404.html">404 Error</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="pages-404-alt.html">404 Error (alt)</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarAuthentication" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarAuthentication">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:lock-keyhole-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Authentication </span>
-                    </a>
-                    <div class="collapse" id="sidebarAuthentication">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="auth-signin.html">Sign In</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="auth-signup.html">Sign Up</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="auth-password.html">Reset Password</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="auth-lock-screen.html">Lock Screen</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarAuthentication" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarAuthentication">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:lock-keyhole-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Authentication </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarAuthentication">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="auth-signin.html">Sign In</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="auth-signup.html">Sign Up</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="auth-password.html">Reset Password</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="auth-lock-screen.html">Lock Screen</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="widgets.html">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:atom-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text">Widgets</span>
-                        <span class="badge bg-info badge-pill text-end">9+</span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="widgets.html">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:atom-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text">Widgets</span>-->
+<!--                        <span class="badge bg-info badge-pill text-end">9+</span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="menu-title mt-2">Components</li>
+<!--                <li class="menu-title mt-2">Components</li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarBaseUI" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarBaseUI">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:bookmark-square-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Base UI </span>
-                    </a>
-                    <div class="collapse" id="sidebarBaseUI">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-accordion.html">Accordion</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-alerts.html">Alerts</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-avatar.html">Avatar</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-badge.html">Badge</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-breadcrumb.html">Breadcrumb</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-buttons.html">Buttons</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-card.html">Card</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-carousel.html">Carousel</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-collapse.html">Collapse</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-dropdown.html">Dropdown</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-list-group.html">List Group</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-modal.html">Modal</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-tabs.html">Tabs</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-offcanvas.html">Offcanvas</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-pagination.html">Pagination</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-placeholders.html">Placeholders</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-popovers.html">Popovers</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-progress.html">Progress</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-scrollspy.html">Scrollspy</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-spinners.html">Spinners</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-toasts.html">Toasts</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="ui-tooltips.html">Tooltips</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarBaseUI" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarBaseUI">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:bookmark-square-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Base UI </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarBaseUI">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-accordion.html">Accordion</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-alerts.html">Alerts</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-avatar.html">Avatar</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-badge.html">Badge</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-breadcrumb.html">Breadcrumb</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-buttons.html">Buttons</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-card.html">Card</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-carousel.html">Carousel</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-collapse.html">Collapse</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-dropdown.html">Dropdown</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-list-group.html">List Group</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-modal.html">Modal</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-tabs.html">Tabs</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-offcanvas.html">Offcanvas</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-pagination.html">Pagination</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-placeholders.html">Placeholders</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-popovers.html">Popovers</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-progress.html">Progress</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-scrollspy.html">Scrollspy</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-spinners.html">Spinners</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-toasts.html">Toasts</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="ui-tooltips.html">Tooltips</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarExtendedUI" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarExtendedUI">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:case-round-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Advanced UI </span>
-                    </a>
-                    <div class="collapse" id="sidebarExtendedUI">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="extended-ratings.html">Ratings</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="extended-sweetalert.html">Sweet Alert</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="extended-swiper-silder.html">Swiper Slider</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="extended-scrollbar.html">Scrollbar</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="extended-toastify.html">Toastify</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarExtendedUI" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarExtendedUI">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:case-round-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Advanced UI </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarExtendedUI">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="extended-ratings.html">Ratings</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="extended-sweetalert.html">Sweet Alert</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="extended-swiper-silder.html">Swiper Slider</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="extended-scrollbar.html">Scrollbar</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="extended-toastify.html">Toastify</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarCharts" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarCharts">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:pie-chart-2-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Charts </span>
-                    </a>
-                    <div class="collapse" id="sidebarCharts">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-area.html">Area</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-bar.html">Bar</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-bubble.html">Bubble</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-candlestick.html">Candlestick</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-column.html">Column</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-heatmap.html">Heatmap</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-line.html">Line</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-mixed.html">Mixed</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-timeline.html">Timeline</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-boxplot.html">Boxplot</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-treemap.html">Treemap</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-pie.html">Pie</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-radar.html">Radar</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-radialbar.html">RadialBar</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-scatter.html">Scatter</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="charts-apex-polar-area.html">Polar Area</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarCharts" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarCharts">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:pie-chart-2-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Charts </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarCharts">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-area.html">Area</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-bar.html">Bar</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-bubble.html">Bubble</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-candlestick.html">Candlestick</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-column.html">Column</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-heatmap.html">Heatmap</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-line.html">Line</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-mixed.html">Mixed</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-timeline.html">Timeline</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-boxplot.html">Boxplot</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-treemap.html">Treemap</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-pie.html">Pie</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-radar.html">Radar</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-radialbar.html">RadialBar</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-scatter.html">Scatter</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="charts-apex-polar-area.html">Polar Area</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarForms" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarForms">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:book-bookmark-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Forms </span>
-                    </a>
-                    <div class="collapse" id="sidebarForms">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-basic.html">Basic Elements</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-checkbox-radio.html">Checkbox &amp; Radio</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-choices.html">Choice Select</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-clipboard.html">Clipboard</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-flatepicker.html">Flatepicker</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-validation.html">Validation</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-wizard.html">Wizard</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-fileuploads.html">File Upload</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-editors.html">Editors</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-input-mask.html">Input Mask</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="forms-range-slider.html">Slider</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarForms" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarForms">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:book-bookmark-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Forms </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarForms">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-basic.html">Basic Elements</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-checkbox-radio.html">Checkbox &amp; Radio</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-choices.html">Choice Select</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-clipboard.html">Clipboard</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-flatepicker.html">Flatepicker</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-validation.html">Validation</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-wizard.html">Wizard</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-fileuploads.html">File Upload</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-editors.html">Editors</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-input-mask.html">Input Mask</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="forms-range-slider.html">Slider</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarTables" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarTables">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:tuning-2-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Tables </span>
-                    </a>
-                    <div class="collapse" id="sidebarTables">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="tables-basic.html">Basic Tables</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="tables-gridjs.html">Grid Js</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarTables" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarTables">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:tuning-2-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Tables </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarTables">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="tables-basic.html">Basic Tables</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="tables-gridjs.html">Grid Js</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarIcons" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarIcons">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:ufo-2-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Icons </span>
-                    </a>
-                    <div class="collapse" id="sidebarIcons">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="icons-boxicons.html">Boxicons</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="icons-solar.html">Solar Icons</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarIcons" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarIcons">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:ufo-2-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Icons </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarIcons">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="icons-boxicons.html">Boxicons</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="icons-solar.html">Solar Icons</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarMaps" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarMaps">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:streets-map-point-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Maps </span>
-                    </a>
-                    <div class="collapse" id="sidebarMaps">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="maps-google.html">Google Maps</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="maps-vector.html">Vector Maps</a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarMaps" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarMaps">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:streets-map-point-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Maps </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarMaps">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="maps-google.html">Google Maps</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="maps-vector.html">Vector Maps</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link" href="javascript:void(0);">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:volleyball-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text">Badge Menu</span>
-                        <span class="badge bg-danger badge-pill text-end">1</span>
-                    </a>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link" href="javascript:void(0);">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:volleyball-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text">Badge Menu</span>-->
+<!--                        <span class="badge bg-danger badge-pill text-end">1</span>-->
+<!--                    </a>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link menu-arrow" href="#sidebarMultiLevelDemo" data-bs-toggle="collapse" role="button"
-                       aria-expanded="false" aria-controls="sidebarMultiLevelDemo">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:share-circle-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Menu Item </span>
-                    </a>
-                    <div class="collapse" id="sidebarMultiLevelDemo">
-                        <ul class="nav sub-navbar-nav">
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="javascript:void(0);">Menu Item 1</a>
-                            </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link  menu-arrow" href="#sidebarItemDemoSubItem"
-                                   data-bs-toggle="collapse" role="button" aria-expanded="false"
-                                   aria-controls="sidebarItemDemoSubItem">
-                                    <span> Menu Item 2 </span>
-                                </a>
-                                <div class="collapse" id="sidebarItemDemoSubItem">
-                                    <ul class="nav sub-navbar-nav">
-                                        <li class="sub-nav-item">
-                                            <a class="sub-nav-link" href="javascript:void(0);">Menu Sub item</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link menu-arrow" href="#sidebarMultiLevelDemo" data-bs-toggle="collapse" role="button"-->
+<!--                       aria-expanded="false" aria-controls="sidebarMultiLevelDemo">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:share-circle-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Menu Item </span>-->
+<!--                    </a>-->
+<!--                    <div class="collapse" id="sidebarMultiLevelDemo">-->
+<!--                        <ul class="nav sub-navbar-nav">-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link" href="javascript:void(0);">Menu Item 1</a>-->
+<!--                            </li>-->
+<!--                            <li class="sub-nav-item">-->
+<!--                                <a class="sub-nav-link  menu-arrow" href="#sidebarItemDemoSubItem"-->
+<!--                                   data-bs-toggle="collapse" role="button" aria-expanded="false"-->
+<!--                                   aria-controls="sidebarItemDemoSubItem">-->
+<!--                                    <span> Menu Item 2 </span>-->
+<!--                                </a>-->
+<!--                                <div class="collapse" id="sidebarItemDemoSubItem">-->
+<!--                                    <ul class="nav sub-navbar-nav">-->
+<!--                                        <li class="sub-nav-item">-->
+<!--                                            <a class="sub-nav-link" href="javascript:void(0);">Menu Sub item</a>-->
+<!--                                        </li>-->
+<!--                                    </ul>-->
+<!--                                </div>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--                </li>-->
 
-                <li class="nav-item">
-                    <a class="nav-link disabled" href="javascript:void(0);">
-                                   <span class="nav-icon">
-                                        <iconify-icon icon="solar:user-block-rounded-bold-duotone"></iconify-icon>
-                                   </span>
-                        <span class="nav-text"> Disable Item </span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
+<!--                <li class="nav-item">-->
+<!--                    <a class="nav-link disabled" href="javascript:void(0);">-->
+<!--                                   <span class="nav-icon">-->
+<!--                                        <iconify-icon icon="solar:user-block-rounded-bold-duotone"></iconify-icon>-->
+<!--                                   </span>-->
+<!--                        <span class="nav-text"> Disable Item </span>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--            </ul>-->
+<!--        </div>-->
+<!--    </div>-->
     <!-- ========== App Menu End ========== -->
 
     <!-- ==================================================== -->
@@ -1328,8 +1321,7 @@
         <div class="container-xxl">
 
             <div class="row">
-                <form th:object="${product}" method="post" th:action="@{/admin/product/save}" enctype="multipart/form-data">
-                    <input type="hidden" th:field="*{id}">
+                <form id="productForm" enctype="multipart/form-data">
 
                     <div class="col-xl-9 col-lg-8">
                         <div class="card">
@@ -1341,19 +1333,24 @@
                                 <div class="row">
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label for="product-name" class="form-label">Tên sản phẩm</label>
-                                            <input type="text" id="product-name" class="form-control"
-                                                   placeholder="Tên sản phẩm" th:field="*{title}" required>
+                                            <label for="title" class="form-label">Tên sản phẩm</label>
+                                            <input type="text" id="title" name="title" class="form-control"
+                                                   placeholder="Tên sản phẩm" required>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
-                                        <label for="product-categories" class="form-label">Loại sản phẩm</label>
-                                        <select class="form-control" id="product-categories" data-choices
-                                                data-choices-groups data-placeholder="Chọn loại sản phẩm"
-                                                name="choices-single-groups" th:field="*{categoryId}">
-                                            <option th:each="category : ${categories}" th:value="${category.id}"
-                                                    th:text="${category.type}"
-                                                    th:selected="${product.categoryName == category.type}"/>
+                                    <!-- Category -->
+                                    <div class="col-lg-3">
+                                        <label for="categoryId" class="form-label">Loại sản phẩm</label>
+                                        <select class="form-control" id="categoryId" name="categoryId" required>
+                                            <option value="">Chọn loại sản phẩm</option> <!-- AJAX populate -->
+                                        </select>
+                                    </div>
+
+                                    <!-- Brand -->
+                                    <div class="col-lg-3">
+                                        <label for="brandId" class="form-label">Loại thương hiệu</label>
+                                        <select class="form-control" id="brandId" name="brandId" required>
+                                            <option value="">Chọn thương hiệu</option> <!-- AJAX populate -->
                                         </select>
                                     </div>
                                 </div>
@@ -1364,7 +1361,7 @@
                                         <div class="mb-3">
                                             <label for="image" class="form-label">Ảnh sản phẩm</label>
                                             <input type="file" class="form-control bg-light-subtle"
-                                                   id="image" name="image" placeholder="Ảnh sản phẩm">
+                                                   id="image" name="image" placeholder="Ảnh sản phẩm" accept="image/*">
                                         </div>
                                     </div>
                                 </div>
@@ -1374,8 +1371,8 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Mô tả sản phẩm</label>
-                                            <textarea th:field="*{description}" class="form-control bg-light-subtle"
-                                                      id="description" rows="7" placeholder="Mô tả sản phẩm"></textarea>
+                                            <textarea name="description" id="description"  class="form-control bg-light-subtle"
+                                                       rows="7" placeholder="Mô tả sản phẩm"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -1386,7 +1383,8 @@
                                         <div class="mb-3">
                                             <label for="voucher" class="form-label">Voucher</label>
                                             <input type="number" id="voucher" class="form-control"
-                                                   th:field="*{voucher}" placeholder="Voucher code">
+                                                   placeholder="Voucher code" min="0">
+<!--                                            min = 0 là thêm-->
                                         </div>
                                     </div>
                                 </div>
@@ -1401,11 +1399,12 @@
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-lg-4">
-                                        <label for="product-price" class="form-label">Giá sản phẩm</label>
+                                        <label for="price" class="form-label">Giá sản phẩm</label>
                                         <div class="input-group mb-3">
-                                            <span class="input-group-text fs-20"><i class='bx bx-dollar'></i></span>
-                                            <input type="number" id="product-price" class="form-control"
-                                                   th:field="*{price}" placeholder="Giá sản phẩm">
+                                            <span class="input-group-text fs-14">VNĐ</span>
+<!--                                            <span class="input-group-text fs-20"><i class='bx bx-dollar'></i></span>-->
+                                            <input type="number" id="price" name="price" class="form-control"
+                                                    placeholder="Giá sản phẩm">
                                         </div>
                                     </div>
                                 </div>
@@ -1424,16 +1423,15 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <!-- Loop through sizes 38 to 45 -->
-                                                <tr th:each="size : ${#numbers.sequence(38, 45)}">
-                                                    <td th:text="${size}">38</td>
-                                                    <td>
-                                                        <!-- The correct format for th:name -->
-                                                        <input type="number" class="form-control"
-                                                               th:name="'productDetails[' + ${size} + '].priceadd'"
-                                                               placeholder="Giá thêm cho size" min="0"/>
-                                                    </td>
-                                                </tr>
+                                                <!-- Hardcode loop 38-45 (thay th:each) -->
+                                                <tr><td>38</td><td><input type="number" name="productDetails[38]" class="form-control" placeholder="Giá thêm cho size 38" min="0" step="0.01"/></td></tr>
+                                                <tr><td>39</td><td><input type="number" name="productDetails[39]" class="form-control" placeholder="Giá thêm cho size 39" min="0" step="0.01"/></td></tr>
+                                                <tr><td>40</td><td><input type="number" name="productDetails[40]" class="form-control" placeholder="Giá thêm cho size 40" min="0" step="0.01"/></td></tr>
+                                                <tr><td>41</td><td><input type="number" name="productDetails[41]" class="form-control" placeholder="Giá thêm cho size 41" min="0" step="0.01"/></td></tr>
+                                                <tr><td>42</td><td><input type="number" name="productDetails[42]" class="form-control" placeholder="Giá thêm cho size 42" min="0" step="0.01"/></td></tr>
+                                                <tr><td>43</td><td><input type="number" name="productDetails[43]" class="form-control" placeholder="Giá thêm cho size 43" min="0" step="0.01"/></td></tr>
+                                                <tr><td>44</td><td><input type="number" name="productDetails[44]" class="form-control" placeholder="Giá thêm cho size 44" min="0" step="0.01"/></td></tr>
+                                                <tr><td>45</td><td><input type="number" name="productDetails[45]" class="form-control" placeholder="Giá thêm cho size 45" min="0" step="0.01"/></td></tr>
 
                                                 </tbody>
                                             </table>
@@ -1447,10 +1445,10 @@
                         <div class="p-3 bg-light mb-3 rounded">
                             <div class="row justify-content-end g-2">
                                 <div class="col-lg-2">
-                                    <button type="submit" class="btn btn-outline-secondary w-100">Lưu thông tin</button>
+                                    <button type="submit" class="btn btn-outline-secondary w-100">Lưu thông tin</button> <!-- onclick="submitForm()" hoặc jQuery -->
                                 </div>
                                 <div class="col-lg-2">
-                                    <a href="#!" class="btn btn-primary w-100">Huỷ</a>
+                                    <a href="/admin/product" class="btn btn-primary w-100">Huỷ</a>
                                 </div>
                             </div>
                         </div>
@@ -1468,6 +1466,8 @@
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
+
+<script src="/js/product-add.js"></script>
 
 </body>
 </html>

@@ -26,22 +26,6 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResponse> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-        return categories.stream()
-                .map(cat -> CategoryResponse.builder()
-                        .id(cat.getId())
-                        .name(cat.getName())
-                        .description(cat.getDescription())
-                        .productCount((cat.getProducts() != null && !cat.getProducts().isEmpty()) ? cat.getProducts().size() : 0)
-                        .build()
-                )
-                .collect(Collectors.toList());
-
-    }
-
-    // phân trang + tìm kiếm theo tên
-    @Override
     public Page<CategoryResponse> getAllCategories(Pageable pageable, String search) {
         Page<Category> categoryPage;
         if (search != null && !search.trim().isEmpty()) {
@@ -58,6 +42,19 @@ public class CategoryServiceImpl implements CategoryService {
                 ))
                 .collect(Collectors.toList());
         return new PageImpl<>(responses, pageable, categoryPage.getTotalElements());
+    }
+
+    @Override
+    public List<CategoryResponse> getAllCategoriesList() {
+        List<Category> categories = categoryRepository.findAll();
+        return categories.stream()
+                .map(category -> new CategoryResponse(
+                        category.getId(),
+                        category.getName(),
+                        category.getDescription(),
+                        category.getProducts() != null ? category.getProducts().size() : 0
+                ))
+                .collect(Collectors.toList());
     }
 
 

@@ -27,24 +27,13 @@ public class ApiCategoryController {
 
     private final CategoryService categoryService;
 
-//    @GetMapping
-//    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-//        try {
-//            List<CategoryResponse> categories = categoryService.getAllCategories();
-//            return ResponseEntity.ok(categories);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
-    // phân trang + tìm kiếm
     @GetMapping
     public ResponseEntity<PaginationResponse<CategoryResponse>> getCategories(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "7") int size, // mỗi trang 7 items
+            @RequestParam(defaultValue = "7") int size,
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "id") String sortBy,  // sort theo field (mặc định id)
-            @RequestParam(defaultValue = "asc") String sortDir  // asc/desc
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
         try {
             Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
@@ -74,6 +63,16 @@ public class ApiCategoryController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<CategoryResponse>> getAllCategoriesList() {
+        try {
+            List<CategoryResponse> categories = categoryService.getAllCategoriesList();
+            return ResponseEntity.ok(categories);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

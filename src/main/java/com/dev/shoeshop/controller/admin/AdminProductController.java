@@ -10,12 +10,12 @@ public class AdminProductController {
 
     @GetMapping("/insert")
     public String insertProductPage() {
-        return "/admin/products/product-add";
+        return "admin/products/product-add";
     }
 
     @GetMapping("")
     public String getAllProduct() {
-        return "/admin/products/product-list";
+        return "admin/products/product-list";
     }
 
 }

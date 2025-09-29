@@ -1,11 +1,12 @@
 package com.dev.shoeshop.service;
 
-import com.dev.shoeshop.entity.Product;
+import com.dev.shoeshop.dto.product.ProductRequest;
+import com.dev.shoeshop.dto.product.ProductResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
-    Page<Product> findAllPage(Pageable pageable);
-    Page<Product> searchProductsByTitle(String keyword, Pageable pageable);
-    Page<Product> searchProductsByCategoryAndTitle(Long categoryId, String keyword, Pageable pageable);
+    void saveProduct(ProductRequest request, MultipartFile image);
+    Page<ProductResponse> getAllProducts(Pageable pageable, String search);
 }

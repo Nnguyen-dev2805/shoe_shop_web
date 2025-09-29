@@ -23,7 +23,9 @@ public class ProductDetail {
     private Product product;
 
     @NotNull(message = "Size cannot be null")
-    private int size;
+    @Column(name = "size", nullable = false)
+//    private int size;
+    private Integer size;
 
     @Min(value = 0, message = "Price add must be greater than or equal to 0")
     @Column(name = "price_add")
@@ -34,12 +36,12 @@ public class ProductDetail {
     @ToString.Exclude
     private Set<OrderDetail> orderDetailSet;
 
-//    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<CartDetail> cartDetailSet;
-//    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL)
-//    @EqualsAndHashCode.Exclude
-//    @ToString.Exclude
-//    private Set<Inventory> inventories;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<CartDetail> cartDetailSet;
+    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Inventory> inventories;
 }
