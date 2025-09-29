@@ -15,6 +15,8 @@ public interface OrderService {
     public List<OrderDTO> getAllOrders();
 
     public Order findById(Long id);
+    public Order findByOrderId(Long id);
 
 
+    void cancelOrder(Long orderId);
 }

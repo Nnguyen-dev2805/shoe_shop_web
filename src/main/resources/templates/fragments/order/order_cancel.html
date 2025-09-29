@@ -32,7 +32,7 @@
 
                 // Gửi yêu cầu hủy đơn hàng qua AJAX
                 $.ajax({
-                    url: "/api/order/cancel", // URL API hủy đơn hàng
+                    url: "/admin/order/cancel", // URL API hủy đơn hàng
                     type: "POST",
                     data: { orderId: selectedOrderId },
                     success: function (response) {
@@ -41,8 +41,13 @@
                         // Thực hiện các hành động khác, ví dụ: làm mới bảng
                         location.reload();
                     },
-                    error: function (error) {
-                        alert("Some error " + selectedOrderId + ".");
+                    error: function (xhr) {
+                        // Trường hợp backend trả 400 -> vẫn có JSON message
+                        let errMsg = "Some error";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errMsg = xhr.responseJSON.message;
+                        }
+                        alert(errMsg);
                     }
                 });
             }

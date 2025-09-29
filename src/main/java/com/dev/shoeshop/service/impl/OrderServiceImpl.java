@@ -54,4 +54,17 @@ public class OrderServiceImpl implements OrderService {
     public Order findById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("can not find order"));
     }
+
+    @Override
+    public Order findByOrderId(Long id) {
+        return orderRepository.findOrderById(id);
+    }
+
+    @Override
+    public void cancelOrder(Long orderId) {
+        Order order = findById(orderId);
+        order.setStatus(ShipmentStatus.CANCEL);
+        orderRepository.save(order);
+        System.out.println("Service save");
+    }
 }
