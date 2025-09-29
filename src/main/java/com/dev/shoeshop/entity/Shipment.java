@@ -3,6 +3,7 @@ package com.dev.shoeshop.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
 
@@ -14,7 +15,7 @@ public class Shipment {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false,  unique = true)
 //    @NotNull(message = "Order cannot be null")
     private Order order;
 

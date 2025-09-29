@@ -72,18 +72,54 @@
                                         <i class='bx bx-arrow-from-left align-middle fs-16'>
                                         </i> Status: <span class="text-dark fw-medium" id="orderStatus"></span>
                                 </div>
-                                    <a  class="btn btn-primary" style="margin-right: 100%">Cancel</a>
+                                    <a id = "cancelBtn"
+                                       class="btn btn-primary" style="margin-right: 100%">Cancel</a>
                                     <!-- Order cancel fragment-->
-                                    <div ></div>
+                                    <div th:include="~{fragments/order/order_cancel.html}"></div>
+<!--                                    <div ></div>-->
                                     </p>
                                     <div  style="display: flex; justify-content: flex-end;">
-                                        <button onclick="turnOnSearch()" href="#!" class="btn btn-primary" >Make as ready ship</button>
+                                        <button id="makeReadyShipBtn" onclick="turnOnSearch()" href="#!" class="btn btn-primary"
+                                        >Make as ready ship
+                                        </button>
                                     </div>
 
                                     <script>
                                         function turnOnSearch(){
                                             const myDiv = document.getElementById('searchBox')
                                             myDiv.style.display='block'
+                                            // lay tat ca danh sach shipper truoc
+                                            loadAllShippers()
+                                        }
+                                        function loadAllShippers() {
+                                            var currentUrl = window.location.pathname;
+                                            var orderid = currentUrl.split('/')[4];
+
+                                            $.ajax({
+                                                url: "/user/shipper/all",   // API trả về tất cả shipper
+                                                type: "GET",
+                                                success: function(response) {
+                                                    $("#resultSearch tbody").empty();
+                                                    let listShipper = response.listShipper;
+
+                                                    if (listShipper.length > 0) {
+                                                        listShipper.forEach(function(user) {
+                                                            $("#resultSearch tbody")
+                                                                .append("<tr>\n" +
+                                                                    "<td>" + user.id + "</td>\n" +
+                                                                    "<td>" + user.fullname + "</td>\n" +
+                                                                    "<td><a class=\"btn btn-primary\" href='/admin/order/shipping?orderid="
+                                                                    + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +
+                                                                    "</tr>");
+                                                        });
+                                                    } else {
+                                                        $("#resultSearch tbody").append("<tr><td colspan='3'>Không có shipper nào.</td></tr>");
+                                                    }
+                                                },
+                                                error: function(error) {
+                                                    console.error("Lỗi khi gọi API", error);
+                                                }
+                                            });
                                         }
                                     </script>
                                 </div>
@@ -125,7 +161,7 @@
                                                 if (fullname.trim() !== "") {
                                                     // Gửi yêu cầu AJAX tới API của Spring Boot
                                                     $.ajax({
-                                                        url: "/api/shipper/search",   // Đường dẫn tới API
+                                                        url: "/user/shipper/search",   // Đường dẫn tới API
                                                         type: "GET",               // Phương thức HTTP là GET
                                                         data: {
                                                             name: fullname    // Gửi tham số fullname qua API
@@ -133,18 +169,17 @@
                                                         success: function(response) {   // Hàm xử lý khi API trả về dữ liệu thành công
                                                             // Làm sạch kết quả cũ mỗi lần người dùng tìm kiếm
                                                             $("#resultSearch tbody").empty();
-
+                                                            let listShipper = response.listShipper;
                                                             // Kiểm tra nếu có kết quả trả về
-                                                            if (response.length > 0) {
-                                                                // Lặp qua danh sách người dùng trả về từ API
-                                                                response.forEach(function(user) {
-                                                                    // Thêm từng người dùng vào phần tử #result
+                                                            if (listShipper.length > 0) {
+                                                                listShipper.forEach(function(user) {
                                                                     $("#resultSearch tbody")
                                                                         .append("<tr>\n" +
                                                                             "<td>" + user.id + "</td>\n" +
-                                                                            "<td>" + user.name +"</td>\n" +
-                                                                            "<td><a class=\"btn btn-primary\" href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +  // Thêm thẻ <a> với orderid lấy từ URL
-                                                                            " </tr>");
+                                                                            "<td>" + user.fullname + "</td>\n" +
+                                                                            "<td><a class=\"btn btn-primary\" href='/admin/order/shipping?orderid="
+                                                                            + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +
+                                                                            "</tr>");
                                                                 });
                                                             } else {
                                                                 // Nếu không có người dùng nào, hiển thị thông báo không tìm thấy
@@ -159,8 +194,22 @@
                                             });
                                         });
                                     </script>
+                                    <script>
+                                        let selectedOrderId = null;
 
+                                        function popUpClick(orderId) {
+                                            let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+                                            modal.show();
+                                            selectedOrderId = orderId;
+                                            console.log("OrderId: " + selectedOrderId);
+                                        }
 
+                                        $(document).ready(function() {
+                                            $("#cancelBtn").click(function() {
+                                                popUpClick(123); // test thử popup có lên không
+                                            });
+                                        });
+                                    </script>
                                 </div>
                             </div>
                             <div class="card">
@@ -360,6 +409,11 @@
                         $("#orderCreatedDate").text(order.createdDate ? new Date(order.createdDate).toLocaleString() : "");
                         $("#orderUpdatedDate").text(order.updatedDate ? new Date(order.updatedDate).toLocaleString() : "");
 
+                        // Gắn sự kiện Cancel
+                        $("#cancelBtn").off("click").on("click", function() {
+                            popUpClick(order.id);
+                        });
+
                         // Fill Customer Detail
                         if (order.user) {
                             $("#customerName").text(order.user.fullname || "");
@@ -369,6 +423,9 @@
                             if (order.user.avatar) {
                                 $("#customerAvatar").attr("src", order.user.avatar);
                             }
+                        }
+                        if (order.status !== "IN_STOCK") {
+                            $("#makeReadyShipBtn").prop("disabled", true);
                         }
 
                     }

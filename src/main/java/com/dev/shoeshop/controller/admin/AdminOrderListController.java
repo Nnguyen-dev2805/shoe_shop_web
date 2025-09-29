@@ -15,10 +15,7 @@ import com.dev.shoeshop.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,8 +98,41 @@ public class AdminOrderListController {
         System.out.println("hoangha");
         return ResponseEntity.ok(response);// sẽ map tới templates/manager/order/test.html
     }
-    
-    
-    
+    @PostMapping("/cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cancelOrder(@RequestParam("orderId") Long orderId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Order order = orderService.findById(orderId);
+
+            // Kiểm tra trạng thái shipment (giả sử order có shipment đi kèm)
+
+            if (order == null || order.getStatus() != ShipmentStatus.IN_STOCK) {
+                response.put("success", false);
+                response.put("message", "Chỉ những đơn hàng đang ở trạng thái IN_STOCK mới được hủy.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Nếu hợp lệ thì hủy
+            orderService.cancelOrder(orderId);
+            response.put("success", true);
+            response.put("message", "Order " + orderId + " was canceled successfully");
+            System.out.println("hoangha");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    @GetMapping("/shipping")
+    public String addShipping(@RequestParam("orderid") Long orderid,
+                              @RequestParam("userid") Long userid){
+        shipmentService.insertShipment(orderid, userid);
+        System.out.println("hoangha");
+        return "redirect:/admin/order/detail-page/" + orderid;
+    }
+
 
 }
