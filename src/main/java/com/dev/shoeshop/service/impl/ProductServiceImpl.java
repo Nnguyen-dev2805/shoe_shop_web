@@ -43,10 +43,10 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         product.setBrand(brandService.getBrandById(request.getBrandId()));
 
-        if (image != null && !image.isEmpty()) {
-            String fileUrl = storageService.storeFile(image);
-            product.setImage(fileUrl);
-        }
+//        if (image != null && !image.isEmpty()) {
+//            String fileUrl = storageService.storeFile(image);
+//            product.setImage(fileUrl);
+//        }
 
         productRepository.save(product);
 
@@ -60,6 +60,14 @@ public class ProductServiceImpl implements ProductService {
                 productDetailService.save(detail);
             }
         }
+
+        if (image != null && !image.isEmpty()) {
+            String fileUrl = storageService.storeFile(image);
+            product.setImage(fileUrl);
+            productRepository.save(product);
+        }
+
+
     }
 
     @Override
