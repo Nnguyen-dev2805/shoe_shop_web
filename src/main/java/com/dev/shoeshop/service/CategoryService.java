@@ -10,9 +10,9 @@ import java.util.List;
 
 public interface CategoryService {
     Category saveCategory(Category category);
-    List<CategoryResponse> getAllCategories();
     void deleteCategoryById(Long id);
     Category updateCategory(Long id, CategoryRequest request);
     Category getCategoryById(Long id);
     Page<CategoryResponse> getAllCategories(Pageable pageable, String search);
+    List<CategoryResponse> getAllCategoriesList();
 }
