@@ -61,7 +61,6 @@ public class UserHomeController {
         Map<String, Object> response = new HashMap<>();
 
         response.put("listShipper", listShipper);
-        System.out.println("hoangha");
         return ResponseEntity.ok(response);
     }
 
@@ -71,7 +70,6 @@ public class UserHomeController {
         Map<String, Object> response = new HashMap<>();
 
         response.put("listShipper", listShipper);
-        System.out.println("hoangha");
         return ResponseEntity.ok(response);
     }
 
