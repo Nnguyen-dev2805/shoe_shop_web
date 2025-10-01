@@ -84,6 +84,400 @@
         .star.selected, .star.hover {
             color: gold; /* Màu sao được chọn hoặc hover */
         }
+        
+        /* Size buttons styling */
+        .size-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .size-btn {
+            min-width: 80px;
+            padding: 10px 15px;
+            border: 2px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .size-btn:hover {
+            border-color: rgb(245, 114, 98);
+            color: rgb(245, 114, 98);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(245, 114, 98, 0.2);
+        }
+        
+        .size-btn.active {
+            border-color: rgb(245, 114, 98);
+            background: rgb(245, 114, 98);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .size-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #f5f5f5;
+        }
+        
+        .size-btn.disabled:hover {
+            transform: none;
+            box-shadow: none;
+            border-color: #ddd;
+        }
+        
+        /* Stock info */
+        .stock-info {
+            margin-top: 15px;
+            padding: 10px 15px;
+            background: #f0f8ff;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        
+        .stock-info.low-stock {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        
+        .stock-info.out-of-stock {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+        }
+        
+        /* Quantity selector */
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .quantity-selector label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .qty-btn {
+            width: 40px;
+            height: 40px;
+            background: #f5f5f5;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.2s;
+            color: #333;
+        }
+        
+        .qty-btn:hover {
+            background: rgb(245, 114, 98);
+            color: white;
+        }
+        
+        .qty-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .qty-input {
+            width: 60px;
+            height: 40px;
+            text-align: center;
+            border: none;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .qty-input:focus {
+            outline: none;
+        }
+        
+        /* Price display */
+        .price-breakdown {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+        
+        .price-row.total {
+            font-size: 20px;
+            font-weight: bold;
+            color: rgb(245, 114, 98);
+            border-top: 2px solid #ddd;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+        
+        /* Product image zoom effect */
+        .single-product-img {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: white;
+            padding: 20px;
+        }
+        
+        .single-product-img img {
+            width: 100%;
+            height: auto;
+            transition: transform 0.5s ease;
+            cursor: zoom-in;
+        }
+        
+        .single-product-img:hover img {
+            transform: scale(1.1);
+        }
+        
+        /* Product details card styling */
+        .product-details-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 30px;
+        }
+        
+        .product-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #333;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .product-name:hover {
+            color: rgb(245, 114, 98);
+        }
+        
+        /* Rating section */
+        .rating-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+        }
+        
+        .rating-section .ratings {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .rating-section .ratings i {
+            color: #ffc107;
+            font-size: 18px;
+        }
+        
+        .rating-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        
+        .rating-info strong {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Availability badge */
+        .availability-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .availability-badge.out-stock {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Price section */
+        .price-section {
+            padding: 20px;
+            background: linear-gradient(135deg, #fff5f3 0%, #ffe8e4 100%);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ffe0dc;
+        }
+        
+        .item-price {
+            margin: 0;
+        }
+        
+        .item-price span {
+            font-size: 36px;
+            font-weight: 700;
+            color: rgb(245, 114, 98);
+            display: block;
+        }
+        
+        /* Description section */
+        .description-section {
+            padding: 15px 0;
+            margin-bottom: 20px;
+        }
+        
+        .description-section p {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #666;
+            margin: 0;
+        }
+        
+        .description-section strong {
+            color: #333;
+            font-weight: 600;
+        }
+        
+        /* Action buttons */
+        .action {
+            margin-bottom: 25px;
+        }
+        
+        .add-to-links {
+            display: flex;
+            gap: 10px;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .add-to-links li a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 45px;
+            height: 45px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            color: #666;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .add-to-links li a:hover {
+            border-color: rgb(245, 114, 98);
+            color: rgb(245, 114, 98);
+            background: #fff5f3;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(245, 114, 98, 0.2);
+        }
+        
+        .add-to-links li a i {
+            font-size: 18px;
+        }
+        
+        /* Size selection section */
+        .size-selection-section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .size-select label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .size-select label em {
+            color: rgb(245, 114, 98);
+        }
+        
+        /* Cart item container */
+        .cart-item {
+            margin-top: 20px;
+            /*width: 100%;*/
+            /*padding: 0;*/
+        }
+        
+        .single-cart {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /*padding: 0;*/
+            /*margin: 0;*/
+        }
+        
+        /* Add to cart button */
+        .cart-btn {
+            width: 100%;
+            max-width: 100%;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgb(245, 114, 98);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(245, 114, 98, 0.3);
+            text-align: center;
+            display: block;
+        }
+        
+        .cart-btn:hover:not(:disabled) {
+            background: rgb(230, 99, 83);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(245, 114, 98, 0.4);
+        }
+        
+        .cart-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .cart-btn i {
+            margin-right: 8px;
+        }
+        
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -125,86 +519,121 @@
             </div>
             <div class="col-lg-6">
                 <form action="#" method="post">
-                    <div class="single-product-details">
+                    <div class="single-product-details product-details-card">
+                        <!-- Product Title -->
                         <a href="#" class="product-name" id="product-title">Loading...</a>
-                        <div class="list-product-info">
-                            <div class="price-rating">
-                                <div class="ratings">
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <i class="fa fa-star"></i>
-                                    <strong id="product-rating">Điểm đánh giá: 0.0</strong>
-                                    <br>
-                                    <strong id="product-reviews">0 reviews</strong>
-<!--                                    <i class="fa fa-star-half-o"></i>-->
-<!--                                    <a href="#tab3" class="review" id="reviewsLink"><em ></em></a>-->
-
-<!--                                    <a href="#" class="add-review">Add Your Review</a>-->
-                                </div>
+                        
+                        <!-- Rating Section -->
+                        <div class="rating-section">
+                            <div class="ratings">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                            <div class="rating-info">
+                                <strong id="product-rating">Điểm đánh giá: 0.0</strong>
+                                <strong id="product-reviews">Chưa có đánh giá</strong>
                             </div>
                         </div>
-                        <div class="avalable">
-                            <p>Tình trạng:<span> Còn hàng</span></p>
-                        </div>
-                        <div class="item-price">
-                            <span id="product-price">$0.00</span>
-                        </div>
-                        <div class="single-product-info">
-                            <p>Mô tả: <span id="product-description">Loading...</span></p>
-                            <div class="share">
-                                <img src="img/product/share.png" alt="">
+                        
+                        <!-- Availability Badge -->
+                        <span class="availability-badge">
+                            <i class="fa fa-check-circle"></i> Còn hàng
+                        </span>
+                        
+                        <!-- Price Section -->
+                        <div class="price-section">
+                            <div class="item-price">
+                                <span id="product-price">0 đ</span>
                             </div>
                         </div>
-                        <!-- them vao danh sach yeu thich-->
+                        
+                        <!-- Description -->
+                        <div class="description-section">
+                            <p><strong>Mô tả:</strong> <span id="product-description">Loading...</span></p>
+                        </div>
+                        
+                        <div class="divider"></div>
+                        
+                        <!-- Action Buttons -->
                         <div class="action">
                             <ul class="add-to-links">
                                 <li>
-                                    <a href="#" class="add-to-wishlist" data-product-id="">
+                                    <a href="#" class="add-to-wishlist" data-product-id="" title="Thêm vào yêu thích">
                                         <i class="fa fa-heart-o"></i>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">
+                                    <a href="#" title="So sánh">
                                         <i class="fa fa-refresh"></i>
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#">
-                                        <i class="fa fa-envelope"></i>
+                                    <a href="#" title="Chia sẻ">
+                                        <i class="fa fa-share-alt"></i>
                                     </a>
                                 </li>
                             </ul>
                         </div>
+                        
+                        <!-- Size Selection -->
+                        <div class="size-selection-section">
                         <div class="select-catagory">
                             <div class="size-select">
                                 <label class="required">
-                                    <em>*</em> Size
+                                    <em>*</em> Chọn Size
                                 </label>
-                                <div class="input-box">
-                                    <select id="size-select" name="productDetailId" required>
-                                        <option value="" disabled selected>-- Please choose size --</option>
-                                        <!-- Options will be loaded via AJAX -->
-                                    </select>
+                                <div class="size-buttons" id="size-buttons">
+                                    <!-- Size buttons will be loaded via AJAX -->
+                                    <p>Đang tải sizes...</p>
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Stock Information -->
+                        <div class="stock-info" id="stock-info" style="display: none;">
+                            <i class="fa fa-check-circle"></i>
+                            <strong>Số lượng còn lại:</strong> <span id="stock-quantity">10</span> sản phẩm
+                        </div>
+                        
+                        <!-- Quantity Selector -->
+                        <div class="quantity-selector" id="quantity-selector" style="display: none;">
+                            <label>Số lượng:</label>
+                            <div class="qty-controls">
+                                <button type="button" class="qty-btn" id="qty-minus">-</button>
+                                <input type="text" class="qty-input" id="qty-input" name="quantity" value="1" readonly>
+                                <button type="button" class="qty-btn" id="qty-plus">+</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Price Breakdown -->
+                        <div class="price-breakdown" id="price-breakdown" style="display: none;">
+                            <div class="price-row">
+                                <span>Giá cơ bản:</span>
+                                <span id="base-price-display">0 đ</span>
+                            </div>
+                            <div class="price-row">
+                                <span>Phụ phí size:</span>
+                                <span id="size-fee-display">0 đ</span>
+                            </div>
+                            <div class="price-row total">
+                                <span>Tổng cộng:</span>
+                                <span id="final-price">0 đ</span>
+                            </div>
+                        </div>
+                        </div>
+                        
                         <div class="cart-item">
-                            <div class="price-box">
-                                <!-- Giá cuối cùng sẽ được hiển thị ở đây -->
-                                <span id="final-price" data-base-price="0">$0.00</span>
-                            </div>
                             <div class="single-cart">
-                                <div class="cart-plus-minus">
-                                    <label>Qty: </label>
-                                    <input class="cart-plus-minus-box" type="text" name="quantity" value="1">
-                                </div>
-                                <!-- Hidden input để lưu productDetailId -->
+                                <!-- Hidden inputs -->
                                 <input type="hidden" id="productDetailId" name="productDetailId" value="">
-                                <button class="cart-btn" type="submit">Thêm vào giỏ hàng</button>
+                                <input type="hidden" id="selectedSize" name="selectedSize" value="">
+                                <button class="cart-btn" type="submit" id="add-to-cart-btn" disabled>
+                                    <i class="fa fa-shopping-cart"></i> Chọn size để tiếp tục
+                                </button>
                             </div>
-
                         </div>
                     </div>
                 </form>

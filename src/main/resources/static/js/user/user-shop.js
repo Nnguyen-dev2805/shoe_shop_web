@@ -1,9 +1,10 @@
+// Global variables
 let currentPage = 0;
 let currentCategory = null;
 let searchKeyword = '';
 
-$(document).ready(function (){
-    // Load categories
+$(document).ready(function () {
+    // Load categories on page load
     loadCategories();
     
     // Load products on page load
@@ -44,6 +45,24 @@ $(document).ready(function (){
         currentPage = 0;
         loadProducts(currentPage);
     });
+
+    // Search button click handler
+    $('#searchBtn').click(function (e) {
+        e.preventDefault();
+        searchKeyword = $('#searchInput').val();
+        currentPage = 0;
+        loadProducts(currentPage);
+    });
+
+    // Search on Enter key
+    $('#searchInput').keypress(function (e) {
+        if (e.which === 13) {
+            e.preventDefault();
+            searchKeyword = $(this).val();
+            currentPage = 0;
+            loadProducts(currentPage);
+        }
+    });
     
     // Event: Click pagination
     $(document).on('click', '.page-link', function (e) {
@@ -59,71 +78,48 @@ $(document).ready(function (){
             }, 500);
         }
     });
-    
-    // Event: Search form submit
-    $('form[action*="search"]').on('submit', function (e) {
+
+    // Bắt sự kiện khi nhấn vào liên kết "add-to-wishlist"
+    $(document).on('click', '.add-to-wishlist', function (e) {
         e.preventDefault();
-        searchKeyword = $(this).find('input[name="key"]').val();
-        currentPage = 0;
-        loadProducts(currentPage);
+
+        var productIdStr = $(this).data('product-id');
+        var productId = parseInt(productIdStr, 10);
+        if (isNaN(productId) || productId <= 0) {
+            alert('ID sản phẩm không hợp lệ');
+            return;
+        }
+
+        var heartIcon = $(this).find('i');
+
+        $.ajax({
+            url: '/wishlist/toggle',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({productId: productId}),
+            success: function (response) {
+                if (response === 'ADDED') {
+                    heartIcon.removeClass('fa-heart-o').addClass('fa-heart');
+                    heartIcon.css('color', 'red');
+                } else if (response === 'REMOVED') {
+                    heartIcon.removeClass('fa-heart').addClass('fa-heart-o');
+                    heartIcon.css('color', '');
+                } else if (response === 'LOGIN_REQUIRED') {
+                    alert('Vui lòng đăng nhập để thêm sản phẩm vào wishlist');
+                } else if (response === 'ALREADY_EXISTS') {
+                    alert('Sản phẩm đã có trong wishlist');
+                }
+            },
+            error: function () {
+                alert('Đã có lỗi xảy ra, vui lòng thử lại sau');
+            }
+        });
     });
 });
 
-// function loadCategories() {
-//     $.ajax({
-//         url: "/api/category/list",
-//         type: "GET",
-//         success: function (categories) {
-//             let $list = $("#categoryList");
-//             $list.empty();
-//
-//             // Thêm button "Tất cả sản phẩm" đầu tiên
-//             $list.append(`
-//                 <li role="presentation" class="active">
-//                     <a href="#tab1"
-//                        id="allProductsBtn"
-//                        class="category-link"
-//                        aria-controls="tab1"
-//                        role="tab"
-//                        data-bs-toggle="tab"
-//                        style="display: flex; justify-content: flex-start; align-items: center; padding: 10px 15px;"
-//                        <span style="flex: 1; line-height: 24px;">
-//                            <i class="fa fa-th-large" style="margin-right: 8px;"></i>
-//                            Tất cả sản phẩm
-//                        </span>
-//                        <i class="fa fa-arrow-right" style="font-size: 14px;"></i>
-//                     </a>
-//                 </li>
-//             `);
-//
-//             if (!categories || categories.length === 0) {
-//                 $list.append('<li>Chưa có danh mục</li>');
-//                 return;
-//             }
-//
-//             // Render các categories
-//             $.each(categories, function (index, category) {
-//                 const productCount = category.productCount || 0;
-//
-//                 $list.append(`
-//                     <li role="presentation">
-//                         <a href="#tab1" aria-controls="tab1" role="tab" data-bs-toggle="tab"
-//                            class="category-link"
-//                            data-category-id="${category.id}"
-//                            style="display: flex; justify-content: flex-start; align-items: center; padding: 10px 15px;"
-//                            <span style="flex: 1; line-height: 24px;">${category.name}</span>
-//                            <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #e0e0e0; color: #555; border-radius: 50%; font-size: 11px; font-weight: 600; line-height: 1; text-align: center;">${productCount}</span>
-//                         </a>
-//                     </li>
-//                 `);
-//             });
-//         },
-//         error: function (xhr, status, error) {
-//             console.error("❌ Lỗi khi load categories:", error);
-//             $("#categoryList").append('<li>Lỗi tải danh mục</li>');
-//         }
-//     });
-// }
+/**
+ * Load categories from API and render
+ */
 function loadCategories() {
     $.ajax({
         url: "/api/category/list",
@@ -134,20 +130,16 @@ function loadCategories() {
 
             // Thêm button "Tất cả sản phẩm" đầu tiên
             $list.append(`
-                <li role="presentation" class="active">
-                    <a href="#tab1" 
+                <li role="presentation" class="active" style="list-style: none;">
+                    <a href="#" 
                        id="allProductsBtn"
                        class="category-link"
-                       aria-controls="tab1" 
-                       role="tab" 
-                       data-bs-toggle="tab"
                        style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-                       
-                       <span style="line-height: 24px; display: flex; align-items: center;">
+                       <span style="flex: 1; line-height: 24px;">
                            <i class="fa fa-th-large" style="margin-right: 8px;"></i>
                            Tất cả sản phẩm
                        </span>
-                       <i class="fa fa-arrow-right" style="font-size: 14px; color: #777;"></i>
+                       <i class="fa fa-arrow-right" style="font-size: 14px;"></i>
                     </a>
                 </li>
             `);
@@ -160,18 +152,15 @@ function loadCategories() {
             // Render các categories
             $.each(categories, function (index, category) {
                 const productCount = category.productCount || 0;
-
+                
                 $list.append(`
-                    <li role="presentation">
-                        <a href="#tab1" aria-controls="tab1" role="tab" data-bs-toggle="tab"
+                    <li role="presentation" style="list-style: none;">
+                        <a href="#" 
                            class="category-link"
                            data-category-id="${category.id}"
                            style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
-                           
-                           <span style="line-height: 24px;">${category.name}</span>
-                           <span style="display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; background: #e0e0e0; color: #555; border-radius: 50%; font-size: 11px; font-weight: 600; line-height: 1; text-align: center; padding: 0 6px;">
-                               ${productCount}
-                           </span>
+                           <span style="flex: 1; line-height: 24px;">${category.name}</span>
+                           <span style="display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; background: #e0e0e0; color: #555; border-radius: 50%; font-size: 11px; font-weight: 600; line-height: 1; text-align: center;">${productCount}</span>
                         </a>
                     </li>
                 `);
@@ -184,9 +173,13 @@ function loadCategories() {
     });
 }
 
-
+/**
+ * Load products with pagination, category filter, and search
+ * @param {number} page - Page number (0-based)
+ */
 function loadProducts(page) {
-
+    $('#loadingSpinner').show();
+    
     let params = {
         page: page,
         size: 6
@@ -207,6 +200,7 @@ function loadProducts(page) {
         data: params,
         dataType: 'json',
         success: function (response) {
+            $('#loadingSpinner').hide();
             console.log("✅ JSON Backend trả về:", response);
             if (response && response.content) {
                 renderProducts(response.content);
@@ -216,12 +210,17 @@ function loadProducts(page) {
             }
         },
         error: function (xhr, status, error) {
+            $('#loadingSpinner').hide();
             console.error('❌ Lỗi khi load products:', error);
             $('#productList').html('<div class="col-12 text-center" style="margin-top: 50px;"><p>Lỗi tải sản phẩm. Vui lòng thử lại sau.</p></div>');
         }
     });
 }
 
+/**
+ * Render products to the DOM
+ * @param {Array} products - Array of product objects
+ */
 function renderProducts(products) {
     let productHtml = '';
     
@@ -265,6 +264,10 @@ function renderProducts(products) {
     $('#productList').html(productHtml);
 }
 
+/**
+ * Render pagination controls
+ * @param {Object} data - Pagination data from API response
+ */
 function renderPagination(data) {
     let paginationHtml = '';
 

@@ -28,15 +28,10 @@ public class UserHomeController {
 
     private final UserService userService;
 
-    /**
-     * Display shop page
-     * Data will be loaded via AJAX from /api/shop/* endpoints
-     */
     @GetMapping("/shop")
-    public String userShop(HttpSession session, Model model) {
+    public String userShop(HttpSession session) {
         Users u = (Users) session.getAttribute(Constant.SESSION_USER);
         if (u != null) {
-            model.addAttribute("user", u);
             return "user/shop";
         } else {
             return "redirect:/login";
