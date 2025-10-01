@@ -67,17 +67,7 @@
             color: #ccc; /* Trái tim xám khi chưa yêu thích */
         }
         
-        /* Style cho button "Tất cả sản phẩm" */
-        #allProductsBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4) !important;
-        }
-        
-        #allProductsBtn:active {
-            transform: translateY(0);
-        }
-        
-        /* Style cho category links */
+        /* Style cho category links (bao gồm "Tất cả sản phẩm") */
         .category-link {
             transition: all 0.3s ease;
             color: white !important;
@@ -149,22 +139,7 @@
 <!--                            </ul>-->
 
                             <ul class="nav tab-navigation" role="tablist" id="categoryList">
-                                <!-- Button "Tất cả sản phẩm" -->
-                                <li role="presentation" class="active">
-                                    <a href="#tab1" 
-                                       id="allProductsBtn"
-                                       aria-controls="tab1" 
-                                       role="tab" 
-                                       data-bs-toggle="tab"
-                                       style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px; margin-bottom: 10px; font-weight: 600; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;">
-                                       <span style="flex: 1; line-height: 24px;">
-                                           <i class="fa fa-th-large" style="margin-right: 8px;"></i>
-                                           Tất cả sản phẩm
-                                       </span>
-                                       <i class="fa fa-arrow-right" style="font-size: 14px;"></i>
-                                    </a>
-                                </li>
-                                <!-- Category sẽ được load bằng AJAX -->
+                                <!-- Button "Tất cả sản phẩm" + Categories sẽ được load bằng AJAX -->
                             </ul>
 
                             <!-- Form search -->

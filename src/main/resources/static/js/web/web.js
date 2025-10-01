@@ -77,11 +77,31 @@ function loadCategories() {
             let $list = $("#categoryList");
             $list.empty();
 
+            // Thêm button "Tất cả sản phẩm" đầu tiên
+            $list.append(`
+                <li role="presentation" class="active">
+                    <a href="#tab1" 
+                       id="allProductsBtn"
+                       class="category-link"
+                       aria-controls="tab1" 
+                       role="tab" 
+                       data-bs-toggle="tab"
+                       style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px;">
+                       <span style="flex: 1; line-height: 24px;">
+                           <i class="fa fa-th-large" style="margin-right: 8px;"></i>
+                           Tất cả sản phẩm
+                       </span>
+                       <i class="fa fa-arrow-right" style="font-size: 14px;"></i>
+                    </a>
+                </li>
+            `);
+
             if (!categories || categories.length === 0) {
                 $list.append('<li>Chưa có danh mục</li>');
                 return;
             }
 
+            // Render các categories
             $.each(categories, function (index, category) {
                 const productCount = category.productCount || 0;
                 
