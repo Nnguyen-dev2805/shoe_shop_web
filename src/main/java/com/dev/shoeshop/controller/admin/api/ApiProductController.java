@@ -31,13 +31,14 @@ public class ApiProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "7") int size,
             @RequestParam(required = false) String search,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDir
     ) {
         try {
             Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
             Pageable pageable = PageRequest.of(page, size, sort);
-            Page<ProductResponse> productPage = productService.getAllProducts(pageable, search);
+            Page<ProductResponse> productPage = productService.getAllProducts(pageable, search, categoryId);
             PaginationResponse<ProductResponse> response = new PaginationResponse<>(
                     productPage.getContent(),
                     productPage.getTotalPages(),

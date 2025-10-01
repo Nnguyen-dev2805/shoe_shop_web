@@ -31,7 +31,7 @@ public class WebSecurityConfig {
     private final String[] PUBLIC_ENDPOINT = {"/", "/login", "/register", "/product/**", "/category/**", "/send-code", "/reset_password", "/sendcode",
             "/verifycode", "/resetPassword", "/api/**"};
     private final String[] PUBLIC_CSS = {"/assets/**", "/css/**", "/fonts/**", "/img/**", "/js/**", "/lib/**",
-            "/style.css", "/uploads/**"};
+            "/style.css", "/uploads/**", "/images/**"};
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

@@ -89,7 +89,7 @@ $(document).ready(function () {
             contentType: false, // bắt buộc với FormData
             success: function(response) {
                 alert("Thêm sản phẩm thành công!");
-                window.location.href = '/admin/product';
+                window.location.href = '';
             },
             error: function(xhr) {
                 alert("Lỗi khi thêm sản phẩm: " + xhr.responseText);

@@ -6,7 +6,6 @@ let searchTerm = '';
 $(document).ready(function() {
     loadProducts(currentPage, searchTerm);
 
-    // debounce search
     $('#searchInput').on('keyup', function () {
         clearTimeout(window.searchTimeout);
         const value = $(this).val();

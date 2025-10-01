@@ -4,7 +4,7 @@
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title> Login || James </title>
+        <title> Login || DeeG Shop </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -77,8 +77,8 @@
                     <div class="col-md-12">
                         <div class="location">
                             <ul>
-                                <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
-                                <li><strong>Login page</strong></li>
+                                <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a>  </li>
+                                <li><strong>Đăng Nhập</strong></li>
                             </ul>
                         </div>
                     </div>
@@ -86,7 +86,7 @@
             </div>
         </div>
         <div th:if="${param.error}" style="color: red; text-align: center; font-size: larger">
-            <p>Invalid email or password</p>
+            <p>Email hoặc mật khẩu không hợp lệ</p>
         </div>
         <div class="login-area">
             <div class="container">
@@ -95,20 +95,20 @@
                         <div class="login">
                             <div class="login-form-container">
                                 <div class="login-text">
-                                    <h2>login</h2>
-                                    <span>Please login using account detail bellow.</span>
+                                    <h2>Đăng nhập</h2>
+                                    <span>Vui lòng đăng nhập bằng thông tin tài khoản bên dưới.</span>
                                 </div>
                                 <div class="login-form">
                                     <form action="/login" method="post">
-                                        <input type="text" name="username"  placeholder="Username" th:value="${username}" required>
-                                        <input type="password" name="password" placeholder="Password" required minlength="6" title="Password must be at least 6 characters long">
+                                            <input type="text" name="username"  placeholder="Tên đăng nhập" th:value="${username}" required>
+                                            <input type="password" name="password" placeholder="Mật khẩu" required minlength="6" title="Password must be at least 6 characters long">
                                         <div class="button-box">
                                             <div class="login-toggle-btn">
                                                 <input type="checkbox" id="remember" name="remember-me">
-                                                <label for="remember">Remember me</label>
-                                                <a href="/reset_password">Forgot Password?</a>
+                                                <label for="remember">Ghi nhớ đăng nhập</label>
+                                                <a href="/reset_password">Quên mật khẩu?</a>
                                             </div>
-                                            <button type="submit" class="default-btn">Login</button>
+                                            <button type="submit" class="default-btn">Đăng Nhập</button>
                                         </div>
                                     </form>
                                 </div>

@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Single Shop || James </title>
+    <title>Single Shop || DeeG Shop</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -103,8 +103,8 @@
             <div class="col-md-12">
                 <div class="location">
                     <ul>
-                        <li><a th:href="${session.user != null ? '/user/shop' : '/'}" title="go to homepage">Home<span>/</span></a></li>
-                        <li><strong> Product details</strong></li>
+                        <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a></li>
+                        <li><strong> Chi Tiết sản phẩm</strong></li>
                     </ul>
                 </div>
             </div>
@@ -119,31 +119,14 @@
             <div class="col-lg-6">
                 <div class="single-product-img tab-content">
                     <div class="single-pro-main-image tab-pane active" id="pro-large-img-1">
-                        <a href="#"><img class="optima_zoom" th:src="${product.image}"
-                                         data-zoom-image="img/product/7.png" alt="optima"/></a>
-                    </div>
-                    <div class="single-pro-main-image tab-pane" id="pro-large-img-2">
-                        <a href="#"><img class="optima_zoom" src="img/product/2.png" data-zoom-image="img/product/2.png"
-                                         alt="optima"/></a>
-                    </div>
-                    <div class="single-pro-main-image tab-pane" id="pro-large-img-3">
-                        <a href="#"><img class="optima_zoom" src="img/product/8.png" data-zoom-image="img/product/8.png"
-                                         alt="optima"/></a>
-                    </div>
-                    <div class="single-pro-main-image tab-pane" id="pro-large-img-4">
-                        <a href="#"><img class="optima_zoom" src="img/product/1.png" data-zoom-image="img/product/1.png"
-                                         alt="optima"/></a>
-                    </div>
-                    <div class="single-pro-main-image tab-pane" id="pro-large-img-5">
-                        <a href="#"><img class="optima_zoom" src="img/product/9.png" data-zoom-image="img/product/9.png"
-                                         alt="optima"/></a>
+                        <a href="#"><img class="optima_zoom" id="product-image" src="" alt="Product Image"/></a>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
-                <form th:action="@{/cart/add}" method="post">
+                <form action="#" method="post">
                     <div class="single-product-details">
-                        <a href="#" class="product-name" th:text="${product.title}"></a>
+                        <a href="#" class="product-name" id="product-title">Loading...</a>
                         <div class="list-product-info">
                             <div class="price-rating">
                                 <div class="ratings">
@@ -152,9 +135,9 @@
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
                                     <i class="fa fa-star"></i>
-                                    <strong th:text="'Avg rating: ' + ${avgrating}"></strong>
+                                    <strong id="product-rating">Điểm đánh giá: 0.0</strong>
                                     <br>
-                                    <strong th:text="${totalRating} + ' reviews'"></strong>
+                                    <strong id="product-reviews">0 reviews</strong>
 <!--                                    <i class="fa fa-star-half-o"></i>-->
 <!--                                    <a href="#tab3" class="review" id="reviewsLink"><em ></em></a>-->
 
@@ -163,48 +146,22 @@
                             </div>
                         </div>
                         <div class="avalable">
-                            <p>Availability:<span> In stock</span></p>
+                            <p>Tình trạng:<span> Còn hàng</span></p>
                         </div>
                         <div class="item-price">
-                            <span th:text="${product.price}"></span>
+                            <span id="product-price">$0.00</span>
                         </div>
                         <div class="single-product-info">
-                            <p>Description: <span th:text="${product.description}"></span></p>
+                            <p>Mô tả: <span id="product-description">Loading...</span></p>
                             <div class="share">
                                 <img src="img/product/share.png" alt="">
                             </div>
                         </div>
                         <!-- them vao danh sach yeu thich-->
-                        <div class="action" th:if="${session.user != null}">
+                        <div class="action">
                             <ul class="add-to-links">
-                                <li >
-                                    <a href="#" class="add-to-wishlist" th:attr="data-product-id=${product.id}">
-                                        <i class="fa"
-                                           th:class="${wishlist.contains(product) ? ' fa fa-heart' : 'fa fa-heart-o'}">
-                                        </i>
-                                    </a>
-                                </li>
-<!--                                <li th:if="${session.user == null}">-->
-<!--                                    <a href="#" class="add-to-wishlist">-->
-<!--                                        <i class="fa" class="fa fa-heart-o"></i>-->
-<!--                                    </a>-->
-<!--                                </li>-->
                                 <li>
-                                    <a href="#">
-                                        <i class="fa fa-refresh"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <i class="fa fa-envelope"></i>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="action" th:if="${session.user == null}">
-                            <ul class="add-to-links">
-                                <li >
-                                    <a href="#" class="add-to-wishlist" th:attr="data-product-id=${product.id}">
+                                    <a href="#" class="add-to-wishlist" data-product-id="">
                                         <i class="fa fa-heart-o"></i>
                                     </a>
                                 </li>
@@ -226,13 +183,9 @@
                                     <em>*</em> Size
                                 </label>
                                 <div class="input-box">
-                                    <select id="select-2" name="productDetailId" required>
+                                    <select id="size-select" name="productDetailId" required>
                                         <option value="" disabled selected>-- Please choose size --</option>
-                                        <option th:each="productDetail : ${productDetails}"
-                                                th:value="${productDetail.id}"
-                                                th:data-priceadd="${productDetail.priceadd}"
-                                                th:text="'Size: ' + ${productDetail.size} + ' + $' + ${productDetail.priceadd}">
-                                        </option>
+                                        <!-- Options will be loaded via AJAX -->
                                     </select>
                                 </div>
                             </div>
@@ -240,7 +193,7 @@
                         <div class="cart-item">
                             <div class="price-box">
                                 <!-- Giá cuối cùng sẽ được hiển thị ở đây -->
-                                <span id="final-price" th:text="${product.price}"></span>
+                                <span id="final-price" data-base-price="0">$0.00</span>
                             </div>
                             <div class="single-cart">
                                 <div class="cart-plus-minus">
@@ -249,16 +202,14 @@
                                 </div>
                                 <!-- Hidden input để lưu productDetailId -->
                                 <input type="hidden" id="productDetailId" name="productDetailId" value="">
-                                <button class="cart-btn" type="submit">Add to cart</button>
+                                <button class="cart-btn" type="submit">Thêm vào giỏ hàng</button>
                             </div>
 
                         </div>
                     </div>
                 </form>
             </div>
-            <div>
-                <h5 th:if="${alert} != null" th:text="${alert}"></h5>
-            </div>
+            <!-- Alert message will be shown here -->
         </div>
     </div>
 </div>
@@ -275,10 +226,10 @@
 <!--                                Description</a>-->
 <!--                        </li>-->
                         <li role="presentation">
-                            <a href="#tab2" aria-controls="tab2" role="tab" data-bs-toggle="tab">Reviews</a>
+                            <a href="#tab2" aria-controls="tab2" role="tab" data-bs-toggle="tab">Đánh giá</a>
                         </li>
                         <li role="presentation">
-                            <a href="#tab3" aria-controls="tab3" role="tab" data-bs-toggle="tab" id="viewAllReview" th:attr="data-product-id=${product.id}">View all review</a>
+                            <a href="#tab3" aria-controls="tab3" role="tab" data-bs-toggle="tab" id="viewAllReview" data-product-id="">Xem danh sách đánh giá</a>
                         </li>
                     </ul>
 
@@ -303,7 +254,7 @@
                                     <div class="col-md-12">
                                         <div class="rate-product hidden-xs">
                                             <div class="rate-product-heading">
-                                                <h3 th:text=" 'You are reviewing: ' + ${product.title}"></h3>
+                                                <h3 id="product-review-title">You are reviewing: Product</h3>
                                                 <h3>How do you rate this product? <em>*</em></h3>
                                             </div>
                                             <form id="ratingForm" th:action="@{/rating/add}" method="post" enctype="multipart/form-data">
@@ -318,8 +269,8 @@
                                                 <ul class="form-list">
                                                     <li>
                                                         <label>Nickname <em>*</em></label>
-                                                        <input type="hidden" th:value="${product.id}" name="productId">
-                                                        <input type="text" th:value="${session.user != null ? session.user.fullname : ''}" name="fullname" readonly>
+                                                        <input type="hidden" value="" name="productId">
+                                                        <input type="text" th:value="${session.user != null ? session.user.fullname : ''}" name="fullname" placeholder="Your name">
                                                         <input type="hidden" th:value="${session.user != null ? session.user.email : ''}" name="email">
                                                     </li>
                                                     <li>
@@ -819,27 +770,7 @@
 <!-- main JS
 ============================================ -->
 <script src="/js/main.js"></script>
-<script>
-    // Lấy giá sản phẩm gốc từ HTML
-    const basePrice = parseFloat(document.getElementById('final-price').textContent);  // Giá ban đầu
-    const selectBox = document.getElementById('select-2');  // Select box chứa các lựa chọn size
-    const finalPriceSpan = document.getElementById('final-price');  // Span hiển thị giá cuối cùng
-    const hiddenInputProductDetailId = document.getElementById('productDetailId'); // Hidden input để lưu id sản phẩm
-
-    // Xử lý sự kiện thay đổi size
-    selectBox.addEventListener('change', function () {
-        const selectedOption = this.options[this.selectedIndex];  // Lấy option được chọn
-        const priceAdd = parseFloat(selectedOption.getAttribute('data-priceadd')) || 0;  // Giá cộng thêm từ attribute 'data-priceadd'
-        const productDetailId = selectedOption.value;  // Lấy id của productDetail từ 'value' của option
-
-        // Cập nhật giá hiển thị
-        const totalPrice = basePrice + priceAdd;  // Tính tổng giá (giá gốc + giá cộng thêm)
-        finalPriceSpan.textContent = totalPrice.toFixed(1);  // Hiển thị giá cuối cùng
-
-        // Lưu id của productDetail vào hidden input để gửi về server
-        hiddenInputProductDetailId.value = productDetailId;
-    });
-</script>
+<!-- Size price calculator đã được chuyển vào product-details.js -->
 <script>
     $(document).ready(function () {
         // Bắt sự kiện khi nhấn vào liên kết "add-to-wishlist"
@@ -993,6 +924,9 @@
         });
     });
 </script>
+
+<!-- Product Details AJAX Script -->
+<script src="/js/web/product-details.js"></script>
 
 </body>
 
