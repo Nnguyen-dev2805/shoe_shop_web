@@ -43,11 +43,6 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         product.setBrand(brandService.getBrandById(request.getBrandId()));
 
-//        if (image != null && !image.isEmpty()) {
-//            String fileUrl = storageService.storeFile(image);
-//            product.setImage(fileUrl);
-//        }
-
         productRepository.save(product);
 
         if (request.getProductDetails() != null) {
@@ -84,10 +79,25 @@ public class ProductServiceImpl implements ProductService {
                         cat.getTitle(),
                         cat.getPrice(),
                         cat.getImage(),
-                        cat.getCategory(),
-                        cat.getBrand()
+                        cat.getCategory().getName(),
+                        cat.getBrand().getName()
                 ))
                 .collect(Collectors.toList());
         return new PageImpl<>(responses, pageable, productPage.getTotalElements());
+    }
+
+    @Override
+    public List<ProductResponse> getAllProductsList() {
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(cat -> new ProductResponse(
+                        cat.getId(),
+                        cat.getTitle(),
+                        cat.getPrice(),
+                        cat.getImage(),
+                        cat.getCategory().getName(),
+                        cat.getBrand().getName()
+                ))
+                .collect(Collectors.toList());
     }
 }

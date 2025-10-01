@@ -3,6 +3,9 @@ package com.dev.shoeshop.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,21 +23,19 @@ public class Users {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "address", length = 255, nullable = false)
-    private String address;
-
-    @Column(name = "phone", nullable = false, length = 10)
+    @Column(name = "phone", nullable = false, length = 10, unique = true)
     private String phone;
 
-    @ManyToOne  // Hiện tại một người chỉ có 1 role
+    @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-//    // Quan hệ OneToMany với Rating
-//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Rating> ratings = new ArrayList<>();
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rating> ratings = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAddress> userAddresses = new ArrayList<>();
 }

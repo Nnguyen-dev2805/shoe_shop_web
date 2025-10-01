@@ -10,6 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -21,11 +24,25 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     public void addInventory(InventoryRequest request) {
-        Inventory inventory = new Inventory();
-        ProductDetail detail = productDetailRepository.findById(request.getProductDetailId()).get();
-        inventory.setQuantity(request.getQuantity());
-        inventory.setProductDetail(detail);
-        inventory.setCreatedAt(LocalDateTime.now());
-        inventoryRepository.save(inventory);
+        List<ProductDetail> details = productDetailRepository.findByProductId(request.getProductId());
+
+        for (Map.Entry<Integer, Integer> entry : request.getSizes().entrySet()) {
+            Integer size = entry.getKey();
+            Integer quantity = entry.getValue();
+
+            if (quantity != null && quantity > 0) {
+                ProductDetail detail = details.stream()
+                        .filter(d -> Objects.equals(d.getSize(), size))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Không tìm thấy product_detail cho size " + size));
+
+                Inventory inventory = new Inventory();
+                inventory.setProductDetail(detail);
+                inventory.setQuantity(quantity);
+                inventory.setCreatedAt(request.getCreatedAt() != null ? request.getCreatedAt() : LocalDateTime.now());
+
+                inventoryRepository.save(inventory);
+            }
+        }
     }
 }

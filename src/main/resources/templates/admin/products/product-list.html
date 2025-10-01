@@ -11,12 +11,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 
     <style>
-        .avatar-img {
+
+        .product-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .product-img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Giữ tỷ lệ và cắt ảnh nếu cần */
-            border-radius: 50%; /* Để làm tròn ảnh */
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
+
+        .product-img:hover {
+            transform: scale(1.08);
+        }
+
 
     </style>
 
@@ -560,7 +578,7 @@
                             </a>
                         </div>
                         <div class="mb-3">
-                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name or category" onkeyup="searchTable()">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Tìm kiếm theo tên" onkeyup="searchTable()">
                         </div>
                         <div>
                             <div class="table-responsive">
@@ -604,213 +622,8 @@
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
-<!--<script>-->
-<!--    function searchTable() {-->
-<!--        var input, filter, table, tr, td, i, j, txtValue, match;-->
-<!--        input = document.getElementById("searchInput");-->
-<!--        filter = input.value.toLowerCase();-->
-<!--        table = document.querySelector(".table");-->
-<!--        tr = table.getElementsByTagName("tr");-->
 
-<!--        for (i = 1; i < tr.length; i++) { // Bắt đầu từ 1 để bỏ qua tiêu đề-->
-<!--            tr[i].style.display = "none"; // Ẩn tất cả các hàng-->
-<!--            td = tr[i].getElementsByTagName("td");-->
-
-<!--            match = false; // Đặt mặc định là không có kết quả-->
-
-<!--            // Duyệt qua các cột (tên và loại)-->
-<!--            for (j = 1; j < td.length; j++) {-->
-<!--                if (td[j]) {-->
-<!--                    txtValue = td[j].textContent || td[j].innerText;-->
-<!--                    if (txtValue.toLowerCase().indexOf(filter) > -1) {-->
-<!--                        match = true; // Nếu tìm thấy, thay đổi trạng thái-->
-<!--                    }-->
-<!--                }-->
-<!--            }-->
-
-<!--            if (match) {-->
-<!--                tr[i].style.display = ""; // Hiển thị hàng nếu có kết quả-->
-<!--            }-->
-<!--        }-->
-<!--    }-->
-<!--</script>-->
-
-
-<script>
-    let currentPage = 1;
-    const itemsPerPage = 7;
-    let totalPages = 0;
-    let searchTerm = '';
-
-    $(document).ready(function() {
-        loadProducts(currentPage, searchTerm);
-    });
-
-    function loadProducts(page, search) {
-
-        const tbody = $('#productBody');
-
-        let params = {
-            page: page - 1,  // Chuyển sang 0-based cho backend
-            size: itemsPerPage,
-            search: search || ''
-        };
-
-
-        $.ajax({
-            url: `/api/product`,
-            type: 'GET',
-            data: params
-            dataType: 'json',
-            success: function (response) {
-                if (!response || !response.content) {
-                    tbody.html('<tr><td colspan="5" class="text-center text-danger">Lỗi response từ server.</td></tr>');
-                    return;
-                }
-
-                currentPage = response.currentPage;  // 1-based từ backend
-                totalPages = response.totalPages;
-                searchTerm = search || '';
-
-                renderProducts(response.content);
-
-                renderPagination();
-            },
-            error: function (xhr, status, error) {
-                const tbody = $('#categoryTbody');
-                let msg = 'Lỗi load dữ liệu: ';
-                if (xhr.status === 401) {
-                    msg += 'Chưa đăng nhập. Đang chuyển hướng...';
-                    setTimeout(function () {
-                        window.location.href = '/login';
-                    }, 1000);
-                } else if (xhr.status === 403) {
-                    msg += 'Không có quyền truy cập.';
-                } else if (xhr.status === 500) {
-                    msg += 'Lỗi server. Vui lòng thử lại.';
-                } else {
-                    msg += xhr.status + ' - ' + error;
-                }
-                tbody.html('<tr><td colspan="5" class="text-center text-danger">' + msg + '</td></tr>');
-            }
-        });
-    }
-
-    function renderProducts(products) {
-        const tbody = $('#productBody');
-        if (products.length === 0) {
-            tbody.html('<tr><td colspan="5" class="text-center">Không có dữ liệu</td></tr>');
-            return;
-        }
-        let rows = '';
-        products.forEach(product => {
-            // Render row tương tự Thymeleaf: ID, tên với image, giá (format), loại (category.name), actions
-            // Giả sử ProductResponse có: id, title, price (Double), image (String), category {name}
-            // Image: th:src="@{{fileName}(fileName=${product.image})}" → /images/${image}
-            // Giá: Format toLocaleString('vi-VN') + ' VNĐ'
-            // Loại: product.category.name (thay vì product.category.type)
-            rows += `
-                <tr>
-                    <td>${product.id}</td>
-                    <td>
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="rounded bg-light avatar-md d-flex align-items-center justify-content-center">
-                                <img src="/images/${product.image || 'default.jpg'}" alt="" class="avatar-img" onerror="this.src='/assets/images/users/avatar-1.jpg';">
-                            </div>
-                            <div>
-                                <a href="/admin/product/detail/${product.id}" class="text-dark fw-medium fs-15">${product.title}</a>
-                            </div>
-                        </div>
-                    </td>
-                    <td>${product.price ? product.price.toLocaleString('vi-VN') + ' VNĐ' : 'N/A'}</td>
-                    <td>
-                        <p class="mb-1 text-muted">
-                            <span class="text-dark fw-medium">${product.category ? product.category.name : 'N/A'}</span>
-                        </p>
-                    </td>
-                    <td>
-                        <div class="d-flex gap-2">
-                            <a href="/admin/product/updateProduct/${product.id}" class="btn btn-soft-primary btn-sm">
-                                <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
-                            </a>
-                            <!-- Delete button với AJAX -->
-                            <button onclick="deleteProduct(${product.id})" class="btn btn-soft-danger btn-sm">
-                                <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-                `;
-        });
-        tbody.html(rows);
-    }
-
-    function renderPagination() {
-        const pagination = $('#pagination');
-        pagination.empty();
-        // Previous button
-        const prevDisabled = currentPage === 1 ? 'disabled' : '';
-        pagination.append(`
-            <li class="page-item ${prevDisabled}">
-                <a class="page-link" href="javascript:void(0);" onclick="${prevDisabled ? '' : `loadProducts(${currentPage - 1}, '${searchTerm}')`}">Previous</a>
-            </li>
-        `);
-        // Page numbers (tương tự Thymeleaf #numbers.sequence)
-        for (let i = 1; i <= totalPages; i++) {
-            const active = i === currentPage ? 'active' : '';
-            pagination.append(`
-                <li class="page-item ${active}">
-                    <a class="page-link" href="javascript:void(0);" onclick="loadProducts(${i}, '${searchTerm}')">${i}</a>
-                </li>
-            `);
-        }
-        // Next button
-        const nextDisabled = currentPage === totalPages ? 'disabled' : '';
-        pagination.append(`
-            <li class="page-item ${nextDisabled}">
-                <a class="page-link" href="javascript:void(0);" onclick="${nextDisabled ? '' : `loadProducts(${currentPage + 1}, '${searchTerm}')`}">Next</a>
-            </li>
-        `);
-    }
-
-    // Handle search với debounce (server-side, reset page 1)
-    function searchTable() {
-        const searchValue = $('#searchInput').val();
-        clearTimeout(window.searchTimeout);
-        window.searchTimeout = setTimeout(() => {
-            searchTerm = searchValue;
-            loadProducts(1, searchTerm);  // Reset về page 1 khi search
-        }, 500);  // Debounce 500ms
-    }
-
-    // Delete product với AJAX (thêm endpoint DELETE nếu chưa có)
-    function deleteProduct(id) {
-        if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) {
-            $.ajax({
-                url: `/api/product/${id}`,
-                type: 'DELETE',
-                dataType: 'json',
-                success: function (response) {
-                    alert('Xóa thành công!');
-                    loadProducts(currentPage, searchTerm);  // Reload trang hiện tại
-                },
-                error: function (xhr, status, error) {
-                    let msg = 'Lỗi xóa sản phẩm: ';
-                    if (xhr.status === 403) {
-                        msg += 'Không có quyền.';
-                    } else if (xhr.status === 404) {
-                        msg += 'Sản phẩm không tồn tại.';
-                    } else {
-                        msg += xhr.responseJSON ? xhr.responseJSON.message : error;
-                    }
-                    alert(msg);
-                }
-            });
-        }
-    }
-
-</script>
-
+<script src="/js/product-list.js"></script>
 
 </body>
 </html>
