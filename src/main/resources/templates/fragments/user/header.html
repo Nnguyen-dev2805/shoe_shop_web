@@ -7,20 +7,20 @@
                     <div class="col-lg-7 offset-lg-3 col-md-9 d-none d-md-block">
                         <div class="site-option">
                             <ul>
-                                <li class="currency"><a href="#">USD <i class="fa fa-angle-down"></i> </a>
+                                <li class="currency"><a href="#">VNĐ <i class="fa fa-angle-down"></i> </a>
                                     <ul class="sub-site-option">
-                                        <li><a href="#">Usd</a></li>
+                                        <li><a href="#">VNĐ</a></li>
                                     </ul>
                                 </li>
-                                <li class="language"><a href="#">English <i class="fa fa-angle-down"></i> </a>
+                                <li class="language"><a href="#">Tiếng Việt <i class="fa fa-angle-down"></i> </a>
                                     <ul class="sub-site-option">
-                                        <li><a href="#">English</a></li>
+                                        <li><a href="#">Tiếng Việt</a></li>
                                     </ul>
                                 </li>
                             </ul>
                         </div>
                         <div class="call-support">
-                            <p>Hello, <span th:text="${session.user != null ? session.user.fullname : 'Welcome to my shop   '}"></span></p>
+                            <p>Xin chào, <span th:text="${session.user != null ? session.user.fullname : 'Chào mừng đến với DeeG   '}"></span></p>
                         </div>
 
                     </div>
@@ -35,22 +35,22 @@
                                         </a>
                                         <ul>
                                             <div th:if="${session.user != null}">
-                                                <li><a href="/user/my_account">my account</a></li>
-                                                <li><a href="/user/wishlist">my wishlist</a></li>
-                                                <li><a href="/cart/view">my cart</a></li>
-                                                <li><a href="/order">Checkout</a></li>
-                                                <li><a href="/user/blog">Blog</a></li>
-                                                <li><a href="/logout">Logout</a></li>
+                                                <li><a href="/user/my_account">Tài khoản</a></li>
+                                                <li><a href="/user/wishlist">Sản phẩm Yêu thích</a></li>
+                                                <li><a href="/cart/view">Giỏ hàng</a></li>
+                                                <li><a href="/order">Thanh toán</a></li>
+                                                <li><a href="/user/blog">Bài viết</a></li>
+                                                <li><a href="/logout">Đăng xuất</a></li>
                                             </div>
 
                                             <div th:if="${session.user == null}">
-                                                <li><a href="/user/my_account">my account</a></li>
-                                                <li><a href="/user/wishlist">my wishlist</a></li>
-                                                <li><a href="/cart/view">my cart</a></li>
-                                                <li><a href="/order">Checkout</a></li>
-                                                <li><a href="/blog">Blog</a></li>
-                                                <li><a href="/login">Login</a></li>
-                                                <li><a href="/register">Register</a></li>
+                                                <li><a href="/user/my_account">Tài Khoản</a></li>
+                                                <li><a href="/user/wishlist">Sản phẩm yêu thích</a></li>
+                                                <li><a href="/cart/view">giỏ hàng</a></li>
+                                                <li><a href="/order">thanh toán</a></li>
+                                                <li><a href="/blog">Tin tức</a></li>
+                                                <li><a href="/login">Đăng nhập</a></li>
+                                                <li><a href="/register">Đăng ký</a></li>
                                             </div>
 
                                         </ul>
@@ -90,12 +90,12 @@
 <!--                                    <th:block th:if="${session.user}">-->
 <!--                                        <li><a href="/user/shop">Home</a></li>-->
 <!--                                    </th:block>-->
-                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/">Trang Chủ</a></li>
 
-                                    <li class="mega-women"><a href="/user/shop">Shop</a>
+                                    <li class="mega-women"><a href="/user/shop">Cửa Hàng</a>
 
                                     </li>
-                                    <li class="mega-men"><a href="shop.html">Men</a>
+                                    <li class="mega-men"><a href="shop.html">Nam</a>
                                         <div class="mega-menu men">
                                                 <span>
                                                     <a href="#">Bags</a>
@@ -114,7 +114,7 @@
                                                 </span>
                                         </div>
                                     </li>
-                                    <li class="mega-footwear"><a href="shop.html">Footwear</a>
+                                    <li class="mega-footwear"><a href="shop.html">Giày Dép</a>
                                         <div class="mega-menu footwear">
                                                 <span>
                                                     <a href="#">Footwear Man</a>
@@ -126,48 +126,48 @@
                                                 </span>
                                         </div>
                                     </li>
-                                    <li class="mega-jewellery"><a href="shop.html">Jewellery</a>
-                                        <div class="mega-menu jewellery">
-                                                <span>
-                                                    <a href="#">Rings</a>
-                                                </span>
-                                        </div>
-                                    </li>
-                                    <li><a href="shop.html">accessories</a></li>
-                                    <li><a href="#">Pages</a>
+<!--                                    <li class="mega-jewellery"><a href="shop.html">Jewellery</a>-->
+<!--                                        <div class="mega-menu jewellery">-->
+<!--                                                <span>-->
+<!--                                                    <a href="#">Rings</a>-->
+<!--                                                </span>-->
+<!--                                        </div>-->
+<!--                                    </li>-->
+                                    <li><a href="shop.html">Phụ Kiện</a></li>
+                                    <li><a href="#">Trang</a>
                                         <div class="sub-menu pages">
                                                 <span>
-                                                    <a href="about-us.html">About us</a>
+                                                    <a href="about-us.html">Giới Thiệu</a>
                                                 </span>
                                             <span>
-                                                    <a href="/blog">Blog</a>
+                                                    <a href="/blog">Tin tức</a>
                                                 </span>
                                             <span>
-                                                    <a href="blog-details.html">Blog Details</a>
+                                                    <a href="blog-details.html">Chi tiết bài viết</a>
                                                 </span>
                                             <span>
-                                                    <a href="cart.html">Cart</a>
+                                                    <a href="cart.html">Giỏ hàng</a>
                                                 </span>
                                             <span>
-                                                    <a href="checkout.html">Checkout</a>
+                                                    <a href="checkout.html">Thanh toán</a>
                                                 </span>
                                             <span>
-                                                    <a href="contact.html">Contact</a>
+                                                    <a href="contact.html">Liên hệ</a>
                                                 </span>
                                             <span>
-                                                    <a href="/user/my_account">My account</a>
+                                                    <a href="/user/my_account">Tài khoản</a>
                                                 </span>
                                             <span>
-                                                    <a href="shop.html">Shop</a>
+                                                    <a href="shop.html">Cửa hàng</a>
                                                 </span>
                                             <span>
-                                                    <a href="shop-list.html">Shop list</a>
+                                                    <a href="shop-list.html">Danh sách sản phẩm</a>
                                                 </span>
                                             <span>
-                                                    <a href="single-product.html">Single Shop</a>
+                                                    <a href="single-product.html">Chi tiết sản phẩm</a>
                                                 </span>
                                             <span>
-                                                    <a href="wishlist.html">Wishlist</a>
+                                                    <a href="wishlist.html">Sản phẩm Yêu thích</a>
                                                 </span>
                                         </div>
                                     </li>

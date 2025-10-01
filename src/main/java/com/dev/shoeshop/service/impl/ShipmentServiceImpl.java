@@ -1,6 +1,6 @@
 package com.dev.shoeshop.service.impl;
 
-import com.dev.shoeshop.converter.toShipmentDTO;
+import com.dev.shoeshop.converter.ToShipmentDTO;
 import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.Shipment;
@@ -21,7 +21,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Autowired
     private ShipmentRepository shipmentRepository;
     @Autowired
-    private toShipmentDTO  toShipmentDTO;
+    private ToShipmentDTO toShipmentDTO;
     @Autowired
     private OrderRepository orderRepository;
     @Autowired

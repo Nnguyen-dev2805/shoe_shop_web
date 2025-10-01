@@ -1,10 +1,12 @@
 package com.dev.shoeshop.service.impl;
 
+import com.dev.shoeshop.dto.product.ProductDetailResponse;
 import com.dev.shoeshop.dto.product.ProductRequest;
 import com.dev.shoeshop.dto.product.ProductResponse;
 import com.dev.shoeshop.dto.productdetail.ProductDetailRequest;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
+import com.dev.shoeshop.entity.Rating;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.service.*;
 import lombok.RequiredArgsConstructor;
@@ -43,11 +45,6 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         product.setBrand(brandService.getBrandById(request.getBrandId()));
 
-//        if (image != null && !image.isEmpty()) {
-//            String fileUrl = storageService.storeFile(image);
-//            product.setImage(fileUrl);
-//        }
-
         productRepository.save(product);
 
         if (request.getProductDetails() != null) {
@@ -71,23 +68,90 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Page<ProductResponse> getAllProducts(Pageable pageable, String search) {
+    public Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId) {
         Page<Product> productPage;
-        if (search != null && !search.trim().isEmpty()) {
+        
+        // Filter by category and search
+        if (categoryId != null && search != null && !search.trim().isEmpty()) {
+            productPage = productRepository.findByCategoryIdAndTitleContainingIgnoreCase(categoryId, search, pageable);
+        } 
+        // Filter by category only
+        else if (categoryId != null) {
+            productPage = productRepository.findByCategoryId(categoryId, pageable);
+        } 
+        // Search only
+        else if (search != null && !search.trim().isEmpty()) {
             productPage = productRepository.findByTitleContainingIgnoreCase(search, pageable);
-        } else {
+        } 
+        // Get all
+        else {
             productPage = productRepository.findAll(pageable);
         }
+        
         List<ProductResponse> responses = productPage.getContent().stream()
                 .map(cat -> new ProductResponse(
                         cat.getId(),
                         cat.getTitle(),
                         cat.getPrice(),
                         cat.getImage(),
-                        cat.getCategory(),
-                        cat.getBrand()
+                        cat.getCategory().getName(),
+                        cat.getBrand().getName()
                 ))
                 .collect(Collectors.toList());
         return new PageImpl<>(responses, pageable, productPage.getTotalElements());
+    }
+
+    @Override
+    public List<ProductResponse> getAllProductsList() {
+        List<Product> products = productRepository.findAll();
+        return products.stream()
+                .map(cat -> new ProductResponse(
+                        cat.getId(),
+                        cat.getTitle(),
+                        cat.getPrice(),
+                        cat.getImage(),
+                        cat.getCategory().getName(),
+                        cat.getBrand().getName()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public ProductDetailResponse getProductById(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        // Convert ProductDetails to SizeOptions
+        List<ProductDetailResponse.SizeOption> sizeOptions = product.getDetails().stream()
+                .map(detail -> ProductDetailResponse.SizeOption.builder()
+                        .id(detail.getId())
+                        .size(detail.getSize())
+                        .priceAdd(detail.getPriceadd())
+                        .build())
+                .collect(Collectors.toList());
+
+        // Calculate average rating
+        Double avgRating = 0.0;
+        Integer totalReviews = 0;
+        if (product.getRatings() != null && !product.getRatings().isEmpty()) {
+            totalReviews = product.getRatings().size();
+            avgRating = product.getRatings().stream()
+                    .mapToInt(Rating::getStar)
+                    .average()
+                    .orElse(0.0);
+        }
+
+        return ProductDetailResponse.builder()
+                .id(product.getId())
+                .title(product.getTitle())
+                .description(product.getDescription())
+                .price(product.getPrice())
+                .image(product.getImage())
+                .categoryName(product.getCategory() != null ? product.getCategory().getName() : "N/A")
+                .brandName(product.getBrand() != null ? product.getBrand().getName() : "N/A")
+                .sizeOptions(sizeOptions)
+                .avgRating(avgRating)
+                .totalReviews(totalReviews)
+                .build();
     }
 }

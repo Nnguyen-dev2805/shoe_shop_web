@@ -1,7 +1,5 @@
 package com.dev.shoeshop.dto.product;
 
-import com.dev.shoeshop.entity.Brand;
-import com.dev.shoeshop.entity.Category;
 import lombok.*;
 
 @NoArgsConstructor
@@ -14,6 +12,6 @@ public class ProductResponse {
     private String title;
     private Double price;
     private String image;
-    private Category category;
-    private Brand brand;
+    private String categoryName;
+    private String brandName;
 }

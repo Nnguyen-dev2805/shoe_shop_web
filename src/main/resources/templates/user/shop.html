@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title> Shop || James </title>
+    <title> Shop || DeeG Shop</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -68,6 +68,67 @@
         .fa-heart-o {
             color: #ccc; /* Trái tim xám khi chưa yêu thích */
         }
+        
+        /* Style cho category links trong sidebar (bao gồm "Tất cả sản phẩm") */
+        #categoryList {
+            list-style: none !important;
+            padding: 0;
+            margin: 0;
+        }
+        
+        #categoryList li {
+            margin-bottom: 5px;
+            list-style: none !important;
+            list-style-type: none !important;
+        }
+        
+        #categoryList li::before {
+            display: none !important;
+        }
+        
+        .category-link {
+            display: block;
+            transition: all 0.3s ease;
+            color: #333 !important;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        
+        .category-link:hover {
+            background-color: rgb(245, 114, 98) !important;
+            color: white !important;
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(245, 114, 98, 0.3);
+        }
+        
+        /* Active state cho category - Màu cam đỏ nổi bật */
+        #categoryList li.active > a {
+            background-color: rgb(245, 114, 98) !important;
+            color: white !important;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(245, 114, 98, 0.4);
+        }
+        
+        /* Badge số lượng sản phẩm trong active state */
+        #categoryList li.active > a span:last-child {
+            background-color: white !important;
+            color: rgb(245, 114, 98) !important;
+        }
+        
+        /* Loading spinner */
+        #loadingSpinner {
+            padding: 50px 0;
+        }
+
+        #categoryList li,
+        #categoryList li::before,
+        #categoryList .category-link::before {
+            list-style: none !important;
+            list-style-type: none !important;
+            content: none !important;
+            background: none !important;
+        }
     </style>
 </head>
 <body>
@@ -90,8 +151,8 @@
             <div class="col-md-12">
                 <div class="location">
                     <ul>
-                        <li><a href="/" title="go to homepage">Home<span>/</span></a></li>
-                        <li><strong> shop</strong></li>
+                        <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a></li>
+                        <li><strong>Cửa Hàng</strong></li>
                     </ul>
                 </div>
             </div>
@@ -100,21 +161,15 @@
             <div class="col-lg-3">
                 <div class="product-sidebar">
                     <div class="sidebar-title">
-                        <h2>Shopping Options</h2>
+                        <h2>Bộ lọc sản phẩm</h2>
                     </div>
                     <div class="single-sidebar">
-                        <div class="single-sidebar-title">
-                            <h3>Category</h3>
-                        </div>
+<!--                        <div class="single-sidebar-title">-->
+<!--                            <h3>Category</h3>-->
+<!--                        </div>-->
                         <div class="single-sidebar-content">
-                            <ul>
-                                <li th:if="${#lists.isEmpty(cate)}">Chưa có danh mục</li>
-                                <!-- Hiển thị khi danh sách trống -->
-                                <li th:each="category : ${cate}">
-                                    <a href="#tab15" class="category-link" th:attr="data-category-id=${category.id}">
-                                        <span th:text="${category.type}">Category Name</span>
-                                    </a>
-                                </li>
+                            <ul id="categoryList">
+                                <!-- Button "Tất cả sản phẩm" + Categories sẽ được load bằng AJAX -->
                             </ul>
                         </div>
                     </div>
@@ -131,10 +186,10 @@
 <!--                                    </div>-->
 <!--                                </div>-->
 <!--                            </div>-->
-                            <form th:action="@{/product/search/all}" method="get">
+                            <form id="searchForm">
                                 <input type="hidden" name="category" id="selectedCategory" value="">
-                                <input type="text" name="key" value="" placeholder="Search products">
-                                <button type="submit"><span>search</span></button>
+                                <input type="text" name="key" id="searchInput" value="" placeholder="Tìm kiếm sản phẩm">
+                                <button type="button" id="searchBtn"><span>Tìm kiếm</span></button>
                             </form>
                         </div>
                     </div>
@@ -154,7 +209,7 @@
                                             <img class="primary" src="/img/product/grid-primary.png" alt="">
                                             <img class="secondary" src="/img/product/grid-secondary.png" alt="">
                                         </span>
-                                Gird
+<!--                                Gird-->
                             </a>
                         </li>
                     </ul>
@@ -171,7 +226,7 @@
                         </a>
                     </div>-->
                     <div class="time-display limit-product">
-                        <label>Current Time</label>
+                        <label>Thời gian hiện tại</label>
                         <span id="current-time">Loading...</span>
                     </div>
                 </div>
@@ -181,69 +236,16 @@
                             <div role="tabpanel" class="tab-pane active fade show home2" id="gird">
                                 <div id="productListContainer">
                                     <div class="row" id="productList">
-                                        <div class="row">
-                                            <h4 th:if="${alert} != null" th:text="${alert}"></h4>
-                                            <div class="col-lg-4 col-md-6" th:each="product : ${products}">
-                                                <div class="single-product">
-                                                    <div class="level-pro-new">
-                                                        <span>new</span>
-                                                    </div>
-
-                                                    <div class="product-img">
-                                                        <a th:href="@{/product/details/{id}(id=${product.id})}">
-                                                            <img th:src="${product.image}" alt="Image"
-                                                                 class="primary-img">
-                                                            <img src="/img/logo.png" alt="Image2" class="secondary-img">
-                                                        </a>
-                                                    </div>
-                                                    <div class="product-name">
-                                                        <a th:href="@{/product/details/{id}(id=${product.id})}"
-                                                           th:title="${product.title}" th:text="${product.title}"></a>
-                                                        <!--                                                            <p th:text="${product.description}"></p>-->
-                                                    </div>
-                                                    <div class="price-rating">
-                                                        <span class="formatted-price" th:text="${product.price}"></span>
-                                                        <!--                                                                <div class="ratings">-->
-                                                        <!--                                                                    <i class="fa fa-star" th:each="star, iterStat : ${#numbers.sequence(1, product.rating)}"></i>-->
-                                                        <!--                                                                    <i class="fa fa-star-half-o" th:if="${product.rating - #numbers.floor(product.rating) > 0}"></i>-->
-                                                        <!--                                                                </div>-->
-                                                        <div class="ratings">
-                                                            <i class="fa fa-star"></i>
-                                                            <i class="fa fa-star"></i>
-                                                            <i class="fa fa-star"></i>
-                                                            <i class="fa fa-star"></i>
-                                                            <i class="fa fa-star"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- Phân trang -->
-                                            <div th:if="${!#lists.isEmpty(products)}">
-                                                <ul class="pagination justify-content-center" style="margin-top: 50px">
-                                                    <!-- Nút Previous -->
-                                                    <li class="page-item"
-                                                        th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                                        <a class="page-link"
-                                                           th:href="@{/user/shop(page=${currentPage - 1}, size=6)}">Previous</a>
-                                                    </li>
-
-                                                    <!-- Các số trang -->
-                                                    <li class="page-item"
-                                                        th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
-                                                        th:classappend="${i == currentPage ? 'active' : ''}">
-                                                        <a class="page-link" th:href="@{/user/shop(page=${i}, size=6)}"
-                                                           th:text="${i + 1}"></a>
-                                                    </li>
-
-                                                    <!-- Nút Next -->
-                                                    <li class="page-item"
-                                                        th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                                        <a class="page-link"
-                                                           th:href="@{/user/shop(page=${currentPage + 1}, size=6)}">Next</a>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                        <!-- Products will be loaded dynamically via AJAX -->
+                                        <div class="col-12 text-center" id="loadingSpinner">
+                                            <p>Loading products...</p>
                                         </div>
+                                    </div>
+                                    <!-- Pagination -->
+                                    <div id="paginationContainer" class="col-12">
+                                        <ul class="pagination justify-content-center" style="margin-top: 50px" id="pagination">
+                                            <!-- Pagination will be loaded dynamically -->
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
@@ -354,49 +356,9 @@
 <!-- main JS
 ============================================ -->
 <script src="/js/main.js"></script>
-<script>
-    $(document).ready(function () {
-        // Bắt sự kiện khi nhấn vào liên kết "add-to-wishlist"
-        $('.add-to-wishlist').click(function (e) {
-            e.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
 
-            var productIdStr = $(this).data('product-id'); // Lấy productId từ thuộc tính data-product-id
-            var productId = parseInt(productIdStr, 10); // Chuyển đổi productId sang số nguyên
-            if (isNaN(productId) || productId <= 0) {
-                alert('ID sản phẩm không hợp lệ');
-                return;
-            }
-
-            var heartIcon = $(this).find('i'); // Lấy thẻ <i> chứa biểu tượng trái tim
-
-            // Gửi yêu cầu AJAX đến server
-            $.ajax({
-                url: '/wishlist/toggle', // URL của endpoint thêm/xóa sản phẩm vào wishlist
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({productId: productId}), // Gửi productId dưới dạng JSON
-                success: function (response) {
-                    if (response === 'ADDED') {
-                        // Nếu thêm thành công, thay đổi biểu tượng trái tim thành màu đỏ
-                        heartIcon.removeClass('fa-heart-o').addClass('fa-heart');
-                        heartIcon.css('color', 'red');
-                    } else if (response === 'REMOVED') {
-                        // Nếu bị xóa, đổi biểu tượng trái tim thành không màu
-                        heartIcon.removeClass('fa-heart').addClass('fa-heart-o');
-                        heartIcon.css('color', '');
-                    } else if (response === 'LOGIN_REQUIRED') {
-                        alert('Vui lòng đăng nhập để thêm sản phẩm vào wishlist');
-                    } else if (response === 'ALREADY_EXISTS') {
-                        alert('Sản phẩm đã có trong wishlist');
-                    }
-                },
-                error: function () {
-                    alert('Đã có lỗi xảy ra, vui lòng thử lại sau');
-                }
-            });
-        });
-    });
-</script>
+<!-- User Shop JS - Category Filter & Product List -->
+<script src="/js/user/user-shop.js"></script>
 <script>
     // Hàm để cập nhật thời gian
     function updateTime() {
@@ -417,47 +379,5 @@
     updateTime();
 </script>
 
-<script>
-    $(document).ready(function () {
-        // Hàm load sản phẩm theo danh mục
-        function loadProducts(categoryId, page) {
-            $.get("/category/" + categoryId, {page: page}, function (data) {
-                console.log(data);  // Kiểm tra dữ liệu trả về
-                $('#productListContainer').html(data);  // Đảm bảo rằng 'data' chứa phần HTML cần thiết
-                bindPaginationLinks(categoryId);  // Gắn lại sự kiện cho các nút phân trang
-            }).fail(function (error) {
-                console.error("Error loading products:", error);
-            });
-        }
-
-        // Gắn sự kiện click cho các danh mục
-        $(document).on('click', '.category-link', function (e) {
-            e.preventDefault();
-            const categoryId = $(this).data('category-id');
-            // Cập nhật giá trị category vào input ẩn
-            $('#selectedCategory').val(categoryId);
-            loadProducts(categoryId, 0); // Load trang đầu tiên
-        });
-
-        // Gắn sự kiện click cho các nút phân trang
-        function bindPaginationLinks(categoryId) {
-            $(document).on('click', '.page-link', function (e) {
-                e.preventDefault();
-                const page = $(this).data('page');
-                if (!isNaN(page)) {
-                    loadProducts(categoryId, page);
-                } else {
-                    console.error("Invalid page number");
-                }
-            });
-        }
-    });
-</script>
-<script>
-    document.querySelectorAll('.formatted-price').forEach(function (priceElement) {
-        var price = parseFloat(priceElement.textContent);
-        priceElement.textContent = new Intl.NumberFormat().format(price);
-    });
-</script>
 </body>
 </html>

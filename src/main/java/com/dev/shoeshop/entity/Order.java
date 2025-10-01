@@ -50,7 +50,7 @@ public class Order {
     @ManyToOne
 //    @NotNull(message = "User cannot be null")
     @JoinColumn(name = "delivery_address_id", nullable = false) // Khóa ngoại đến User
-    private addressEntity address;
+    private Address address;
 
 
 }

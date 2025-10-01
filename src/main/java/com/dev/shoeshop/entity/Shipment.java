@@ -3,7 +3,6 @@ package com.dev.shoeshop.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.Date;
 
@@ -31,7 +30,7 @@ public class Shipment {
     @ManyToOne
 //    @NotNull(message = "User cannot be null")
     @JoinColumn(name = "shipment_address_id", nullable = false) // Khóa ngoại đến User
-    private addressEntity address;
+    private Address address;
 
     @Column(name = "status")
     private String status;

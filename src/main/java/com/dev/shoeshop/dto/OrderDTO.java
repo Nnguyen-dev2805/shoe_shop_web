@@ -44,7 +44,8 @@ public class OrderDTO {
                         .id(order.getUser().getId())
                         .fullname(order.getUser().getFullname())
                         .email(order.getUser().getEmail())
-                        .address(order.getUser().getAddress())
+                        .address("1 VVN") // đoạn này chưa fix
+//                        .address(order.getUser().getAddress())
                         .phone(order.getUser().getPhone())
                         .build()
                 )

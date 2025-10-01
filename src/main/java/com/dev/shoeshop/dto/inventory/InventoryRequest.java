@@ -3,6 +3,7 @@ package com.dev.shoeshop.dto.inventory;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -10,10 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 public class InventoryRequest {
-    protected Long id;
-    protected Long productDetailId;
-    private String title;
-    private int quantity;
-    private int size;
+    private Long productId;
+    private Map<Integer, Integer> sizes;
     private LocalDateTime createdAt;
 }

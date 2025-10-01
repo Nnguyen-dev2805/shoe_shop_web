@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -15,7 +17,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Table(name = "address")
 @Builder
-public class addressEntity {
+public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -36,9 +38,10 @@ public class addressEntity {
     @Column(name = "country")
     private String country;
 
+    @OneToMany(mappedBy = "address", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserAddress> userAddresses = new ArrayList<>();
+
+
     @OneToMany(mappedBy = "address",cascade = CascadeType.ALL)
     private Set<Order>Orders;
-
-
-
 }

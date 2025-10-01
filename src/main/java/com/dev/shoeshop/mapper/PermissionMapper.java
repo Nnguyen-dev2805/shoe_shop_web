@@ -17,7 +17,8 @@ public class PermissionMapper {
                 .id(user.getId())
                 .fullname(user.getFullname())
                 .email(user.getEmail())
-                .address(user.getAddress())
+                .address("1 VVN") // đoạn này chưa fix
+//                .address(user.getUserAddresses())
                 .phone(user.getPhone())
                 .roleId(user.getRole() != null ? user.getRole().getRoleId() : null)
                 .roleName(user.getRole() != null ? user.getRole().getRoleName() : null)
