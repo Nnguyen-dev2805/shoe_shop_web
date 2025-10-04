@@ -591,66 +591,8 @@
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
 
-<!--<script>-->
-<!--    $(document).ready(function() {-->
-<!--        $('#categoryForm').on('submit', function(e) {-->
-<!--            e.preventDefault();-->
-<!--            const requestData = {-->
-<!--                name: $('#name').val().trim(),-->
-<!--                description: $('#description').val().trim()-->
-<!--            };-->
-<!--            if (!requestData.name) {-->
-<!--                $('#nameError').text('Tên không được để trống').show();-->
-<!--                $('#name').focus();-->
-<!--                return false;-->
-<!--            }-->
-<!--            $('#nameError').hide();-->
-<!--            $('#message').empty();-->
-
-
-<!--            $.ajax({-->
-<!--                url: '/api/category',-->
-<!--                type: 'POST',-->
-<!--                contentType: 'application/json',-->
-<!--                data: JSON.stringify(requestData),-->
-<!--                dataType: 'json',-->
-<!--                success: function(response) {-->
-<!--                    $('#message').html(-->
-<!--                        '<div class="alert alert-success alert-dismissible fade show" role="alert">' +-->
-<!--                        'Thêm thành công! Tên: <strong>' + response.name + '</strong> (ID: ' + response.id + ')' +-->
-<!--                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +-->
-<!--                        '</div>'-->
-<!--                    );-->
-<!--                    $('#categoryForm')[0].reset();-->
-<!--                    setTimeout(function() {-->
-<!--                        window.location.href = '/admin/category'-->
-<!--                    }, 2000);-->
-<!--                },-->
-<!--                error: function(xhr, status, error) {-->
-<!--                    var errorMsg = 'Lỗi: ';-->
-<!--                    if (xhr.status === 400) {-->
-<!--                        errorMsg += xhr.responseText || 'Dữ liệu không hợp lệ';-->
-<!--                    } else if (xhr.status === 401) {-->
-<!--                        errorMsg += 'Chưa đăng nhập. Vui lòng login lại.';-->
-<!--                        window.location.href = '/login';-->
-<!--                    } else if (xhr.status === 403) {-->
-<!--                        errorMsg += 'Không có quyền truy cập.';-->
-<!--                    } else if (xhr.status === 500) {-->
-<!--                        errorMsg += 'Lỗi server. Vui lòng thử lại.' + (xhr.responseText ? ' Chi tiết: ' + xhr.responseText : '');-->
-<!--                    } else {-->
-<!--                        errorMsg += xhr.status + ' - ' + error;-->
-<!--                    }-->
-<!--                    $('#message').html(-->
-<!--                        '<div class="alert alert-danger alert-dismissible fade show" role="alert">' +-->
-<!--                        errorMsg +-->
-<!--                        '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +-->
-<!--                        '</div>'-->
-<!--                    );-->
-<!--                }-->
-<!--            });-->
-<!--        });-->
-<!--    });-->
-<!--</script>-->
+<!-- Admin Brand Management JS -->
+<script src="/js/admin/admin-brand.js"></script>
 
 </body>
 </html>
