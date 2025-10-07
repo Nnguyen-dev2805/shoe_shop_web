@@ -194,91 +194,36 @@
                     </div>
                 </div>
                 <div class="row">
-                    <!-- Nút để mở modal -->
-                    <div class="col-md-4">
-                        <div class="discount-code">
-                            <h3>Discount Codes</h3>
-                            <p>Enter your coupon code if you have one.</p>
-                            <!-- Giữ các input readonly để hiển thị thông tin đã chọn -->
-                            <input type="hidden" id="discountIdInput" name="discountId">
-                            <input type="text" id="couponCodeInput" class="form-control" placeholder="Selected discount" readonly>
-
-                            <div class="shopping-button mt-2">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#discountModal">Choose Discount</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" style="max-width: 600px; width: 90%; margin: auto;">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="discountModalLabel">Select Discount</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Discount availability will be handled dynamically -->
-                                    <ul class="list-group" id="discountList" style="max-height: 250px; overflow-y: auto;">
-                                        <!-- Discounts will be loaded dynamically via AJAX -->
-                                        <li class="text-center">
-                                            <i class="fa fa-spinner fa-spin"></i> Loading discounts...
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Other content -->
-                    <div class="col-md-4">
-                        <div class="estimate-shipping">
-                            <h3>Estimate Shipping and Tax</h3>
-                            <p>Enter your destination to get a shipping estimate.</p>
-                            <form action="#">
-                                <div class="form-box">
-                                    <div class="form-name">
-                                    </div>
-                                </div>
-
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <!-- Address Selection -->
+                    <div class="col-md-6">
                         <div class="totals">
-                            <p>Created Date: <span id="createdDate">Loading...</span></p>
-                            <h3>Grand Total <span id="totalPrice">0</span></h3>
-
-
-
-                            <!-- Form for Checkout -->
-                            <form id="form2">
-                                <input type="hidden" name="cartId" value=""/>
-                                <input type="hidden" name="finalTotalPrice" id="finalTotalPrice" value="0"/>
-                                <div>
-                                    <label for="payOption">Payment Option:</label>
-                                    <select name="payOption" id="payOption">
-                                        <option value="COD">Cash on Delivery</option>
-                                        <option value="VNPAY">Pay with VNPay</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>Address <em>*</em></label>
-                                    <select name="addressId" required style="width: 100%; max-width: 400px;">
-                                        <!-- User addresses will be loaded dynamically via AJAX -->
-                                        <option value="">Loading addresses...</option>
-                                    </select>
-                                </div>
-
-                                <div class="shopping-button">
-                                    <button type="submit">Proceed to Checkout</button>
-                                </div>
-                            </form>
-
-                            <a href="#">Checkout with Multiple Addresses</a>
+                            <h3><i class="fa fa-map-marker"></i> Địa chỉ giao hàng</h3>
+                            <div class="form-group">
+                                <label>Chọn địa chỉ <em>*</em></label>
+                                <select name="addressId" id="addressSelect" required class="form-control">
+                                    <!-- User addresses will be loaded dynamically via AJAX -->
+                                    <option value="">Đang tải địa chỉ...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-
+                    
+                    <!-- Total Price -->
+                    <div class="col-md-6">
+                        <div class="totals">
+                            <p>Ngày tạo giỏ hàng: <span id="createdDate">Đang tải...</span></p>
+                            <h3>Tổng tiền tạm tính: <span id="totalPrice" style="color: #e74c3c;">0 đ</span></h3>
+                            <p style="font-size: 14px; color: #666;">(*Chưa bao gồm phí vận chuyển và giảm giá)</p>
+                            
+                            <input type="hidden" name="cartId" id="cartIdInput" value=""/>
+                            
+                            <div class="shopping-button mt-3">
+                                <button type="button" id="btn-continue-payment" class="btn btn-success btn-lg" style="width: 100%;">
+                                    <i class="fa fa-shopping-cart"></i> Tiếp tục mua hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>

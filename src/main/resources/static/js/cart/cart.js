@@ -6,22 +6,21 @@
 $(document).ready(function() {
     // Initialize cart when page loads
     initializeCart();
-    
     // Bind event handlers
     bindEventHandlers();
 });
 
 /**
- * Initialize cart data loading
+ * Initialize cart page
  */
 function initializeCart() {
     loadCartData();
-    loadDiscounts();
     loadUserAddresses();
 }
 
 /**
  * Load cart data from API
+{{ ... }}
  */
 function loadCartData() {
     $.ajax({
@@ -102,8 +101,11 @@ function renderCartItems(cart) {
         const row = `
             <tr data-detail-id="${detail.id}">
                 <td class="text-center">
-                    <input type="checkbox" class="item-checkbox" data-id="${detail.id}" 
-                           data-price="${detail.price}" data-quantity="${detail.quantity}" checked>
+                    <input type="checkbox" class="item-checkbox" 
+                           data-id="${detail.id}" 
+                           data-price="${detail.price}" 
+                           data-quantity="${detail.quantity}"
+                           checked>
                 </td>
                 <td class="cart-item-img">
                     <a href="/product/details/${detail.product.product.id}">
@@ -143,6 +145,9 @@ function renderCartItems(cart) {
             </tr>
         `;
         tbody.append(row);
+        
+        // Store detail object using jQuery data() - this avoids JSON escaping issues
+        $(`tr[data-detail-id="${detail.id}"] .item-checkbox`).data('product-detail', detail);
     });
     
     // Store cart data globally for calculations
@@ -238,20 +243,19 @@ function calculateSelectedTotal() {
 function updateCartTotals(cart) {
     // Calculate total based on selected items only
     const selectedTotal = calculateSelectedTotal();
-    const totalPrice = selectedTotal > 0 ? selectedTotal + 5 : selectedTotal;
     
-    $('#totalPrice').text(formatPrice(totalPrice));
+    $('#totalPrice').text(formatPrice(selectedTotal));
     
     // Update created date
     const createdDate = new Date(cart.createdDate);
     const formattedDate = createdDate.toLocaleString('vi-VN');
-    $('.totals p').first().html(`Created Date: <span>${formattedDate}</span>`);
+    $('#createdDate').text(formattedDate);
     
-    // Update cart ID in form
-    $('input[name="cartId"]').val(cart.id);
+    // Update cart ID
+    $('#cartIdInput').val(cart.id);
     
-    // Store original total price for discount calculations
-    window.originalTotalPrice = totalPrice;
+    // Store for later use
+    window.originalTotalPrice = selectedTotal;
 }
 
 /**
@@ -270,11 +274,8 @@ function bindEventHandlers() {
     $(document).on('click', '.edit-btn', handleEditItem);
     $(document).on('click', '.remove-btn', handleRemoveItem);
     
-    // Discount selection
-    $(document).on('click', '.select-discount-btn', handleDiscountSelection);
-    
-    // Checkout form submission
-    $('#form2').on('submit', handleCheckoutSubmission);
+    // Continue to payment button
+    $('#btn-continue-payment').on('click', handleContinueToPayment);
 }
 
 /**
@@ -403,81 +404,51 @@ function handleRemoveItem() {
 }
 
 /**
- * Handle discount selection
+ * Handle continue to payment button
  */
-function handleDiscountSelection() {
-    const listItem = $(this).closest('li');
-    const discountId = listItem.data('id');
-    const discountName = listItem.data('discount-code');
-    const discountPercent = parseFloat(listItem.data('percent'));
-    
-    // Update discount inputs
-    $('#discountIdInput').val(discountId);
-    $('#couponCodeInput').val(`${discountName} - ${discountPercent}% OFF`);
-    
-    // Calculate new total price
-    const newTotalPrice = window.originalTotalPrice * (1 - (discountPercent / 100));
-    
-    // Update display
-    $('#totalPrice').text(formatPrice(newTotalPrice));
-    $('#finalTotalPrice').val(newTotalPrice.toFixed(2));
-    
-    // Close modal
-    $('#discountModal').modal('hide');
-}
-
-/**
- * Handle checkout form submission
- */
-function handleCheckoutSubmission(e) {
-    e.preventDefault();
+function handleContinueToPayment() {
+    console.log('Button clicked!'); // Debug log
     
     // Validate: At least one item must be selected
     const selectedItems = $('.item-checkbox:checked');
+    console.log('Selected items:', selectedItems.length); // Debug log
+    
     if (selectedItems.length === 0) {
-        showAlert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!', 'error');
+        showAlert('Vui lòng chọn ít nhất một sản phẩm!', 'error');
         return;
     }
     
-    // Get list of selected item IDs
-    const selectedItemIds = [];
+    // Validate address
+    const addressId = $('#addressSelect').val();
+    console.log('Address ID:', addressId); // Debug log
+    
+    if (!addressId) {
+        showAlert('Vui lòng chọn địa chỉ giao hàng!', 'error');
+        return;
+    }
+    
+    // Collect selected items data from data attribute
+    const selectedData = [];
     selectedItems.each(function() {
-        selectedItemIds.push($(this).data('id'));
-    });
-    
-    const formData = {
-        cartId: $('input[name="cartId"]').val(),
-        finalTotalPrice: $('#finalTotalPrice').val() || window.originalTotalPrice,
-        payOption: $('#payOption').val(),
-        addressId: $('select[name="addressId"]').val(),
-        discountId: $('#discountIdInput').val(),
-        selectedItemIds: selectedItemIds // Send selected items to backend
-    };
-    
-    $.ajax({
-        url: '/api/order/pay',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(formData),
-        success: function(response) {
-            if (response.success) {
-                if (response.redirectUrl) {
-                    window.location.href = response.redirectUrl;
-                } else {
-                    showAlert('Order placed successfully!', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/user/orders';
-                    }, 2000);
-                }
-            } else {
-                showAlert(response.message || 'Error processing order', 'error');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error processing checkout:', error);
-            showAlert('Failed to process order', 'error');
+        const checkbox = $(this);
+        const detailData = checkbox.data('product-detail');
+        
+        if (detailData) {
+            selectedData.push(detailData);
         }
     });
+    
+    console.log('Selected data:', selectedData); // Debug log
+    
+    // Store in sessionStorage
+    sessionStorage.setItem('selectedItems', JSON.stringify(selectedData));
+    sessionStorage.setItem('selectedAddressId', addressId);
+    sessionStorage.setItem('cartId', $('#cartIdInput').val());
+    
+    console.log('Redirecting to payment...'); // Debug log
+    
+    // Redirect to payment page
+    window.location.href = '/user/payment';
 }
 
 /**
@@ -487,7 +458,7 @@ function formatPrice(price) {
     return new Intl.NumberFormat('vi-VN', { 
         style: 'decimal', 
         minimumFractionDigits: 0 
-    }).format(price);
+    }).format(price) + ' đ';
 }
 
 /**

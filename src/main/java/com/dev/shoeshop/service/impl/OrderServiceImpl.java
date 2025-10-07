@@ -7,12 +7,16 @@ import com.dev.shoeshop.dto.CartProductDTO;
 import com.dev.shoeshop.dto.OrderDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
+import com.dev.shoeshop.entity.Address;
 import com.dev.shoeshop.entity.Cart;
 import com.dev.shoeshop.entity.CartDetail;
 import com.dev.shoeshop.entity.Order;
+import com.dev.shoeshop.entity.OrderDetail;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
 import com.dev.shoeshop.repository.OrderRepository;
@@ -23,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +53,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -119,8 +127,14 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                         Double finalTotalPrice, String payOption, 
-                                        Long shippingCompanyId, Long discountId) {
+                                        Long shippingCompanyId, Long discountId, 
+                                        java.util.List<Integer> selectedItemIds) {
         try {
+            System.out.println("=== Processing checkout in service ===");
+            System.out.println("Cart ID: " + cartId);
+            System.out.println("User ID: " + userId);
+            System.out.println("Selected Item IDs: " + selectedItemIds);
+            
             // Validate cart belongs to user
             Cart cart = cartRepository.findById(cartId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
@@ -129,29 +143,36 @@ public class OrderServiceImpl implements OrderService {
                 throw new RuntimeException("Unauthorized access to cart");
             }
             
-            // Create order from cart
-            Order order = createOrderFromCart(cart, addressId, finalTotalPrice, payOption, shippingCompanyId, discountId);
+            // Get address
+            Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+            
+            // Create order from selected cart items
+            Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, selectedItemIds);
             Order savedOrder = orderRepository.save(order);
             
-            // Clear cart after successful order
-            clearCart(cart);
+            System.out.println("Order created with ID: " + savedOrder.getId());
+            
+            // Remove selected items from cart (không xóa toàn bộ cart)
+            removeSelectedItemsFromCart(cart, selectedItemIds);
             
             // Handle payment processing
-            OrderResultDTO result = OrderResultDTO.builder()
+            OrderResultDTO orderResult = OrderResultDTO.builder()
                 .orderId(savedOrder.getId())
                 .status("SUCCESS")
                 .message("Order created successfully")
                 .build();
             
-            // If VNPay, generate payment URL (implement based on your VNPay integration)
+            // If VNPay, generate payment URL
             if ("VNPAY".equals(payOption)) {
                 String paymentUrl = generateVNPayUrl(savedOrder);
-                result.setPaymentUrl(paymentUrl);
+                orderResult.setPaymentUrl(paymentUrl);
             }
             
-            return result;
+            return orderResult;
             
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException("Error processing checkout: " + e.getMessage(), e);
         }
     }
@@ -187,19 +208,73 @@ public class OrderServiceImpl implements OrderService {
         return cartDTO;
     }
     
-    private Order createOrderFromCart(Cart cart, Long addressId, Double finalTotalPrice, 
-                                    String payOption, Long shippingCompanyId, Long discountId) {
-        // Implementation would depend on your Order entity structure
-        // This is a placeholder - you'll need to implement based on your entities
+    private Order createOrderFromCart(Cart cart, Address address, Double finalTotalPrice, 
+                                    String payOption, java.util.List<Integer> selectedItemIds) {
+        System.out.println("Creating order from cart...");
+        
+        // Create order
         Order order = new Order();
-        // Set order properties from cart and parameters
+        order.setUser(cart.getUser());
+        order.setAddress(address);
+        order.setTotalPrice(finalTotalPrice);
+        order.setCreatedDate(new Date());
+        order.setStatus(ShipmentStatus.IN_STOCK);
+        order.setPayOption(PayOption.valueOf(payOption));
+        
+        // Create order details
+        Set<OrderDetail> orderDetails = new HashSet<>();
+        
+        for (CartDetail cartDetail : cart.getCartDetails()) {
+            // Chỉ thêm vào order nếu item được chọn
+            if (selectedItemIds == null || selectedItemIds.contains(cartDetail.getId())) {
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setOrder(order);
+                orderDetail.setProduct(cartDetail.getProduct());
+                orderDetail.setQuantity(cartDetail.getQuantity());
+                orderDetail.setPrice(cartDetail.getPrice());
+                
+                orderDetails.add(orderDetail);
+                System.out.println("Added order detail: product=" + cartDetail.getProduct().getId() + 
+                                 ", quantity=" + cartDetail.getQuantity() + 
+                                 ", price=" + cartDetail.getPrice());
+            }
+        }
+        
+        order.setOrderDetailSet(orderDetails);
+        System.out.println("Order created with " + orderDetails.size() + " items");
+        
         return order;
     }
     
-    private void clearCart(Cart cart) {
-        // Clear cart items or delete cart based on your business logic
-        cart.getCartDetails().clear();
-        cart.setTotalPrice(0.0);
+    private void removeSelectedItemsFromCart(Cart cart, java.util.List<Integer> selectedItemIds) {
+        System.out.println("Removing selected items from cart...");
+        
+        if (selectedItemIds == null || selectedItemIds.isEmpty()) {
+            // Nếu không có selectedItemIds, xóa toàn bộ (backward compatibility)
+            cart.getCartDetails().clear();
+            cart.setTotalPrice(0.0);
+        } else {
+            // Tạo list items cần xóa (tránh ConcurrentModificationException)
+            java.util.List<CartDetail> toRemove = new java.util.ArrayList<>();
+            for (CartDetail detail : cart.getCartDetails()) {
+                if (selectedItemIds.contains(detail.getId())) {
+                    toRemove.add(detail);
+                }
+            }
+            
+            // Xóa các items
+            cart.getCartDetails().removeAll(toRemove);
+            
+            // Tính lại tổng tiền
+            Double newTotal = cart.getCartDetails().stream()
+                .mapToDouble(cd -> cd.getPrice() * cd.getQuantity())
+                .sum();
+            cart.setTotalPrice(newTotal);
+            
+            System.out.println("Removed " + toRemove.size() + " items from cart");
+            System.out.println("New cart total: " + newTotal);
+        }
+        
         cartRepository.save(cart);
     }
     

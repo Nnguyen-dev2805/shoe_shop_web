@@ -146,7 +146,7 @@ public class ApiCartController {
      */
     @PutMapping("/cart/update-quantity/{id}")
     public ResponseEntity<?> updateQuantity(@PathVariable Long id, 
-                                          @RequestBody Map<String, Long> request,
+                                          @RequestBody Map<String, Object> request,
                                           HttpSession session) {
         try {
             Users user = (Users) session.getAttribute(Constant.SESSION_USER);
@@ -155,11 +155,25 @@ public class ApiCartController {
                     .body(createErrorResponse("User not authenticated"));
             }
             
-            Long quantity = request.get("quantity");
-            if (quantity == null || quantity < 1) {
+            System.out.println("=== Update Quantity Request ===");
+            System.out.println("Cart Detail ID: " + id);
+            System.out.println("Request body: " + request);
+            
+            Object quantityObj = request.get("quantity");
+            if (quantityObj == null) {
                 return ResponseEntity.badRequest()
-                    .body(createErrorResponse("Invalid quantity"));
+                    .body(createErrorResponse("Quantity is required"));
             }
+            
+            // Convert to Long (handle both Integer and Long)
+            Long quantity = Long.valueOf(quantityObj.toString());
+            if (quantity < 1) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Quantity must be at least 1"));
+            }
+            
+            System.out.println("Parsed quantity: " + quantity);
+            System.out.println("User ID: " + user.getId());
             
             orderDetailService.updateQuantity(id, quantity, user.getId());
             
@@ -170,6 +184,7 @@ public class ApiCartController {
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createErrorResponse("Error updating quantity: " + e.getMessage()));
         }
@@ -251,14 +266,32 @@ public class ApiCartController {
                     .body(createErrorResponse("User not authenticated"));
             }
             
+            System.out.println("=== Processing checkout ===");
+            System.out.println("Request: " + request);
+            
             // Extract request data
             Long cartId = Long.valueOf(request.get("cartId").toString());
             Double finalTotalPrice = Double.valueOf(request.get("finalTotalPrice").toString());
             String payOption = (String) request.get("payOption");
             Long addressId = Long.valueOf(request.get("addressId").toString());
-            Long shippingCompanyId = null; // Shipping company removed from cart
-            Long discountId = request.get("discountId") != null ? 
+            Long shippingCompanyId = request.get("shippingCompanyId") != null ? 
+                Long.valueOf(request.get("shippingCompanyId").toString()) : null;
+            Long discountId = request.get("discountId") != null && !request.get("discountId").toString().isEmpty() ? 
                 Long.valueOf(request.get("discountId").toString()) : null;
+            
+            // Get selected item IDs (only items user selected to purchase)
+            @SuppressWarnings("unchecked")
+            java.util.List<Integer> selectedItemIds = request.get("selectedItemIds") != null ? 
+                (java.util.List<Integer>) request.get("selectedItemIds") : null;
+            
+            System.out.println("Cart ID: " + cartId);
+            System.out.println("User ID: " + user.getId());
+            System.out.println("Address ID: " + addressId);
+            System.out.println("Payment Option: " + payOption);
+            System.out.println("Shipping Company ID: " + shippingCompanyId);
+            System.out.println("Discount ID: " + discountId);
+            System.out.println("Selected Item IDs: " + selectedItemIds);
+            System.out.println("Final Total Price: " + finalTotalPrice);
             
             // Validate required fields
             if (cartId == null || addressId == null || payOption == null) {
@@ -269,22 +302,20 @@ public class ApiCartController {
             // Process the order
             OrderResultDTO orderResult = orderService.processCheckout(
                 cartId, user.getId(), addressId, finalTotalPrice, 
-                payOption, shippingCompanyId, discountId
+                payOption, shippingCompanyId, discountId, selectedItemIds
             );
             
             Map<String, Object> response = new HashMap<>();
             response.put("success", true);
             response.put("message", "Order processed successfully");
-            response.put("orderId", orderResult.getOrderId());
+            response.put("data", orderResult);
             
-            // Handle payment redirection for VNPay
-            if ("VNPAY".equals(payOption) && orderResult.getPaymentUrl() != null) {
-                response.put("redirectUrl", orderResult.getPaymentUrl());
-            }
+            System.out.println("Order created successfully with ID: " + orderResult.getOrderId());
             
             return ResponseEntity.ok(response);
             
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createErrorResponse("Error processing checkout: " + e.getMessage()));
         }

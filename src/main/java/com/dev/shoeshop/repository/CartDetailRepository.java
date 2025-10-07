@@ -27,17 +27,18 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Long> {
     
     /**
      * Update quantity of cart detail
+     * Note: No JOIN with cart table to avoid trigger conflict
      */
-    @Modifying
-    @Query("UPDATE CartDetail cd SET cd.quantity = :quantity WHERE cd.id = :detailId AND cd.cart.user.id = :userId")
-    Long updateQuantity(@Param("detailId") Long detailId, @Param("quantity") Long quantity, @Param("userId") Long userId);
+    @Modifying(clearAutomatically = true)
+    @Query("UPDATE CartDetail cd SET cd.quantity = :quantity WHERE cd.id = :detailId AND cd.id IN (SELECT cd2.id FROM CartDetail cd2 WHERE cd2.cart.user.id = :userId)")
+    int updateQuantity(@Param("detailId") Long detailId, @Param("quantity") Integer quantity, @Param("userId") Long userId);
     
     /**
      * Delete cart detail by ID and user ID (for security)
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("DELETE FROM CartDetail cd WHERE cd.id = :detailId AND cd.cart.user.id = :userId")
-    Long deleteByIdAndUserId(@Param("detailId") Long detailId, @Param("userId") Long userId);
+    int deleteByIdAndUserId(@Param("detailId") Long detailId, @Param("userId") Long userId);
     
     /**
      * Count items in cart

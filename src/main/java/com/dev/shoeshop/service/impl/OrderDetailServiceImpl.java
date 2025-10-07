@@ -74,13 +74,34 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     @Override
     @Transactional
     public void updateQuantity(Long detailId, Long quantity, Long userId) {
-        Long updated = cartDetailRepository.updateQuantity(detailId, quantity, userId);
-        if (updated == 0) {
-            throw new RuntimeException("Cart item not found or unauthorized access");
+        System.out.println("=== OrderDetailServiceImpl.updateQuantity ===");
+        System.out.println("Detail ID: " + detailId);
+        System.out.println("Quantity: " + quantity);
+        System.out.println("User ID: " + userId);
+        
+        // First, find and validate cart detail belongs to user
+        CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
+            .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
+        
+        // Validate quantity against product stock
+        int availableStock = cartDetail.getProduct().getQuantity();
+        System.out.println("Available stock: " + availableStock);
+        
+        if (quantity > availableStock) {
+            throw new RuntimeException("Số lượng vượt quá tồn kho. Chỉ còn " + availableStock + " sản phẩm");
         }
         
-        // Update cart total price
-        updateCartTotalPrice(detailId, userId);
+        if (quantity <= 0) {
+            throw new RuntimeException("Số lượng phải lớn hơn 0");
+        }
+        
+        // Update quantity
+        cartDetail.setQuantity(quantity.intValue());
+        cartDetailRepository.save(cartDetail);
+        
+        System.out.println("Quantity updated successfully");
+        
+        // Note: Cart total price is automatically updated by database trigger
     }
     
     @Override
@@ -89,38 +110,55 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
+        // Validate quantity against product stock
+        int availableStock = cartDetail.getProduct().getQuantity();
+        
+        if (quantity > availableStock) {
+            throw new RuntimeException("Số lượng vượt quá tồn kho. Chỉ còn " + availableStock + " sản phẩm");
+        }
+        
+        if (quantity <= 0) {
+            throw new RuntimeException("Số lượng phải lớn hơn 0");
+        }
+        
         cartDetail.setQuantity(quantity.intValue());
         cartDetailRepository.save(cartDetail);
         
-        // Update cart total price
-        updateCartTotalPrice(detailId, userId);
+        // Note: Cart total price is automatically updated by database trigger
     }
     
     @Override
     @Transactional
     public void removeCartItem(Long detailId, Long userId) {
-        Long deleted = cartDetailRepository.deleteByIdAndUserId(detailId, userId);
-        if (deleted == 0) {
-            throw new RuntimeException("Cart item not found or unauthorized access");
-        }
+        System.out.println("=== OrderDetailServiceImpl.removeCartItem ===");
+        System.out.println("Detail ID: " + detailId);
+        System.out.println("User ID: " + userId);
         
-        // Update cart total price
-        updateCartTotalPrice(detailId, userId);
+        // First, find and validate cart detail belongs to user
+        CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
+            .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
+        
+        // Delete using entity (not @Modifying query to avoid trigger conflict)
+        cartDetailRepository.delete(cartDetail);
+        
+        System.out.println("Cart item deleted successfully");
+        
+        // Note: Cart total price is automatically updated by database trigger
     }
     
+    // DEPRECATED: Cart total price is now automatically updated by database trigger
+    // No longer needed since database handles this via trigger
+    /*
     private void updateCartTotalPrice(Long detailId, Long userId) {
-        // Find the cart through cart detail or user
         CartDetail cartDetail = cartDetailRepository.findById(detailId).orElse(null);
         if (cartDetail != null) {
             Cart cart = cartDetail.getCart();
-            
-            // Recalculate total price
             double totalPrice = cart.getCartDetails().stream()
                 .mapToDouble(detail -> detail.getPrice() * detail.getQuantity())
                 .sum();
-            
             cart.setTotalPrice(totalPrice);
             cartRepository.save(cart);
         }
     }
+    */
 }
