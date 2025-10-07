@@ -432,12 +432,26 @@ function handleDiscountSelection() {
 function handleCheckoutSubmission(e) {
     e.preventDefault();
     
+    // Validate: At least one item must be selected
+    const selectedItems = $('.item-checkbox:checked');
+    if (selectedItems.length === 0) {
+        showAlert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!', 'error');
+        return;
+    }
+    
+    // Get list of selected item IDs
+    const selectedItemIds = [];
+    selectedItems.each(function() {
+        selectedItemIds.push($(this).data('id'));
+    });
+    
     const formData = {
         cartId: $('input[name="cartId"]').val(),
         finalTotalPrice: $('#finalTotalPrice').val() || window.originalTotalPrice,
         payOption: $('#payOption').val(),
         addressId: $('select[name="addressId"]').val(),
-        discountId: $('#discountIdInput').val()
+        discountId: $('#discountIdInput').val(),
+        selectedItemIds: selectedItemIds // Send selected items to backend
     };
     
     $.ajax({
