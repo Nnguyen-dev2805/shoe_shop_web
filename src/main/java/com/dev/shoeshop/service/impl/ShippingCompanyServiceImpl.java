@@ -1,5 +1,6 @@
 package com.dev.shoeshop.service.impl;
 
+import com.dev.shoeshop.dto.shippingcompany.ShippingCompanyResponse;
 import com.dev.shoeshop.entity.ShippingCompany;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.service.ShippingCompanyService;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -109,5 +111,28 @@ public class ShippingCompanyServiceImpl implements ShippingCompanyService {
     public boolean existsByNameAndIdNot(String name, Integer id) {
         log.info("Checking if shipping company exists by name: {} and not id: {}", name, id);
         return shippingCompanyRepository.existsByNameIgnoreCaseAndIdNot(name, id);
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<ShippingCompanyResponse> getAllActiveCompanies() {
+        log.info("Getting all active shipping companies as response DTOs");
+        List<ShippingCompany> activeCompanies = getActiveShippingCompanies();
+        
+        return activeCompanies.stream()
+            .map(this::convertToResponse)
+            .collect(Collectors.toList());
+    }
+    
+    private ShippingCompanyResponse convertToResponse(ShippingCompany company) {
+        ShippingCompanyResponse response = new ShippingCompanyResponse();
+        response.setId(company.getId());
+        response.setName(company.getName());
+        response.setHotline(company.getHotline());
+        response.setEmail(company.getEmail());
+        response.setAddress(company.getAddress());
+        response.setWebsite(company.getWebsite());
+        response.setIsActive(company.getIsActive());
+        return response;
     }
 }

@@ -25,6 +25,7 @@ public class ApiController {
     public ResponseEntity<ProductDetailResponse> getProductDetails(@PathVariable Long id) {
         try {
             ProductDetailResponse product = productService.getProductById(id);
+            System.out.println("product");
             return ResponseEntity.ok(product);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

@@ -118,16 +118,27 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDetailResponse getProductById(Long id) {
-        Product product = productRepository.findById(id)
+        // Use custom query to eagerly fetch details and inventories
+        Product product = productRepository.findByIdWithDetailsAndInventories(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
 
-        // Convert ProductDetails to SizeOptions
+        // Convert ProductDetails to SizeOptions with stock from product_detail.quantity
         List<ProductDetailResponse.SizeOption> sizeOptions = product.getDetails().stream()
-                .map(detail -> ProductDetailResponse.SizeOption.builder()
-                        .id(detail.getId())
-                        .size(detail.getSize())
-                        .priceAdd(detail.getPriceadd())
-                        .build())
+                .map(detail -> {
+                    // Get quantity directly from ProductDetail entity
+                    int stock = detail.getQuantity();
+                    
+                    System.out.println("=== Processing ProductDetail ID: " + detail.getId() 
+                            + ", Size: " + detail.getSize() 
+                            + ", Stock: " + stock);
+                    
+                    return ProductDetailResponse.SizeOption.builder()
+                            .id(detail.getId())
+                            .size(detail.getSize())
+                            .priceAdd(detail.getPriceadd())
+                            .stock(stock)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
         // Calculate average rating

@@ -30,6 +30,10 @@ public class ProductDetail {
     @Min(value = 0, message = "Price add must be greater than or equal to 0")
     @Column(name = "price_add")
     private double priceadd;
+    
+    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
