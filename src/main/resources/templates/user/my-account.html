@@ -1,10 +1,10 @@
 <!doctype html>
-<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org">
+<html class="no-js" lang="">
 
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>My account || James </title>
+        <title>My account || DeeG Shop </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -77,8 +77,8 @@
                     <div class="col-md-12">
                         <div class="location">
                             <ul>
-                                <li><a href="/user/shop" title="go to homepage">Home<span>/</span></a>  </li>
-                                <li><strong> my account</strong></li>
+                                <li><a href="/user/shop" title="go to homepage">Trang Chủ<span>/</span></a>  </li>
+                                <li><strong>Tài Khoản</strong></li>
                             </ul>
                         </div>
                     </div>
@@ -90,9 +90,9 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingOne">
                                         <h4 class="panel-title">
-                                            <a role="button" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                                                 <i class="fa fa-list-ol"></i>
-                                                Order history and details
+                                                Lịch sử và chi tiết đơn hàng
                                             </a>
                                         </h4>
                                     </div>
@@ -101,10 +101,10 @@
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <div class="account-title">
-                                                        <h4>Here are the orders you've placed since your account was created.</h4>
+                                                        <h4>Đây là các đơn hàng bạn đã đặt kể từ khi tạo tài khoản.</h4>
                                                     </div>
                                                     <div class="order-history">
-                                                        <p>You have not placed any orders.</p>
+                                                        <p>Bạn chưa đặt bất kỳ đơn hàng nào.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -114,9 +114,10 @@
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
+
                                             <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                                 <i class="fa fa-file-o"></i>
-                                                My credit slips
+                                                Phiếu tín dụng của tôi
                                             </a>
                                         </h4>
                                     </div>
@@ -125,10 +126,10 @@
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <div class="account-title">
-                                                        <h4>Credit slips you have received after canceled orders. </h4>
+                                                        <h4>Các phiếu tín dụng bạn nhận được sau khi hủy đơn hàng. </h4>
                                                     </div>
                                                     <div class="credit-slids">
-                                                        <p>You have not received any credit slips.</p>
+                                                        <p>Bạn chưa nhận được phiếu tín dụng nào.</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -140,7 +141,7 @@
                                         <h4 class="panel-title">
                                             <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                                 <i class="fa fa-building-o"></i>
-                                                My addresses
+                                                Địa chỉ của tôi
                                             </a>
                                         </h4>
                                     </div>
@@ -149,30 +150,20 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="my-address">
-                                                        <p>Please configure your default billing and delivery addresses when placing an order. You may also add additional addresses, which can be useful for sending gifts or receiving an order at your office.</p>
+                                                        <p>Hãy thiết lập địa chỉ thanh toán và giao hàng mặc định để chúng tôi có thể xử lý đơn hàng nhanh chóng. Bạn cũng có thể thêm địa chỉ khác, thuận tiện cho việc nhận hàng tại nhà, văn phòng hoặc gửi quà tặng.</p>
                                                         <div class="account-title">
-                                                            <h4>Your addresses are listed below. </h4>
+                                                            <h4>Danh sách địa chỉ của bạn:</h4>
                                                         </div>
-                                                        <p>Be sure to update your personal information if it has changed.</p>
+                                                        <p>Đừng quên cập nhật thông tin nếu có thay đổi để việc giao hàng luôn thuận tiện.</p>
                                                         <div class="row">
                                                             <div class="col-md-6 col-sm-12">
-                                                                <form th:action="@{/user/submitAddress}" method="post">
-                                                                    <div th:if="${er}" class="alert alert-danger">
-                                                                        <span th:text="${er}"></span>
+                                                                <form action="/user/submitAddress" method="post">
+                                                                    <div id="error-message" class="alert alert-danger" style="display: none;">
+                                                                        <span id="error-text"></span>
                                                                     </div>
-                                                                    <div th:if="${adr != null}">
-                                                                        <th:block th:each="address : ${adr}">
-                                                                            <!-- Radio button cho từng địa chỉ -->
-                                                                            <div class="form-check">
-                                                                                <input class="form-check-input" type="radio"
-                                                                                       th:id="'address-' + ${address.id}"
-                                                                                       th:name="selectedAddressId"
-                                                                                       th:value="${address.id}"
-                                                                                       th:checked="${address.isDefault} ? true : false" />
-                                                                                <label class="form-check-label" th:for="'address-' + ${address.id}"
-                                                                                       th:text="${address.address}"></label>
-                                                                            </div>
-                                                                        </th:block>
+                                                                    <div id="address-list">
+                                                                        <!-- Address list will be loaded via AJAX -->
+                                                                    </div>
                                                                         <div class="add-address" style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                                                                             <!-- Trường hidden để xác định hành động -->
                                                                             <input type="hidden" name="action" id="action" value="">
@@ -185,7 +176,7 @@
                                                                                     onmouseover="this.style.backgroundColor='#45a049';"
                                                                                     onmouseout="this.style.backgroundColor='#4CAF50';"
                                                                                     onclick="setAction('setDefault')">
-                                                                                Set Default
+                                                                                Đặt làm mặc định
                                                                             </button>
 
                                                                             <!-- Nút Delete -->
@@ -196,19 +187,16 @@
                                                                                     onmouseover="this.style.backgroundColor='#d32f2f';"
                                                                                     onmouseout="this.style.backgroundColor='#f44336';"
                                                                                     onclick="setAction('delete')">
-                                                                                Delete
+                                                                                Xóa
                                                                             </button>
                                                                         </div>
-                                                                    </div>
-                                                                    <div th:if="${adr == null}">
-                                                                        <p>No addresses available</p>
                                                                     </div>
                                                                 </form>
 
                                                             </div>
                                                         </div>
                                                         <div class="add-address">
-                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal">add new address</button>
+                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal">Thêm địa chỉ mới</button>
                                                         </div>
                                                         <!-- Modal -->
                                                         <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
@@ -287,25 +275,25 @@
                                                             <div class="account-title">
                                                                 <h4>Please be sure to update your personal information if it has changed. </h4>
                                                             </div>
-                                                            <div th:if="${success1}" class="alert alert-success">
-                                                                <span th:text="${success1}"></span>
+                                                            <div id="success-message" class="alert alert-success" style="display: none;">
+                                                                <span id="success-text"></span>
                                                             </div>
                                                             <div class="form-name">
                                                                 <label>Email</label>
-                                                                <input type="email" name="email" placeholder="Email" th:value="${user.email}"  readonly required>
+                                                                <input type="email" id="user-email" name="email" placeholder="Email" value="" readonly required>
                                                             </div>
                                                             <div class="form-name">
                                                                 <label>Full Name <em>*</em> </label>
-                                                                <input type="text" name="fullname" placeholder="First Name" th:value="${user.fullname}" required>
+                                                                <input type="text" id="user-fullname" name="fullname" placeholder="First Name" value="" required>
                                                             </div>
 
                                                             <div class="form-name">
                                                                 <label>Phone <em>*</em> </label>
-                                                                <input type="text" name="phone" placeholder="Phone" th:value="${user.phone}" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
+                                                                <input type="text" id="user-phone" name="phone" placeholder="Phone" value="" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
                                                             </div>
                                                             <div class="form-name">
                                                                 <label>Address</label>
-                                                                <input type="text" name="address" placeholder="Address" th:value="${user.address}" readonly>
+                                                                <input type="text" id="user-address" name="address" placeholder="Address" value="" readonly>
                                                             </div>
                                                             <div class="save-button">
                                                                 <button type="submit">save</button>
@@ -335,16 +323,16 @@
                                                             <div class="account-title">
                                                                 <h4>Please enter your current and new password to reset.</h4>
                                                             </div>
-                                                            <div th:if="${error}" class="alert alert-danger">
-                                                                <span th:text="${error}"></span>
+                                                            <div id="password-error" class="alert alert-danger" style="display: none;">
+                                                                <span id="password-error-text"></span>
                                                             </div>
-                                                            <div th:if="${success}" class="alert alert-success">
-                                                                <span th:text="${success}"></span>
+                                                            <div id="password-success" class="alert alert-success" style="display: none;">
+                                                                <span id="password-success-text"></span>
                                                             </div>
 
                                                             <div class="form-name">
                                                                 <label>Email</label>
-                                                                <input type="email" name="email" placeholder="Email" th:value="${user.email}"  readonly required>
+                                                                <input type="email" id="reset-email" name="email" placeholder="Email" value="" readonly required>
                                                             </div>
                                                             <div class="form-name">
                                                                 <label>Current Password<em>*</em></label>
@@ -382,32 +370,9 @@
                                             <div class="col-sm-12">
                                                 <div class="wishlist-container">
                                                     <h3>Viewed Products</h3>
-                                                    <div th:if="${viewedProducts != null and !viewedProducts.isEmpty()}">
-                                                        <div class="wishlist-container">
-                                                            <div class="d-flex flex-column">
-                                                                <!-- Lặp qua các sản phẩm trong viewedProducts -->
-                                                                <div th:each="product : ${viewedProducts}" class="product-item d-flex align-items-center mb-4">
-                                                                    <!-- Hình ảnh sản phẩm -->
-                                                                    <img th:src="@{${product.image}}" alt="product image" class="product-image img-fluid" style="width: 120px; height: auto;">
-
-                                                                    <!-- Thông tin sản phẩm -->
-                                                                    <div class="product-info ms-3" style="flex: 1;">
-                                                                        <h4 th:text="${product.title}"></h4>
-                                                                        <p th:text="${product.description}"></p>
-                                                                        <p th:text="'$' + ${product.price}"></p>
-                                                                    </div>
-
-                                                                    <!-- Nút View -->
-                                                                    <a th:href="@{/product/details/{id}(id=${product.id})}" class="save-button">View Product</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-
-                                                    <!-- Nếu không có sản phẩm đã xem -->
-                                                    <div th:if="${viewedProducts == null or viewedProducts.isEmpty()}">
-                                                        <p>No products viewed yet.</p>
+                                                    <div id="viewed-products-list">
+                                                        <!-- Viewed products will be loaded via AJAX -->
+                                                        <p>Loading...</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -425,25 +390,9 @@
             </div>
         </div>
         <!-- my account area end -->
-        <div th:include="~{fragments/web/footer.html}"></div>
+
         <!-- footer area start -->
-        <footer class="footer-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="footer-copyright">
-                            <p>Copyright &copy; 2022 <a href="#"> Bootexperts</a>. All Rights Reserved</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="payment-icon">
-                            <img src="/img/payment.png" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <a href="#" id="scrollUp"><i class="fa fa fa-arrow-up"></i></a>
-        </footer>
+        <div th:include="~{fragments/web/footer.html}"></div>
         <!-- footer area end -->
 
         <!-- jquery
@@ -480,6 +429,10 @@
         <!-- main JS
         ============================================ -->
         <script src="/js/main.js"></script>
+        
+        <!-- User Account JS -->
+        <script src="/js/user/user-account.js"></script>
+        
         <script>
             function setAction(action) {
                 document.getElementById('action').value = action;
