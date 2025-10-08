@@ -16,7 +16,7 @@ public interface ProductRepository extends JpaRepository<Product,Long> {
     Page<Product> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
     // tìm kiếm theo tên và category id
     Page<Product> findByCategoryIdAndTitleContainingIgnoreCase(Long categoryId, String keyword, Pageable pageable);
-    // lọc theo category
+    // lọc theo sản phẩm theo category dùng cho hiển thị web
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
     
     /**
