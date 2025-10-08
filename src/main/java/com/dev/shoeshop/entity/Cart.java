@@ -3,9 +3,7 @@ package com.dev.shoeshop.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
@@ -13,16 +11,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @ManyToOne
     @NotNull(message = "User cannot be null")
     @JoinColumn(name = "user_id", nullable = false) // Khóa ngoại đến User
-    private Users userId;
+    private Users user; // Changed from userId to user for proper naming
 
     @Column(name = "total_price", nullable = false)
     @NotNull(message = "Total price cannot be null")
@@ -34,8 +35,8 @@ public class Cart {
     @Temporal(TemporalType.TIMESTAMP) // Định dạng DateTime
     private Date createdDate;
 
-    @OneToMany(mappedBy = "cart",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Set<CartDetail> orderDetailSet = new HashSet<>();
+    private Set<CartDetail> cartDetails = new HashSet<>(); // Changed from orderDetailSet to cartDetails
 }

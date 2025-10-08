@@ -82,6 +82,11 @@ public interface DiscountService {
     List<DiscountResponse> getUsableDiscounts();
     
     /**
+     * Lấy discount có sẵn cho user (alias for getUsableDiscounts)
+     */
+    List<DiscountResponse> getAvailableDiscounts();
+    
+    /**
      * Cập nhật discount
      */
     Discount updateDiscount(Discount discount);

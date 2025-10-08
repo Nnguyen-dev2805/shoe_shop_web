@@ -86,6 +86,13 @@
         }
     </style>
     <style>
+        /* Checkbox styling */
+        .item-checkbox, #select-all-items {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
         .quantity-controller {
             display: flex;
             align-items: center;
@@ -150,13 +157,15 @@
                     <div class="col-md-12">
                         <div class="table-responsive">
                             <table class="table-bordered table table-hover">
-                                <h4 th:if="${alert} != null" th:text="${alert}"></h4>
+                                <!-- Alert placeholder for dynamic messages -->
+                                <div id="alert-container"></div>
                                 <thead>
                                     <tr style="text-align: center">
+                                        <th style="width: 50px;">
+                                            <input type="checkbox" id="select-all-items" checked>
+                                        </th>
                                         <th class="cart-item-img">Image</th>
                                         <th class="cart-product-name">Product Name</th>
-<!--                                        <th class="edit"></th>-->
-<!--                                        <th class="move-wishlist">Move to Wishlist</th>-->
                                         <th class="unit-price">Size</th>
                                         <th class="unit-price">Unit Price</th>
                                         <th class="quantity">Qty</th>
@@ -166,51 +175,12 @@
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
-                                    <tr th:each="detail : ${cart.orderDetailSet}">
-                                        <td class="cart-item-img">
-                                            <a href="single-product.html">
-<!--                                                th:src="${detail.product.product.image}"-->
-                                                <img th:src="${detail.product.product.image}" alt="image" style="max-width: 100px; max-height: 100px; object-fit: cover;">
-                                            </a>
-                                        </td>
-                                        <td class="cart-product-name">
-                                            <a th:href="@{/product/details/{id}(id = ${detail.product.product.id})}" th:text="${detail.product.product.title}"></a>
-                                        </td>
-<!--                                        <td class="edit">-->
-<!--                                            <a href="#">Edit</a>-->
-<!--                                        </td>-->
-<!--                                        <td class="move-wishlist">-->
-<!--                                            <a href="#">Move</a>-->
-<!--                                        </td>-->
-                                        <td class="unit-price">
-                                            <span th:text="${detail.product.size}"></span>
-                                        </td>
-                                        <td class="unit-price">
-                                            <span class="formatted-price" id="unitPrice" th:text="${detail.product.product.price} + ${detail.product.priceadd}"></span>
-                                        </td>
-                                        <td class="quantity" >
-                                            <div class="quantity-controller" style="margin-top: 30px ; margin-left: 30px ; margin-right: -30px">
-                                                <button type="button" class="quantity-btn decrease" data-id="${detail.id}">-</button>
-                                                <input type="number" class="quantity-input" name="quantity" th:value="${detail.quantity}" data-id="${detail.id}" readonly>
-                                                <button type="button" class="quantity-btn increase" data-id="${detail.id}">+</button>
+                                    <!-- Cart items will be loaded dynamically via AJAX -->
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            <div class="loading-spinner">
+                                                <i class="fa fa-spinner fa-spin"></i> Loading cart items...
                                             </div>
-                                        </td>
-
-                                        <td class="subtotal">
-                                            <span class="formatted-price" id="subtotalPrice" th:text="${detail.price}*${detail.quantity}"></span>
-                                        </td>
-                                        <td class="remove-icon">
-                                            <form th:action="@{/cart/edit/{id}(id = ${detail.id})}" method="POST" style="margin-top: 30px">
-                                                <input type="hidden" name="quantity" class="quantity-input" th:value="${detail.quantity}">
-                                                <button type="submit" class="edit-btn">
-                                                    <img src="/img/cart/btn_edit.gif" alt="Edit">
-                                                </button>
-                                            </form>
-                                        </td>
-                                        <td class="remove-icon">
-                                            <a th:href="@{/cart/delete/{id}(id = ${detail.id})}">
-                                                <img src="/img/cart/btn_remove.png" alt="Remove">
-                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -224,143 +194,36 @@
                     </div>
                 </div>
                 <div class="row">
-                    <!-- Nút để mở modal -->
-                    <div class="col-md-4">
-                        <div class="discount-code">
-                            <h3>Discount Codes</h3>
-                            <p>Enter your coupon code if you have one.</p>
-                            <!-- Giữ các input readonly để hiển thị thông tin đã chọn -->
-                            <input type="hidden" id="discountIdInput" name="discountId">
-                            <input type="text" id="couponCodeInput" class="form-control" placeholder="Selected discount" readonly>
-
-                            <div class="shopping-button mt-2">
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#discountModal">Choose Discount</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal -->
-                    <div class="modal fade" id="discountModal" tabindex="-1" aria-labelledby="discountModalLabel" aria-hidden="true">
-                        <div class="modal-dialog" style="max-width: 600px; width: 90%; margin: auto;">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="discountModalLabel">Select Discount</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Kiểm tra xem danh sách có mã giảm giá không -->
-                                    <div th:if="${#lists.isEmpty(discounts)}">
-                                        <p class="text-center">No discount</p>
-                                    </div>
-                                    <ul class="list-group" id="discountList" style="max-height: 250px; overflow-y: auto;">
-                                        <!-- Dùng Thymeleaf để lặp qua các discount từ controller -->
-                                        <li class="list-group-item d-flex justify-content-between align-items-center"
-                                            th:each="discount : ${discounts}"
-                                            th:data-id="${discount.id}"
-                                            th:data-discount-code="${discount.name}"
-                                            th:data-percent="${discount.percent*100}"
-                                            th:data-start-date="${discount.startDate}"
-                                            th:data-end-date="${discount.endDate}">
-                                            <div>
-                                                <strong th:text="${discount.name}">DISCOUNT CODE</strong> -
-                                                <span th:text="${discount.percent*100}">0</span>% OFF
-                                                <br>
-                                                <small>
-                                                    <span th:text="'Start: ' + ${discount.startDate}">Start: 2024-01-01</span> -
-                                                    <span th:text="'End: ' + ${discount.endDate}">End: 2024-12-31</span>
-                                                </small>
-                                            </div>
-                                            <!-- Ẩn toàn bộ dòng khi discount.status là 'EXPIRED' -->
-                                            <div th:if="${discount.status != 'EXPIRED'}">
-                                                <button type="button"
-                                                        class="btn btn-primary btn-sm select-discount-btn"
-                                                        th:classappend="${discount.status == 'ACTIVE' ? '' : 'd-none'}"
-                                                        th:disabled="${discount.status == 'COMING' || discount.status == 'INACTIVE' || discount.status == 'EXPIRED'}"
-                                                        th:text="${discount.status == 'COMING' ? 'Coming Soon' : (discount.status == 'INACTIVE' ? 'Not Condition' : 'Select')}">
-                                                </button>
-
-                                                <!-- Hiển thị "Coming Soon" khi discount.status là 'COMING' -->
-                                                <span th:if="${discount.status == 'COMING'}" class="badge bg-warning">Coming Soon</span>
-
-                                                <!-- Hiển thị "Not Condition" khi discount.status là 'INACTIVE' -->
-                                                <span th:if="${discount.status == 'INACTIVE'}" class="badge bg-secondary">Not Condition</span>
-                                            </div>
-
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Other content -->
-                    <div class="col-md-4">
-                        <div class="estimate-shipping">
-                            <h3>Estimate Shipping and Tax</h3>
-                            <p>Enter your destination to get a shipping estimate.</p>
-                            <form action="#">
-                                <div class="form-box">
-                                    <div class="form-name">
-                                    </div>
-                                </div>
-                               
-                                <div class="form-box">
-                                    <div class="form-name">
-                                     
-                                        <label>Shipping Company <em>*</em></label>
-                                        <select name="shippingCompanyId" required style="width: 100%; max-width: 400px;">
-                                            <!-- Lặp qua danh sách shippingCompanies -->
-                                            <th:block th:each="company : ${shippingCompanies}">
-                                                <!-- Kiểm tra nếu company.active = true và hiển thị như option -->
-                                                <option th:value="${company.id}" th:text="${company.name}" ></option>
-                                            </th:block>
-                                        </select>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
+                    <!-- Address Selection -->
+                    <div class="col-md-6">
                         <div class="totals">
-                            <p>Created Date: <span th:text="${#dates.format(cart.createdDate, 'HH:mm:ss dd-MM-yyyy')}"></span></p>
-                            <h3>Grand Total <span id="totalPrice" th:text="${cart.totalPrice > 0 ? cart.totalPrice + 5 : cart.totalPrice}"></span></h3>
-                           
-                           
-
-                            <!-- Form for Checkout -->
-                            <form action="/order/pay" method="post" id="form2">
-                                <input type="hidden" name="cartId" th:value="${cart.id}"/>
-                                <input type="hidden" name="finalTotalPrice" id="finalTotalPrice" th:value="${finalTotalPrice != null && finalTotalPrice != '' ? finalTotalPrice : 0}"/>
-                                <div>
-                                    <label for="payOption">Payment Option:</label>
-                                    <select name="payOption" id="payOption">
-                                        <option value="COD">Cash on Delivery</option>
-                                        <option value="VNPAY">Pay with VNPay</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label>Address <em>*</em></label>
-                                    <select name="addressId" required style="width: 100%; max-width: 400px;">
-                                        <!-- Lặp qua danh sách địa chỉ -->
-                                        <th:block th:each="address : ${adr}">
-                                            <option th:value="${address.id}" th:text="${address.address}" th:if="${address.isDefault}" selected></option>
-                                            <option th:value="${address.id}"
-                                                    th:text="${address.address}"
-                                                    th:unless="${address.isDefault}">
-                                            </option>
-                                        </th:block>
-                                    </select>
-                                </div>
-
-                                <div class="shopping-button">
-                                    <button type="submit">Proceed to Checkout</button>
-                                </div>
-                            </form>
-
-                            <a href="#">Checkout with Multiple Addresses</a>
+                            <h3><i class="fa fa-map-marker"></i> Địa chỉ giao hàng</h3>
+                            <div class="form-group">
+                                <label>Chọn địa chỉ <em>*</em></label>
+                                <select name="addressId" id="addressSelect" required class="form-control">
+                                    <!-- User addresses will be loaded dynamically via AJAX -->
+                                    <option value="">Đang tải địa chỉ...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-
+                    
+                    <!-- Total Price -->
+                    <div class="col-md-6">
+                        <div class="totals">
+                            <p>Ngày tạo giỏ hàng: <span id="createdDate">Đang tải...</span></p>
+                            <h3>Tổng tiền tạm tính: <span id="totalPrice" style="color: #e74c3c;">0 đ</span></h3>
+                            <p style="font-size: 14px; color: #666;">(*Chưa bao gồm phí vận chuyển và giảm giá)</p>
+                            
+                            <input type="hidden" name="cartId" id="cartIdInput" value=""/>
+                            
+                            <div class="shopping-button mt-3">
+                                <button type="button" id="btn-continue-payment" class="btn btn-success btn-lg" style="width: 100%;">
+                                    <i class="fa fa-shopping-cart"></i> Tiếp tục mua hàng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
@@ -406,146 +269,9 @@
         <!-- Thêm Bootstrap JS và Popper.js -->
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+        <!-- Cart Management JavaScript -->
+        <script src="/js/cart/cart.js"></script>
     </body>
-<script>
-    document.getElementById('myForm').addEventListener('submit', function(event) {
-        // Lấy giá trị từ input bên ngoài form
-        var couponCodeValue = document.getElementById('couponCodeInput').value;
-
-        // Gán giá trị vào input bên trong form
-        document.getElementById('couponCode').value = couponCodeValue;
-    });
-</script>
-<script>
-    // Lấy phần tử HTML có id 'totalPrice', đây là phần tử hiển thị tổng giá trị
-    const totalPriceElem = document.getElementById('totalPrice');
-
-    // Lấy giá trị của tổng từ phần tử đó, chuyển nó thành kiểu số thực (float)
-    const totalPrice = parseFloat(totalPriceElem.textContent);
-
-    // Định dạng lại giá trị totalPrice thành định dạng tiền tệ Việt Nam
-    // 'vi-VN' là mã ngôn ngữ cho tiếng Việt, style: 'decimal' là kiểu định dạng số thông thường
-    // minimumFractionDigits: 0 sẽ làm số không có phần thập phân (ví dụ: 10000 thay vì 10000.0)
-    totalPriceElem.textContent = new Intl.NumberFormat('vi-VN', { style: 'decimal', minimumFractionDigits: 0 }).format(totalPrice);
-</script>
-
-<script>
-    // Lắng nghe sự kiện DOMContentLoaded để đảm bảo toàn bộ trang đã được tải trước khi chạy mã
-    document.addEventListener("DOMContentLoaded", () => {
-
-        // Tìm tất cả phần tử có class 'quantity-controller', nơi chứa các nút chỉnh sửa số lượng
-        const cartDetails = document.querySelectorAll(".quantity-controller");
-
-        // Duyệt qua tất cả các phần tử cartDetails để xử lý sự kiện cho từng phần tử
-        cartDetails.forEach((controller) => {
-            // Tìm nút giảm (decrease) và nút tăng (increase) bên trong mỗi controller
-            const decreaseBtn = controller.querySelector(".decrease");
-            const increaseBtn = controller.querySelector(".increase");
-
-            // Tìm ô input số lượng trong mỗi controller
-            const quantityInput = controller.querySelector(".quantity-input");
-
-            // Khi nút giảm (-) được bấm
-            decreaseBtn.addEventListener("click", () => {
-                // Lấy giá trị hiện tại của số lượng từ ô input
-                const currentQuantity = parseInt(quantityInput.value, 10);
-
-                // Nếu số lượng lớn hơn hoặc bằng 1, giảm số lượng đi 1
-                if (currentQuantity >= 1) {
-                    quantityInput.value = currentQuantity - 1;
-                    // Cập nhật giá trị số lượng vào input ẩn trong form
-                    updateFormInput(controller, quantityInput.value);
-                }
-            });
-
-            // Khi nút tăng (+) được bấm
-            increaseBtn.addEventListener("click", () => {
-                // Lấy giá trị hiện tại của số lượng từ ô input
-                const currentQuantity = parseInt(quantityInput.value, 10);
-
-                // Tăng số lượng lên 1
-                quantityInput.value = currentQuantity + 1;
-                // Cập nhật giá trị số lượng vào input ẩn trong form
-                updateFormInput(controller, quantityInput.value);
-            });
-        });
-
-        // Hàm cập nhật giá trị số lượng vào input ẩn trong form để gửi lên server
-        function updateFormInput(controller, quantity) {
-            // Tìm form chứa controller và sau đó tìm input ẩn trong form (input có name='quantity')
-            const form = controller.closest("tr").querySelector("form");
-            const hiddenInput = form.querySelector('input[name="quantity"]');
-
-            // Cập nhật giá trị của input ẩn với số lượng mới
-            hiddenInput.value = quantity;
-        }
-    });
-</script>
-<script>
-    document.querySelectorAll('.formatted-price').forEach(function(priceElement) {
-        var price = parseFloat(priceElement.textContent);
-        priceElement.textContent = new Intl.NumberFormat().format(price);
-    });
-</script>
-<script>
-    // Lưu giá gốc toàn cục
-    let originalTotalPrice = null;
-
-    // Khi DOM đã sẵn sàng
-    document.addEventListener('DOMContentLoaded', () => {
-        const totalPriceElement = document.getElementById('totalPrice');
-
-        // Lưu giá gốc khi trang tải lần đầu
-        originalTotalPrice = parseFloat(totalPriceElement.innerText.replace(/[^0-9.-]+/g, ""));
-    });
-
-    document.querySelectorAll('.select-discount-btn').forEach(button => {
-        button.addEventListener('click', function () {
-            // Kiểm tra nếu nút không bị vô hiệu hóa
-            if (!this.disabled) {
-                const listItem = this.closest('li');
-                const discountId = listItem.getAttribute('data-id');
-                const discountName = listItem.getAttribute('data-discount-code');
-                const discountPer = parseFloat(listItem.getAttribute('data-percent')); // Tỷ lệ giảm giá (ví dụ: 20%)
-
-                // Cập nhật giá trị vào các input
-                document.getElementById('discountIdInput').value = discountId;
-                document.getElementById('couponCodeInput').value = discountName + " - " + discountPer + "% OFF"; // Hiển thị tỷ lệ phần trăm trong input
-
-                // Tính toán giá mới dựa trên giá gốc cộng thêm 5
-                const newTotalPrice = (originalTotalPrice) * (1 - (discountPer / 100.0));
-
-                // Cập nhật giá trị mới vào phần tử #totalPrice
-                const totalPriceElement = document.getElementById('totalPrice');
-                totalPriceElement.innerText = newTotalPrice.toFixed(2); // Cập nhật tổng giá mới với hai chữ số thập phân
-
-                // Cập nhật giá trị cuối cùng vào input ẩn
-                document.getElementById('finalTotalPrice').value = newTotalPrice.toFixed(2);
-
-                // Đóng modal
-                const modalElement = document.getElementById('discountModal');
-                const modal = bootstrap.Modal.getInstance(modalElement);
-                modal.hide();
-            }
-        });
-    });
-
-    // Đảm bảo rằng cuộn chuột không bị chặn
-    window.addEventListener('wheel', function(e) {
-        // Cho phép cuộn chuột mà không ngừng lại
-    }, { passive: true });
-
-    // Đảm bảo rằng không có sự kiện nào gây cản trở việc cuộn trang khi modal đóng
-    const modalElement = document.getElementById('discountModal');
-    const modal = bootstrap.Modal.getInstance(modalElement);
-
-    modalElement.addEventListener('hidden.bs.modal', function() {
-        // Cho phép cuộn trang lại sau khi modal đã đóng
-        document.body.style.overflow = 'auto'; // Cho phép cuộn trang
-    });
-
-    // Đảm bảo CSS không làm ngừng cuộn
-    document.body.style.overflow = 'auto'; // Đảm bảo cuộn trang không bị chặn
-</script>
+    <!-- All JavaScript functionality is now handled by cart.js -->
 
 </html>

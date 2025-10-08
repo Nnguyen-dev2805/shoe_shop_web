@@ -1,5 +1,6 @@
 package com.dev.shoeshop.service;
 
+import com.dev.shoeshop.dto.shippingcompany.ShippingCompanyResponse;
 import com.dev.shoeshop.entity.ShippingCompany;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,6 +33,9 @@ public interface ShippingCompanyService {
     
     // Lấy tất cả công ty đang hoạt động
     List<ShippingCompany> getActiveShippingCompanies();
+    
+    // Lấy tất cả công ty đang hoạt động (Response DTO)
+    List<ShippingCompanyResponse> getAllActiveCompanies();
     
     // Xóa công ty vận chuyển
     void deleteShippingCompany(Integer id);

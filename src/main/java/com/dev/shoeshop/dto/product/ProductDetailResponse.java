@@ -30,5 +30,6 @@ public class ProductDetailResponse {
         private Long id;
         private Integer size;
         private Double priceAdd;
+        private Integer stock; // Quantity available in inventory
     }
 }

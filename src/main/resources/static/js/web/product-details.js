@@ -1,6 +1,6 @@
 // Global variables
 let currentQuantity = 1;
-let maxStock = 10; // Hardcode stock quantity
+let maxStock = 0; // Will be set from API
 let selectedSizeData = null;
 let baseProductPrice = 0;
 
@@ -17,6 +17,9 @@ $(document).ready(function() {
     
     // Setup quantity controls
     setupQuantityControls();
+    
+    // Setup add to cart button
+    setupAddToCartButton();
 });
 
 /**
@@ -101,21 +104,29 @@ function renderSizeButtons(sizeOptions, basePrice) {
     if (sizeOptions && sizeOptions.length > 0) {
         sizeOptions.forEach(function(size) {
             const priceAdd = size.priceAdd || 0;
+            const stock = size.stock || 0; // Get stock from API
             const sizeLabel = `Size ${size.size}`;
             
+            // Add badge for out of stock
+            const stockBadge = stock === 0 ? ' <span class="badge bg-danger">Hết hàng</span>' : '';
+            
             const button = $(`
-                <button type="button" class="size-btn" 
+                <button type="button" class="size-btn ${stock === 0 ? 'disabled' : ''}" 
                         data-size-id="${size.id}" 
                         data-size="${size.size}"
-                        data-price-add="${priceAdd}">
-                    ${sizeLabel}
+                        data-price-add="${priceAdd}"
+                        data-stock="${stock}"
+                        ${stock === 0 ? 'disabled' : ''}>
+                    ${sizeLabel}${stockBadge}
                 </button>
             `);
             
-            // Click handler cho size button
-            button.on('click', function() {
-                selectSize($(this), basePrice);
-            });
+            // Click handler cho size button (only if in stock)
+            if (stock > 0) {
+                button.on('click', function() {
+                    selectSize($(this), basePrice);
+                });
+            }
             
             $container.append(button);
         });
@@ -134,16 +145,21 @@ function selectSize($button, basePrice) {
     // Add active class to selected button
     $button.addClass('active');
     
-    // Get size data
+    // Get size data including stock from data attribute
     const sizeId = $button.data('size-id');
     const sizeName = $button.data('size');
     const priceAdd = parseFloat($button.data('price-add')) || 0;
+    const stock = parseInt($button.data('stock')) || 0;
+    
+    // Update global maxStock variable with stock from API
+    maxStock = stock;
     
     // Store selected size data
     selectedSizeData = {
         id: sizeId,
         name: sizeName,
-        priceAdd: priceAdd
+        priceAdd: priceAdd,
+        stock: stock
     };
     
     // Update hidden inputs
@@ -193,11 +209,16 @@ function selectSize($button, basePrice) {
  * Cập nhật hiển thị giá
  */
 function updatePriceDisplay(basePrice, sizeFee) {
-    const totalPrice = basePrice + sizeFee;
+    const pricePerUnit = basePrice + sizeFee; // Giá 1 đôi giày
+    const totalPrice = pricePerUnit * currentQuantity; // Tổng tiền = giá 1 đôi * số lượng
     
-    $('#base-price-display').text(formatVND(basePrice));
-    $('#size-fee-display').text(formatVND(sizeFee));
-    $('#final-price').text(formatVND(totalPrice));
+    // Update main product price (tổng tiền)
+    $('#product-price').text(formatVND(totalPrice));
+    
+    // Update price breakdown
+    $('#base-price-display').text(formatVND(basePrice)); // Giá cơ bản cho 1 sản phẩm (không đổi)
+    $('#size-fee-display').text(formatVND(sizeFee)); // Phụ phí size cho 1 sản phẩm (không đổi)
+    $('#final-price').text(formatVND(totalPrice)); // Tổng cộng tăng theo số lượng
     
     // Show price breakdown
     $('#price-breakdown').show();
@@ -212,6 +233,10 @@ function setupQuantityControls() {
         if (currentQuantity > 1) {
             currentQuantity--;
             $('#qty-input').val(currentQuantity);
+            // Update price when quantity changes
+            if (selectedSizeData) {
+                updatePriceDisplay(baseProductPrice, selectedSizeData.priceAdd);
+            }
         }
     });
     
@@ -220,6 +245,10 @@ function setupQuantityControls() {
         if (currentQuantity < maxStock) {
             currentQuantity++;
             $('#qty-input').val(currentQuantity);
+            // Update price when quantity changes
+            if (selectedSizeData) {
+                updatePriceDisplay(baseProductPrice, selectedSizeData.priceAdd);
+            }
         } else {
             alert(`Chỉ còn ${maxStock} sản phẩm trong kho!`);
         }
@@ -227,8 +256,85 @@ function setupQuantityControls() {
 }
 
 /**
+ * Setup add to cart button handler
+ */
+function setupAddToCartButton() {
+    $('#add-to-cart-btn').on('click', function() {
+        if (!selectedSizeData) {
+            alert('Vui lòng chọn size trước khi thêm vào giỏ hàng!');
+            return;
+        }
+        
+        if (currentQuantity <= 0) {
+            alert('Số lượng phải lớn hơn 0!');
+            return;
+        }
+        
+        // Calculate price per unit (base price + size fee)
+        const pricePerUnit = baseProductPrice + selectedSizeData.priceAdd;
+        
+        // Prepare data
+        const cartData = {
+            productDetailId: selectedSizeData.id,
+            quantity: currentQuantity,
+            pricePerUnit: pricePerUnit
+        };
+        
+        console.log('Adding to cart:', cartData);
+        
+        // Disable button and show loading
+        const $btn = $(this);
+        $btn.prop('disabled', true);
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Đang thêm...');
+        
+        // Call API
+        $.ajax({
+            url: '/api/cart/add',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(cartData),
+            success: function(response) {
+                console.log('Add to cart success:', response);
+                if (response.success) {
+                    // Show success message
+                    alert(' ' + response.message);
+                    
+                    // Reset button
+                    $btn.prop('disabled', false);
+                    $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+                    
+                    // Optional: Redirect to cart page
+                    // window.location.href = '/user/cart';
+                } else {
+                    alert(' ' + response.message);
+                    $btn.prop('disabled', false);
+                    $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Add to cart error:', error);
+                console.error('XHR:', xhr);
+                
+                if (xhr.status === 401) {
+                    alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');
+                    window.location.href = '/login';
+                } else {
+                    alert('Có lỗi xảy ra khi thêm vào giỏ hàng. Vui lòng thử lại!');
+                }
+                
+                $btn.prop('disabled', false);
+                $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+            }
+        });
+    });
+}
+
+/**
  * Format giá theo VND
  */
 function formatVND(price) {
-    return new Intl.NumberFormat('vi-VN').format(price) + ' đ';
+    return new Intl.NumberFormat('vi-VN', { 
+        style: 'currency', 
+        currency: 'VND' 
+    }).format(price);
 }

@@ -1,8 +1,11 @@
 package com.dev.shoeshop.service.impl;
 
 import com.dev.shoeshop.converter.UserDTOConverter;
+import com.dev.shoeshop.dto.AddressDTO;
 import com.dev.shoeshop.dto.UserDTO;
+import com.dev.shoeshop.entity.Address;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository2;
     @Autowired
     private UserDTOConverter userDTOConverter;
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Override
     public Users findUserByEmail(String email) {
@@ -46,5 +51,30 @@ public class UserServiceImpl implements UserService {
         return listUser.stream()
                 .map(userDTOConverter::toUserDTO)
                 .toList(); // Java 16+
+    }
+    
+    @Override
+    public List<AddressDTO> getUserAddresses(Long userId) {
+        List<Address> addresses = addressRepository.findByUserId(userId);
+        
+        return addresses.stream()
+            .map(this::convertToAddressDTO)
+            .collect(Collectors.toList());
+    }
+    
+    private AddressDTO convertToAddressDTO(Address address) {
+        AddressDTO dto = new AddressDTO();
+        dto.setId(address.getId());
+        dto.setAddressLine(address.getAddress_line());
+        dto.setDistrict(address.getDistrict());
+        dto.setCity(address.getCity());
+        dto.setPostalCode(address.getPostal_code());
+        dto.setCountry(address.getCountry());
+        dto.setAddress(dto.getFullAddress()); // Use helper method for display
+        
+        // Check if this is default address (would need UserAddress relationship)
+        dto.setIsDefault(false); // This would need to be determined from UserAddress table
+        
+        return dto;
     }
 }

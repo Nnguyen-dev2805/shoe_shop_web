@@ -1,5 +1,6 @@
 package com.dev.shoeshop.service;
 
+import com.dev.shoeshop.dto.AddressDTO;
 import com.dev.shoeshop.dto.UserDTO;
 import com.dev.shoeshop.entity.Users;
 
@@ -16,6 +17,9 @@ public interface UserService {
     List<UserDTO> getAllShipper(Long i);
 
     List<UserDTO> findByFullnameAndRole(String name, long roleId);
+    
+    // Address related methods
+    List<AddressDTO> getUserAddresses(Long userId);
 //    List<Users> findByFullNameAndRole(String name, int roleId);
 //    Users findUserByUserID(int userId);
 //    void updateUser(Users user, String fullName, String address, String phone);

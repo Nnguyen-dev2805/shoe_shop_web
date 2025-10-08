@@ -300,4 +300,11 @@ public class DiscountServiceImpl implements DiscountService {
             }
         }
     }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiscountResponse> getAvailableDiscounts() {
+        log.info("Getting available discounts for users");
+        return getUsableDiscounts(); // Delegate to existing method
+    }
 }
