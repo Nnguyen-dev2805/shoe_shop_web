@@ -63,10 +63,6 @@
         <link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
         
-        <!-- Leaflet as backup -->
-        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-        
         <!-- modernizr JS
         ============================================ -->
         <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
@@ -514,138 +510,7 @@
                 citySelect.addEventListener("change", updateNewAddress);
                 countrySelect.addEventListener("change", updateNewAddress);
 
-                // ===== LEAFLET MAPS INTEGRATION (OpenStreetMap - FREE) =====
-                let map, marker;
-
-                function initGoongMap() {
-                    console.log('Initializing Leaflet Map with OpenStreetMap');
-                    
-                    try {
-                        // Khởi tạo bản đồ Leaflet (Hồ Chí Minh)
-                        map = L.map('goongMap').setView([10.8231, 106.6297], 13);
-                        
-                        // Thêm OpenStreetMap tiles (MIỄN PHÍ)
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '© OpenStreetMap contributors',
-                            maxZoom: 19
-                        }).addTo(map);
-
-                        console.log('Map loaded successfully!');
-                    } catch (error) {
-                        console.error('Error initializing map:', error);
-                    }
-
-                    // Thêm marker Leaflet
-                    marker = L.marker([10.8231, 106.6297], {
-                        draggable: true
-                    }).addTo(map);
-
-                    // Click vào bản đồ
-                    map.on('click', function(e) {
-                        marker.setLatLng(e.latlng);
-                        updateAddressFromCoords(e.latlng.lng, e.latlng.lat);
-                    });
-
-                    // Kéo marker
-                    marker.on('dragend', function() {
-                        const latlng = marker.getLatLng();
-                        updateAddressFromCoords(latlng.lng, latlng.lat);
-                    });
-
-                    // Tìm kiếm địa điểm
-                    document.getElementById('mapSearchInput').addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            searchPlace();
-                        }
-                    });
-                }
-
-                // Tìm kiếm địa điểm với Nominatim (OpenStreetMap)
-                function searchPlace() {
-                    const query = document.getElementById('mapSearchInput').value;
-                    if (!query) return;
-                    
-                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&countrycodes=vn`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data && data.length > 0) {
-                                const place = data[0];
-                                const lat = parseFloat(place.lat);
-                                const lng = parseFloat(place.lon);
-                                
-                                map.setView([lat, lng], 16);
-                                marker.setLatLng([lat, lng]);
-                                
-                                // Cập nhật form
-                                document.getElementById('selectedAddress').value = place.display_name;
-                                document.getElementById('latitude').value = lat;
-                                document.getElementById('longitude').value = lng;
-                            } else {
-                                alert('Không tìm thấy địa điểm này!');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Search error:', error);
-                            alert('Lỗi tìm kiếm địa điểm!');
-                        });
-                }
-
-                // Chuyển tọa độ thành địa chỉ với Nominatim
-                function updateAddressFromCoords(lng, lat) {
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data && data.display_name) {
-                                document.getElementById('selectedAddress').value = data.display_name;
-                                document.getElementById('latitude').value = lat;
-                                document.getElementById('longitude').value = lng;
-                                
-                                // Parse address components
-                                parseOpenStreetMapAddress(data);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Geocoding error:', error);
-                        });
-                }
-
-                // Parse địa chỉ OpenStreetMap
-                function parseOpenStreetMapAddress(data) {
-                    const address = data.address || {};
-                    let street = "";
-                    
-                    // Tạo địa chỉ đường
-                    if (address.house_number) street += address.house_number + " ";
-                    if (address.road) street += address.road;
-                    
-                    // Cập nhật form fields
-                    if (street.trim()) {
-                        document.getElementById('street').value = street.trim();
-                    }
-                    
-                    // Auto-select city nếu có
-                    const cityName = address.city || address.town || address.village || address.state || "";
-                    if (cityName) {
-                        const citySelect = document.getElementById('city');
-                        for (let option of citySelect.options) {
-                            if (cityName.toLowerCase().includes(option.text.toLowerCase()) || 
-                                option.text.toLowerCase().includes(cityName.toLowerCase())) {
-                                citySelect.value = option.value;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                // Khởi tạo map khi modal mở
-                $('#addAddressModal').on('shown.bs.modal', function() {
-                    if (!map) {
-                        setTimeout(initGoongMap, 100); // Delay để đảm bảo modal đã render
-                    } else {
-                        map.invalidateSize(); // Resize map Leaflet
-                    }
-                });
+                // Maps integration moved to separate file: /js/user/goong-maps.js
 
                 // Reset form khi modal đóng
                 $('#addAddressModal').on('hidden.bs.modal', function () {
@@ -662,5 +527,8 @@
             });
 
         </script>
+        
+        <!-- Goong Maps Integration -->
+        <script src="/js/user/goong-maps.js"></script>
     </body>
 </html>
