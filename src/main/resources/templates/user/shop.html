@@ -186,11 +186,31 @@
 <!--                                    </div>-->
 <!--                                </div>-->
 <!--                            </div>-->
-                            <form id="searchForm">
+
+<!--                            <form id="searchForm">-->
+<!--                                <input type="hidden" name="category" id="selectedCategory" value="">-->
+<!--                                <input type="text" name="key" id="searchInput" value="" placeholder="Tìm kiếm sản phẩm">-->
+<!--                                <button type="button" id="searchBtn"><span>Tìm kiếm</span></button>-->
+<!--                            </form>-->
+                            <form action="/product/search/all/index" method="get" class="d-flex my-2" style="max-width: 400px;">
                                 <input type="hidden" name="category" id="selectedCategory" value="">
-                                <input type="text" name="key" id="searchInput" value="" placeholder="Tìm kiếm sản phẩm">
-                                <button type="button" id="searchBtn"><span>Tìm kiếm</span></button>
+                                <input
+                                        class="form-control form-control-sm me-2"
+                                        type="text"
+                                        name="key"
+                                        id="searchInput"
+                                        placeholder="Tìm kiếm sản phẩm"
+                                >
+                                <button
+                                        class="btn btn-sm"
+                                        type="submit"
+                                        id="searchBtn"
+                                        style="background-color: rgb(216,216,216); border: 1px solid #ccc; color: #000;"
+                                >
+                                    Tìm kiếm
+                                </button>
                             </form>
+
                         </div>
                     </div>
                     <div class="banner-left">

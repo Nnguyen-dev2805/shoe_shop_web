@@ -2,18 +2,19 @@ package com.dev.shoeshop.config;
 
 import com.dev.shoeshop.security.CustomAuthenticationSuccessHandler;
 import com.dev.shoeshop.security.CustomAuthenticationProvider;
+import com.dev.shoeshop.security.OAuth2AuthenticationSuccessHandler;
 import com.dev.shoeshop.service.impl.CustomUserDetailServiceImpl;
+import com.dev.shoeshop.service.impl.OAuth2UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -26,7 +27,11 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationFa
 public class WebSecurityConfig {
 
     private final CustomAuthenticationSuccessHandler successHandler;
-    private final CustomUserDetailServiceImpl userDetailService; // service bạn đã viết
+    private final OAuth2AuthenticationSuccessHandler oauth2SuccessHandler;
+    private final CustomUserDetailServiceImpl userDetailService;
+    @Lazy
+    private final OAuth2UserServiceImpl oauth2UserService;
+    private final PasswordEncoder passwordEncoder;
 
     private final String[] PUBLIC_ENDPOINT = {"/", "/login", "/register", "/product/**", "/category/**", "/send-code", "/reset_password", "/sendcode",
             "/verifycode", "/resetPassword", "/api/**"};
@@ -40,6 +45,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/**").hasRole("admin")
                         .requestMatchers("/manager/**").hasAnyRole("manager", "admin")
                         .requestMatchers("/shipper/**").hasRole("shipper")
+//                        .requestMatchers("/user/**").hasRole("user")  // ⚡ FIX: Thêm rule cho user
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .requestMatchers(PUBLIC_CSS).permitAll()
                         .anyRequest().authenticated()
@@ -50,9 +56,16 @@ public class WebSecurityConfig {
                                 .failureHandler(new SimpleUrlAuthenticationFailureHandler("/login?error=true"))
                                 .permitAll()
                 )
+                // ⚡ THÊM: OAuth2 Login Configuration
+                .oauth2Login(oauth2Login ->
+                        oauth2Login.loginPage("/login")
+                                .userInfoEndpoint(userInfo -> userInfo.userService(oauth2UserService))
+                                .successHandler(oauth2SuccessHandler)
+                                .failureUrl("/login?oauth2&error")
+                )
                 .logout(logout -> logout.logoutUrl("/logout").permitAll())
                 .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()))
-                .csrf(AbstractHttpConfigurer::disable);
+                .csrf(csrf -> csrf.disable());
 
         // ⚡ quan trọng: đăng ký CustomAuthenticationProvider
         httpSecurity.authenticationProvider(authenticationProvider());
@@ -61,13 +74,8 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public AuthenticationProvider authenticationProvider() {
-        return new CustomAuthenticationProvider(userDetailService, passwordEncoder());
+        return new CustomAuthenticationProvider(userDetailService, passwordEncoder);
     }
 
     @Bean
@@ -80,4 +88,3 @@ public class WebSecurityConfig {
         return configuration.getAuthenticationManager();
     }
 }
-

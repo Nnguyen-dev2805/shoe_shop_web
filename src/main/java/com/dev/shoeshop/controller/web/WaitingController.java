@@ -10,22 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class WaitingController {
     @GetMapping("/waiting")
     public String waitingPage(HttpSession session) {
-        Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER); // lấy thông tin từ session
+        Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
         System.out.println(loggedInUser.getFullname() + " " + loggedInUser.getId());
-        if (loggedInUser != null) {
-            long roleId = loggedInUser.getRole().getRoleId();
-            if (roleId == 1) {
-                return "redirect:/admin";
-            } else if (roleId == 2) {
-                return "redirect:/manager";
-            } else if (roleId == 3) {
-                return "redirect:/user/shop";
-            } else {
-                return "redirect:/shipper/order/list";
-            }
+        long roleId = loggedInUser.getRole().getRoleId();
+        if (roleId == 1) {
+            return "redirect:/admin";
+        } else if (roleId == 2) {
+            return "redirect:/manager";
+        } else if (roleId == 3) {
+            return "redirect:/user/shop";
         } else {
-            System.out.println("No account");
-            return "redirect:/login";
+            return "redirect:/shipper/order/list";
         }
     }
 }
