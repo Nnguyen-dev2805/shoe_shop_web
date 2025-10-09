@@ -3,9 +3,14 @@ package com.dev.shoeshop.service.impl;
 import com.dev.shoeshop.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -13,17 +18,41 @@ import org.springframework.stereotype.Service;
 public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
+    private final TemplateEngine templateEngine;
 
     @Override
     public void sendPasswordResetEmail(String toEmail, String verificationCode) {
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(toEmail);
-            message.setSubject("Mã xác nhận đặt lại mật khẩu - Shoe Shop");
-            message.setText(buildEmailContent(verificationCode));
-            message.setFrom("noreply@shoeshop.com");
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setTo(toEmail);
+            helper.setSubject("🔐 Mã xác nhận đặt lại mật khẩu - DeeG Shoe Shop");
+            
+            // Render HTML template với Thymeleaf
+            Context context = new Context();
+            context.setVariable("verificationCode", verificationCode);
+            String htmlContent = templateEngine.process("email/password-reset", context);
+            helper.setText(htmlContent, true);
+            
+            // Set sender with proper encoding handling
+            helper.setFrom("noreply@deegshoeshop.com", "DeeG Shoe Shop");
 
-            mailSender.send(message);
+            // Attach logo
+            try {
+                ClassPathResource logoResource = new ClassPathResource("static/img/logo-1.png");
+                if (logoResource.exists()) {
+                    helper.addInline("logo", logoResource);
+                    log.info("Logo attached successfully to email");
+                } else {
+                    log.warn("Logo file not found at: static/img/logo-1.png");
+                }
+            } catch (Exception logoException) {
+                log.warn("Failed to attach logo to email: {}", logoException.getMessage());
+                // Continue sending email without logo
+            }
+
+            mailSender.send(mimeMessage);
             log.info("Password reset email sent successfully to: {}", toEmail);
         } catch (Exception e) {
             log.error("Failed to send password reset email to: {}", toEmail, e);
@@ -31,16 +60,4 @@ public class EmailServiceImpl implements EmailService {
         }
     }
 
-    private String buildEmailContent(String verificationCode) {
-        return String.format(
-            "Xin chào,\n\n" +
-            "Bạn đã yêu cầu đặt lại mật khẩu cho tài khoản Shoe Shop của mình.\n\n" +
-            "Mã xác nhận của bạn là: %s\n\n" +
-            "Mã này sẽ hết hạn sau 15 phút.\n\n" +
-            "Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.\n\n" +
-            "Trân trọng,\n" +
-            "Đội ngũ Shoe Shop",
-            verificationCode
-        );
-    }
 }
