@@ -26,12 +26,22 @@ public class Users {
     @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "phone", nullable = false, length = 10, unique = true)
+    @Column(name = "phone", length = 10)
     private String phone;
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    // ⚡ THÊM: OAuth2 fields
+    @Column(name = "provider", length = 50)
+    private String provider; // GOOGLE, FACEBOOK, LOCAL
+    
+    @Column(name = "profile_picture", length = 500)
+    private String profilePicture;
+    
+    @Column(name = "is_active")
+    private Boolean isActive = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rating> ratings = new ArrayList<>();

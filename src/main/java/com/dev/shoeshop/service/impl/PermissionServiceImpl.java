@@ -90,7 +90,7 @@ public class PermissionServiceImpl implements PermissionService {
     @Transactional(readOnly = true)
     public Role getRoleByName(String roleName) {
         log.info("Getting role by name: {}", roleName);
-        return roleRepository.findByRoleName(roleName);
+        return roleRepository.findByRoleName(roleName).orElse(null);
     }
     
     @Override
@@ -125,7 +125,7 @@ public class PermissionServiceImpl implements PermissionService {
     public long countUsersByRole(String roleName) {
         log.info("Counting users by role: {}", roleName);
         
-        Role role = roleRepository.findByRoleName(roleName);
+        Role role = roleRepository.findByRoleName(roleName).orElse(null);
         if (role == null) {
             return 0;
         }
