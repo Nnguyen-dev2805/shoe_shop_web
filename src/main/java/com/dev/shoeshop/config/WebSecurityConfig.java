@@ -33,8 +33,8 @@ public class WebSecurityConfig {
     private final OAuth2UserServiceImpl oauth2UserService;
     private final PasswordEncoder passwordEncoder;
 
-    private final String[] PUBLIC_ENDPOINT = {"/", "/login", "/register", "/product/**", "/category/**", "/send-code", "/reset_password", "/sendcode",
-            "/verifycode", "/resetPassword", "/api/**"};
+    private final String[] PUBLIC_ENDPOINT = {"/", "/login", "/register", "/product/**", "/category/**", "/send-code", "/reset-password", "/reset_password", "/sendcode",
+            "/verifycode", "/resetPassword", "/api/**", "/test-reset", "/reset-password-test"};
     private final String[] PUBLIC_CSS = {"/assets/**", "/css/**", "/fonts/**", "/img/**", "/js/**", "/lib/**",
             "/style.css", "/uploads/**", "/images/**"};
 
