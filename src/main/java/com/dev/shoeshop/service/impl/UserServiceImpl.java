@@ -4,16 +4,23 @@ import com.dev.shoeshop.converter.UserDTOConverter;
 import com.dev.shoeshop.dto.AddressDTO;
 import com.dev.shoeshop.dto.UserDTO;
 import com.dev.shoeshop.entity.Address;
+import com.dev.shoeshop.entity.PasswordResetToken;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.repository.AddressRepository;
+import com.dev.shoeshop.repository.PasswordResetTokenRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.EmailService;
 import com.dev.shoeshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,6 +29,10 @@ public class UserServiceImpl implements UserService {
 
     // Constructor injection (final): rõ ràng, testable, clean code → được khuyến nghị.
     private final UserRepository userRepository;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+    
     @Autowired
     private UserRepository userRepository2;
     @Autowired
@@ -76,5 +87,71 @@ public class UserServiceImpl implements UserService {
         dto.setIsDefault(false); // This would need to be determined from UserAddress table
         
         return dto;
+    }
+    
+    // Password reset methods implementation
+    @Override
+    public String generateVerificationCode() {
+        SecureRandom random = new SecureRandom();
+        int code = 100000 + random.nextInt(900000); // Generate 6-digit code
+        return String.valueOf(code);
+    }
+
+    @Override
+    @Transactional
+    public void sendPasswordResetCode(String email) {
+        // Check if user exists
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Email không tồn tại trong hệ thống.");
+        }
+
+        // Generate verification code
+        String verificationCode = generateVerificationCode();
+
+        // Mark all previous tokens as used
+        passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
+
+        // Create new token
+        PasswordResetToken token = PasswordResetToken.builder()
+                .email(email)
+                .verificationCode(verificationCode)
+                .isUsed(false)
+                .build();
+
+        passwordResetTokenRepository.save(token);
+
+        // Send email
+        emailService.sendPasswordResetEmail(email, verificationCode);
+    }
+
+    @Override
+    public boolean verifyResetCode(String email, String code) {
+        Optional<PasswordResetToken> tokenOpt = passwordResetTokenRepository
+                .findByEmailAndVerificationCodeAndIsUsedFalse(email, code);
+
+        if (tokenOpt.isEmpty()) {
+            return false;
+        }
+
+        PasswordResetToken token = tokenOpt.get();
+        return !token.isExpired();
+    }
+
+    @Override
+    @Transactional
+    public void resetPassword(String email, String newPassword) {
+        // Find user
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Email không tồn tại trong hệ thống.");
+        }
+
+        // Encode and update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        // Mark all tokens as used
+        passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
     }
 }

@@ -20,6 +20,10 @@ public interface UserService {
     
     // Address related methods
     List<AddressDTO> getUserAddresses(Long userId);
+    String generateVerificationCode();
+    void sendPasswordResetCode(String email);
+    void resetPassword(String email, String newPassword);
+    boolean verifyResetCode(String email, String code);
 //    List<Users> findByFullNameAndRole(String name, int roleId);
 //    Users findUserByUserID(int userId);
 //    void updateUser(Users user, String fullName, String address, String phone);
