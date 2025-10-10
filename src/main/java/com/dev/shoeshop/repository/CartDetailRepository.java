@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CartDetailRepository extends JpaRepository<CartDetail, Long> {
+public interface CartDetailRepository extends JpaRepository<CartDetail, Integer> {
     
     /**
      * Find all cart details by cart

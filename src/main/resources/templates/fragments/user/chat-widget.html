@@ -1,0 +1,572 @@
+<!-- Chat Widget Fragment for Shoe Shop -->
+<div th:fragment="chat-widget">
+    <!-- Chat Toggle Button -->
+    <button 
+        type="button" 
+        id="shoe_shop_chat_button" 
+        class="shoe_shop_chat_button">
+        <img 
+            alt="Shoe Shop AI Assistant" 
+            src="/img/chatbot/chatbot.png" 
+            style="width: 100%; height: 100%; object-fit: cover;">
+    </button>
+
+    <!-- Chat Window -->
+    <div id="shoe_shop_chat_window" class="shoe_shop_chat_window">
+        <!-- Chat Header -->
+        <div class="shoe_shop_chat_header">
+            <div class="shoe_shop_chat_header_info">
+                <img class="shoe_shop_chat_logo" src="/img/logo.png" alt="Shoe Shop Logo">
+                <div class="shoe_shop_chat_title">
+                    <span class="shoe_shop_chat_name">Trợ Lý AI Shoe Shop</span>
+                    <span class="shoe_shop_chat_status">Đang hoạt động</span>
+                </div>
+            </div>
+            <button type="button" id="shoe_shop_chat_close" class="shoe_shop_chat_close_btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="shoe_shop_chat_messages" id="shoe_shop_chat_messages">
+            <div class="shoe_shop_welcome_message">
+                <div class="shoe_shop_bot_avatar">
+                    <img src="/img/chatbot/chatbot.png" alt="AI Assistant">
+                </div>
+                <div class="shoe_shop_message_content">
+                    <div class="shoe_shop_message_bubble bot">
+                        <p>👋 Xin chào! Tôi là trợ lý AI của Shoe Shop. Tôi có thể giúp bạn:</p>
+                        <ul>
+                            <li>🔍 Tìm kiếm giày theo sở thích</li>
+                            <li>📏 Tư vấn size giày phù hợp</li>
+                            <li>💳 Hỗ trợ đặt hàng</li>
+                            <li>📦 Theo dõi đơn hàng</li>
+                            <li>❓ Trả lời câu hỏi về sản phẩm</li>
+                        </ul>
+                        <p>Bạn cần hỗ trợ gì ạ? 😊</p>
+                    </div>
+                    <div class="shoe_shop_message_time">Vừa xong</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="shoe_shop_typing_indicator" id="shoe_shop_typing_indicator" style="display: none;">
+            <div class="shoe_shop_bot_avatar">
+                <img src="/img/chatbot/chatbot.png" alt="AI Assistant">
+            </div>
+            <div class="shoe_shop_typing_dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="shoe_shop_typing_text">Đang nhập...</span>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="shoe_shop_chat_input_area">
+            <div class="shoe_shop_input_container">
+                <textarea 
+                    id="shoe_shop_chat_input" 
+                    class="shoe_shop_chat_input" 
+                    placeholder="Nhập câu hỏi của bạn..." 
+                    rows="1"
+                    maxlength="500"></textarea>
+                <button id="shoe_shop_chat_send" class="shoe_shop_send_btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22 2L11 13M22 2L15 22L11 13M22 2L2 9L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Widget CSS -->
+    <style>
+        /* Chat Button */
+        .shoe_shop_chat_button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .shoe_shop_chat_button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .shoe_shop_chat_button:active {
+            transform: scale(0.95);
+        }
+
+        /* Chat Window */
+        .shoe_shop_chat_window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 380px;
+            height: 600px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            border: 1px solid #e0e0e0;
+        }
+
+        .shoe_shop_chat_window.show {
+            display: flex;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Chat Header */
+        .shoe_shop_chat_header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shoe_shop_chat_header_info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .shoe_shop_chat_logo {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .shoe_shop_chat_title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .shoe_shop_chat_name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .shoe_shop_chat_status {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .shoe_shop_chat_close_btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s ease;
+        }
+
+        .shoe_shop_chat_close_btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Chat Messages */
+        .shoe_shop_chat_messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .shoe_shop_welcome_message {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .shoe_shop_bot_avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .shoe_shop_bot_avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .shoe_shop_message_content {
+            flex: 1;
+        }
+
+        .shoe_shop_message_bubble {
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            max-width: 85%;
+        }
+
+        .shoe_shop_message_bubble.bot {
+            background: white;
+            color: #333;
+            border: 1px solid #e9ecef;
+            border-bottom-left-radius: 5px;
+        }
+
+        .shoe_shop_message_bubble.user {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+            margin-left: auto;
+        }
+
+        .shoe_shop_message_bubble ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .shoe_shop_message_bubble li {
+            margin: 4px 0;
+        }
+
+        .shoe_shop_message_time {
+            font-size: 11px;
+            color: #666;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        /* Typing Indicator */
+        .shoe_shop_typing_indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: #f8f9fa;
+        }
+
+        .shoe_shop_typing_dots {
+            display: flex;
+            gap: 4px;
+        }
+
+        .shoe_shop_typing_dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .shoe_shop_typing_dots span:nth-child(1) { animation-delay: -0.32s; }
+        .shoe_shop_typing_dots span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        .shoe_shop_typing_text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* Chat Input */
+        .shoe_shop_chat_input_area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .shoe_shop_input_container {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .shoe_shop_chat_input {
+            flex: 1;
+            border: 1px solid #e9ecef;
+            border-radius: 25px;
+            padding: 12px 16px;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s ease;
+            max-height: 100px;
+            min-height: 44px;
+            font-family: inherit;
+        }
+
+        .shoe_shop_chat_input:focus {
+            border-color: #ff6b6b;
+        }
+
+        .shoe_shop_send_btn {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .shoe_shop_send_btn:hover {
+            transform: scale(1.1);
+        }
+
+        .shoe_shop_send_btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .shoe_shop_chat_window {
+                width: calc(100vw - 20px);
+                height: calc(100vh - 100px);
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .shoe_shop_chat_button {
+                width: 50px;
+                height: 50px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Scrollbar */
+        .shoe_shop_chat_messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .shoe_shop_chat_messages::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+
+        .shoe_shop_chat_messages::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+        .shoe_shop_chat_messages::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+    </style>
+
+    <!-- Chat Widget JavaScript -->
+    <script>
+        class ShoeShopChatWidget {
+            constructor() {
+                this.isOpen = false;
+                this.init();
+            }
+
+            init() {
+                this.bindEvents();
+            }
+
+            bindEvents() {
+                const chatButton = document.getElementById('shoe_shop_chat_button');
+                const chatWindow = document.getElementById('shoe_shop_chat_window');
+                const chatInput = document.getElementById('shoe_shop_chat_input');
+                const chatSendBtn = document.getElementById('shoe_shop_chat_send');
+                const chatCloseBtn = document.getElementById('shoe_shop_chat_close');
+
+                // Toggle chat
+                chatButton.addEventListener('click', () => this.toggleChat());
+
+                // Send message
+                chatSendBtn.addEventListener('click', () => this.sendMessage());
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+
+                // Auto-resize textarea
+                chatInput.addEventListener('input', () => {
+                    chatInput.style.height = 'auto';
+                    chatInput.style.height = Math.min(chatInput.scrollHeight, 100) + 'px';
+                });
+
+                // Close chat
+                chatCloseBtn.addEventListener('click', () => this.closeChat());
+
+                // Click outside to close
+                document.addEventListener('click', (e) => {
+                    if (this.isOpen && 
+                        !chatWindow.contains(e.target) && 
+                        !chatButton.contains(e.target)) {
+                        this.closeChat();
+                    }
+                });
+            }
+
+            toggleChat() {
+                if (this.isOpen) {
+                    this.closeChat();
+                } else {
+                    this.openChat();
+                }
+            }
+
+            openChat() {
+                const chatWindow = document.getElementById('shoe_shop_chat_window');
+                const chatInput = document.getElementById('shoe_shop_chat_input');
+                
+                if (chatWindow) {
+                    chatWindow.classList.add('show');
+                    this.isOpen = true;
+                    
+                    setTimeout(() => {
+                        chatInput?.focus();
+                    }, 300);
+                }
+            }
+
+            closeChat() {
+                const chatWindow = document.getElementById('shoe_shop_chat_window');
+                if (chatWindow) {
+                    chatWindow.classList.remove('show');
+                    this.isOpen = false;
+                }
+            }
+
+            async sendMessage() {
+                const chatInput = document.getElementById('shoe_shop_chat_input');
+                const message = chatInput.value.trim();
+                
+                if (!message) return;
+
+                // Add user message
+                this.addMessage(message, 'user');
+                chatInput.value = '';
+                chatInput.style.height = 'auto';
+
+                // Show typing indicator
+                this.showTypingIndicator();
+
+                try {
+                    // Call Gemini API
+                    const response = await fetch('/api/gemini/ask', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(message)
+                    });
+
+                    const botResponse = await response.text();
+                    this.hideTypingIndicator();
+                    this.addMessage(botResponse, 'bot');
+                } catch (error) {
+                    this.hideTypingIndicator();
+                    this.addMessage('Xin lỗi, tôi đang gặp sự cố kỹ thuật. Vui lòng thử lại sau!', 'bot');
+                }
+            }
+
+            addMessage(text, sender) {
+                const chatMessages = document.getElementById('shoe_shop_chat_messages');
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `shoe_shop_message ${sender === 'user' ? 'user' : 'bot'}`;
+                
+                const time = new Date().toLocaleTimeString('vi-VN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                if (sender === 'user') {
+                    messageDiv.innerHTML = `
+                        <div class="shoe_shop_message_bubble user">${text}</div>
+                        <div class="shoe_shop_message_time">${time}</div>
+                    `;
+                } else {
+                    messageDiv.innerHTML = `
+                        <div class="shoe_shop_bot_avatar">
+                            <img src="/img/chatbot/chatbot.png" alt="AI Assistant">
+                        </div>
+                        <div class="shoe_shop_message_content">
+                            <div class="shoe_shop_message_bubble bot">${text}</div>
+                            <div class="shoe_shop_message_time">${time}</div>
+                        </div>
+                    `;
+                }
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            showTypingIndicator() {
+                const typingIndicator = document.getElementById('shoe_shop_typing_indicator');
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'flex';
+                }
+            }
+
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('shoe_shop_typing_indicator');
+                if (typingIndicator) {
+                    typingIndicator.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize chat widget when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            window.shoeShopChatWidget = new ShoeShopChatWidget();
+        });
+    </script>
+</div>
