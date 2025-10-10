@@ -3,7 +3,7 @@
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title> Register || James </title>
+        <title> Register || DeeG Shop </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -56,6 +56,14 @@
         <!-- responsive CSS
         ============================================ -->
         <link rel="stylesheet" href="css/responsive.css">
+        <!-- Custom Styles -->
+        <style>
+            /* Login link hover effect */
+            .login-link:hover {
+                color: rgb(180, 30, 60) !important;
+                text-decoration: underline !important;
+            }
+        </style>
         <!-- modernizr JS
         ============================================ -->
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
@@ -74,16 +82,16 @@
                     <div class="col-md-12">
                         <div class="location">
                             <ul>
-                                <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
-                                <li><strong>Register page</strong></li>
+                                <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a>  </li>
+                                <li><strong>Đăng Ký</strong></li>
                             </ul>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div th:if="${mess}" style="color: red; text-align: center; font-size: larger">
-            <p th:text="${mess}"></p>
+        <div id="alertMessage" style="display: none; text-align: center; font-size: larger; padding: 15px; margin: 20px auto; max-width: 600px; border-radius: 5px;">
+            <p id="alertText"></p>
         </div>
         <div class="login-area ptb-120">
             <div class="container">
@@ -92,23 +100,32 @@
                         <div class="login">
                             <div class="login-form-container">
                                 <div class="login-text">
-                                    <h2>Register</h2>
-                                    <span>Please Register using account detail bellow.</span>
+                                    <h2>Đăng Ký</h2>
+                                    <span>Vui lòng đăng ký tài khoản bằng thông tin bên dưới.</span>
                                 </div>
                                 <div class="login-form">
-                                    <form action="/register" method="post">
-                                        <input name="email" placeholder="Email" type="email" required>
-                                        <input type="text" name="fullname" placeholder="Fullname" required>
-                                        <input type="text" name="address" placeholder="Address" required>
-                                        <input type="text" name="phone" placeholder="Phone Number" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
-                                        <input type="password" name="password" placeholder="Password" required minlength="6" title="Password must be at least 6 characters long">
+                                    <form id="registerForm">
+                                        <input id="email" name="email" placeholder="Email" type="email" required>
+                                        <input id="fullname" type="text" name="fullname" placeholder="Tên Đầy Đủ" required minlength="2">
+                                        <input id="password" type="password" name="password" placeholder="Mật Khẩu" required minlength="6">
+                                        <input id="confirmPassword" type="password" name="confirmPassword" placeholder="Xác Nhận Mật Khẩu" required minlength="6">
                                         <div class="align-items-center gap-3" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-                                            <button type="button" onclick="sendVerificationEmail()" class="default-btn" style="padding: 10px; font-size: 16px; width: 100%; height: 40px; border: 1px solid #ccc; border-radius: 5px; display: block;">Send code</button>
-                                            <input type="text" name="verity" placeholder="Verify code" required pattern="^\d{6}$" title="Please enter exactly 6 digits" style="padding: 10px; margin-bottom: 4px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; width: 100%; height: 40px;">
+                                            <button type="button" id="sendCodeBtn" class="default-btn" style="padding: 10px; font-size: 16px; width: 100%; height: 40px; border: 1px solid #ccc; border-radius: 5px; display: block;">Gửi Mã</button>
+                                            <input id="verificationCode" type="text" name="verificationCode" placeholder="Mã Xác Nhận" required pattern="^\d{6}$" title="Vui lòng nhập đúng 6 chữ số" style="padding: 10px; margin-bottom: 4px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; width: 100%; height: 40px;">
                                         </div>
 
                                         <div class="button-box">
-                                            <button type="submit" class="default-btn" style="margin: 0 auto; margin-top: 10px;display: block">Register</button>
+                                            <button type="submit" class="default-btn" style="margin: 0 auto; margin-top: 10px;display: block">Đăng Ký</button>
+                                        </div>
+                                        
+                                        <!-- Login Link -->
+                                        <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                                            <p style="margin: 0; color: #666; font-size: 14px;">
+                                                Đã có tài khoản? 
+                                                <a href="/login" class="login-link" style="color: rgb(214, 51, 77); font-weight: 600; text-decoration: none; margin-left: 5px; transition: all 0.3s ease;">
+                                                    Đăng nhập ngay
+                                                </a>
+                                            </p>
                                         </div>
                                     </form>
                                 </div>
@@ -155,31 +172,8 @@
         <!-- main JS
         ============================================ -->
         <script src="js/main.js"></script>
-        <script>
-            function sendVerificationEmail() {
-                var email = document.querySelector("input[name='email']").value;
-
-                if (email) {
-                    fetch("/send-code?email=" + email, {
-                        method: "POST"
-                    })
-                        .then(response => response.text())
-                        .then(message => {
-                            if (message === "success") {
-                                alert("Đã gửi mã xác minh thành công! Vui lòng kiểm tra email của bạn.");
-                            }
-                            else if (message === "email_exists") {
-                                alert("Email đã đăng kí. Vui lòng chọn email khác");
-                            }
-                            else{
-                                alert("Có lỗi. Vui lòng tử lại!")
-                            }
-                        })
-                        .catch(error => console.error("Error:", error));
-                } else {
-                    alert("Please enter a valid email.");
-                }
-            }
-        </script>
+        <!-- register JS
+        ============================================ -->
+        <script src="js/web/register.js"></script>
     </body>
 </html>

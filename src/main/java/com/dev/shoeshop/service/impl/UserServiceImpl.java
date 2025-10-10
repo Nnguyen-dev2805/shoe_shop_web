@@ -6,8 +6,10 @@ import com.dev.shoeshop.dto.UserDTO;
 import com.dev.shoeshop.entity.Address;
 import com.dev.shoeshop.entity.PasswordResetToken;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.entity.Role;
 import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.PasswordResetTokenRepository;
+import com.dev.shoeshop.repository.RoleRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.EmailService;
 import com.dev.shoeshop.service.UserService;
@@ -32,6 +34,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailService emailService;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
     
     @Autowired
     private UserRepository userRepository2;
@@ -152,6 +155,55 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         // Mark all tokens as used
+        passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
+    }
+    
+    @Override
+    @Transactional
+    public void sendRegistrationVerificationCode(String email, String verificationCode) {
+        // Mark all previous tokens as used
+        passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
+
+        // Create new token
+        PasswordResetToken token = PasswordResetToken.builder()
+                .email(email)
+                .verificationCode(verificationCode)
+                .isUsed(false)
+                .build();
+
+        passwordResetTokenRepository.save(token);
+
+        // Send email
+        emailService.sendRegistrationVerificationEmail(email, verificationCode);
+    }
+    
+    @Override
+    @Transactional
+    public void registerNewUser(String email, String fullname, String password) {
+        // Check if user already exists
+        Users existingUser = userRepository.findByEmail(email);
+        if (existingUser != null) {
+            throw new RuntimeException("Email đã được đăng ký trong hệ thống.");
+        }
+
+        // Get default role (user role with id = 3 or find by name "user")
+        Role userRole = roleRepository.findById(3L)
+                .orElseGet(() -> roleRepository.findByRoleName("user")
+                        .orElseThrow(() -> new RuntimeException("Default role not found")));
+
+        // Create new user
+        Users newUser = Users.builder()
+                .email(email)
+                .fullname(fullname)
+                .password(passwordEncoder.encode(password))
+                .role(userRole)
+                .provider("LOCAL")
+                .isActive(true)
+                .build();
+
+        userRepository.save(newUser);
+
+        // Mark all verification tokens as used
         passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
     }
 }
