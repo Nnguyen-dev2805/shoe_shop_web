@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -67,6 +69,10 @@ public class Discount {
 
     @Column(name = "updated_date")
     private LocalDate updatedDate;
+
+    // Quan hệ với DiscountUsed (Many-to-Many với Users thông qua bảng trung gian)
+    @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<DiscountUsed> discountUsages = new ArrayList<>();
 
     // Business logic methods
 
@@ -145,6 +151,39 @@ public class Discount {
     public String getPercentDisplay() {
         if (percent == null) return "0%";
         return String.format("%.1f%%", percent * 100);
+    }
+
+    /**
+     * Đếm số lần discount đã được sử dụng
+     */
+    public long getUsageCount() {
+        if (discountUsages == null) return 0;
+        return discountUsages.stream()
+                .filter(DiscountUsed::getIsActive)
+                .count();
+    }
+
+    /**
+     * Kiểm tra xem discount còn có thể sử dụng không (dựa trên số lượng đã sử dụng)
+     */
+    public boolean hasRemainingUsage() {
+        return getUsageCount() < quantity;
+    }
+
+    /**
+     * Lấy số lượng discount còn lại có thể sử dụng
+     */
+    public long getRemainingQuantity() {
+        return quantity - getUsageCount();
+    }
+
+    /**
+     * Kiểm tra user đã sử dụng discount này chưa
+     */
+    public boolean hasUserUsedDiscount(Users user) {
+        if (discountUsages == null || user == null) return false;
+        return discountUsages.stream()
+                .anyMatch(usage -> usage.getUser().getId().equals(user.getId()) && usage.getIsActive());
     }
 
     // JPA Lifecycle methods

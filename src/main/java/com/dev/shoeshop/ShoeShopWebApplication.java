@@ -8,8 +8,5 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class ShoeShopWebApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(ShoeShopWebApplication.class, args);
-    }
-
+    public static void main(String[] args) {SpringApplication.run(ShoeShopWebApplication.class, args);}
 }

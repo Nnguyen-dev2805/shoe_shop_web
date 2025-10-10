@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "shipping_company")
 @Data
@@ -39,6 +42,10 @@ public class ShippingCompany {
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
     
+    // Quan hệ One-to-Many với Shipper
+    @OneToMany(mappedBy = "shippingCompany", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<Shipper> shippers = new ArrayList<>();
+    
     // Constructor cho tạo mới
     public ShippingCompany(String name, String hotline, String email, String address, String website, Boolean isActive) {
         this.name = name;
@@ -47,5 +54,94 @@ public class ShippingCompany {
         this.address = address;
         this.website = website;
         this.isActive = isActive;
+    }
+    
+    // Business logic methods
+    
+    /**
+     * Đếm số lượng shipper đang hoạt động
+     */
+    public long getActiveShipperCount() {
+        if (shippers == null) return 0;
+        return shippers.stream()
+                .filter(Shipper::isWorking)
+                .count();
+    }
+    
+    /**
+     * Đếm tổng số shipper
+     */
+    public long getTotalShipperCount() {
+        return shippers != null ? shippers.size() : 0;
+    }
+    
+    /**
+     * Lấy danh sách shipper đang hoạt động
+     */
+    public List<Shipper> getActiveShippers() {
+        if (shippers == null) return new ArrayList<>();
+        return shippers.stream()
+                .filter(Shipper::isWorking)
+                .toList();
+    }
+    
+    /**
+     * Kiểm tra công ty có shipper nào đang hoạt động không
+     */
+    public boolean hasActiveShippers() {
+        return getActiveShipperCount() > 0;
+    }
+    
+    /**
+     * Thêm shipper mới vào công ty
+     */
+    public void addShipper(Shipper shipper) {
+        if (shippers == null) {
+            shippers = new ArrayList<>();
+        }
+        shipper.setShippingCompany(this);
+        shippers.add(shipper);
+    }
+    
+    /**
+     * Xóa shipper khỏi công ty
+     */
+    public void removeShipper(Shipper shipper) {
+        if (shippers != null) {
+            shippers.remove(shipper);
+            shipper.setShippingCompany(null);
+        }
+    }
+    
+    /**
+     * Lấy thông tin liên hệ đầy đủ
+     */
+    public String getFullContactInfo() {
+        StringBuilder contact = new StringBuilder();
+        contact.append("Công ty: ").append(name);
+        if (hotline != null) {
+            contact.append(", Hotline: ").append(hotline);
+        }
+        if (email != null) {
+            contact.append(", Email: ").append(email);
+        }
+        if (address != null) {
+            contact.append(", Địa chỉ: ").append(address);
+        }
+        return contact.toString();
+    }
+    
+    /**
+     * Đánh dấu công ty không hoạt động
+     */
+    public void deactivate() {
+        this.isActive = false;
+    }
+    
+    /**
+     * Kích hoạt lại công ty
+     */
+    public void activate() {
+        this.isActive = true;
     }
 }
