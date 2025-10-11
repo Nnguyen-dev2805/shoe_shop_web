@@ -112,33 +112,36 @@ public class ApiCartController {
                 .body(createErrorResponse("Error loading shipping companies: " + e.getMessage()));
         }
     }
-    
+
+
+
+    // TẠM THỜI KHÔNG DÙNG
     /**
      * Get user addresses
      * GET /api/user/addresses
      */
-    @GetMapping("/user/addresses")
-    public ResponseEntity<?> getUserAddresses(HttpSession session) {
-        try {
-            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(createErrorResponse("User not authenticated"));
-            }
-            
-            List<AddressDTO> addresses = userService.getUserAddresses(user.getId());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", addresses);
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(createErrorResponse("Error loading addresses: " + e.getMessage()));
-        }
-    }
+//    @GetMapping("/user/addresses")
+//    public ResponseEntity<?> getUserAddresses(HttpSession session) {
+//        try {
+//            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+//            if (user == null) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(createErrorResponse("User not authenticated"));
+//            }
+//
+//            List<AddressDTO> addresses = userService.getUserAddresses(user.getId());
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("success", true);
+//            response.put("data", addresses);
+//
+//            return ResponseEntity.ok(response);
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(createErrorResponse("Error loading addresses: " + e.getMessage()));
+//        }
+//    }
     
     /**
      * Update item quantity

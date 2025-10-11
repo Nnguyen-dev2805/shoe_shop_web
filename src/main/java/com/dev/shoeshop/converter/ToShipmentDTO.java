@@ -29,7 +29,6 @@ public class ToShipmentDTO {
         if (shipment.getAddress() != null) {
             String address = String.join(", ",
                     shipment.getAddress().getAddress_line(),
-                    shipment.getAddress().getDistrict(),
                     shipment.getAddress().getCity(),
                     shipment.getAddress().getCountry());
             dto.setDeliveryAddress(address);

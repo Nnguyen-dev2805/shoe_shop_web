@@ -145,44 +145,43 @@ function updateAddressFromCoords(lng, lat) {
         });
 }
 
-// Parse địa chỉ Việt Nam
+// Parse địa chỉ Việt Nam - PHIÊN BẢN ĐƠN GIẢN
 function parseVietnameseAddress(result) {
-    const components = result.address_components || [];
-    let street = "", ward = "", district = "", city = "";
+    const fullAddress = result.formatted_address || '';
+    console.log('📍 Full address:', fullAddress);
     
-    components.forEach(component => {
-        const types = component.types || [];
-        const name = component.long_name;
+    // Tách địa chỉ theo dấu phẩy
+    // VD: "Toyota Dũng Tiến, 233 Đại Lộ Hùng Vương, Phường 5, Tuy Hòa, Phú Yên"
+    const parts = fullAddress.split(',').map(p => p.trim());
+    
+    let street = '';
+    let city = '';
+    
+    if (parts.length >= 2) {
+        // Lấy phần cuối là Tỉnh/Thành phố
+        city = parts[parts.length - 1];
         
-        if (types.includes("street_number") || types.includes("route")) {
-            street += name + " ";
-        }
-        if (types.includes("sublocality_level_1") || name.includes("Phường") || name.includes("Xã")) {
-            ward = name;
-        }
-        if (types.includes("administrative_area_level_2") || name.includes("Quận") || name.includes("Huyện")) {
-            district = name;
-        }
-        if (types.includes("administrative_area_level_1") || name.includes("Thành phố") || name.includes("Tỉnh")) {
-            city = name;
-        }
-    });
-    
-    // Cập nhật form fields
-    if (street.trim()) {
-        document.getElementById('street').value = street.trim();
+        // Tất cả phần còn lại (từ đầu đến phần cuối - 1) là "Số nhà, tên đường"
+        street = parts.slice(0, -1).join(', ');
+    } else {
+        // Nếu không parse được, lấy toàn bộ
+        street = fullAddress;
     }
     
-    // Auto-select city if matches
-    const citySelect = document.getElementById('city');
-    if (citySelect && city) {
-        for (let option of citySelect.options) {
-            if (city.toLowerCase().includes(option.text.toLowerCase()) || 
-                option.text.toLowerCase().includes(city.toLowerCase())) {
-                citySelect.value = option.value;
-                break;
-            }
-        }
+    console.log('✅ Parsed simple:', { street, city });
+    
+    // ✅ Fill Số nhà, tên đường (bao gồm phường, quận)
+    const streetInput = document.getElementById('street');
+    if (streetInput) {
+        streetInput.value = street;
+        console.log('Street filled:', street);
+    }
+    
+    // ✅ Fill Tỉnh/Thành phố
+    const cityInput = document.getElementById('city');
+    if (cityInput) {
+        cityInput.value = city;
+        console.log('City filled:', city);
     }
 }
 

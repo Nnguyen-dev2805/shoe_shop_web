@@ -95,12 +95,17 @@ function loadAddresses() {
         url: '/api/user/addresses',
         method: 'GET',
         success: function(response) {
-            if (response.success && response.data) {
-                renderAddresses(response.data);
+            console.log('Address API response:', response);  // Debug log
+            if (response.success && response.addresses) {  // ✅ Sửa: response.data → response.addresses
+                renderAddresses(response.addresses);
+            } else {
+                console.warn('No addresses found or API error');
+                renderAddresses([]);  // Render empty state
             }
         },
         error: function(xhr, status, error) {
             console.error('Error loading addresses:', error);
+            console.error('Response:', xhr.responseJSON);
         }
     });
 }

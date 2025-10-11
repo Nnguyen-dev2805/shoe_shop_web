@@ -80,7 +80,6 @@ public class UserServiceImpl implements UserService {
         AddressDTO dto = new AddressDTO();
         dto.setId(address.getId());
         dto.setAddressLine(address.getAddress_line());
-        dto.setDistrict(address.getDistrict());
         dto.setCity(address.getCity());
         dto.setPostalCode(address.getPostal_code());
         dto.setCountry(address.getCountry());

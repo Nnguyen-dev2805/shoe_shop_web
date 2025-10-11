@@ -71,12 +71,17 @@ function loadUserAddresses() {
         method: 'GET',
         dataType: 'json',
         success: function(response) {
-            if (response.success) {
-                renderUserAddresses(response.data);
+            console.log('Address API response:', response);  // Debug log
+            if (response.success && response.addresses) {  // ✅ Sửa: response.data → response.addresses
+                renderUserAddresses(response.addresses);
+            } else {
+                console.warn('No addresses found or API error');
+                renderUserAddresses([]);  // Render empty state
             }
         },
         error: function(xhr, status, error) {
             console.error('Error loading addresses:', error);
+            console.error('Response:', xhr.responseJSON);
         }
     });
 }
@@ -215,6 +220,12 @@ function renderDiscountButton(discount) {
 function renderUserAddresses(addresses) {
     const select = $('select[name="addressId"]');
     select.empty();
+    
+    // Handle empty addresses
+    if (!addresses || addresses.length === 0) {
+        select.append('<option value="">Chưa có địa chỉ</option>');
+        return;
+    }
     
     addresses.forEach(function(address) {
         const selected = address.isDefault ? 'selected' : '';
