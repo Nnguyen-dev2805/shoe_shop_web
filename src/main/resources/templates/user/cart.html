@@ -3,7 +3,7 @@
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title> Cart || James </title>
+        <title> Giỏ Hàng || DeeG Shop </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -94,12 +94,11 @@
         }
         
         .quantity-controller {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 5px; /* Khoảng cách giữa các nút */
-            width: 100px; /* Đặt chiều rộng tối đa cho container */
-            flex-shrink: 1; /* Cho phép container co nhỏ */
+            margin: 0 auto; /* Căn giữa */
         }
 
         .quantity-btn {
@@ -128,6 +127,73 @@
         .modal-backdrop {
             display: none !important;
         }
+        
+        /* ⭐ Hover effect cho button thanh toán */
+        #btn-continue-payment:hover {
+            background: rgb(200, 40, 70) !important;
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(224, 53, 80, 0.4);
+        }
+        
+        /* ⭐ Table row hover */
+        tbody tr:hover {
+            background-color: rgba(224, 53, 80, 0.05) !important;
+            transition: all 0.3s ease;
+        }
+
+        /* ⭐ Canh giữa các nút và checkbox trong table */
+        tbody td {
+            vertical-align: middle !important;
+            background-color: white !important;
+        }
+        
+        thead th {
+            vertical-align: middle !important;
+        }
+        
+        /* ⭐ Canh giữa các icon/button trong cột Edit và Remove */
+        .remove-icon, .edit-icon {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        
+        tbody td:nth-child(1), /* Checkbox column */
+        tbody td:nth-child(8), /* Edit column */
+        tbody td:nth-child(9)  /* Remove column */
+        {
+            text-align: center !important;
+            vertical-align: middle !important;
+        }
+        
+        /* ⭐ Canh giữa button edit và remove */
+        .edit-btn, .remove-btn {
+            display: inline-block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            background: none !important;
+            line-height: 0 !important;
+        }
+        
+        .edit-btn img, .remove-btn img {
+            display: block !important;
+            margin: 0 auto !important;
+        }
+        
+        /* ⭐ Canh giữa checkbox - important override */
+        .item-checkbox, #select-all-items {
+            margin: 0 auto !important;
+            display: block !important;
+            vertical-align: middle !important;
+        }
+        
+        /* ⭐ Hover cho button Thêm Địa Chỉ */
+        .btn-add-address:hover {
+            background: rgb(200, 40, 70) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(224, 53, 80, 0.4);
+        }
 
     </style>
     </head>
@@ -147,8 +213,8 @@
                     <div class="col-md-12">
                         <div class="location">
                             <ul>
-                                <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
-                                <li><strong> Shopping cart</strong></li>
+                                <li><a href="/" title="Trang chủ">Trang chủ<span>/</span></a>  </li>
+                                <li><strong> Giỏ hàng</strong></li>
                             </ul>
                         </div>
                     </div>
@@ -159,27 +225,28 @@
                             <table class="table-bordered table table-hover">
                                 <!-- Alert placeholder for dynamic messages -->
                                 <div id="alert-container"></div>
-                                <thead>
-                                    <tr style="text-align: center">
-                                        <th style="width: 50px;">
+                                <thead style="background: rgb(229, 229, 229); color: rgb(35, 34, 34);">
+                                    <tr style="text-align: center; vertical-align: middle;">
+                                        <th style="width: 50px; vertical-align: middle;">
                                             <input type="checkbox" id="select-all-items" checked>
                                         </th>
-                                        <th class="cart-item-img">Image</th>
-                                        <th class="cart-product-name">Product Name</th>
+                                        <th class="cart-item-img">Hình ảnh</th>
+                                        <th class="cart-product-name">Tên sản phẩm</th>
                                         <th class="unit-price">Size</th>
-                                        <th class="unit-price">Unit Price</th>
-                                        <th class="quantity">Qty</th>
-                                        <th class="subtotal">Subtotal</th>
-                                        <th class="remove-icon">Edit</th>
-                                        <th class="remove-icon">Remove</th>
+                                        <th class="unit-price">Đơn giá</th>
+                                        <th class="quantity">Số lượng</th>
+                                        <th class="subtotal">Thành tiền</th>
+                                        <th class="remove-icon">Sửa</th>
+                                        <th class="remove-icon">Xóa</th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
                                     <!-- Cart items will be loaded dynamically via AJAX -->
                                     <tr>
-                                        <td colspan="8" class="text-center">
-                                            <div class="loading-spinner">
-                                                <i class="fa fa-spinner fa-spin"></i> Loading cart items...
+                                        <td colspan="9" class="text-center">
+                                            <div class="loading-spinner" style="padding: 30px;">
+                                                <i class="fa fa-spinner fa-spin" style="font-size: 24px; color: rgb(224, 53, 80);"></i>
+                                                <p style="margin-top: 10px; color: rgb(35, 34, 34);">Đang tải giỏ hàng...</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -187,39 +254,73 @@
                             </table>
                             <div class="shopping-button">
                                 <div class="continue-shopping">
-                                    <a href="/user/shop"> continue shopping </a>
+                                    <a href="/user/shop" style="text-transform: none;">
+                                        <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <!-- Address Selection -->
+                <div class="row" style="margin-top: 30px;">
+                    <!-- ⭐ ĐỊA CHỈ GIAO HÀNG -->
                     <div class="col-md-6">
-                        <div class="totals">
-                            <h3><i class="fa fa-map-marker"></i> Địa chỉ giao hàng</h3>
-                            <div class="form-group">
-                                <label>Chọn địa chỉ <em>*</em></label>
-                                <select name="addressId" id="addressSelect" required class="form-control">
+                        <div class="totals" style="background: rgb(229, 229, 229); border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; min-height: 380px; display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 20px; color: rgb(224, 53, 80); border-bottom: none; padding-bottom: 10px; font-weight: bold;">
+                                <i class="fa fa-map-marker"></i> ĐỊA CHỈ GIAO HÀNG
+                            </h3>
+                            <div class="form-group" style="margin-bottom: 20px;">
+                                <select name="addressId" id="addressSelect" required 
+                                        class="form-control" 
+                                        style="border: 1px solid #ccc; border-radius: 8px; padding: 14px; font-size: 15px; background-color: white; font-weight: 500;">
                                     <!-- User addresses will be loaded dynamically via AJAX -->
-                                    <option value="">Đang tải địa chỉ...</option>
+                                    <option value="">
+                                        <i class="fa fa-spinner fa-spin"></i> Đang tải địa chỉ...
+                                    </option>
                                 </select>
+                                <small style="color: rgb(35, 34, 34); margin-top: 10px; display: block;">
+                                    <i class="fa fa-info-circle"></i> Vui lòng chọn địa chỉ giao hàng trước khi thanh toán
+                                </small>
                             </div>
+                            <a href="/user/my-account" 
+                               class="btn btn-block btn-add-address"
+                               style="background: rgb(224, 53, 80); color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; display: block; text-align: center; transition: all 0.3s; border: none;">
+                                <i class="fa fa-plus-circle"></i> Thêm Địa Chỉ Mới
+                            </a>
                         </div>
                     </div>
                     
-                    <!-- Total Price -->
+                    <!-- ⭐ TỔNG TIỀN -->
                     <div class="col-md-6">
-                        <div class="totals">
-                            <p>Ngày tạo giỏ hàng: <span id="createdDate">Đang tải...</span></p>
-                            <h3>Tổng tiền tạm tính: <span id="totalPrice" style="color: #e74c3c;">0 đ</span></h3>
-                            <p style="font-size: 14px; color: #666;">(*Chưa bao gồm phí vận chuyển và giảm giá)</p>
+                        <div class="totals" style="background: rgb(229, 229, 229); border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; min-height: 380px; display: flex; flex-direction: column;">
+                            <h3 style="margin-bottom: 20px; color: rgb(224, 53, 80); border-bottom: none; padding-bottom: 10px; font-weight: bold;">
+                                <i class="fa fa-calculator"></i> THÔNG TIN THANH TOÁN
+                            </h3>
+                            
+                            <div style="padding: 10px 0; margin-bottom: 10px; border-bottom: 1px solid #ddd;">
+                                <p style="margin: 0; font-size: 14px; color: rgb(35, 34, 34);">
+                                    <i class="fa fa-calendar"></i> Ngày tạo giỏ hàng: 
+                                    <span id="createdDate" style="font-weight: bold;">Đang tải...</span>
+                                </p>
+                            </div>
+                            
+                            <div style="padding: 15px 0; margin-bottom: 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
+                                <p style="margin: 0; font-size: 16px; color: rgb(35, 34, 34);">Tổng tiền tạm tính</p>
+                                <h2 id="totalPrice" style="color: rgb(224, 53, 80); margin: 10px 0; font-size: 32px; font-weight: bold;">
+                                    0 đ
+                                </h2>
+                                <p style="font-size: 13px; color: #666; margin: 0;">
+                                    <i class="fa fa-info-circle"></i> Chưa bao gồm phí vận chuyển và giảm giá
+                                </p>
+                            </div>
                             
                             <input type="hidden" name="cartId" id="cartIdInput" value=""/>
                             
-                            <div class="shopping-button mt-3">
-                                <button type="button" id="btn-continue-payment" class="btn btn-success btn-lg" style="width: 100%;">
-                                    <i class="fa fa-shopping-cart"></i> Tiếp tục mua hàng
+                            <div class="shopping-button" style="margin-top: auto;">
+                                <button type="button" id="btn-continue-payment" 
+                                        class="btn" 
+                                        style="width: 100%; background: rgb(224, 53, 80); color: white; font-weight: bold; padding: 12px; border-radius: 8px; border: none; font-size: 16px; transition: all 0.3s;">
+                                    <i class="fa fa-credit-card"></i> Tiến Hành Thanh Toán
                                 </button>
                             </div>
                         </div>
