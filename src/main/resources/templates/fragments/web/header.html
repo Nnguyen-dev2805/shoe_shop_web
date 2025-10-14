@@ -1,4 +1,8 @@
 <html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Cart Badge CSS -->
+    <link rel="stylesheet" href="/css/header-cart.css">
+</head>
 <div th:fragment="header">
     <header>
         <div class="top-link">
@@ -44,7 +48,9 @@
                             </div>
                             <div class="cart-menu">
                                 <ul>
-                                    <li><a href="#"> <img src="/img/icon-cart.png" alt=""> </a>
+                                    <li>
+                                        <a th:href="@{/cart/view}"> <img src="/img/icon-cart.png" alt="Cart Icon"></a>
+                                        <!-- COMMENTED OUT: Cart hover preview - User only wants item count badge -->
 <!--                                        <div class="cart-info">-->
 <!--                                            <ul>-->
 <!--                                                <li>-->

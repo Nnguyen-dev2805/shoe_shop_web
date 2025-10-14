@@ -103,18 +103,22 @@ function loadAddressInfo() {
         url: '/api/user/addresses',
         method: 'GET',
         success: function(response) {
-            if (response.success && response.data) {
-                const address = response.data.find(a => a.id == addressId);
+            console.log('Address API response:', response);  // Debug log
+            if (response.success && response.addresses) {  // ✅ Sửa: response.data → response.addresses
+                const address = response.addresses.find(a => a.id == addressId);
                 if (address) {
                     $('#delivery-address').html(`
                         <i class="fa fa-check-circle text-success"></i> 
                         <strong>${address.address}</strong>
                     `);
+                } else {
+                    console.warn('Address not found with ID:', addressId);
                 }
             }
         },
         error: function(xhr, status, error) {
             console.error('Error loading address:', error);
+            console.error('Response:', xhr.responseJSON);
         }
     });
 }

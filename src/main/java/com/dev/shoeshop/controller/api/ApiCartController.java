@@ -34,6 +34,45 @@ public class ApiCartController {
     private final UserService userService;
     
     /**
+     * Get cart item count for current user
+     * GET /api/cart/count
+     */
+    @GetMapping("/cart/count")
+    public ResponseEntity<?> getCartCount(HttpSession session) {
+        try {
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            
+            // Nếu user chưa đăng nhập, trả về count = 0
+            if (user == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("count", 0);
+                response.put("authenticated", false);
+                return ResponseEntity.ok(response);
+            }
+            
+            // Lấy giỏ hàng của user
+            CartDTO cart = orderService.getCartByUserId(user.getId());
+            int itemCount = 0;
+            
+            if (cart != null && cart.getCartDetails() != null) {
+                itemCount = cart.getCartDetails().size();
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("count", itemCount);
+            response.put("authenticated", true);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createErrorResponse("Error loading cart count: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * Get current cart data
      * GET /api/cart/current
      */
@@ -112,33 +151,36 @@ public class ApiCartController {
                 .body(createErrorResponse("Error loading shipping companies: " + e.getMessage()));
         }
     }
-    
+
+
+
+    // TẠM THỜI KHÔNG DÙNG
     /**
      * Get user addresses
      * GET /api/user/addresses
      */
-    @GetMapping("/user/addresses")
-    public ResponseEntity<?> getUserAddresses(HttpSession session) {
-        try {
-            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
-            if (user == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(createErrorResponse("User not authenticated"));
-            }
-            
-            List<AddressDTO> addresses = userService.getUserAddresses(user.getId());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", addresses);
-            
-            return ResponseEntity.ok(response);
-            
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(createErrorResponse("Error loading addresses: " + e.getMessage()));
-        }
-    }
+//    @GetMapping("/user/addresses")
+//    public ResponseEntity<?> getUserAddresses(HttpSession session) {
+//        try {
+//            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+//            if (user == null) {
+//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+//                    .body(createErrorResponse("User not authenticated"));
+//            }
+//
+//            List<AddressDTO> addresses = userService.getUserAddresses(user.getId());
+//
+//            Map<String, Object> response = new HashMap<>();
+//            response.put("success", true);
+//            response.put("data", addresses);
+//
+//            return ResponseEntity.ok(response);
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                .body(createErrorResponse("Error loading addresses: " + e.getMessage()));
+//        }
+//    }
     
     /**
      * Update item quantity

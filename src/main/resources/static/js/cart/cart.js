@@ -71,12 +71,17 @@ function loadUserAddresses() {
         method: 'GET',
         dataType: 'json',
         success: function(response) {
-            if (response.success) {
-                renderUserAddresses(response.data);
+            console.log('Address API response:', response);  // Debug log
+            if (response.success && response.addresses) {  // ✅ Sửa: response.data → response.addresses
+                renderUserAddresses(response.addresses);
+            } else {
+                console.warn('No addresses found or API error');
+                renderUserAddresses([]);  // Render empty state
             }
         },
         error: function(xhr, status, error) {
             console.error('Error loading addresses:', error);
+            console.error('Response:', xhr.responseJSON);
         }
     });
 }
@@ -123,7 +128,7 @@ function renderCartItems(cart) {
                     <span class="formatted-price">${formatPrice(detail.product.product.price + detail.product.priceadd)}</span>
                 </td>
                 <td class="quantity">
-                    <div class="quantity-controller" style="margin-top: 30px; margin-left: 30px; margin-right: -30px">
+                    <div class="quantity-controller" style="margin: 0 auto;">
                         <button type="button" class="quantity-btn decrease" data-id="${detail.id}">-</button>
                         <input type="number" class="quantity-input" value="${detail.quantity}" data-id="${detail.id}" readonly>
                         <button type="button" class="quantity-btn increase" data-id="${detail.id}">+</button>
@@ -133,13 +138,13 @@ function renderCartItems(cart) {
                     <span class="formatted-price">${formatPrice(detail.price * detail.quantity)}</span>
                 </td>
                 <td class="remove-icon">
-                    <button type="button" class="edit-btn" data-id="${detail.id}" style="margin-top: 30px; border: none; background: none;">
-                        <img src="/img/cart/btn_edit.gif" alt="Edit">
+                    <button type="button" class="edit-btn" data-id="${detail.id}" style="border: none; background: none; padding: 0; margin: 0;">
+                        <img src="/img/cart/btn_edit.gif" alt="Edit" style="display: block;">
                     </button>
                 </td>
                 <td class="remove-icon">
-                    <button type="button" class="remove-btn" data-id="${detail.id}" style="border: none; background: none;">
-                        <img src="/img/cart/btn_remove.png" alt="Remove">
+                    <button type="button" class="remove-btn" data-id="${detail.id}" style="border: none; background: none; padding: 0; margin: 0;">
+                        <img src="/img/cart/btn_remove.png" alt="Remove" style="display: block;">
                     </button>
                 </td>
             </tr>
@@ -215,6 +220,12 @@ function renderDiscountButton(discount) {
 function renderUserAddresses(addresses) {
     const select = $('select[name="addressId"]');
     select.empty();
+    
+    // Handle empty addresses
+    if (!addresses || addresses.length === 0) {
+        select.append('<option value="">Chưa có địa chỉ</option>');
+        return;
+    }
     
     addresses.forEach(function(address) {
         const selected = address.isDefault ? 'selected' : '';
@@ -391,6 +402,11 @@ function handleRemoveItem() {
                 if (response.success) {
                     showAlert('Item removed successfully', 'success');
                     loadCartData();
+                    
+                    // Refresh cart count in header
+                    if (typeof window.refreshCartCount === 'function') {
+                        window.refreshCartCount();
+                    }
                 } else {
                     showAlert(response.message || 'Error removing item', 'error');
                 }

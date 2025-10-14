@@ -19,6 +19,11 @@ public class AddressDTO {
     private String country;
     private Boolean isDefault;
     
+    // Recipient information from UserAddress
+    private String recipientName;
+    private String recipientPhone;
+    private String street; // Alias for addressLine
+    
     // Helper method to get full address display
     public String getFullAddress() {
         StringBuilder fullAddress = new StringBuilder();
