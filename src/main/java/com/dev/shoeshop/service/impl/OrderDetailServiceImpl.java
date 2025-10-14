@@ -8,6 +8,7 @@ import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.OrderDetail;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
+import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.service.OrderDetailService;
@@ -32,6 +33,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
     
     @Autowired
     CartRepository cartRepository;
+    
+    @Autowired
+    InventoryRepository inventoryRepository;
 
     @Override
     public List<OrderDetailDTO> findAllOrderDetailById(Long id) {
@@ -83,9 +87,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
-        // Validate quantity against product stock
-        int availableStock = cartDetail.getProduct().getQuantity();
-        System.out.println("Available stock: " + availableStock);
+        // Validate quantity against product stock from Inventory
+        int availableStock = inventoryRepository.getTotalQuantityByProductDetail(cartDetail.getProduct());
+        System.out.println("Available stock from Inventory: " + availableStock);
         
         if (quantity > availableStock) {
             throw new RuntimeException("Số lượng vượt quá tồn kho. Chỉ còn " + availableStock + " sản phẩm");
@@ -110,8 +114,8 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
-        // Validate quantity against product stock
-        int availableStock = cartDetail.getProduct().getQuantity();
+        // Validate quantity against product stock from Inventory
+        int availableStock = inventoryRepository.getTotalQuantityByProductDetail(cartDetail.getProduct());
         
         if (quantity > availableStock) {
             throw new RuntimeException("Số lượng vượt quá tồn kho. Chỉ còn " + availableStock + " sản phẩm");

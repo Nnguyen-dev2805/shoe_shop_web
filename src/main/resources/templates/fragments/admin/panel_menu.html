@@ -23,14 +23,14 @@
         <div class="scrollbar" data-simplebar>
             <ul class="navbar-nav" id="navbar-nav">
 
-                <li class="menu-title">General</li>
+                <li class="menu-title">Tổng quan</li>
 
                 <li class="nav-item">
                     <a class="nav-link" href="/admin">
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Dashboard </span>
+                        <span class="nav-text"> Bảng Điều Khiển </span>
                     </a>
                 </li>
 
@@ -39,15 +39,15 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:t-shirt-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Products </span>
+                        <span class="nav-text"> Sản Phẩm </span>
                     </a>
                     <div class="collapse" id="sidebarProducts">
                         <ul class="nav sub-navbar-nav">
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/product">List</a>
+                                <a class="sub-nav-link" href="/admin/product">Danh Sách Sản Phẩm</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/product/insert">Create</a>
+                                <a class="sub-nav-link" href="/admin/product/insert">Thêm Sản Phẩm</a>
                             </li>
                         </ul>
                     </div>
@@ -58,15 +58,15 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:clipboard-list-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Category </span>
+                        <span class="nav-text"> Danh Mục </span>
                     </a>
                     <div class="collapse" id="sidebarCategory">
                         <ul class="nav sub-navbar-nav">
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/category">List</a>
+                                <a class="sub-nav-link" href="/admin/category">Danh Sách Danh Mục</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/category/insert">Create</a>
+                                <a class="sub-nav-link" href="/admin/category/insert">Thêm Danh Mục</a>
                             </li>
                         </ul>
                     </div>
@@ -77,15 +77,15 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:tag-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Brand </span>
+                        <span class="nav-text"> Thương Hiệu </span>
                     </a>
                     <div class="collapse" id="sidebarBrand">
                         <ul class="nav sub-navbar-nav">
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/brand">List</a>
+                                <a class="sub-nav-link" href="/admin/brand">Danh Sách Thương Hiệu</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/brand/insert">Create</a>
+                                <a class="sub-nav-link" href="/admin/brand/insert">Thêm Thương Hiệu</a>
                             </li>
                         </ul>
                     </div>
@@ -96,16 +96,16 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Inventory </span>
+                        <span class="nav-text"> Tồn Kho </span>
                     </a>
                     <div class="collapse" id="sidebarInventory">
                         <ul class="nav sub-navbar-nav">
 
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/inventory">List</a>
+                                <a class="sub-nav-link" href="/admin/inventory">Danh Sách Tồn Kho</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/inventory/insert">Add</a>
+                                <a class="sub-nav-link" href="/admin/inventory/insert">Thêm Tồn Kho</a>
                             </li>
                         </ul>
                     </div>
@@ -116,16 +116,16 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Orders </span>
+                        <span class="nav-text"> Đơn Hàng </span>
                     </a>
                     <div class="collapse" id="sidebarOrders">
                         <ul class="nav sub-navbar-nav">
 
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" th:href="@{/admin/order/list}">List</a>
+                                <a class="sub-nav-link" th:href="@{/admin/order/list}">Danh Sách Đơn Hàng</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="order-detail.html">Details</a>
+                                <a class="sub-nav-link" href="order-detail.html">Chi Tiết Đơn Hàng</a>
                             </li>
                         </ul>
                     </div>
@@ -137,16 +137,16 @@
                         <!-- Sử dụng biểu tượng giảm giá từ Iconify -->
                         <iconify-icon icon="mdi:tag-heart-outline"></iconify-icon>
                     </span>
-                        <span class="nav-text"> Discount </span>
+                        <span class="nav-text"> Mã Giảm Giá </span>
                     </a>
 
                     <div class="collapse" id="sidebarDiscount">
                         <ul class="nav sub-navbar-nav">
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/discount-list">List</a>
+                                <a class="sub-nav-link" href="/admin/discount-list">Danh Sách Mã Giảm Giá</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/discount-add">Create</a>
+                                <a class="sub-nav-link" href="/admin/discount-add">Thêm Mã Giảm Giá</a>
                             </li>
                         </ul>
                     </div>
@@ -156,7 +156,7 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="mdi:account"></iconify-icon>
                                    </span>
-                        <span class="nav-text"> Permission </span>
+                        <span class="nav-text"> Phân Quyền </span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -165,16 +165,16 @@
                         <!-- Use the shipping company icon from Iconify -->
                         <iconify-icon icon="mdi:truck-delivery-outline"></iconify-icon>
                     </span>
-                        <span class="nav-text"> Shipping Company </span>
+                        <span class="nav-text"> Đơn Vị Vận Chuyển </span>
                     </a>
 
                     <div class="collapse" id="sidebarShippingCompany">
                         <ul class="nav sub-navbar-nav">
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/shipping_company/list">List</a>
+                                <a class="sub-nav-link" href="/admin/shipping_company/list">Danh Sách Đơn Vị Vận Chuyển</a>
                             </li>
                             <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="/admin/shipping_company/add">Create</a>
+                                <a class="sub-nav-link" href="/admin/shipping_company/add">Thêm Đơn Vị Vận Chuyển</a>
                             </li>
                         </ul>
                     </div>
@@ -182,7 +182,7 @@
 
                 <li class="nav-item">
                     <a th:href="@{/logout}" class="nav-link" href="pages-profile.html">
-                        <span class="nav-text"> Logout </span>
+                        <span class="nav-text"> Đăng Xuất </span>
                     </a>
                 </li>
             </ul>

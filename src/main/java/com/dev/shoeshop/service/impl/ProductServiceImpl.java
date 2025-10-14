@@ -7,6 +7,7 @@ import com.dev.shoeshop.dto.productdetail.ProductDetailRequest;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Rating;
+import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.service.*;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ProductServiceImpl implements ProductService {
     private final ProductDetailService productDetailService;
 
     private final BrandService brandService;
+
+    private final InventoryRepository inventoryRepository;
 
     @Transactional
     @Override
@@ -122,15 +125,15 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByIdWithDetailsAndInventories(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
 
-        // Convert ProductDetails to SizeOptions with stock from product_detail.quantity
+        // Convert ProductDetails to SizeOptions with stock from Inventory
         List<ProductDetailResponse.SizeOption> sizeOptions = product.getDetails().stream()
                 .map(detail -> {
-                    // Get quantity directly from ProductDetail entity
-                    int stock = detail.getQuantity();
+                    // Get total quantity from all Inventory records for this ProductDetail
+                    int stock = inventoryRepository.getTotalQuantityByProductDetail(detail);
                     
                     System.out.println("=== Processing ProductDetail ID: " + detail.getId() 
                             + ", Size: " + detail.getSize() 
-                            + ", Stock: " + stock);
+                            + ", Stock from Inventory: " + stock);
                     
                     return ProductDetailResponse.SizeOption.builder()
                             .id(detail.getId())
