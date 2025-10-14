@@ -155,130 +155,145 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="my-address">
-                                                        <p>Hãy thiết lập địa chỉ thanh toán và giao hàng mặc định để chúng tôi có thể xử lý đơn hàng nhanh chóng. Bạn cũng có thể thêm địa chỉ khác, thuận tiện cho việc nhận hàng tại nhà, văn phòng hoặc gửi quà tặng.</p>
-                                                        <div class="account-title">
-                                                            <h4>Danh sách địa chỉ của bạn:</h4>
-                                                        </div>
-                                                        <p>Đừng quên cập nhật thông tin nếu có thay đổi để việc giao hàng luôn thuận tiện.</p>
-                                                        <div id="error-message" class="alert alert-danger" style="display: none;">
+                                                        <!-- Error/Success Message -->
+                                                        <div id="error-message" class="alert alert-danger" style="display: none; margin-bottom: 20px; border-radius: 6px;">
                                                             <span id="error-text"></span>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6 col-sm-12">
-                                                                <div id="address-list">
-                                                                    <!-- Address list will be loaded via AJAX -->
-                                                                    <p style="color: #999; text-align: center; padding: 20px;">
-                                                                        <i class="fa fa-spinner fa-spin"></i> Đang tải danh sách địa chỉ...
-                                                                    </p>
+                                                        
+                                                        <!-- Description -->
+                                                        <div style="background: #fffaf5; border-left: 3px solid #ee4d2d; padding: 12px 16px; margin-bottom: 20px; border-radius: 4px;">
+                                                            <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.6;">
+                                                                <i class="fa fa-info-circle" style="color: #ee4d2d; margin-right: 6px;"></i>
+                                                                Hãy thiết lập địa chỉ giao hàng để chúng tôi có thể xử lý đơn hàng nhanh chóng hơn.
+                                                            </p>
+                                                        </div>
+                                                        
+                                                        <!-- Address List Container -->
+                                                        <div style="background: white; border: 1px solid #efefef; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
+                                                            <div id="address-list">
+                                                                <!-- Address list will be loaded via AJAX -->
+                                                                <div style="text-align: center; padding: 20px; color: #999;">
+                                                                    <i class="fa fa-spinner fa-spin" style="font-size: 24px;"></i>
+                                                                    <p style="margin-top: 10px; font-size: 14px;">Đang tải danh sách địa chỉ...</p>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="add-address">
-                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal">Thêm địa chỉ mới</button>
+                                                        
+                                                        <!-- Add Address Button -->
+                                                        <div style="text-align: center;">
+                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#addAddressModal"
+                                                                    style="background: white; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 10px 24px; 
+                                                                           border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
+                                                                    onmouseover="this.style.background='#ee4d2d'; this.style.color='white'" 
+                                                                    onmouseout="this.style.background='white'; this.style.color='#ee4d2d'">
+                                                                <i class="fa fa-plus-circle"></i> Thêm Địa Chỉ Mới
+                                                            </button>
                                                         </div>
                                                         <!-- Modal -->
                                                         <div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
                                                             <div class="modal-dialog modal-xl" style="max-width: 1200px;">
                                                                 <div class="modal-content">
-                                                                    <div class="modal-header" style="border-bottom: 1px solid #ddd; padding: 25px 30px;">
-                                                                        <h5 class="modal-title" id="addAddressModalLabel" style="font-size: 20px; font-weight: bold;">
-                                                                            <i class="fa fa-map-marker"></i> Thêm địa chỉ giao hàng
+                                                                    <div class="modal-header" style="border-bottom: 1px solid #e5e5e5; padding: 20px 30px; background: #fff;">
+                                                                        <h5 class="modal-title" id="addAddressModalLabel" style="font-size: 18px; font-weight: 600; color: #333;">
+                                                                            <i class="fa fa-map-marker" style="color: #ee4d2d;"></i> Thêm địa chỉ giao hàng
                                                                         </h5>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="font-size: 20px;"></button>
                                                                     </div>
-                                                                    <div class="modal-body" style="padding: 20px;">
+                                                                    <div class="modal-body" style="padding: 25px 30px; background: #f8f8f8;">
                                                                         <div class="row">
                                                                             <!-- Google Maps Column -->
                                                                             <div class="col-md-7">
-                                                                                <div class="map-container" style="margin-bottom: 20px;">
-                                                                                    <label style="display: block; font-weight: bold; margin-bottom: 10px;">
-                                                                                        <i class="fa fa-search"></i> Tìm kiếm vị trí trên bản đồ:
-                                                                                    </label>
-                                                                                    <input type="text" id="mapSearchInput" placeholder="Nhập địa chỉ để tìm kiếm..." 
-                                                                                           style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 10px;">
-                                                                                    <div id="goongMap" style="width: 100%; height: 400px; border: 1px solid #ddd; border-radius: 5px;"></div>
-                                                                                    <p style="font-size: 12px; color: #666; margin-top: 5px;">
-                                                                                        <i class="fa fa-info-circle"></i> Click vào bản đồ để chọn vị trí chính xác
+                                                                                <div class="map-container" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                                                                                    <div style="position: relative; margin-bottom: 12px;">
+                                                                                        <i class="fa fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                                                                        <input type="text" id="mapSearchInput" placeholder="Tìm kiếm địa chỉ" 
+                                                                                           style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;" 
+                                                                                           onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
+                                                                                    </div>
+                                                                                    <div id="goongMap" style="width: 100%; height: 420px; border-radius: 6px; overflow: hidden;"></div>
+                                                                                    <p style="font-size: 12px; color: #999; margin-top: 8px; margin-bottom: 0;">
+                                                                                        <i class="fa fa-info-circle" style="color: #ee4d2d;"></i> Click vào bản đồ để chọn vị trí chính xác
                                                                                     </p>
                                                                                 </div>
                                                                             </div>
                                                                             
                                                                             <!-- Form Column -->
                                                                             <div class="col-md-5">
-                                                                                <form id="addAddressForm">
-                                                                                    <!-- ⭐ Thông tin người nhận -->
-                                                                                    <div class="form-name" style="margin-bottom: 15px;">
-                                                                                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                            <i class="fa fa-user"></i> Tên người nhận <em style="color: red;">*</em>
+                                                                                <form id="addAddressForm" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                                                                                    <!-- Thông tin người nhận -->
+                                                                                    <div class="form-group" style="margin-bottom: 18px;">
+                                                                                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                            <i class="fa fa-user" style="color: #ee4d2d; width: 16px;"></i> Tên người nhận <span style="color: #ee4d2d;">*</span>
                                                                                         </label>
-                                                                                        <input type="text" id="recipientName" name="recipientName" placeholder="Nhập họ tên người nhận" required
-                                                                                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;">
+                                                                                        <input type="text" id="recipientName" name="recipientName" placeholder="Nhập họ tên" required
+                                                                                               style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
+                                                                                               onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
                                                                                     </div>
                                                                                     
-                                                                                    <div class="form-name" style="margin-bottom: 15px;">
-                                                                                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                            <i class="fa fa-phone"></i> Số điện thoại <em style="color: red;">*</em>
+                                                                                    <div class="form-group" style="margin-bottom: 18px;">
+                                                                                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                            <i class="fa fa-phone" style="color: #ee4d2d; width: 16px;"></i> Số điện thoại <span style="color: #ee4d2d;">*</span>
                                                                                         </label>
-                                                                                        <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="VD: 0901234567" required
+                                                                                        <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="0901234567" required
                                                                                                pattern="^0\d{9}$" title="Số điện thoại phải là 10 số và bắt đầu bằng 0"
-                                                                                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;">
+                                                                                               style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
+                                                                                               onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
                                                                                     </div>
                                                                                     
-                                                                                    <!-- ⭐ Địa chỉ từ Map -->
-                                                                                    <div class="form-name" style="margin-bottom: 15px;">
-                                                                                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                            <i class="fa fa-map-pin"></i> Địa chỉ đã chọn <em style="color: red;">*</em>
+                                                                                    <!-- Địa chỉ từ Map -->
+                                                                                    <div class="form-group" style="margin-bottom: 18px;">
+                                                                                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                            <i class="fa fa-map-marker" style="color: #ee4d2d; width: 16px;"></i> Địa chỉ đã chọn <span style="color: #ee4d2d;">*</span>
                                                                                         </label>
-                                                                                        <textarea id="selectedAddress" name="selectedAddress" placeholder="Địa chỉ sẽ hiển thị khi bạn chọn trên bản đồ" readonly
-                                                                                               style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 13px; height: 60px; resize: vertical; background: #f9f9f9;"></textarea>
+                                                                                        <textarea id="selectedAddress" name="selectedAddress" placeholder="Chọn vị trí trên bản đồ" readonly
+                                                                                               style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 13px; height: 65px; resize: none; background: #f9f9f9; color: #666;"></textarea>
                                                                                     </div>
                                                                                     
                                                                                     <!-- Hidden fields for coordinates -->
                                                                                     <input type="hidden" id="latitude" name="latitude">
                                                                                     <input type="hidden" id="longitude" name="longitude">
                                                                                     
-                                                                                    <!-- ⭐ Số nhà, tên đường (bao gồm phường, quận) -->
-                                                                                    <div class="form-name" style="margin-bottom: 15px;">
-                                                                                        <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                            <i class="fa fa-road"></i> Số nhà, tên đường <em style="color: red;">*</em>
+                                                                                    <!-- Số nhà, tên đường -->
+                                                                                    <div class="form-group" style="margin-bottom: 18px;">
+                                                                                        <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                            <i class="fa fa-home" style="color: #ee4d2d; width: 16px;"></i> Số nhà, tên đường <span style="color: #ee4d2d;">*</span>
                                                                                         </label>
-                                                                                        <textarea id="street" name="street" placeholder="VD: Toyota Dũng Tiến, 233 Đại Lộ Hùng Vương, Phường 5, Tuy Hòa" required
-                                                                                               style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; height: 60px; resize: vertical;"></textarea>
-                                                                                        <small style="color: #666; font-size: 12px;">💡 Nhập đầy đủ: Số nhà, tên đường, phường/xã, quận/huyện</small>
+                                                                                        <textarea id="street" name="street" placeholder="Số nhà, tên đường, phường/xã, quận/huyện" required
+                                                                                               style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; height: 70px; resize: none; outline: none; transition: border-color 0.3s;"
+                                                                                               onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'"></textarea>
                                                                                     </div>
                                                                             
-                                                                            <!-- ⭐ Tỉnh/Thành phố -->
-                                                                            <div class="form-name" style="margin-bottom: 15px;">
-                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                    <i class="fa fa-university"></i> Tỉnh/Thành phố <em style="color: red;">*</em>
+                                                                            <!-- Tỉnh/Thành phố -->
+                                                                            <div class="form-group" style="margin-bottom: 18px;">
+                                                                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                    <i class="fa fa-building-o" style="color: #ee4d2d; width: 16px;"></i> Tỉnh/Thành phố <span style="color: #ee4d2d;">*</span>
                                                                                 </label>
-                                                                                <input type="text" id="city" name="city" placeholder="VD: Phú Yên, Hồ Chí Minh, Hà Nội" required readonly
-                                                                                       style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; background-color: #f9f9f9;">
-                                                                                <small style="color: #666; font-size: 12px;">💡 Tự động điền từ bản đồ</small>
+                                                                                <input type="text" id="city" name="city" placeholder="Tự động điền từ bản đồ" required readonly
+                                                                                       style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; background-color: #f9f9f9; color: #666;">
                                                                             </div>
                                                                             
                                                                             <!-- Hidden: Country mặc định Việt Nam -->
                                                                             <input type="hidden" id="country" name="country" value="Việt Nam">
                                                                             
-                                                                            <!-- ⭐ Loại địa chỉ (chỉ 2 loại) -->
-                                                                            <div class="form-name" style="margin-bottom: 15px;">
-                                                                                <label style="display: block; font-weight: bold; margin-bottom: 5px;">
-                                                                                    <i class="fa fa-tag"></i> Loại địa chỉ
+                                                                            <!-- Loại địa chỉ -->
+                                                                            <div class="form-group" style="margin-bottom: 18px;">
+                                                                                <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                                                                    <i class="fa fa-tag" style="color: #ee4d2d; width: 16px;"></i> Loại địa chỉ
                                                                                 </label>
                                                                                 <select id="addressType" name="addressType"
-                                                                                        style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;">
-                                                                                    <option value="HOME">🏠 Nhà riêng</option>
-                                                                                    <option value="OFFICE">🏢 Văn phòng</option>
+                                                                                        style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; cursor: pointer; background: white;">
+                                                                                    <option value="HOME">Nhà riêng</option>
+                                                                                    <option value="OFFICE">Văn phòng</option>
                                                                                 </select>
                                                                             </div>
                                                                             
-                                                                            <!-- ⭐ Checkbox: Đặt làm địa chỉ mặc định -->
-                                                                            <div class="form-name" style="margin-bottom: 15px;">
-                                                                                <label style="display: flex; align-items: center; cursor: pointer;">
+                                                                            <!-- Checkbox: Đặt làm địa chỉ mặc định -->
+                                                                            <div class="form-group" style="margin-bottom: 0;">
+                                                                                <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #fff8f0; border: 1px solid #ffe8cc; border-radius: 6px;">
                                                                                     <input type="checkbox" id="isDefault" name="isDefault" value="true"
-                                                                                           style="width: 18px; height: 18px; margin-right: 8px; cursor: pointer;">
-                                                                                    <span style="font-weight: bold;">
-                                                                                        <i class="fa fa-star" style="color: #f39c12;"></i> Đặt làm địa chỉ mặc định
+                                                                                           style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #ee4d2d;">
+                                                                                    <span style="font-weight: 500; font-size: 14px; color: #333;">
+                                                                                        <i class="fa fa-star" style="color: #ee4d2d;"></i> Đặt làm địa chỉ mặc định
                                                                                     </span>
                                                                                 </label>
                                                                             </div>
@@ -286,11 +301,14 @@
                                                                     </div>
                                                                 </div>
                                                                 <!-- Modal Footer -->
-                                                                <div class="modal-footer" style="border-top: 1px solid #ddd; padding: 15px 20px;">
-                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                                                                    <button type="submit" form="addAddressForm" class="add-address"
-                                                                            style="padding: 10px 20px; font-size: 16px; border-radius: 5px;">
-                                                                        <i class="fa fa-save"></i> Lưu Địa Chỉ
+                                                                <div class="modal-footer" style="border-top: 1px solid #e5e5e5; padding: 15px 30px; background: white;">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" 
+                                                                            style="padding: 10px 24px; font-size: 14px; border-radius: 6px; border: 1px solid #ddd; background: white; color: #666;">
+                                                                        Hủy
+                                                                    </button>
+                                                                    <button type="submit" form="addAddressForm" 
+                                                                            style="padding: 10px 24px; font-size: 14px; border-radius: 6px; background: #ee4d2d; color: white; border: none; font-weight: 500; cursor: pointer;">
+                                                                        Lưu Địa Chỉ
                                                                     </button>
                                                                 </div>
                                                             </div>

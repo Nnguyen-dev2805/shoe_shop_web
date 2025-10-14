@@ -34,6 +34,45 @@ public class ApiCartController {
     private final UserService userService;
     
     /**
+     * Get cart item count for current user
+     * GET /api/cart/count
+     */
+    @GetMapping("/cart/count")
+    public ResponseEntity<?> getCartCount(HttpSession session) {
+        try {
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            
+            // Nếu user chưa đăng nhập, trả về count = 0
+            if (user == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("success", true);
+                response.put("count", 0);
+                response.put("authenticated", false);
+                return ResponseEntity.ok(response);
+            }
+            
+            // Lấy giỏ hàng của user
+            CartDTO cart = orderService.getCartByUserId(user.getId());
+            int itemCount = 0;
+            
+            if (cart != null && cart.getCartDetails() != null) {
+                itemCount = cart.getCartDetails().size();
+            }
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("count", itemCount);
+            response.put("authenticated", true);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createErrorResponse("Error loading cart count: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * Get current cart data
      * GET /api/cart/current
      */

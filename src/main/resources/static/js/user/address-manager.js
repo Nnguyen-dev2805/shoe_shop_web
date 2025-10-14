@@ -35,55 +35,65 @@ $(document).ready(function() {
     }
     
     /**
-     * Display addresses in the list
+     * Display addresses in the list - Shopee Style
      */
     function displayAddresses(addresses) {
         const $addressList = $('#address-list');
         $addressList.empty();
         
         if (!addresses || addresses.length === 0) {
-            $addressList.html('<p style="color: #666; font-style: italic;">Bạn chưa có địa chỉ nào. Hãy thêm địa chỉ mới!</p>');
+            $addressList.html(`
+                <div style="text-align: center; padding: 40px 20px; color: #999;">
+                    <i class="fa fa-map-marker" style="font-size: 48px; color: #ddd; margin-bottom: 15px;"></i>
+                    <p style="font-size: 14px;">Bạn chưa có địa chỉ nào</p>
+                    <p style="font-size: 13px; color: #bbb;">Hãy thêm địa chỉ để nhận hàng thuận tiện hơn</p>
+                </div>
+            `);
             return;
         }
         
-        addresses.forEach(function(address) {
+        addresses.forEach(function(address, index) {
             const isDefault = address.isDefault;
             const defaultBadge = isDefault 
-                ? '<span style="background: #4CAF50; color: white; padding: 2px 8px; border-radius: 3px; font-size: 12px; margin-left: 10px;">Mặc định</span>' 
+                ? '<span style="display: inline-block; border: 1px solid #ee4d2d; color: #ee4d2d; padding: 2px 6px; border-radius: 2px; font-size: 11px; margin-left: 12px; font-weight: 400;">Mặc định</span>' 
                 : '';
             
             const addressHtml = `
-                <div class="address-item" style="border: 1px solid ${isDefault ? '#4CAF50' : '#ddd'}; 
-                                                  padding: 15px; margin-bottom: 10px; border-radius: 5px; 
-                                                  background: ${isDefault ? '#f0f9f0' : 'white'};">
-                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                        <input type="radio" name="selectedAddress" value="${address.id}" 
-                               ${isDefault ? 'checked' : ''} 
-                               style="margin-right: 10px; cursor: pointer;">
-                        <strong style="font-size: 15px;">${address.address}</strong>
+                <div class="address-item" style="padding: 20px 0; ${index < addresses.length - 1 ? 'border-bottom: 1px solid #efefef;' : ''}">
+                    <!-- Tên và SĐT -->
+                    <div style="margin-bottom: 12px;">
+                        <span style="font-size: 16px; font-weight: 600; color: #333;">${address.recipientName || 'Người nhận'}</span>
+                        <span style="color: #ddd; margin: 0 8px;">|</span>
+                        <span style="font-size: 14px; color: #999;">${address.recipientPhone || ''}</span>
                         ${defaultBadge}
                     </div>
-                    <div style="padding-left: 25px; color: #666; font-size: 13px;">
-                        <p style="margin: 3px 0;">
-                            <i class="fa fa-map-marker"></i> 
-                            ${address.addressLine || ''}
-                            ${address.district ? ', ' + address.district : ''}
-                        </p>
-                        <p style="margin: 3px 0;">
-                            <i class="fa fa-building"></i> ${address.city || ''}, ${address.country || ''}
-                        </p>
+                    
+                    <!-- Địa chỉ chi tiết -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="font-size: 14px; color: #666; line-height: 1.6;">
+                            ${address.street || ''}
+                        </div>
+                        <div style="font-size: 14px; color: #999; margin-top: 4px;">
+                            ${address.city || ''}, ${address.country || 'Việt Nam'}
+                        </div>
                     </div>
-                    <div style="padding-left: 25px; margin-top: 10px;">
-                        <button type="button" class="btn-set-default" data-id="${address.id}" 
-                                style="background: #2196F3; color: white; border: none; padding: 5px 12px; 
-                                       border-radius: 3px; cursor: pointer; font-size: 13px; margin-right: 5px;"
-                                ${isDefault ? 'disabled' : ''}>
-                            <i class="fa fa-check"></i> Đặt làm mặc định
-                        </button>
+                    
+                    <!-- Action buttons -->
+                    <div style="display: flex; gap: 12px;">
+                        ${!isDefault ? `
+                            <button type="button" class="btn-set-default" data-id="${address.id}" 
+                                    style="background: white; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 6px 16px; 
+                                           border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.3s;"
+                                    onmouseover="this.style.background='#fff5f3'" onmouseout="this.style.background='white'">
+                                Đặt làm mặc định
+                            </button>
+                        ` : ''}
                         <button type="button" class="btn-delete-address" data-id="${address.id}"
-                                style="background: #f44336; color: white; border: none; padding: 5px 12px; 
-                                       border-radius: 3px; cursor: pointer; font-size: 13px;">
-                            <i class="fa fa-trash"></i> Xóa
+                                style="background: white; color: #555; border: 1px solid #ddd; padding: 6px 16px; 
+                                       border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.3s;"
+                                onmouseover="this.style.background='#f5f5f5'; this.style.color='#ee4d2d'; this.style.borderColor='#ee4d2d'" 
+                                onmouseout="this.style.background='white'; this.style.color='#555'; this.style.borderColor='#ddd'">
+                            Xóa
                         </button>
                     </div>
                 </div>

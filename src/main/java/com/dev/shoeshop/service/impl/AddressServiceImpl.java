@@ -145,10 +145,15 @@ public class AddressServiceImpl implements AddressService {
         AddressDTO dto = new AddressDTO();
         dto.setId(address.getId());
         dto.setAddressLine(address.getAddress_line());
+        dto.setStreet(address.getAddress_line()); // Alias
         dto.setCity(address.getCity());
         dto.setPostalCode(address.getPostal_code());
         dto.setCountry(address.getCountry());
         dto.setIsDefault(userAddress.getIsDefault());
+        
+        // Map recipient information from UserAddress
+        dto.setRecipientName(userAddress.getRecipientName());
+        dto.setRecipientPhone(userAddress.getRecipientPhone());
         
         // Build full address string
         StringBuilder fullAddress = new StringBuilder();

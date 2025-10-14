@@ -402,6 +402,11 @@ function handleRemoveItem() {
                 if (response.success) {
                     showAlert('Item removed successfully', 'success');
                     loadCartData();
+                    
+                    // Refresh cart count in header
+                    if (typeof window.refreshCartCount === 'function') {
+                        window.refreshCartCount();
+                    }
                 } else {
                     showAlert(response.message || 'Error removing item', 'error');
                 }
