@@ -1,7 +1,12 @@
 package com.dev.shoeshop.controller.user;
 
+import com.dev.shoeshop.dto.OrderDTO;
+import com.dev.shoeshop.dto.RatingRequestDTO;
 import com.dev.shoeshop.dto.UserDTO;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.service.OrderService;
+import com.dev.shoeshop.service.RatingService;
 import com.dev.shoeshop.service.UserService;
 import com.dev.shoeshop.utils.Constant;
 import jakarta.servlet.http.HttpSession;
@@ -9,9 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
@@ -29,6 +33,8 @@ import java.util.stream.Collectors;
 public class UserHomeController {
 
     private final UserService userService;
+    private final OrderService orderService;
+    private final RatingService ratingService;
 
     @GetMapping("/shop")
     public String userShop(HttpSession session) {
@@ -99,6 +105,137 @@ public class UserHomeController {
 
         response.put("listShipper", listShipper);
         return ResponseEntity.ok(response);
+    }
+    
+    // Trang xem đơn hàng theo trạng thái
+    @GetMapping("/order/view")
+    public String orderView(HttpSession session, Model model) {
+        Users u = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (u != null) {
+            model.addAttribute("user", u);
+            return "user/order-view";
+        } else {
+            return "redirect:/login";
+        }
+    }
+    
+    // Trang chi tiết đơn hàng
+    @GetMapping("/order-detail/{orderId}")
+    public String orderDetail(@PathVariable Long orderId, HttpSession session, Model model) {
+        Users u = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (u != null) {
+            try {
+                OrderDTO orderDetail = orderService.getOrderDetailById(orderId, u.getId());
+                model.addAttribute("order", orderDetail);
+                model.addAttribute("user", u);
+                return "user/order-detail";
+            } catch (RuntimeException e) {
+                model.addAttribute("error", e.getMessage());
+                return "user/order-detail";
+            }
+        } else {
+            return "redirect:/login";
+        }
+    }
+    
+    /**
+     * API endpoint để submit ratings
+     */
+    @PostMapping("/api/ratings")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> submitRatings(
+            @RequestBody RatingRequestDTO ratingRequest,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Debug logs
+            System.out.println("=== UserHomeController.submitRatings ===");
+            System.out.println("RatingRequest: " + ratingRequest);
+            System.out.println("OrderId: " + (ratingRequest != null ? ratingRequest.getOrderId() : "null"));
+            System.out.println("Ratings: " + (ratingRequest != null ? ratingRequest.getRatings() : "null"));
+            
+            // Validate ratingRequest
+            if (ratingRequest == null) {
+                response.put("success", false);
+                response.put("message", "Dữ liệu đánh giá không hợp lệ");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            if (ratingRequest.getOrderId() == null) {
+                response.put("success", false);
+                response.put("message", "ID đơn hàng không được để trống");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Lấy user từ session
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để đánh giá");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            System.out.println("User ID: " + user.getId());
+            
+            // Validate order belongs to user
+            OrderDTO order = orderService.getOrderDetailById(ratingRequest.getOrderId(), user.getId());
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "Đơn hàng không tồn tại hoặc không thuộc về bạn");
+                return ResponseEntity.status(404).body(response);
+            }
+            
+            // Check if order is DELIVERED
+            if (order.getStatus() != ShipmentStatus.DELIVERED) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể đánh giá đơn hàng đã giao");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Submit ratings
+            ratingService.submitRatings(ratingRequest, user.getId());
+            
+            response.put("success", true);
+            response.put("message", "Đánh giá đã được gửi thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    // API endpoint để lấy orders theo status
+    @GetMapping("/api/orders/status/{status}")
+    public ResponseEntity<?> getOrdersByStatus(@PathVariable String status, HttpSession session) {
+        Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "User not logged in"));
+        }
+        
+        try {
+            ShipmentStatus shipmentStatus = ShipmentStatus.valueOf(status.toUpperCase());
+            List<OrderDTO> orders = orderService.getOrdersByUserIdAndStatus(user.getId(), shipmentStatus);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("orders", orders);
+            response.put("success", true);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Invalid status: " + status);
+            response.put("success", false);
+            return ResponseEntity.status(400).body(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Failed to load orders: " + e.getMessage());
+            response.put("success", false);
+            return ResponseEntity.status(500).body(response);
+        }
     }
 
 }

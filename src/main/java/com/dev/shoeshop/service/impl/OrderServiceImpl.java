@@ -5,6 +5,7 @@ import com.dev.shoeshop.dto.CartDTO;
 import com.dev.shoeshop.dto.CartDetailDTO;
 import com.dev.shoeshop.dto.CartProductDTO;
 import com.dev.shoeshop.dto.OrderDTO;
+import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
 import com.dev.shoeshop.entity.Address;
@@ -32,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -84,6 +86,41 @@ public class OrderServiceImpl implements OrderService {
                 .map(orderDTOConverter::toOrderDTO)
                 .toList();
 
+    }
+    
+    @Override
+    public List<OrderDTO> getOrdersByUserId(Long userId) {
+        return orderRepository.findByUserIdOrderByCreatedDateDesc(userId)
+                .stream()
+                .map(orderDTOConverter::toOrderDTO)
+                .toList();
+    }
+    
+    @Override
+    public List<OrderDTO> getOrdersByUserIdAndStatus(Long userId, ShipmentStatus status) {
+        return orderRepository.findByUserIdAndStatusOrderByCreatedDateDesc(userId, status)
+                .stream()
+                .map(orderDTOConverter::toOrderDTO)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public OrderDTO getOrderDetailById(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        // Kiểm tra order thuộc về user
+        if (!order.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Unauthorized access to order");
+        }
+        
+        // Force load OrderDetails (vì mặc định là LAZY loading)
+        if (order.getOrderDetailSet() != null) {
+            order.getOrderDetailSet().size(); // Trigger lazy loading
+        }
+        
+        return convertToOrderDetailDTO(order);
     }
 
     @Override
@@ -389,5 +426,75 @@ public class OrderServiceImpl implements OrderService {
         cartRepository.save(cart);
         
         System.out.println("Updated cart total price: " + totalPrice);
+    }
+    
+    /**
+     * Convert Order to OrderDTO with detailed information
+     */
+    private OrderDTO convertToOrderDetailDTO(Order order) {
+        System.out.println("=== convertToOrderDetailDTO ===");
+        System.out.println("Order ID: " + order.getId());
+        
+        OrderDTO dto = orderDTOConverter.toOrderDTO(order);
+        
+        System.out.println("DTO ID after conversion: " + dto.getId());
+        
+        // Convert order details
+        if (order.getOrderDetailSet() != null) {
+            List<OrderDetailDTO> orderDetailDTOs = order.getOrderDetailSet().stream()
+                    .map(this::convertOrderDetailToDTO)
+                    .collect(Collectors.toList());
+            dto.setOrderDetails(orderDetailDTOs);
+        }
+        
+        System.out.println("Final DTO ID: " + dto.getId());
+        return dto;
+    }
+    
+    /**
+     * Convert OrderDetail to OrderDetailDTO
+     */
+    private OrderDetailDTO convertOrderDetailToDTO(OrderDetail orderDetail) {
+        OrderDetailDTO dto = OrderDetailDTO.builder()
+                .id((long) orderDetail.getId())
+                .quantity(orderDetail.getQuantity())
+                .price(orderDetail.getPrice())
+                .build();
+        
+        // Convert ProductDetail
+        if (orderDetail.getProduct() != null) {
+            OrderDetailDTO.ProductDetailDTO productDetailDTO = OrderDetailDTO.ProductDetailDTO.builder()
+                    .id(orderDetail.getProduct().getId())
+                    .size(orderDetail.getProduct().getSize())
+                    .priceadd(orderDetail.getProduct().getPriceadd())
+                    .build();
+            
+            // Convert Product info
+            if (orderDetail.getProduct().getProduct() != null) {
+                OrderDetailDTO.ProductDetailDTO.ProductInfo productInfo = OrderDetailDTO.ProductDetailDTO.ProductInfo.builder()
+                        .id(orderDetail.getProduct().getProduct().getId())
+                        .title(orderDetail.getProduct().getProduct().getTitle())
+                        .description(orderDetail.getProduct().getProduct().getDescription())
+                        .price(orderDetail.getProduct().getProduct().getPrice())
+                        .image(orderDetail.getProduct().getProduct().getImage())
+                        .build();
+                
+                // Add brand name
+                if (orderDetail.getProduct().getProduct().getBrand() != null) {
+                    productInfo.setBrandName(orderDetail.getProduct().getProduct().getBrand().getName());
+                }
+                
+                // Add category name
+                if (orderDetail.getProduct().getProduct().getCategory() != null) {
+                    productInfo.setCategoryName(orderDetail.getProduct().getProduct().getCategory().getName());
+                }
+                
+                productDetailDTO.setProduct(productInfo);
+            }
+            
+            dto.setProductDetail(productDetailDTO);
+        }
+        
+        return dto;
     }
 }

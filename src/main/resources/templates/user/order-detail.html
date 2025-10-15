@@ -1,395 +1,562 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
 <html class="no-js" lang="">
     
-<!-- Mirrored from htmldemo.net/james/james/cart.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 05 Nov 2024 02:19:16 GMT -->
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title> Cart || James </title>
+    <title>Chi Tiết Đơn Hàng || DeeG Shop</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
-        <!-- favicon
-        ============================================ -->
+    <!-- favicon -->
         <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
-        <!-- Google Fonts
-        ============================================ -->
+    <!-- Google Fonts -->
         <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
         <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 
-        <!-- Bootstrap CSS
-        ============================================ -->
+    <!-- Bootstrap CSS -->
         <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <!-- Bootstrap CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/font-awesome.min.css">
-        <!-- owl.carousel CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/owl.carousel.css">
         <link rel="stylesheet" href="/css/owl.theme.css">
         <link rel="stylesheet" href="/css/owl.transitions.css">
-        <!-- jquery-ui CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/jquery-ui.css">
-        <!-- meanmenu CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/meanmenu.min.css">
-        <!-- nivoslider CSS
-        ============================================ -->
         <link rel="stylesheet" href="/lib/css/nivo-slider.css">
         <link rel="stylesheet" href="/lib/css/preview.css">
-        <!-- animate CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/animate.css">
-        <!-- magic CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/magic.css">
-        <!-- normalize CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/normalize.css">
-        <!-- main CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/main.css">
-        <!-- style CSS
-        ============================================ -->
         <link rel="stylesheet" href="/style.css">
-        <!-- responsive CSS
-        ============================================ -->
         <link rel="stylesheet" href="/css/responsive.css">
-    <!-- Vendor css (Require in all Page) -->
-    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- Icons css (Require in all Page) -->
-    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- App css (Require in all Page) -->
-    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- Theme Config js (Require in all Page) -->
-    <script src="/assets/js/config.js"></script>
-        <!-- modernizr JS
-
-        ============================================ -->
-        <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    
+    <!-- Custom CSS for Order Detail -->
     <style>
-        .quantity-controller {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px; /* Khoảng cách giữa các nút */
-            width: 100px; /* Đặt chiều rộng tối đa cho container */
-            flex-shrink: 1; /* Cho phép container co nhỏ */
+        /* Order Status Badge Colors */
+        .status-delivered {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border: 1px solid #c3e6cb !important;
         }
-
-        .quantity-btn {
-            background-color: #f0f0f0; /* Màu nền */
-            border: 1px solid #ccc; /* Viền */
-            border-radius: 3px; /* Bo góc */
-            padding: 2px 5px; /* Kích thước nút */
-            font-size: 12px; /* Kích thước chữ */
-            cursor: pointer;
-            width: 25px; /* Chiều rộng cố định của nút */
-            height: 25px; /* Chiều cao cố định của nút */
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        
+        .status-shipped {
+            background-color: #cce5ff !important;
+            color: #004085 !important;
+            border: 1px solid #b3d7ff !important;
         }
-
-        .quantity-input {
-            width: 40px; /* Chiều rộng của ô input */
-            height: 25px; /* Chiều cao của ô input */
-            text-align: center;
-            border: 1px solid #ccc; /* Viền */
-            border-radius: 3px; /* Bo góc */
-            font-size: 12px; /* Kích thước chữ */
+        
+        .status-in_stock {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border: 1px solid #ffeaa7 !important;
+        }
+        
+        .status-cancel {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border: 1px solid #f5c6cb !important;
+        }
+        
+        .status-return {
+            background-color: #e2e3e5 !important;
+            color: #383d41 !important;
+            border: 1px solid #d6d8db !important;
+        }
+        
+        /* Order Detail Styling */
+        .order-detail-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .order-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .order-body {
+            padding: 20px;
+        }
+        
+        .product-item {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .product-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .product-info h5 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .product-meta {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: #ee4d2d;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        
+        .summary-row.total {
+            border-top: 1px solid #e5e5e5;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 18px;
+            color: #ee4d2d;
+        }
+        
+        .back-button {
+            background: #ee4d2d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #d73527;
+            color: white;
+            text-decoration: none;
+            transform: translateY(-1px);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .order-header > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .order-header > div > div:last-child {
+                text-align: left !important;
+                margin-top: 15px;
+            }
+            
+            .product-item > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .product-item > div > div:last-child {
+                margin-top: 15px;
+                text-align: left !important;
+            }
         }
     </style>
     </head>
+
     <body>
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
 
-        <!-- Add your site or application content here -->
         <!-- header area start -->
-        <header th:replace="~{fragments/user/header :: header}"></header>
+    <div th:include="~{fragments/user/header.html}"></div>
         <!-- header area end -->
-        <!-- cart item area start -->
-        <div class="shopping-cart">
+
+    <!-- order detail area start -->
+    <div class="account-area">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="location">
                             <ul>
-                                <li><a href="/" title="go to homepage">Home<span>/</span></a>  </li>
-                                <li><strong> Order detail</strong></li>
+                            <li><a href="/user/shop" title="go to homepage">Trang Chủ<span>/</span></a></li>
+                            <li><a href="/user/order/view">Đơn Hàng<span>/</span></a></li>
+                            <li><strong>Chi Tiết Đơn Hàng</strong></li>
                             </ul>
-                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table-bordered table table-hover">
-                                <h4 th:text="'Order id: ' + ${order.id}"></h4>
-                                <h5 th:text="'Status: ' + ${order.status}"></h5>
-                                <h6 th:text="'Price: ' + ${order.totalPrice}"></h6>
-                                <thead class="bg-light-subtle border-bottom">
-                                <tr>
-                                    <th>Product Name & Size</th>
-                                    <th>Quantity</th>
-                                    <th>Price</th>
-                                    <th>Amount</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr th:each="detail: ${list}">
-                                    <td th:text="${detail.product_name + ', size: ' + detail.size}"></td>
-                                    <td th:text="${detail.quantity}"></td>
-                                    <td th:text="${detail.price}"></td>
-                                    <td th:text="${detail.amount}"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <div class="shopping-button">
-                                <div class="continue-shopping">
-                                    <a href="/user/shop"> continue shopping </a>
+            </div>
+            <div class="row" style="display: flex; justify-content: center; align-items: center;">
+                <div class="col-lg-10">
+                    <!-- Back Button -->
+                    <a href="/user/order/view" class="back-button">
+                        <i class="fa fa-arrow-left"></i> Quay lại danh sách đơn hàng
+                    </a>
+                    
+                    <!-- Error Message -->
+                    <div th:if="${error}" class="alert alert-danger" style="margin-bottom: 20px;">
+                        <i class="fa fa-exclamation-triangle"></i> <span th:text="${error}"></span>
+                    </div>
+                    
+                    <!-- Order Detail -->
+                    <div th:if="${order != null}" class="order-detail-container">
+                        <!-- Order Header -->
+                        <div class="order-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #333;">
+                                        Đơn hàng #<span th:text="${order.id}"></span>
+                                    </h3>
+                                    <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">
+                                        <i class="fa fa-calendar"></i> 
+                                        <span th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </p>
                                 </div>
-                                <div class="shopping-cart-left">
-                                    <button th:onclick="'popUpClick(' + ${order.id} + ')'" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}"> Clear Shopping Cart </button>
-                                    <div th:include="~{fragments/order/order_cancel.html}"></div>
+                                <div style="text-align: right;">
+                                    <span th:class="'status-badge status-' + ${order.status.name().toLowerCase()}" 
+                                          th:text="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED ? 'Đã giao' : 
+                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED ? 'Đang giao' :
+                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).IN_STOCK ? 'Chờ xử lý' :
+                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).CANCEL ? 'Đã hủy' :
+                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).RETURN ? 'Trả hàng' : 'Không xác định'}"
+                                          style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 10px;">
+                                    </span>
+                                    <p style="margin: 0; font-size: 18px; font-weight: 600; color: #ee4d2d;">
+                                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                    </p>
                                 </div>
-
-
                             </div>
                         </div>
+                        
+                        <!-- Order Body -->
+                        <div class="order-body">
+                            <!-- Payment Info -->
+                            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                                <h5 style="margin: 0 0 10px 0; color: #333;">
+                                    <i class="fa fa-credit-card"></i> Thông tin thanh toán
+                                </h5>
+                                <p style="margin: 0; color: #666;">
+                                    Phương thức: 
+                                    <span th:text="${order.payOption == T(com.dev.shoeshop.enums.PayOption).COD ? 'Thanh toán khi nhận hàng' : 'Thanh toán VNPay'}"></span>
+                                </p>
+                            </div>
+                            
+                            <!-- Products List -->
+                            <div>
+                                <h5 style="margin: 0 0 20px 0; color: #333;">
+                                    <i class="fa fa-shopping-bag"></i> Sản phẩm đã đặt
+                                </h5>
+                                
+                                <div th:each="orderDetail : ${order.orderDetails}" class="product-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center;">
+                                            <!-- Product Image -->
+                                            <div style="margin-right: 15px;">
+                                                <img th:src="${orderDetail.productDetail.product.image}" 
+                                                     th:alt="${orderDetail.productDetail.product.title}"
+                                                     class="product-image"
+                                                     onerror="this.src='/img/product/default-product.jpg'">
+                                            </div>
+                                            
+                                            <!-- Product Info -->
+                                            <div class="product-info">
+                                                <h5 th:text="${orderDetail.productDetail.product.title}"></h5>
+                                                <div class="product-meta">
+                                                    <span th:if="${orderDetail.productDetail.product.brandName}" 
+                                                          th:text="'Thương hiệu: ' + ${orderDetail.productDetail.product.brandName}"></span>
+                                                    <span th:if="${orderDetail.productDetail.product.categoryName}" 
+                                                          th:text="' | Danh mục: ' + ${orderDetail.productDetail.product.categoryName}"></span>
+                                                </div>
+                                                <div class="product-meta">
+                                                    <span th:text="'Size: ' + ${orderDetail.productDetail.size}"></span>
+                                                    <span th:text="' | Số lượng: ' + ${orderDetail.quantity}"></span>
+                    </div>
+                                                <div class="product-meta" th:if="${orderDetail.productDetail.product.description}">
+                                                    <span th:text="${orderDetail.productDetail.product.description}"></span>
+                </div>
+            </div>
+        </div>
+                                        
+                                        <!-- Price -->
+                                        <div style="text-align: right;">
+                                            <div class="product-price">
+                                                <span th:text="${#numbers.formatDecimal(orderDetail.price, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                        </div>
+                                            <div style="color: #666; font-size: 13px; margin-top: 5px;">
+                                                <span th:text="${#numbers.formatDecimal(orderDetail.price * orderDetail.quantity, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                    </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rating Form for DELIVERED orders -->
+                                    <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED}" 
+                                         class="rating-form" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                                        <h6 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
+                                            <i class="fa fa-star"></i> Đánh giá sản phẩm:
+                                        </h6>
+                                        
+                                        <div class="star-rating" data-order-detail-id="${orderDetail.id}">
+                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="5" th:id="'star5_' + ${orderDetail.id}">
+                                            <label th:for="'star5_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="4" th:id="'star4_' + ${orderDetail.id}">
+                                            <label th:for="'star4_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="3" th:id="'star3_' + ${orderDetail.id}">
+                                            <label th:for="'star3_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="2" th:id="'star2_' + ${orderDetail.id}">
+                                            <label th:for="'star2_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="1" th:id="'star1_' + ${orderDetail.id}">
+                                            <label th:for="'star1_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                        </div>
+                                        
+                                        <div style="margin-top: 10px;">
+                                            <textarea class="form-control" 
+                                                      th:id="'comment_' + ${orderDetail.id}" 
+                                                      th:name="'comment_' + ${orderDetail.id}"
+                                                      rows="2" 
+                                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                                    </div>
+                                        
+                                        <div style="margin-top: 10px; text-align: right;">
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-primary submit-rating" 
+                                                    th:data-order-detail-id="${orderDetail.id}">
+                                                <i class="fa fa-check"></i> Gửi đánh giá
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Summary -->
+                            <div class="order-summary">
+                                <h5 style="margin: 0 0 15px 0; color: #333;">
+                                    <i class="fa fa-calculator"></i> Tổng kết đơn hàng
+                                </h5>
+                                
+                                <div class="summary-row">
+                                    <span>Tạm tính:</span>
+                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                        </div>
+                                
+                                <div class="summary-row">
+                                    <span>Phí vận chuyển:</span>
+                                    <span>Miễn phí</span>
+                    </div>
+                                
+                                <div class="summary-row total">
+                                    <span>Tổng cộng:</span>
+                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div th:if="${order == null and error == null}" style="text-align: center; padding: 60px 20px;">
+                        <i class="fa fa-shopping-cart" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+                        <h3 style="color: #999; margin-bottom: 10px;">Không tìm thấy đơn hàng</h3>
+                        <p style="color: #aaa; margin-bottom: 20px;">Đơn hàng không tồn tại hoặc bạn không có quyền xem.</p>
+                        <a href="/user/order/view" class="back-button">
+                            <i class="fa fa-arrow-left"></i> Quay lại danh sách đơn hàng
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- cart item area end -->
-        <!-- footer top area start -->
-        <div class="footer-top-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-contact">
-                            <img src="img/logo-white.png" alt="">
-                            <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt.</p>
-                            <ul class="address">
-                                <li>
-                                    <span class="fa fa-fax"></span>
-                                    (800) 123 456 789
-                                </li>
-                                <li>
-                                    <span class="fa fa-phone"></span>
-                                    (800) 123 456 789
-                                </li>
-                                <li>
-                                    <span class="fa fa-envelope-o"></span>
-                                    admin@bootexperts.com
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-tweets">
-                            <div class="footer-title">
-                                <h3>Latest tweets</h3>
-                            </div>
-                            <div class="twitter-feed">
-                                <div class="twitter-article">
-                                    <div class="twitter-img">
-                                        <a href="#">
-                                            <img src="img/twitter/twitter-1.png" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="twitter-text">
-                                        <p>Raboda Fashion #Magento #Theme comes up with pure white and grey, which great show your products. Check it: </p>
-                                        <a href="#">https://t.co/iu0OYBwti8</a>
-                                        <div class="twitter-time">
-                                            <a href="#">16h</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="twitter-article">
-                                    <div class="twitter-img">
-                                        <a href="#">
-                                            <img src="img/twitter/twitter-1.png" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="twitter-text">
-                                        <p>Raboda Fashion #Magento #Theme comes up with pure white and grey, which great show your products. Check it: </p>
-                                        <a href="#">https://t.co/iu0OYBwti8</a>
-                                        <div class="twitter-time">
-                                            <a href="#">16h</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-support">
-                            <div class="footer-title">
-                                <h3>Our support</h3>
-                            </div>
-                            <div class="footer-menu">
-                                <ul>
-                                    <li><a href="#">Sitemap</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Your Account</a></li>
-                                    <li><a href="#">Advanced Search</a></li>
-                                    <li><a href="contact.html">Contact Us</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6">
-                        <div class="footer-info">
-                            <div class="footer-title">
-                                <h3>Our information</h3>
-                            </div>
-                            <div class="footer-menu">
-                                <ul>
-                                    <li><a href="about-us.html">About Us</a></li>
-                                    <li><a href="#">Customer Service</a></li>
-                                    <li><a href="#">Privacy Policy</a></li>
-                                    <li><a href="#">Orders and Returns</a></li>
-                                    <li><a href="#">Site Map</a></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- footer top area end -->
+    </div>
+    <!-- order detail area end -->
+
         <!-- footer area start -->
-        <footer class="footer-area">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="footer-copyright">
-                            <p>Copyright &copy; 2022 <a href="#"> Bootexperts</a>. All Rights Reserved</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="payment-icon">
-                            <img src="img/payment.png" alt="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <a href="#" id="scrollUp"><i class="fa fa fa-arrow-up"></i></a>
-        </footer>
+    <div th:include="~{fragments/web/footer.html}"></div>
         <!-- footer area end -->
-        <!-- jquery
-        ============================================ -->
+
+    <!-- jquery -->
         <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-        <!-- bootstrap JS
-        ============================================ -->
+    <!-- bootstrap JS -->
         <script src="/js/bootstrap.min.js"></script>
-        <!-- wow JS
-        ============================================ -->
+    <!-- wow JS -->
         <script src="/js/wow.min.js"></script>
-        <!-- price-slider JS
-        ============================================ -->
+    <!-- price-slider JS -->
         <script src="/js/jquery-price-slider.js"></script>
-        <!-- nivoslider JS
-        ============================================ -->
+    <!-- nivoslider JS -->
         <script src="/lib/js/jquery.nivo.slider.js"></script>
         <script src="/lib/home.js"></script>
-        <!-- meanmenu JS
-        ============================================ -->
+    <!-- meanmenu JS -->
         <script src="/js/jquery.meanmenu.js"></script>
-        <!-- owl.carousel JS
-        ============================================ -->
+    <!-- owl.carousel JS -->
         <script src="/js/owl.carousel.min.js"></script>
-        <!-- elevatezoom JS
-        ============================================ -->
+    <!-- elevatezoom JS -->
         <script src="/js/jquery.elevatezoom.js"></script>
-        <!-- scrollUp JS
-        ============================================ -->
+    <!-- scrollUp JS -->
         <script src="/js/jquery.scrollUp.min.js"></script>
-        <!-- plugins JS
-        ============================================ -->
+    <!-- plugins JS -->
         <script src="/js/plugins.js"></script>
-        <!-- main JS
-        ============================================ -->
+    <!-- main JS -->
         <script src="/js/main.js"></script>
-    </body>
+    
+
+    <!-- Chat Widget -->
+    <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
+    
+    <!-- Order Detail JavaScript -->
 <script>
-    // Lấy phần tử HTML có id 'totalPrice', đây là phần tử hiển thị tổng giá trị
-    const totalPriceElem = document.getElementById('totalPrice');
-
-    // Lấy giá trị của tổng từ phần tử đó, chuyển nó thành kiểu số thực (float)
-    const totalPrice = parseFloat(totalPriceElem.textContent);
-
-    // Định dạng lại giá trị totalPrice thành định dạng tiền tệ Việt Nam
-    // 'vi-VN' là mã ngôn ngữ cho tiếng Việt, style: 'decimal' là kiểu định dạng số thông thường
-    // minimumFractionDigits: 0 sẽ làm số không có phần thập phân (ví dụ: 10000 thay vì 10000.0)
-    totalPriceElem.textContent = new Intl.NumberFormat('vi-VN', { style: 'decimal', minimumFractionDigits: 0 }).format(totalPrice);
-</script>
-
-<script>
-    // Lắng nghe sự kiện DOMContentLoaded để đảm bảo toàn bộ trang đã được tải trước khi chạy mã
-    document.addEventListener("DOMContentLoaded", () => {
-
-        // Tìm tất cả phần tử có class 'quantity-controller', nơi chứa các nút chỉnh sửa số lượng
-        const cartDetails = document.querySelectorAll(".quantity-controller");
-
-        // Duyệt qua tất cả các phần tử cartDetails để xử lý sự kiện cho từng phần tử
-        cartDetails.forEach((controller) => {
-            // Tìm nút giảm (decrease) và nút tăng (increase) bên trong mỗi controller
-            const decreaseBtn = controller.querySelector(".decrease");
-            const increaseBtn = controller.querySelector(".increase");
-
-            // Tìm ô input số lượng trong mỗi controller
-            const quantityInput = controller.querySelector(".quantity-input");
-
-            // Khi nút giảm (-) được bấm
-            decreaseBtn.addEventListener("click", () => {
-                // Lấy giá trị hiện tại của số lượng từ ô input
-                const currentQuantity = parseInt(quantityInput.value, 10);
-
-                // Nếu số lượng lớn hơn hoặc bằng 1, giảm số lượng đi 1
-                if (currentQuantity >= 1) {
-                    quantityInput.value = currentQuantity - 1;
-                    // Cập nhật giá trị số lượng vào input ẩn trong form
-                    updateFormInput(controller, quantityInput.value);
-                }
-            });
-
-            // Khi nút tăng (+) được bấm
-            increaseBtn.addEventListener("click", () => {
-                // Lấy giá trị hiện tại của số lượng từ ô input
-                const currentQuantity = parseInt(quantityInput.value, 10);
-
-                // Tăng số lượng lên 1
-                quantityInput.value = currentQuantity + 1;
-                // Cập nhật giá trị số lượng vào input ẩn trong form
-                updateFormInput(controller, quantityInput.value);
+        $(document).ready(function() {
+            // Handle individual product rating submission
+            $('.submit-rating').on('click', function() {
+                const orderDetailId = $(this).data('order-detail-id');
+                submitSingleRating(orderDetailId, $(this));
             });
         });
-
-        // Hàm cập nhật giá trị số lượng vào input ẩn trong form để gửi lên server
-        function updateFormInput(controller, quantity) {
-            // Tìm form chứa controller và sau đó tìm input ẩn trong form (input có name='quantity')
-            const form = controller.closest("tr").querySelector("form");
-            const hiddenInput = form.querySelector('input[name="quantity"]');
-
-            // Cập nhật giá trị của input ẩn với số lượng mới
-            hiddenInput.value = quantity;
+        
+        function submitSingleRating(orderDetailId, button) {
+            const orderId = /*[[${order.id}]]*/ null;
+            
+            // Debug: Log all values
+            console.log('=== Rating Submission Debug ===');
+            console.log('OrderId from Thymeleaf:', orderId);
+            console.log('OrderDetailId:', orderDetailId);
+            console.log('OrderId type:', typeof orderId);
+            console.log('OrderDetailId type:', typeof orderDetailId);
+            
+            // Validate orderId
+            if (!orderId) {
+                alert('Lỗi: Không tìm thấy ID đơn hàng. Vui lòng tải lại trang!');
+                return;
+            }
+            
+            // Get rating value - try different selectors
+            let rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
+            console.log('Rating found with name selector:', rating);
+            
+            // If not found, try finding within the same form container
+            if (!rating) {
+                const formContainer = button.closest('.rating-form');
+                rating = formContainer.find('input[type="radio"]:checked').val();
+                console.log('Rating found in form container:', rating);
+            }
+            
+            if (!rating) {
+                alert('Vui lòng chọn số sao đánh giá!');
+                return;
+            }
+            
+            // Get comment
+            const comment = $(`#comment_${orderDetailId}`).val() || '';
+            
+            // Debug: Log the data being sent
+            const requestData = {
+                orderId: orderId,
+                ratings: [{
+                    orderDetailId: orderDetailId,
+                    star: parseInt(rating),
+                    comment: comment
+                }]
+            };
+            console.log('Request data:', requestData);
+            
+            // Show loading
+            const originalText = button.html();
+            button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
+            
+            $.ajax({
+                url: '/user/api/ratings',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    if (response.success) {
+                        alert('Cảm ơn bạn đã đánh giá!');
+                        // Hide the rating form after successful submission
+                        button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 10px;"><i class="fa fa-check-circle"></i> Đã đánh giá thành công!</div>');
+                    } else {
+                        alert('Có lỗi xảy ra: ' + response.message);
+                        button.html(originalText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error submitting rating:', error);
+                    console.error('Response:', xhr.responseText);
+                    console.error('Status:', xhr.status);
+                    
+                    let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
+                    if (xhr.responseText) {
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            errorMessage = response.message || errorMessage;
+                        } catch (e) {
+                            console.error('Could not parse error response:', e);
+                        }
+                    }
+                    
+                    alert(errorMessage);
+                    button.html(originalText).prop('disabled', false);
+                }
+            });
         }
-    });
-</script>
-
-<!-- Mirrored from htmldemo.net/james/james/cart.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 05 Nov 2024 02:19:17 GMT -->
+    </script>
+    
+    <!-- Star Rating CSS -->
+    <style>
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin: 10px 0;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-right: 5px;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        .rating-form-item {
+            transition: all 0.3s ease;
+        }
+        
+        .rating-form-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+    </style>
+</body>
 </html>
