@@ -7,7 +7,7 @@
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Orders List | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Danh Sách Đơn Hàng</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -136,9 +136,9 @@
                                         <div style="display: flex; align-content: center">
                                              <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()" style="margin-left: 10px">
                                                   <option value="">All</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">Shipped</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).DELIVERED}">Delivered</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).RETURN}">Return</option>
+                                                  <option th:value="${T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">Shipped</option>
+                                                  <option th:value="${T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED}">Delivered</option>
+                                                  <option th:value="${T(com.dev.shoeshop.enums.ShipmentStatus).RETURN}">Return</option>
                                              </select>
                                              <script>
                                                   window.onload = function () {
@@ -230,8 +230,8 @@
                     <div class="container-fluid">
                          <div class="row">
                               <div class="col-12 text-center">
-                                   <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                      href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
+                                   <script>document.write(new Date().getFullYear())</script> &copy; DeeGShop. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                      href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">DevPro</a>
                               </div>
                          </div>
                     </div>
