@@ -40,7 +40,7 @@ public class AddressServiceImpl implements AddressService {
         Address address = Address.builder()
                 .address_line(addressRequest.getStreet())  // Bao gồm: số nhà, đường, phường, quận
                 .city(addressRequest.getCity())            // Tỉnh/Thành phố
-                .postal_code(addressRequest.getPostalCode())
+//                .postal_code(addressRequest.getPostalCode())
                 .country(addressRequest.getCountry() != null ? addressRequest.getCountry() : "Việt Nam")
                 .latitude(addressRequest.getLatitude())    // ⭐ GPS cho shipper & tính phí
                 .longitude(addressRequest.getLongitude())
@@ -147,7 +147,7 @@ public class AddressServiceImpl implements AddressService {
         dto.setAddressLine(address.getAddress_line());
         dto.setStreet(address.getAddress_line()); // Alias
         dto.setCity(address.getCity());
-        dto.setPostalCode(address.getPostal_code());
+//        dto.setPostalCode(address.getPostal_code());
         dto.setCountry(address.getCountry());
         dto.setIsDefault(userAddress.getIsDefault());
         

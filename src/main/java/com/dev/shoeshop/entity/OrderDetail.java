@@ -35,4 +35,7 @@ public class OrderDetail {
 //    @PositiveOrZero(message = "Total price must be greater than or equal to 0")
     // don gia tung san pham
     private double price;
+
+    @OneToOne(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rating rating;
 }

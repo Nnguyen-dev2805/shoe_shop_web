@@ -31,9 +31,9 @@ public class ProductDetail {
     @Column(name = "price_add")
     private double priceadd;
     
-    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+//    @Min(value = 0, message = "Quantity must be greater than or equal to 0")
+//    @Column(name = "quantity", nullable = false)
+//    private int quantity;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
@@ -48,4 +48,7 @@ public class ProductDetail {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Inventory> inventories;
+
+    @OneToOne(mappedBy = "productDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Rating rating;
 }
