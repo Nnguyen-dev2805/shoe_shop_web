@@ -5,12 +5,12 @@
     <div class="logo-box">
         <a href="index.html" class="logo-dark">
             <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-            <img src="/assets/images/logo-dark.png" class="logo-lg" alt="logo dark">
+            <img src="/assets/images/logo-dark-1.png" class="logo-lg" alt="logo dark">
         </a>
 
         <a href="index.html" class="logo-light">
             <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-            <img src="/assets/images/logo-light.png" class="logo-lg" alt="logo light">
+            <img src="/assets/images/logo-light-1.png" class="logo-lg" alt="logo light">
         </a>
     </div>
 
@@ -22,14 +22,14 @@
     <div class="scrollbar" data-simplebar>
         <ul class="navbar-nav" id="navbar-nav">
 
-            <li class="menu-title">General</li>
+            <li class="menu-title">Tổng quan</li>
 
             <li class="nav-item">
                 <a class="nav-link" href="index.html">
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Dashboard </span>
+                    <span class="nav-text"> Bảng Điều Khiển </span>
                 </a>
             </li>
 
@@ -38,33 +38,33 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Orders </span>
+                    <span class="nav-text"> Đơn Hàng </span>
                 </a>
                 <div class="collapse" id="sidebarOrders">
                     <ul class="nav sub-navbar-nav">
 
                         <li class="sub-nav-item">
-                            <a class="sub-nav-link" th:href="@{/shipper/order/list}">List</a>
+                            <a class="sub-nav-link" th:href="@{/shipper/order/list}">Danh Sách Đơn Hàng</a>
                         </li>
                     </ul>
                 </div>
             </li>
 
 
-            <li class="menu-title mt-2">Users</li>
+<!--            <li class="menu-title mt-2">Users</li>-->
 
             <li class="nav-item">
                 <a class="nav-link" th:href="@{/shipper/profile}">
                                    <span class="nav-icon">
-                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>
+                                        <iconify-icon icon="solar:user-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Profile </span>
+                    <span class="nav-text"> Tài Khoản </span>
                 </a>
             </li>
 
             <li class="nav-item">
                 <a th:href="@{/logout}" class="nav-link" href="pages-profile.html">
-                    <span class="nav-text"> Logout </span>
+                    <span class="nav-text"> Đăng Xuất </span>
                 </a>
             </li>
 
