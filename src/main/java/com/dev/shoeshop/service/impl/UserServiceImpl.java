@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService {
         dto.setId(address.getId());
         dto.setAddressLine(address.getAddress_line());
         dto.setCity(address.getCity());
-        dto.setPostalCode(address.getPostal_code());
+//        dto.setPostalCode(address.getPostal_code());
         dto.setCountry(address.getCountry());
         dto.setAddress(dto.getFullAddress()); // Use helper method for display
         

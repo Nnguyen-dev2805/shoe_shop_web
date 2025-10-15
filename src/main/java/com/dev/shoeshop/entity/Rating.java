@@ -30,7 +30,6 @@ public class Rating {
 
     private String image;
 
-
     @CreationTimestamp
     @Column(name = "created_dte", updatable = false)
     Date createdDate;
@@ -40,12 +39,20 @@ public class Rating {
     Date modified;
 
     // Quan hệ ManyToOne với Product
-    @ManyToOne
-    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
-    private Product product;
+//    @ManyToOne
+//    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
+//    private Product product;
 
     // Quan hệ ManyToOne với Users
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false) // Khóa ngoại đến Users
     private Users user;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_detail_id", unique = true, nullable = false)
+    private OrderDetail orderDetail;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_detail_id", unique = true, nullable = false)
+    private ProductDetail productDetail;
 }

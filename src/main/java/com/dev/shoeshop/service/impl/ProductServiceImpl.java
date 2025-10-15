@@ -147,13 +147,16 @@ public class ProductServiceImpl implements ProductService {
         // Calculate average rating
         Double avgRating = 0.0;
         Integer totalReviews = 0;
-        if (product.getRatings() != null && !product.getRatings().isEmpty()) {
-            totalReviews = product.getRatings().size();
-            avgRating = product.getRatings().stream()
-                    .mapToInt(Rating::getStar)
-                    .average()
-                    .orElse(0.0);
-        }
+        // đoạn này huy làm chưa đụng đến
+
+
+//        if (product.getRatings() != null && !product.getRatings().isEmpty()) {
+//            totalReviews = product.getRatings().size();
+//            avgRating = product.getRatings().stream()
+//                    .mapToInt(Rating::getStar)
+//                    .average()
+//                    .orElse(0.0);
+//        }
 
         return ProductDetailResponse.builder()
                 .id(product.getId())
