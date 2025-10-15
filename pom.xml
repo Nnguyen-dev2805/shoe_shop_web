@@ -11,7 +11,7 @@
     <groupId>com.dev.shoeshop</groupId>
     <artifactId>shoe_shop_web</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>shoe_shop_web</name>
     <description>shoe_shop_web</description>
     <url/>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
+<!--            <scope>provided</scope>-->
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

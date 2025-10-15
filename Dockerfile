@@ -8,6 +8,7 @@ WORKDIR /app
 COPY pom.xml .
 
 # Download dependencies (cached layer)
+# chạy maven để tải toàn bộ dependency về local repository
 RUN mvn dependency:go-offline -B
 
 # Copy source code
@@ -16,8 +17,11 @@ COPY src ./src
 # Build application (skip tests for faster build)
 RUN mvn clean package -DskipTests
 
-# Verify WAR file was created
-RUN ls -la /app/target/
+# Verify JAR file was created
+# dùng để debug có thể xóa
+RUN ls -la /app/target/ && \
+    echo "=== Build complete ===" && \
+    ls -lh /app/target/*.jar
 
 # Stage 2: Runtime stage - Run application
 FROM eclipse-temurin:22-jre-alpine
@@ -29,27 +33,31 @@ WORKDIR /app
 RUN apk add --no-cache wget
 
 # Create non-root user for security
+# Chạy chương trình bằng user chứ không phải root
 RUN addgroup -S spring && adduser -S spring -G spring
 
-# Copy WAR file from build stage (đúng tên artifact từ pom.xml)
-COPY --from=build /app/target/shoe_shop_web-0.0.1-SNAPSHOT.war app.war
+# Copy JAR file from build
+# copy file jar từ bước 1 đặt tên nội bộ là app.jar
+COPY --from=build /app/target/shoe_shop_web-0.0.1-SNAPSHOT.jar app.jar
 
 # Create uploads directory for file storage
+# tạo thư mục để chứa ảnh và chuyển quyền sở hữu /app sang user spring để user non-root có quyền ghi
 RUN mkdir -p /app/uploads && chown -R spring:spring /app
 
 # Switch to non-root user
+# Từ đây mọi quyền xử lý đều là thuộc user chứ không phải root
 USER spring:spring
 
 # Expose port (Render will override with PORT env variable)
 EXPOSE 8080
 
 # Set active profile to production
-ENV SPRING_PROFILES_ACTIVE=pro
+ENV SPRING_PROFILES_ACTIVE=uat
 
 # Health check endpoint
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8080}/actuator/health || exit 1
 
 # Run application with dynamic PORT from environment
-# Render sẽ inject PORT environment variable
-ENTRYPOINT ["sh", "-c", "java -jar -Dserver.port=${PORT:-8080} app.war"]
+# Render will inject PORT environment variable (usually 10000)
+ENTRYPOINT ["sh", "-c", "java -Xmx512m -jar -Dserver.port=${PORT:-8080} app.jar"]
