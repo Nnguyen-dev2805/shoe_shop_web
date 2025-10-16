@@ -11,6 +11,8 @@ import com.dev.shoeshop.repository.ShipmentRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -57,5 +59,54 @@ public class ShipmentServiceImpl implements ShipmentService {
         order.setStatus(ShipmentStatus.SHIPPED);
 
         orderRepository.save(order);
+    }
+    
+    @Override
+    public void updateShipmentDate(Long orderId) {
+        Shipment shipment = shipmentRepository.findByOrderId(orderId);
+        if (shipment != null) {
+            shipment.setUpdatedDate(new Date());
+            shipmentRepository.save(shipment);
+        }
+    }
+    
+    @Override
+    public void updateShipmentStatusAndDate(Long orderId, ShipmentStatus newStatus) {
+        Shipment shipment = shipmentRepository.findByOrderId(orderId);
+        if (shipment != null) {
+            // Update cả status và ngày
+            shipment.setStatus(newStatus.toString());
+            shipment.setUpdatedDate(new Date());
+            shipmentRepository.save(shipment);
+        }
+    }
+    
+    @Override
+    public void saveNote(Long shipmentId, String note) {
+        Shipment shipment = shipmentRepository.findById(shipmentId).orElse(null);
+        if (shipment != null) {
+            // Lưu note vào field status tạm thời (hoặc cần thêm field note vào entity Shipment)
+            // TODO: Thêm field 'note' vào entity Shipment nếu cần lưu ghi chú
+            System.out.println("📝 Saving note for shipment #" + shipmentId + ": " + note);
+            // shipment.setNote(note); // Uncomment when note field is added
+            shipmentRepository.save(shipment);
+        }
+    }
+    
+    // ========== Methods cho Controller (MVC Pattern) ==========
+    
+    @Override
+    public Page<Order> getOrdersByShipperId(Long shipperId, Pageable pageable) {
+        return shipmentRepository.findOrdersByShipperId(shipperId, pageable);
+    }
+    
+    @Override
+    public Page<Order> getOrdersByShipperIdAndStatus(Long shipperId, ShipmentStatus status, Pageable pageable) {
+        return shipmentRepository.findOrdersByShipperIdAndStatus(shipperId, status, pageable);
+    }
+    
+    @Override
+    public Long countOrdersByShipperIdAndStatus(Long shipperId, ShipmentStatus status) {
+        return shipmentRepository.countByShipperIdAndOrderStatus(shipperId, status);
     }
 }

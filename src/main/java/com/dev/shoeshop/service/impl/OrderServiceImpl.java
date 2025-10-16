@@ -87,7 +87,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> getOrderByStatus(ShipmentStatus status) {
-        return orderRepository.findByStatus(status)
+        // Sắp xếp theo ngày tạo mới nhất (giống shipper)
+        return orderRepository.findByStatusOrderByCreatedDateDesc(status)
                 .stream()
                 .map(orderDTOConverter::toOrderDTO)
                 .toList();
@@ -95,11 +96,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<OrderDTO> getAllOrders() {
-        return orderRepository.findAll()
+        // Sắp xếp theo ngày tạo mới nhất (giống shipper)
+        return orderRepository.findAllByOrderByCreatedDateDesc()
                 .stream()
                 .map(orderDTOConverter::toOrderDTO)
                 .toList();
-
     }
     
     @Override
@@ -658,5 +659,37 @@ public class OrderServiceImpl implements OrderService {
         dto.setHasRating(false);
         
         return dto;
+    }
+    
+    // ========== MVC Pattern: Methods cho Controller ==========
+    
+    @Override
+    @Transactional
+    public void updateOrderStatus(Long orderId, ShipmentStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
+        
+        order.setStatus(newStatus);
+        orderRepository.save(order);
+    }
+    
+    @Override
+    @Transactional
+    public void markOrderAsDelivered(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
+        
+        order.setStatus(ShipmentStatus.DELIVERED);
+        orderRepository.save(order);
+    }
+    
+    @Override
+    @Transactional
+    public void markOrderAsReturn(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
+        
+        order.setStatus(ShipmentStatus.RETURN);
+        orderRepository.save(order);
     }
 }

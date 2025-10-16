@@ -30,6 +30,11 @@ public interface OrderService {
 
     void cancelOrder(Long orderId);
     
+    /**
+     * Cập nhật trạng thái order (MVC Pattern)
+     */
+    void updateOrderStatus(Long orderId, ShipmentStatus newStatus);
+    
     // Cart related methods
     CartDTO getCartByUserId(Long userId);
     
@@ -40,4 +45,14 @@ public interface OrderService {
                                  Long shippingCompanyId, Long discountId, 
                                  java.util.List<Integer> selectedItemIds,
                                  java.util.Map<Integer, Integer> itemQuantities);
+    
+    /**
+     * Đánh dấu đơn hàng đã giao thành công
+     */
+    void markOrderAsDelivered(Long orderId);
+    
+    /**
+     * Đánh dấu đơn hàng bị hoàn trả
+     */
+    void markOrderAsReturn(Long orderId);
 }

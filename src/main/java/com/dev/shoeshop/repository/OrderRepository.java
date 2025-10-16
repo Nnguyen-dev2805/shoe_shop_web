@@ -16,9 +16,19 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
 
     public List<Order> findByStatus(ShipmentStatus status);
     
+    /**
+     * Tìm orders theo status, sắp xếp theo ngày tạo mới nhất (cho admin)
+     */
+    public List<Order> findByStatusOrderByCreatedDateDesc(ShipmentStatus status);
+    
     public Page<Order> findByStatus(ShipmentStatus status, Pageable pageable);
 
     public Order findOrderById(Long id);
+    
+    /**
+     * Lấy tất cả orders, sắp xếp theo ngày tạo mới nhất (cho admin)
+     */
+    public List<Order> findAllByOrderByCreatedDateDesc();
     
     // Lấy danh sách orders của user theo userId, sắp xếp theo ngày tạo mới nhất
     public List<Order> findByUserIdOrderByCreatedDateDesc(Long userId);

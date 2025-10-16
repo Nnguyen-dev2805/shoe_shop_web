@@ -35,11 +35,11 @@
      <div class="wrapper">
 
           <!-- ========== Topbar Start ========== -->
-          <div th:include="~{fragments/shipper/header.html}"></div>
+          <div th:insert="~{fragments/shipper/header.html}"></div>
           <!-- ========== Topbar End ========== -->
 
           <!-- ========== App Menu Start ========== -->
-          <div th:include="~{fragments/shipper/menu_app.html}"></div>
+          <div th:insert="~{fragments/shipper/menu_app.html}"></div>
           <!-- ========== App Menu End ========== -->
 
           <!-- ==================================================== -->
@@ -57,21 +57,16 @@
                                    <div class="col-lg-12">
                                         <div class="card">
                                              <div class="card-body">
-                                                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
-                                                       <div>
-                                                            <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
-                                                                 <span th:text="${order.id}"></span>
-                                                                 <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" th:text="${order.payOption}">hehe</span>
-                                                                 <span id="status" class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
-                                                            </h4>
-                                                            <p class="mb-0">Created date: <span th:text="${#dates.format(order.createdDate, 'MMM dd, yyyy')}"></span></p>
-                                                       </div>
-
-                                                       <div>
-                                                            <a th:href="@{/shipper/delivered(orderid=${order.id})}" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}" class="btn btn-outline-secondary">Delivered</a>
-                                                            <a th:href="@{/shipper/return(orderid=${order.id})}" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}" class="btn btn-primary">Product return</a>
-                                                       </div>
-
+                                                  <div>
+                                                       <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
+                                                            <span th:text="${order.id}"></span>
+                                                            <span class="badge bg-success-subtle text-success px-2 py-1 fs-13" th:text="${order.payOption}"></span>
+                                                            <span id="status" class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
+                                                       </h4>
+                                                       <p class="mb-0 text-muted">
+                                                            <i class='bx bx-calendar'></i> Ngày tạo: 
+                                                            <span class="fw-medium" th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                                       </p>
                                                   </div>
 
                                              </div>
@@ -108,38 +103,62 @@
                                         </div>
                                         <div class="card">
                               <div class="card-header">
-                                   <h4 class="card-title">Shipping detail</h4>
+                                   <h4 class="card-title">Shipping Detail</h4>
                               </div>
                               <div class="card-body">
-                                   <div class="position-relative ms-2">
-                                        <div style="display: flex; align-content: center">
-                                             <textarea id = "note" class="fc-text-arrow" placeholder="Note..." th:text="${shipper.note}"> </textarea>
-                                             <button th:onclick="'sendNote(' + ${shipper.id} +')'" class="fc-button">Send</button>
-                                             <script>
-                                                  function sendNote(shipment){
-                                                       let note = document.getElementById("note").value;
-
-                                                       console.log("note: " + note)
-                                                       $.ajax({
-                                                            url: "/api/shipper/note", // URL API hủy đơn hàng
-                                                            type: "POST",
-                                                            data: {note: note, shipmentId: shipment},
-                                                            success: function (response) {
-                                                                 $("#confirmModal").modal("hide"); // Đóng popup
-                                                                 // Thực hiện các hành động khác, ví dụ: làm mới bảng
-                                                            },
-                                                            error: function (error) {
-                                                                 alert("Some error have occurr.");
-                                                            }
-                                                       })
-                                                  }
-                                             </script>
-                                        </div>
+                                   <!-- Ghi chú -->
+                                   <div class="mb-3">
+                                        <label for="shipperNote" class="form-label fw-medium">
+                                             <i class='bx bx-note'></i> Ghi Chú Giao Hàng
+                                        </label>
+                                        <textarea id="shipperNote" 
+                                                  class="form-control" 
+                                                  rows="3" 
+                                                  placeholder="Nhập ghi chú về quá trình giao hàng (vị trí, tình trạng hàng, ghi chú khách hàng...)">
+                                        </textarea>
+                                        <small class="text-muted">Ghi chú này sẽ được lưu vào lịch sử giao hàng</small>
+                                   </div>
+                                   
+                                   <div class="d-flex gap-2 justify-content-end">
+                                        <button type="button" 
+                                                th:onclick="|saveNote(${shipper.id})|"
+                                                class="btn btn-outline-primary btn-sm">
+                                             <i class='bx bx-save'></i> Lưu Ghi Chú
+                                        </button>
                                    </div>
                               </div>
-                              <div class="card-body" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">
-                                   <div class="position-relative ms-2">
-                                        <p class="mb-1" >Need shipper for this order</p>
+                              
+                              <!-- Action Buttons - Chỉ hiện khi status = SHIPPED -->
+                              <div class="card-body border-top" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">
+                                   <div class="alert alert-info mb-3">
+                                        <i class='bx bx-info-circle'></i> 
+                                        Đơn hàng đang được giao. Vui lòng xác nhận kết quả giao hàng:
+                                   </div>
+                                   
+                                   <div class="d-flex gap-3 justify-content-center">
+                                        <!-- Nút Đã Giao Hàng Thành Công -->
+                                        <button type="button" 
+                                                th:onclick="|confirmStatusChange(${order.id}, 'DELIVERED')|"
+                                                class="btn btn-success btn-lg px-4">
+                                             <i class='bx bx-check-circle fs-18'></i> 
+                                             <span class="ms-2">Đã Giao Thành Công</span>
+                                        </button>
+                                        
+                                        <!-- Nút Hoàn Trả Hàng -->
+                                        <button type="button" 
+                                                th:onclick="|confirmStatusChange(${order.id}, 'RETURN')|"
+                                                class="btn btn-warning btn-lg px-4">
+                                             <i class='bx bx-undo fs-18'></i> 
+                                             <span class="ms-2">Hoàn Trả Hàng</span>
+                                        </button>
+                                   </div>
+                                   
+                                   <div class="text-center mt-3">
+                                        <small class="text-muted">
+                                             <i class='bx bx-time-five'></i> 
+                                             Thời gian cập nhật cuối: 
+                                             <span id="lastUpdateTime" class="fw-medium" th:text="${#dates.format(shipper.updatedDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                        </small>
                                    </div>
                               </div>
                          </div>
@@ -239,29 +258,35 @@
                                    </div>
                                    <div class="card-body">
                                         <div class="d-flex align-items-center gap-2">
-                                             <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar rounded-3 border border-light border-3">
+                                             <img th:src="${user.profilePicture != null ? user.profilePicture : '/assets/images/users/avatar-1.jpg'}" 
+                                                  alt="Customer Avatar" 
+                                                  class="avatar rounded-3 border border-light border-3">
                                              <div>
                                                   <p th:text="${user.fullname}" class="mb-1"></p>
-                                                  <a th:text="${user.email}"href="#!" class="link-primary fw-medium"></a>
+                                                  <a th:text="${user.email}" href="#!" class="link-primary fw-medium"></a>
                                              </div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-3">
                                              <h5 class="">Contact Number</h5>
-                                             <div>
-                                                  <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
-                                             </div>
                                         </div>
-                                        <p class="mb-1">0968543251</p>
+                                        <p class="mb-1">
+                                             <span th:if="${user.phone != null}" th:text="${user.phone}"></span>
+                                             <span th:if="${user.phone == null}" class="text-muted">Chưa có số điện thoại</span>
+                                        </p>
 
                                         <div class="d-flex justify-content-between mt-3">
                                              <h5 class="">Shipping Address</h5>
-                                             <div>
-                                                  <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
-                                             </div>
                                         </div>
 
                                         <div>
-                                             <p class="mb-1" th:text="${user.address}"></p>
+                                             <p class="mb-1">
+                                                  <span th:if="${order.address != null}">
+                                                       <span th:text="${order.address.address_line}"></span><br/>
+                                                       <span th:text="${order.address.city}"></span>, 
+                                                       <span th:text="${order.address.country}"></span>
+                                                  </span>
+                                                  <span th:if="${order.address == null}" class="text-muted">Chưa có địa chỉ giao hàng</span>
+                                             </p>
                                         </div>
                                    </div>
                               </div>
@@ -293,11 +318,256 @@
      </div>
      <!-- END Wrapper -->
 
+     <!-- Confirmation Modal -->
+     <div class="modal fade" id="confirmStatusModal" tabindex="-1" aria-labelledby="confirmStatusModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+                    <div class="modal-header">
+                         <h5 class="modal-title" id="confirmStatusModalLabel">
+                              <i class='bx bx-question-mark'></i> Xác Nhận Thay Đổi Trạng Thái
+                         </h5>
+                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                         <p id="confirmMessage"></p>
+                    </div>
+                    <div class="modal-footer">
+                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                              <i class='bx bx-x'></i> Hủy
+                         </button>
+                         <button type="button" class="btn btn-primary" id="btnConfirmStatus">
+                              <i class='bx bx-check'></i> Xác Nhận
+                         </button>
+                    </div>
+               </div>
+          </div>
+     </div>
+
      <!-- Vendor Javascript (Require in all Page) -->
      <script src="/assets/js/vendor.js"></script>
 
      <!-- App Javascript (Require in all Page) -->
      <script src="/assets/js/app.js"></script>
+
+     <!-- Status Update Script -->
+     <script>
+     let currentOrderId = null;
+     let currentNewStatus = null;
+
+     /**
+      * Hiển thị modal xác nhận thay đổi trạng thái
+      */
+     function confirmStatusChange(orderId, newStatus) {
+          currentOrderId = orderId;
+          currentNewStatus = newStatus;
+          
+          // Set message tùy theo trạng thái
+          let message = '';
+          if (newStatus === 'DELIVERED') {
+               message = 'Đơn hàng #' + orderId + ' đã được giao thành công?';
+          } else if (newStatus === 'RETURN') {
+               message = 'Hàng bị hoàn trả cho đơn hàng #' + orderId + '?';
+          }
+          
+          document.getElementById('confirmMessage').textContent = message;
+          
+          // Hiển thị modal
+          const modal = new bootstrap.Modal(document.getElementById('confirmStatusModal'));
+          modal.show();
+     }
+
+     /**
+      * Xử lý khi click nút xác nhận trong modal
+      */
+     document.getElementById('btnConfirmStatus').addEventListener('click', function() {
+          if (!currentOrderId || !currentNewStatus) return;
+          
+          // Disable button để tránh click liên tục
+          this.disabled = true;
+          this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang xử lý...';
+          
+          // Gọi AJAX để update status
+          updateOrderStatus(currentOrderId, currentNewStatus);
+     });
+
+     /**
+      * Gọi API để cập nhật trạng thái đơn hàng
+      */
+     function updateOrderStatus(orderId, newStatus) {
+          const endpoint = newStatus === 'DELIVERED' ? '/shipper/delivered' : '/shipper/return';
+          
+          $.ajax({
+               url: endpoint,
+               type: 'GET',
+               data: { orderid: orderId },
+               success: function(response) {
+                    console.log('✅ Status updated successfully');
+                    
+                    // Đóng modal
+                    bootstrap.Modal.getInstance(document.getElementById('confirmStatusModal')).hide();
+                    
+                    // Hiển thị thông báo thành công
+                    showSuccessMessage(newStatus);
+                    
+                    // Cập nhật UI
+                    updatePageUI(newStatus);
+                    
+                    // Reload page sau 2 giây
+                    setTimeout(function() {
+                         location.reload();
+                    }, 2000);
+               },
+               error: function(xhr, status, error) {
+                    console.error('❌ Error updating status:', error);
+                    
+                    // Đóng modal
+                    bootstrap.Modal.getInstance(document.getElementById('confirmStatusModal')).hide();
+                    
+                    // Hiển thị thông báo lỗi
+                    alert('❌ Lỗi: Không thể cập nhật trạng thái. Vui lòng thử lại!');
+                    
+                    // Reset button
+                    const btn = document.getElementById('btnConfirmStatus');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bx bx-check"></i> Xác Nhận';
+               }
+          });
+     }
+
+     /**
+      * Hiển thị thông báo thành công
+      */
+     function showSuccessMessage(newStatus) {
+          const message = newStatus === 'DELIVERED' 
+               ? '✅ Đã đánh dấu đơn hàng đã giao thành công!' 
+               : '✅ Đã đánh dấu đơn hàng hoàn trả!';
+          
+          // Tạo alert element
+          const alertDiv = document.createElement('div');
+          alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+          alertDiv.style.zIndex = '9999';
+          alertDiv.innerHTML = `
+               ${message}
+               <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          `;
+          
+          document.body.appendChild(alertDiv);
+          
+          // Tự động ẩn sau 3 giây
+          setTimeout(function() {
+               alertDiv.remove();
+          }, 3000);
+     }
+
+     /**
+      * Cập nhật UI sau khi thay đổi trạng thái
+      */
+     function updatePageUI(newStatus) {
+          // Map status sang tiếng Việt
+          const statusMap = {
+               'IN_STOCK': 'Chờ Xác Nhận',
+               'SHIPPED': 'Đang Giao Hàng',
+               'DELIVERED': 'Đã Giao',
+               'CANCEL': 'Đã Hủy',
+               'RETURN': 'Đã Trả Hàng'
+          };
+          
+          // Cập nhật badge trạng thái
+          const statusBadge = document.getElementById('status');
+          if (statusBadge) {
+               statusBadge.textContent = statusMap[newStatus] || newStatus;
+               
+               // Đổi màu badge
+               statusBadge.className = 'fs-13 px-2 py-1 rounded';
+               if (newStatus === 'DELIVERED') {
+                    statusBadge.classList.add('border', 'border-success', 'text-success');
+               } else if (newStatus === 'RETURN') {
+                    statusBadge.classList.add('border', 'border-danger', 'text-danger');
+               } else if (newStatus === 'SHIPPED') {
+                    statusBadge.classList.add('border', 'border-warning', 'text-warning');
+               } else if (newStatus === 'CANCEL') {
+                    statusBadge.classList.add('border', 'border-secondary', 'text-secondary');
+               }
+          }
+          
+          // Ẩn toàn bộ section Action Buttons
+          const actionSection = document.querySelector('.card-body.border-top');
+          if (actionSection) {
+               actionSection.style.display = 'none';
+          }
+          
+          // Cập nhật thời gian
+          const lastUpdateTimeEl = document.getElementById('lastUpdateTime');
+          if (lastUpdateTimeEl) {
+               const now = new Date();
+               const formattedDate = now.toLocaleString('vi-VN', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+               });
+               lastUpdateTimeEl.textContent = formattedDate;
+          }
+     }
+     
+     /**
+      * Lưu ghi chú của shipper
+      */
+     function saveNote(shipmentId) {
+          const noteTextarea = document.getElementById('shipperNote');
+          const note = noteTextarea.value.trim();
+          
+          if (!note) {
+               alert('⚠️ Vui lòng nhập nội dung ghi chú!');
+               noteTextarea.focus();
+               return;
+          }
+          
+          // Disable button để tránh click nhiều lần
+          const saveBtn = event.target;
+          saveBtn.disabled = true;
+          saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
+          
+          console.log('💾 Saving note:', note, 'for shipment:', shipmentId);
+          
+          $.ajax({
+               url: '/shipper/note',
+               type: 'POST',
+               data: {
+                    note: note,
+                    shipmentId: shipmentId
+               },
+               success: function(response) {
+                    console.log('✅ Note saved successfully:', response);
+                    
+                    // Hiển thị thông báo thành công
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3';
+                    alertDiv.style.zIndex = '9999';
+                    alertDiv.innerHTML = `
+                         ✅ Đã lưu ghi chú thành công!
+                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    
+                    setTimeout(() => alertDiv.remove(), 3000);
+                    
+                    // Reset button
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="bx bx-save"></i> Lưu Ghi Chú';
+               },
+               error: function(xhr, status, error) {
+                    console.error('❌ Error saving note:', error);
+                    alert('❌ Lỗi: Không thể lưu ghi chú. Vui lòng thử lại!');
+                    
+                    // Reset button
+                    saveBtn.disabled = false;
+                    saveBtn.innerHTML = '<i class="bx bx-save"></i> Lưu Ghi Chú';
+               }
+          });
+     }
+     </script>
 
 </body>
 
