@@ -1,10 +1,7 @@
 package com.dev.shoeshop.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
 @Data
@@ -20,6 +17,8 @@ public class OrderDetail {
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
 //    @NotNull(message = "Order cannot be null")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Order order;
 
     @ManyToOne
@@ -37,5 +36,7 @@ public class OrderDetail {
     private double price;
 
     @OneToOne(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Rating rating;
 }

@@ -23,6 +23,8 @@ public class Order {
     @ManyToOne
 //    @NotNull(message = "User cannot be null")
     @JoinColumn(name = "customer_id", nullable = false) // Khóa ngoại đến User
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Users user;
 
     @Column(name = "total_price", nullable = false)

@@ -79,8 +79,8 @@ public class ProductDetail {
         
         return flashSaleItems.stream()
                 .anyMatch(item -> item.getFlashSale() != null 
-                        && item.getFlashSale().isActive() 
-                        && item.hasStock());
+                        && item.getFlashSale().isActive());
+//                        && item.hasStock());
     }
     
     /**
@@ -88,11 +88,17 @@ public class ProductDetail {
      */
     public FlashSaleItem getActiveFlashSaleItem() {
         if (flashSaleItems == null || flashSaleItems.isEmpty()) return null;
+
+//        return flashSaleItems.stream()
+//                .filter(item -> item.getFlashSale() != null
+//                        && item.getFlashSale().isActive()
+//                        && item.hasStock())
+//                .findFirst()
+//                .orElse(null);
         
         return flashSaleItems.stream()
                 .filter(item -> item.getFlashSale() != null 
-                        && item.getFlashSale().isActive() 
-                        && item.hasStock())
+                        && item.getFlashSale().isActive())
                 .findFirst()
                 .orElse(null);
     }
