@@ -1,36 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
-
-<!-- Mirrored from techzaa.in/larkon/admin/orders-list.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Orders List | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Danh Sách Đơn Hàng | Deeg Manager</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="description" content="A fully responsive premium admin dashboard template" />
-     <meta name="author" content="Techzaa" />
+     <meta name="description" content="Hệ thống quản lý đơn hàng Deeg" />
+     <meta name="author" content="Deeg" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
      <!-- App favicon -->
-     <link rel="shortcut icon" href="/assets/images/favicon.ico">
+     <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
 
      <!-- Vendor css (Require in all Page) -->
-     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
 
      <!-- Icons css (Require in all Page) -->
-     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
 
      <!-- App css (Require in all Page) -->
-     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+     <!-- Manager Custom CSS -->
+     <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
+     <link th:href="@{/css/manager/orders-custom.css}" rel="stylesheet" type="text/css" />
 
      <!-- Theme Config js (Require in all Page) -->
-     <script src="/assets/js/config.js"></script>
-<!--     css bootstrap-->
-<!--     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">-->
-     <!-- ajax-->
+     <script th:src="@{/assets/js/config.js}"></script>
+
+     <!-- jQuery -->
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+     <!-- Iconify -->
+     <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
 </head>
 
 <body>
@@ -48,199 +51,349 @@
      <!-- ==================================================== -->
      <!-- Start right Content here -->
      <!-- ==================================================== -->
-     <div>
+     <div class="page-content">
 
-          <div class="page-content">
+          <!-- Start Container Fluid -->
+          <div class="container-xxl">
 
-               <!-- Start Container Fluid -->
-               <div class="container-xxl">
-
-                    <div class="row">
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 class="card-title mb-2">Order Cancel</h4>
-                                                  <p th:text="${static.cancel}" class="text-muted fw-medium fs-22 mb-0"></p>
-                                             </div>
-                                             <div>
-                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                       <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                  </div>
-                                             </div>
+               <!-- Statistics Cards -->
+               <div class="row g-3 mb-4" id="statistics-container">
+                    <div class="col-md-6 col-xl-3">
+                         <div class="card stat-card h-100 shadow-sm">
+                              <div class="card-body">
+                                   <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-danger bg-opacity-10 rounded p-3 me-3">
+                                             <iconify-icon icon="solar:cart-cross-bold-duotone" class="text-danger" width="24" height="24"></iconify-icon>
                                         </div>
-                                   </div>
-                              </div>
-                         </div>
-
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 class="card-title mb-2">Order Shipping</h4>
-                                                  <p th:text="${static.shipping}" class="text-muted fw-medium fs-22 mb-0">630</p>
-                                             </div>
-                                             <div>
-                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                       <iconify-icon icon="solar:box-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 class="card-title mb-2">In Stock</h4>
-                                                  <p th:text="${static.inStock}" class="text-muted fw-medium fs-22 mb-0"></p>
-                                             </div>
-                                             <div>
-                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                       <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 class="card-title mb-2">Delivered</h4>
-                                                  <p th:text="${static.delivered}" class="text-muted fw-medium fs-22 mb-0"></p>
-                                             </div>
-                                             <div>
-                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                       <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                  </div>
-                                             </div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-                         <div class="col-md-6 col-xl-3">
-                              <div class="card">
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 class="card-title mb-2">Return</h4>
-                                                  <p th:text="${static.preturn}" class="text-muted fw-medium fs-22 mb-0">656</p>
-                                             </div>
-                                             <div>
-                                                  <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                                       <iconify-icon icon="solar:inbox-line-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                                  </div>
-                                             </div>
+                                        <div class="flex-grow-1">
+                                             <h4 class="mb-0" id="cancel-orders">0</h4>
+                                             <p class="text-muted mb-0">Đã Hủy</p>
                                         </div>
                                    </div>
                               </div>
                          </div>
                     </div>
 
-                    <div class="row">
-                         <div class="col-xl-12">
-                              <div class="card">
-                                   <div class="d-flex card-header justify-content-between align-items-center">
-                                        <div>
-                                             <h4 class="card-title">All Order List</h4>
+                    <div class="col-md-6 col-xl-3">
+                         <div class="card stat-card h-100 shadow-sm">
+                              <div class="card-body">
+                                   <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary bg-opacity-10 rounded p-3 me-3">
+                                             <iconify-icon icon="solar:delivery-bold-duotone" class="text-primary" width="24" height="24"></iconify-icon>
                                         </div>
-                                        <div style="display: flex; align-content: center">
-                                             <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()" style="margin-left: 10px">
-                                                  <option value="">All</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">Shipped</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL}">Cancel</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">In stock</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).DELIVERED}">Delivered</option>
-                                                  <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).RETURN}">Return</option>
-                                             </select>
-                                             <script>
-                                                  window.onload = function () {
-                                                       const urlParams = new URLSearchParams(window.location.search);
-                                                       const status = urlParams.get('status'); // Lấy giá trị 'status' từ URL
-
-                                                       if (status) {
-                                                            const selectElement = document.getElementById("orderStatus");
-                                                            selectElement.value = status; // Đặt lại giá trị cho combobox
-                                                       }
-
-                                                  };
-                                                  function getOrderStatus() {
-                                                       // Lấy phần tử combobox
-                                                       const selectElement = document.getElementById("orderStatus");
-
-                                                       // Lấy giá trị trạng thái được chọn
-                                                       const selectedValue = selectElement.value;
-
-                                                       // Chuyển hướng đến trang web khác
-                                                       window.location.href = `/manager/order/list?status=${selectedValue}`;
-                                                  }
-
-                                             </script>
+                                        <div class="flex-grow-1">
+                                             <h4 class="mb-0" id="shipping-orders">0</h4>
+                                             <p class="text-muted mb-0">Đang Giao</p>
                                         </div>
                                    </div>
-                                   <div class="card-body p-0">
-                                        <div class="table-responsive">
-                                             <table class="table align-middle mb-0 table-hover table-centered">
-                                                  <thead class="bg-light-subtle">
+                              </div>
+                         </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl-3">
+                         <div class="card stat-card h-100 shadow-sm">
+                              <div class="card-body">
+                                   <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-warning bg-opacity-10 rounded p-3 me-3">
+                                             <iconify-icon icon="solar:box-bold-duotone" class="text-warning" width="24" height="24"></iconify-icon>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                             <h4 class="mb-0" id="instock-orders">0</h4>
+                                             <p class="text-muted mb-0">Trong Kho</p>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl-3">
+                         <div class="card stat-card h-100 shadow-sm">
+                              <div class="card-body">
+                                   <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-success bg-opacity-10 rounded p-3 me-3">
+                                             <iconify-icon icon="solar:check-circle-bold-duotone" class="text-success" width="24" height="24"></iconify-icon>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                             <h4 class="mb-0" id="delivered-orders">0</h4>
+                                             <p class="text-muted mb-0">Đã Giao</p>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+
+                    <div class="col-md-6 col-xl-3">
+                         <div class="card stat-card h-100 shadow-sm">
+                              <div class="card-body">
+                                   <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-secondary bg-opacity-10 rounded p-3 me-3">
+                                             <iconify-icon icon="solar:return-bold-duotone" class="text-secondary" width="24" height="24"></iconify-icon>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                             <h4 class="mb-0" id="return-orders">0</h4>
+                                             <p class="text-muted mb-0">Trả Hàng</p>
+                                        </div>
+                                   </div>
+                              </div>
+                         </div>
+                    </div>
+               </div>
+
+               <!-- Orders Table -->
+               <div class="row">
+                    <div class="col-xl-12">
+                         <div class="card">
+                              <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                                   <div class="d-flex align-items-center mb-2 mb-md-0">
+                                        <h4 class="card-title m-0 fs-5">
+                                             <iconify-icon icon="solar:list-bold-duotone" class="me-2"></iconify-icon>
+                                             Danh Sách Đơn Hàng
+                                        </h4>
+                                   </div>
+                                   <div class="d-flex align-items-center gap-2 flex-nowrap">
+                                        <select class="form-select form-select-sm" id="status-filter" style="width: 140px;">
+                                             <option value="">Tất Cả</option>
+                                             <option value="IN_STOCK">Trong Kho</option>
+                                             <option value="SHIPPED">Đang Giao</option>
+                                             <option value="DELIVERED">Đã Giao</option>
+                                             <option value="CANCEL">Đã Hủy</option>
+                                             <option value="RETURN">Trả Hàng</option>
+                                        </select>
+                                        <button class="btn btn-outline-primary btn-sm d-flex align-items-center flex-shrink-0" 
+                                                id="refresh-button" 
+                                                onclick="refreshOrders()">
+                                             <iconify-icon icon="solar:refresh-bold-duotone" class="me-1" id="refresh-icon"></iconify-icon>
+                                             <span>Làm mới</span>
+                                        </button>
+                                   </div>
+                                   
+                                   <style>
+                                        /* Card Header - Responsive và hiển thị đầy đủ */
+                                        .card-header {
+                                             padding: 0.875rem 1.25rem;
+                                             gap: 0.75rem;
+                                        }
+                                        
+                                        .card-title {
+                                             margin: 0 !important;
+                                             font-size: 1.05rem !important;
+                                             white-space: nowrap;
+                                        }
+                                        
+                                        #refresh-button {
+                                             flex-shrink: 0;
+                                             padding: 0.35rem 0.75rem;
+                                             font-size: 0.875rem;
+                                             white-space: nowrap;
+                                        }
+                                        
+                                        #status-filter {
+                                             flex-shrink: 0;
+                                             font-size: 0.875rem;
+                                             width: 140px !important;
+                                        }
+                                        
+                                        /* Responsive: xuống dòng trên màn hình nhỏ */
+                                        @media (max-width: 768px) {
+                                             .card-header {
+                                                  flex-direction: column;
+                                                  align-items: flex-start !important;
+                                             }
+                                             
+                                             .card-header > div {
+                                                  width: 100%;
+                                             }
+                                             
+                                             .card-header > div:last-child {
+                                                  justify-content: flex-start;
+                                             }
+                                        }
+                                        
+                                        /* Ẩn Scrollbar cho table */
+                                        .table-responsive {
+                                             max-height: none;
+                                             overflow-x: auto;
+                                             overflow-y: visible;
+                                        }
+                                        
+                                        .table-responsive::-webkit-scrollbar {
+                                             width: 6px;
+                                             height: 6px;
+                                        }
+                                        
+                                        .table-responsive::-webkit-scrollbar-track {
+                                             background: transparent;
+                                        }
+                                        
+                                        .table-responsive::-webkit-scrollbar-thumb {
+                                             background: rgba(0,0,0,0.1);
+                                             border-radius: 10px;
+                                        }
+                                        
+                                        .table-responsive::-webkit-scrollbar-thumb:hover {
+                                             background: rgba(0,0,0,0.2);
+                                        }
+                                        
+                                        /* Scrollbar cho Firefox */
+                                        .table-responsive {
+                                             scrollbar-width: thin;
+                                             scrollbar-color: rgba(0,0,0,0.1) transparent;
+                                        }
+                                        
+                                        /* Ẩn scrollbar cho body nếu cần */
+                                        body::-webkit-scrollbar {
+                                             width: 6px;
+                                        }
+                                        
+                                        body::-webkit-scrollbar-track {
+                                             background: transparent;
+                                        }
+                                        
+                                        body::-webkit-scrollbar-thumb {
+                                             background: rgba(0,0,0,0.1);
+                                             border-radius: 10px;
+                                        }
+                                        
+                                        body::-webkit-scrollbar-thumb:hover {
+                                             background: rgba(0,0,0,0.2);
+                                        }
+                                        
+                                        /* Đảm bảo table hiển thị đầy đủ */
+                                        .orders-table {
+                                             width: 100%;
+                                             min-width: 800px;
+                                             table-layout: fixed;
+                                        }
+                                        
+                                        .orders-table th,
+                                        .orders-table td {
+                                             padding: 0.75rem;
+                                             vertical-align: middle;
+                                        }
+                                        
+                                        /* Cột Mã ĐH */
+                                        .orders-table th:nth-child(1),
+                                        .orders-table td:nth-child(1) { 
+                                             width: 10%;
+                                             min-width: 80px;
+                                        }
+                                        
+                                        /* Cột Ngày Tạo */
+                                        .orders-table th:nth-child(2),
+                                        .orders-table td:nth-child(2) { 
+                                             width: 12%;
+                                             min-width: 100px;
+                                        }
+                                        
+                                        /* Cột Khách Hàng */
+                                        .orders-table th:nth-child(3),
+                                        .orders-table td:nth-child(3) { 
+                                             width: 18%;
+                                             min-width: 150px;
+                                        }
+                                        
+                                        /* Cột Tổng Tiền */
+                                        .orders-table th:nth-child(4),
+                                        .orders-table td:nth-child(4) { 
+                                             width: 15%;
+                                             min-width: 100px;
+                                        }
+                                        
+                                        /* Cột Thanh Toán */
+                                        .orders-table th:nth-child(5),
+                                        .orders-table td:nth-child(5) { 
+                                             width: 15%;
+                                             min-width: 100px;
+                                        }
+                                        
+                                        /* Cột Trạng Thái */
+                                        .orders-table th:nth-child(6),
+                                        .orders-table td:nth-child(6) { 
+                                             width: 15%;
+                                             min-width: 100px;
+                                        }
+                                        
+                                        /* Cột Thao Tác */
+                                        .orders-table th:nth-child(7),
+                                        .orders-table td:nth-child(7) { 
+                                             width: 15%;
+                                             min-width: 100px;
+                                             text-align: center;
+                                        }
+                                   </style>
+                                   
+                                   <script>
+                                        function refreshOrders() {
+                                             const btn = document.getElementById('refresh-button');
+                                             const icon = document.getElementById('refresh-icon');
+                                             
+                                             // Add loading state
+                                             btn.disabled = true;
+                                             
+                                             // Trigger reflow to ensure animation restarts
+                                             void btn.offsetWidth;
+                                             
+                                             // Add animation class
+                                             icon.style.animation = 'spin 0.5s ease-in-out';
+                                             
+                                             // Simulate API call (replace with your actual refresh logic)
+                                             setTimeout(() => {
+                                                  // Your refresh logic here
+                                                  
+                                                  // Reset button state
+                                                  btn.disabled = false;
+                                                  icon.style.animation = '';
+                                                  
+                                                  // Show success feedback
+                                                  const originalText = btn.querySelector('span').textContent;
+                                                  btn.querySelector('span').textContent = 'Đã cập nhật';
+                                                  
+                                                  // Revert text after 2 seconds
+                                                  setTimeout(() => {
+                                                       btn.querySelector('span').textContent = originalText;
+                                                  }, 2000);
+                                             }, 1000);
+                                        }
+                                   </script>
+                              </div>
+                              <div class="card-body p-0">
+                                   <div class="table-responsive">
+                                        <table class="table orders-table align-middle mb-0 table-hover">
+                                             <thead>
+                                             <tr>
+                                                  <th>Mã ĐH</th>
+                                                  <th>Ngày Tạo</th>
+                                                  <th>Khách Hàng</th>
+                                                  <th>Tổng Tiền</th>
+                                                  <th>Thanh Toán</th>
+                                                  <th>Trạng Thái</th>
+                                                  <th>Thao Tác</th>
+                                             </tr>
+                                             </thead>
+                                             <tbody id="orders-table-body">
+                                                  <!-- Orders will be loaded here via Ajax -->
                                                   <tr>
-                                                       <th>Order ID</th>
-                                                       <th>Created at</th>
-                                                       <th>Full name</th>
-                                                       <th>Price</th>
-                                                       <th>Pay option</th>
-                                                       <th>Order Status</th>
-<!--                                                       <th>Delivery Number</th>-->
-                                                       <th>Action</th>
-                                                  </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                  <tr th:each="order: ${listOrder.content}">
-                                                       <td th:text="${order.id}">
-                                                       </td>
-                                                       <td th:text="${order.createdDate}"></td>
-                                                       <td th:text="${order.user.fullname}"></td>
-                                                       <td th:text="${order.totalPrice}"></td>
-                                                       <td> <span th:text="${order.payOption}" class="badge bg-light text-dark  px-2 py-1 fs-13"></span></td>
-                                                       <td th:text="${order.status}"> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13"></span></td>
-                                                       <td>
-                                                            <div class="d-flex gap-2">
-                                                                 <a th:href="@{/manager/order/detail/{id}(id=${order.id})}" href="" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-<!--                                                                 <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>-->
-                                                                 <div th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
-                                                                      <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
-                                                                 </div>
+                                                       <td colspan="7" class="text-center py-4">
+                                                            <div class="spinner-border text-primary" role="status">
+                                                                 <span class="visually-hidden">Đang tải...</span>
                                                             </div>
+                                                            <p class="mt-2 text-muted">Đang tải đơn hàng...</p>
                                                        </td>
                                                   </tr>
-                                                  </tbody>
-                                             </table>
-                                        </div>
-                                        <!-- end table-responsive -->
-                                   </div>
-                                   <div class="card-footer border-top" th:if="${totalPages > 0}">
-                                        <nav aria-label="Page navigation example">
-                                             <ul class="pagination justify-content-end mb-0">
-                                                  <li th:if="${listOrder.number > 0}" class="page-item"><a class="page-link" th:href="@{/manager/order/list(page-num=${listOrder.number - 1}, status=${stt})}">Previous</a></li>
-                                                  <li  th:each="pageNumber: ${pageNumbers}" th:class="${pageNumber == listOrder.number + 1} ? 'page-item active' : 'page-item'">
-                                                       <a th:text="${pageNumber}" class="page-link" th:href="@{/manager/order/list(page-num=${pageNumber - 1}, status=${stt})}"></a>
-                                                  </li>
-<!--                                                  <li th:if="${pageNumber != listOrder.number + 1}" class="page-item"><a th:text="${pageNumber}" class="page-link" href="javascript:void(0);"></a></li>-->
-                                                  <li th:if="${totalPages > listOrder.number + 1}" class="page-item"><a class="page-link" th:href="@{/manager/order/list(page-num=${listOrder.number + 1}, status=${stt})}">Next</a></li>
-
-                                             </ul>
-                                        </nav>
+                                             </tbody>
+                                        </table>
                                    </div>
                               </div>
+                              <div class="card-footer border-top">
+                                   <nav aria-label="Phân trang đơn hàng">
+                                        <ul class="pagination justify-content-end mb-0" id="pagination-container">
+                                             <!-- Pagination will be loaded here via Ajax -->
+                                        </ul>
+                                   </nav>
+                              </div>
                          </div>
-
                     </div>
+               </div>
 
                </div>
                <!-- End Container Fluid -->
@@ -248,24 +401,11 @@
                <!-- Order cancel fragment-->
                <div th:include="~{fragments/order/order_cancel.html}"></div>
 
-               <!-- ========== Footer Start ========== -->
-               <footer class="footer">
-                    <div class="container-fluid">
-                         <div class="row">
-                              <div class="col-12 text-center">
-                                   <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                      href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                              </div>
-                         </div>
-                    </div>
-               </footer>
-               <!-- ========== Footer End ========== -->
 
           </div>
           <!-- ==================================================== -->
           <!-- End Page Content -->
           <!-- ==================================================== -->
-
 
      </div>
 
@@ -273,10 +413,13 @@
 <!-- END Wrapper -->
 
 <!-- Vendor Javascript (Require in all Page) -->
-<script src="/assets/js/vendor.js"></script>
+<script th:src="@{/assets/js/vendor.js}"></script>
 
 <!-- App Javascript (Require in all Page) -->
-<script src="/assets/js/app.js"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- Manager Orders JS -->
+<script th:src="@{/js/manager/manager-orders.js}"></script>
 
 </body>
 

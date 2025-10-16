@@ -1,0 +1,39 @@
+package com.dev.shoeshop.repository;
+
+import com.dev.shoeshop.entity.FlashSaleItem;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface FlashSaleItemRepository extends JpaRepository<FlashSaleItem, Long> {
+
+    // tìm tất cả items của một flash sale
+    // dùng để hiển thị danh sách sản phẩm flash sale
+    @Query("SELECT fsi FROM FlashSaleItem fsi " +
+           "JOIN FETCH fsi.productDetail pd " +
+           "JOIN FETCH pd.product p " +
+           "WHERE fsi.flashSale.id = :flashSaleId " +
+           "ORDER BY fsi.position ASC")
+    List<FlashSaleItem> findByFlashSaleIdWithProduct(@Param("flashSaleId") Long flashSaleId);
+
+    // Tìm flash sale item với PESSIMISTIC LOCK
+    // dùng khi user mua hàng để tránh overselling
+    // PESSIMISTIC_WRITE: Lock row trong database
+    // Nếu User A đang mua → Row bị lock
+    // User B phải chờ User A xong mới mua được
+    // Đảm bảo không bán quá số lượng stock
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT fsi FROM FlashSaleItem fsi WHERE fsi.id = :id")
+    Optional<FlashSaleItem> findByIdWithLock(@Param("id") Long id);
+
+    // Đếm số lượng items trong flash sale dùng cho thống kê
+    @Query("SELECT COUNT(fsi) FROM FlashSaleItem fsi WHERE fsi.flashSale.id = :flashSaleId")
+    Long countByFlashSaleId(@Param("flashSaleId") Long flashSaleId);
+}

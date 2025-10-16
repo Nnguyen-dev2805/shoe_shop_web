@@ -3,9 +3,7 @@ package com.dev.shoeshop.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -15,6 +13,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "rating")
 public class Rating {
     @Id
@@ -39,20 +38,28 @@ public class Rating {
     Date modified;
 
     // Quan hệ ManyToOne với Product
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
-//    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Product product;
 
     // Quan hệ ManyToOne với Users
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false) // Khóa ngoại đến Users
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Users user;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_detail_id", unique = true, nullable = false)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private OrderDetail orderDetail;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_detail_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_detail_id", nullable = false)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private ProductDetail productDetail;
 }

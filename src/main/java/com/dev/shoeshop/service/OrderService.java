@@ -15,6 +15,15 @@ public interface OrderService {
     public List<OrderDTO> getOrderByStatus(ShipmentStatus status);
 
     public List<OrderDTO> getAllOrders();
+    
+    // Lấy danh sách orders của user
+    public List<OrderDTO> getOrdersByUserId(Long userId);
+    
+    // Lấy danh sách orders của user theo status
+    public List<OrderDTO> getOrdersByUserIdAndStatus(Long userId, ShipmentStatus status);
+    
+    // Lấy order detail với thông tin sản phẩm
+    public OrderDTO getOrderDetailById(Long orderId, Long userId);
 
     public Order findById(Long id);
     public Order findByOrderId(Long id);
