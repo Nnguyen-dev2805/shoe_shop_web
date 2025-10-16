@@ -5,6 +5,7 @@ import com.dev.shoeshop.dto.CartDTO;
 import com.dev.shoeshop.dto.CartDetailDTO;
 import com.dev.shoeshop.dto.CartProductDTO;
 import com.dev.shoeshop.dto.OrderDTO;
+import com.dev.shoeshop.dto.OrderNotificationDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
 import com.dev.shoeshop.entity.Address;
@@ -26,6 +27,7 @@ import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.NotificationService;
 import com.dev.shoeshop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,6 +63,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private AddressRepository addressRepository;
+    
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -190,6 +195,10 @@ public class OrderServiceImpl implements OrderService {
                 
                 System.out.println("Cart order created with ID: " + savedOrder.getId());
             }
+            
+            // GỬI THÔNG BÁO WEBSOCKET ĐẾN ADMIN
+            System.out.println("Sending WebSocket notification to admin...");
+            sendOrderNotificationToAdmin(savedOrder);
             
             // Handle payment processing
             OrderResultDTO orderResult = OrderResultDTO.builder()
@@ -368,6 +377,70 @@ public class OrderServiceImpl implements OrderService {
         // Implement VNPay URL generation based on your VNPay integration
         // This is a placeholder
         return "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?...";
+    }
+    
+    /**
+     * Gửi thông báo real-time đến admin khi có đơn hàng mới
+     * Sử dụng WebSocket để push notification ngay lập tức
+     */
+    private void sendOrderNotificationToAdmin(Order order) {
+        try {
+            System.out.println("=== Building notification for order #" + order.getId() + " ===");
+            
+            // Build notification DTO
+            OrderNotificationDTO notification = OrderNotificationDTO.builder()
+                .orderId(order.getId())
+                .customerName(order.getUser().getFullname())
+                .customerEmail(order.getUser().getEmail())
+                .totalPrice(order.getTotalPrice())
+                .payOption(order.getPayOption() != null ? order.getPayOption().toString() : "UNKNOWN")
+                .itemCount(order.getOrderDetailSet() != null ? order.getOrderDetailSet().size() : 0)
+                .createdDate(order.getCreatedDate())
+                .deliveryAddress(buildDeliveryAddressString(order.getAddress()))
+                .build();
+            
+            // Send notification via WebSocket
+            notificationService.sendNewOrderNotification(notification);
+            
+            System.out.println("✅ WebSocket notification sent successfully to admin");
+            
+        } catch (Exception e) {
+            // Log error but don't throw - notification failure shouldn't break order creation
+            System.err.println("⚠️ Failed to send WebSocket notification: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * Build delivery address string from Address entity
+     */
+    private String buildDeliveryAddressString(Address address) {
+        if (address == null) {
+            return "N/A";
+        }
+        
+        // Build address string from available fields
+        StringBuilder addressBuilder = new StringBuilder();
+        
+        if (address.getAddress_line() != null && !address.getAddress_line().isEmpty()) {
+            addressBuilder.append(address.getAddress_line());
+        }
+        
+        if (address.getCity() != null && !address.getCity().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append(", ");
+            }
+            addressBuilder.append(address.getCity());
+        }
+        
+        if (address.getCountry() != null && !address.getCountry().isEmpty()) {
+            if (addressBuilder.length() > 0) {
+                addressBuilder.append(", ");
+            }
+            addressBuilder.append(address.getCountry());
+        }
+        
+        return addressBuilder.length() > 0 ? addressBuilder.toString() : "N/A";
     }
     
     private Cart createNewCartForUser(Long userId) {

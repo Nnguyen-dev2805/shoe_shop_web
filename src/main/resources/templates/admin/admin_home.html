@@ -515,10 +515,25 @@
 <!-- END Wrapper -->
 
 <!-- Vendor Javascript (Require in all Page) -->
-<script src="assets/js/vendor.js"></script>
+<script th:src="@{/assets/js/vendor.js}"></script>
 
 <!-- App Javascript (Require in all Page) -->
-<script src="assets/js/app.js"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- WebSocket Libraries for Real-time Notifications -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<!-- Order Notifications WebSocket Handler -->
+<script th:src="@{/js/admin/order-notifications.js}"></script>
+
+<!-- Debug: Check if scripts loaded -->
+<script>
+    console.log('🔍 Checking dependencies...');
+    console.log('jQuery loaded:', typeof jQuery !== 'undefined');
+    console.log('SockJS loaded:', typeof SockJS !== 'undefined');
+    console.log('Stomp loaded:', typeof Stomp !== 'undefined');
+</script>
 
 </body>
 
