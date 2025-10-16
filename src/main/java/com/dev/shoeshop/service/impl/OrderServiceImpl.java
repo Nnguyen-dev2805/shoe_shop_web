@@ -432,12 +432,7 @@ public class OrderServiceImpl implements OrderService {
      * Convert Order to OrderDTO with detailed information
      */
     private OrderDTO convertToOrderDetailDTO(Order order) {
-        System.out.println("=== convertToOrderDetailDTO ===");
-        System.out.println("Order ID: " + order.getId());
-        
         OrderDTO dto = orderDTOConverter.toOrderDTO(order);
-        
-        System.out.println("DTO ID after conversion: " + dto.getId());
         
         // Convert order details
         if (order.getOrderDetailSet() != null) {
@@ -447,7 +442,6 @@ public class OrderServiceImpl implements OrderService {
             dto.setOrderDetails(orderDetailDTOs);
         }
         
-        System.out.println("Final DTO ID: " + dto.getId());
         return dto;
     }
     

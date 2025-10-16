@@ -49,6 +49,8 @@ public class ProductDetail {
     @ToString.Exclude
     private Set<Inventory> inventories;
 
-    @OneToOne(mappedBy = "productDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Rating rating;
+    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Rating> ratings;
 }

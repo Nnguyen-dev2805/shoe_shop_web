@@ -318,40 +318,99 @@
                                     
                                     <!-- Rating Form for DELIVERED orders -->
                                     <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED}" 
-                                         class="rating-form" style="margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
-                                        <h6 style="margin: 0 0 10px 0; color: #333; font-size: 14px;">
-                                            <i class="fa fa-star"></i> Đánh giá sản phẩm:
-                                        </h6>
+                                         class="rating-form" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
                                         
-                                        <div class="star-rating" data-order-detail-id="${orderDetail.id}">
-                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="5" th:id="'star5_' + ${orderDetail.id}">
-                                            <label th:for="'star5_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
-                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="4" th:id="'star4_' + ${orderDetail.id}">
-                                            <label th:for="'star4_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
-                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="3" th:id="'star3_' + ${orderDetail.id}">
-                                            <label th:for="'star3_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
-                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="2" th:id="'star2_' + ${orderDetail.id}">
-                                            <label th:for="'star2_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
-                                            <input type="radio" th:name="'rating_' + ${orderDetail.id}" value="1" th:id="'star1_' + ${orderDetail.id}">
-                                            <label th:for="'star1_' + ${orderDetail.id}"><i class="fa fa-star"></i></label>
+                                        <div class="rating-header" style="margin-bottom: 15px;">
+                                            <h6 style="margin: 0; color: #333; font-size: 16px; font-weight: 600;">
+                                                <i class="fa fa-star" style="color: #ffc107;"></i> Đánh giá sản phẩm
+                                            </h6>
+                                            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">
+                                                Chia sẻ trải nghiệm của bạn về sản phẩm này
+                                            </p>
                                         </div>
                                         
-                                        <div style="margin-top: 10px;">
+                                        <!-- Star Rating -->
+                                        <div class="star-rating-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Đánh giá: <span style="color: red;">*</span>
+                                            </label>
+                                            <div class="star-rating" data-order-detail-id="${orderDetail.id}">
+                                                <input type="radio" name="rating_${orderDetail.id}" value="5" id="star5_${orderDetail.id}">
+                                                <label for="star5_${orderDetail.id}" title="Rất hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" name="rating_${orderDetail.id}" value="4" id="star4_${orderDetail.id}">
+                                                <label for="star4_${orderDetail.id}" title="Hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" name="rating_${orderDetail.id}" value="3" id="star3_${orderDetail.id}">
+                                                <label for="star3_${orderDetail.id}" title="Bình thường">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" name="rating_${orderDetail.id}" value="2" id="star2_${orderDetail.id}">
+                                                <label for="star2_${orderDetail.id}" title="Không hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" name="rating_${orderDetail.id}" value="1" id="star1_${orderDetail.id}">
+                                                <label for="star1_${orderDetail.id}" title="Rất tệ">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Comment -->
+                                        <div class="comment-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Bình luận: <span style="color: red;">*</span>
+                                            </label>
                                             <textarea class="form-control" 
                                                       th:id="'comment_' + ${orderDetail.id}" 
                                                       th:name="'comment_' + ${orderDetail.id}"
-                                                      rows="2" 
-                                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
-                                    </div>
+                                                      rows="4" 
+                                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                                                      style="resize: vertical; border: 1px solid #ddd; border-radius: 4px; padding: 10px;"></textarea>
+                                        </div>
                                         
-                                        <div style="margin-top: 10px; text-align: right;">
+                                        <!-- Image Upload -->
+                                        <div class="image-upload-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Hình ảnh (tùy chọn):
+                                            </label>
+                                            <div class="upload-area" style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
+                                                <input type="file" 
+                                                       th:id="'image_' + ${orderDetail.id}" 
+                                                       th:name="'image_' + ${orderDetail.id}"
+                                                       accept="image/*" 
+                                                       style="display: none;"
+                                                       multiple>
+                                                <div class="upload-content">
+                                                    <i class="fa fa-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
+                                                    <p style="margin: 0; color: #666; font-size: 14px;">
+                                                        Nhấp để chọn hình ảnh hoặc kéo thả vào đây
+                                                    </p>
+                                                    <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">
+                                                        Hỗ trợ: JPG, PNG, GIF (tối đa 5MB mỗi ảnh)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Image Preview -->
+                                            <div class="image-preview" th:id="'preview_' + ${orderDetail.id}" style="margin-top: 10px; display: none;">
+                                                <div class="preview-images" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Submit Button -->
+                                        <div class="submit-container" style="text-align: right;">
                                             <button type="button" 
-                                                    class="btn btn-sm btn-primary submit-rating" 
-                                                    th:data-order-detail-id="${orderDetail.id}">
-                                                <i class="fa fa-check"></i> Gửi đánh giá
+                                                    class="btn btn-primary submit-rating" 
+                                                    th:data-order-detail-id="${orderDetail.id}"
+                                                    style="padding: 10px 20px; border-radius: 4px; font-weight: 500;">
+                                                <i class="fa fa-paper-plane"></i> Gửi đánh giá
                                             </button>
                                         </div>
                                     </div>
+                                    
                                 </div>
                             </div>
                             
@@ -422,118 +481,129 @@
     <!-- main JS -->
         <script src="/js/main.js"></script>
     
-
     <!-- Chat Widget -->
     <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
     
-    <!-- Order Detail JavaScript -->
-<script>
+    <!-- Rating Form JavaScript -->
+    <script>
         $(document).ready(function() {
-            // Handle individual product rating submission
-            $('.submit-rating').on('click', function() {
-                const orderDetailId = $(this).data('order-detail-id');
-                submitSingleRating(orderDetailId, $(this));
-            });
-        });
-        
-        function submitSingleRating(orderDetailId, button) {
-            const orderId = /*[[${order.id}]]*/ null;
-            
-            // Debug: Log all values
-            console.log('=== Rating Submission Debug ===');
-            console.log('OrderId from Thymeleaf:', orderId);
-            console.log('OrderDetailId:', orderDetailId);
-            console.log('OrderId type:', typeof orderId);
-            console.log('OrderDetailId type:', typeof orderDetailId);
-            
-            // Validate orderId
-            if (!orderId) {
-                alert('Lỗi: Không tìm thấy ID đơn hàng. Vui lòng tải lại trang!');
-                return;
-            }
-            
-            // Get rating value - try different selectors
-            let rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
-            console.log('Rating found with name selector:', rating);
-            
-            // If not found, try finding within the same form container
-            if (!rating) {
-                const formContainer = button.closest('.rating-form');
-                rating = formContainer.find('input[type="radio"]:checked').val();
-                console.log('Rating found in form container:', rating);
-            }
-            
-            if (!rating) {
-                alert('Vui lòng chọn số sao đánh giá!');
-                return;
-            }
-            
-            // Get comment
-            const comment = $(`#comment_${orderDetailId}`).val() || '';
-            
-            // Debug: Log the data being sent
-            const requestData = {
-                orderId: orderId,
-                ratings: [{
-                    orderDetailId: orderDetailId,
-                    star: parseInt(rating),
-                    comment: comment
-                }]
-            };
-            console.log('Request data:', requestData);
-            
-            // Show loading
-            const originalText = button.html();
-            button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
-            
-            $.ajax({
-                url: '/user/api/ratings',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function(response) {
-                    if (response.success) {
-                        alert('Cảm ơn bạn đã đánh giá!');
-                        // Hide the rating form after successful submission
-                        button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 10px;"><i class="fa fa-check-circle"></i> Đã đánh giá thành công!</div>');
-                    } else {
-                        alert('Có lỗi xảy ra: ' + response.message);
-                        button.html(originalText).prop('disabled', false);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error submitting rating:', error);
-                    console.error('Response:', xhr.responseText);
-                    console.error('Status:', xhr.status);
-                    
-                    let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
-                    if (xhr.responseText) {
-                        try {
-                            const response = JSON.parse(xhr.responseText);
-                            errorMessage = response.message || errorMessage;
-                        } catch (e) {
-                            console.error('Could not parse error response:', e);
-                        }
-                    }
-                    
-                    alert(errorMessage);
-                    button.html(originalText).prop('disabled', false);
+            // Handle star rating clicks
+            $('.star-rating label').on('click', function() {
+                const input = $(this).prev('input');
+                if (input.length) {
+                    input.prop('checked', true);
+                    console.log('Star clicked:', input.attr('name'), input.val());
                 }
             });
-        }
+            
+            // Handle file upload click
+            $('.upload-area').on('click', function() {
+                const fileInput = $(this).find('input[type="file"]');
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            $('input[type="file"]').on('change', function() {
+                const files = this.files;
+                const orderDetailId = $(this).attr('id').replace('image_', '');
+                const previewContainer = $('#preview_' + orderDetailId);
+                const previewImages = previewContainer.find('.preview-images');
+                
+                // Clear previous previews
+                previewImages.empty();
+                
+                if (files.length > 0) {
+                    previewContainer.show();
+                    
+                    Array.from(files).forEach(function(file) {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imagePreview = $(`
+                                    <div class="preview-item" style="position: relative; display: inline-block;">
+                                        <img src="${e.target.result}" 
+                                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                                        <button type="button" class="remove-image" 
+                                                style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">
+                                            ×
+                                        </button>
+                                    </div>
+                                `);
+                                previewImages.append(imagePreview);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                } else {
+                    previewContainer.hide();
+                }
+            });
+            
+            // Handle remove image
+            $(document).on('click', '.remove-image', function() {
+                $(this).closest('.preview-item').remove();
+                const previewContainer = $(this).closest('.image-preview');
+                if (previewContainer.find('.preview-item').length === 0) {
+                    previewContainer.hide();
+                }
+            });
+            
+            // Handle drag and drop
+            $('.upload-area').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#007bff');
+                $(this).css('background-color', '#f0f8ff');
+            });
+            
+            $('.upload-area').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#ddd');
+                $(this).css('background-color', '#fafafa');
+            });
+            
+            $('.upload-area').on('drop', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#ddd');
+                $(this).css('background-color', '#fafafa');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                const fileInput = $(this).find('input[type="file"]')[0];
+                fileInput.files = files;
+                $(fileInput).trigger('change');
+            });
+            
+            // Handle submit button click (placeholder)
+            $('.submit-rating').on('click', function() {
+                const orderDetailId = $(this).data('order-detail-id');
+                console.log('Submit rating for order detail:', orderDetailId);
+                
+                // Get form data
+                const rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
+                const comment = $(`#comment_${orderDetailId}`).val();
+                const images = $(`#image_${orderDetailId}`)[0].files;
+                
+                console.log('Rating:', rating);
+                console.log('Comment:', comment);
+                console.log('Images:', images.length);
+                
+                // TODO: Implement actual submission logic
+                alert('Chức năng đánh giá đang được phát triển!');
+            });
+        });
     </script>
     
-    <!-- Star Rating CSS -->
+    <!-- Rating Form CSS -->
     <style>
+        /* Star Rating Styles */
         .star-rating {
             display: flex;
             flex-direction: row-reverse;
-            justify-content: flex-end;
+            justify-content: flex-start;
             margin: 10px 0;
         }
         
         .star-rating input {
-            display: none;
+            display: none !important;
         }
         
         .star-rating label {
@@ -542,6 +612,7 @@
             cursor: pointer;
             transition: color 0.2s;
             margin-right: 5px;
+            user-select: none;
         }
         
         .star-rating label:hover,
@@ -550,13 +621,72 @@
             color: #ffc107;
         }
         
-        .rating-form-item {
+        /* Upload Area Styles */
+        .upload-area:hover {
+            border-color: #007bff !important;
+            background-color: #f0f8ff !important;
+        }
+        
+        .upload-area.dragover {
+            border-color: #007bff !important;
+            background-color: #e3f2fd !important;
+        }
+        
+        /* Form Styles */
+        .rating-form {
             transition: all 0.3s ease;
         }
         
-        .rating-form-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .rating-form:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        /* Image Preview Styles */
+        .preview-item {
+            transition: transform 0.2s ease;
+        }
+        
+        .preview-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .remove-image:hover {
+            background-color: #c82333 !important;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .star-rating label {
+                font-size: 20px;
+                margin-right: 3px;
+            }
+            
+            .rating-form {
+                padding: 15px !important;
+            }
+            
+            .upload-area {
+                padding: 15px !important;
+            }
         }
     </style>
+    
 </body>
 </html>
