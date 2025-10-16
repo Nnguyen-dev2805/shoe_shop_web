@@ -1,30 +1,35 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <!-- Title Meta -->
     <meta charset="utf-8" />
-    <title>Home | Manager</title>
+    <title>Bảng Điều Khiển | Deeg Manager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully responsive premium admin dashboard template" />
-    <meta name="author" content="Techzaa" />
+    <meta name="description" content="Hệ thống quản lý cửa hàng giày Deeg" />
+    <meta name="author" content="Deeg" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
-    <!-- Favicon -->
-    <link rel="shortcut icon" th:href="@{assets/images/favicon.ico}" />
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
 
     <!-- Vendor CSS (Require in all Page) -->
-    <link th:href="@{assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
 
     <!-- Icons CSS (Require in all Page) -->
-    <link th:href="@{assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
 
     <!-- App CSS (Require in all Page) -->
-    <link th:href="@{assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Manager Custom CSS -->
+    <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
 
     <!-- Theme Config JS (Require in all Page) -->
-    <script th:src="@{assets/js/config.js}"></script>
+    <script th:src="@{/assets/js/config.js}"></script>
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
 
 </head>
 <body>
@@ -49,46 +54,90 @@
         <!-- Start Container Fluid -->
         <div class="container-xxl">
 
+            <!-- Statistics Cards -->
+            <div class="row g-4 mb-4" id="statistics-container">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-md bg-soft-primary rounded-3 me-3">
+                                    <iconify-icon icon="solar:layers-bold-duotone" class="avatar-title text-primary fs-24"></iconify-icon>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h2 class="mb-0 fw-bold" id="total-categories">0</h2>
+                                    <p class="text-muted mb-0">Tổng Danh Mục</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-md bg-soft-success rounded-3 me-3">
+                                    <iconify-icon icon="solar:box-bold-duotone" class="avatar-title text-success fs-24"></iconify-icon>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h2 class="mb-0 fw-bold" id="total-products">0</h2>
+                                    <p class="text-muted mb-0">Tổng Sản Phẩm</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-md bg-soft-warning rounded-3 me-3">
+                                    <iconify-icon icon="solar:check-circle-bold-duotone" class="avatar-title text-warning fs-24"></iconify-icon>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h2 class="mb-0 fw-bold" id="active-categories">0</h2>
+                                    <p class="text-muted mb-0">Danh Mục Có SP</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card stat-card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-md bg-soft-danger rounded-3 me-3">
+                                    <iconify-icon icon="solar:close-circle-bold-duotone" class="avatar-title text-danger fs-24"></iconify-icon>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h2 class="mb-0 fw-bold" id="empty-categories">0</h2>
+                                    <p class="text-muted mb-0">Danh Mục Trống</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
             <div class="row">
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-secondary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="assets/images/product/p-1.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Fashion Categories</h4>
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-transparent border-0 py-3">
+                            <h5 class="mb-0 d-flex align-items-center">
+                                <iconify-icon icon="solar:widget-5-bold-duotone" class="text-primary me-2"></iconify-icon>
+                                Danh Mục Sản Phẩm
+                            </h5>
                         </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-primary-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="assets/images/product/p-6.png" alt="" class="avatar-xl">
+                        <div class="card-body">
+                            <div class="row g-4" id="categories-container">
+                                <!-- Categories will be loaded here via Ajax -->
+                                <div class="col-12 text-center py-5">
+                                    <div class="spinner-border text-primary" role="status">
+                                        <span class="visually-hidden">Đang tải...</span>
+                                    </div>
+                                    <p class="mt-2 text-muted">Đang tải danh mục...</p>
+                                </div>
                             </div>
-                            <h4 class="mt-3 mb-0">Electronics Headphone</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-warning-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="assets/images/product/p-7.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Foot Wares</h4>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-xl-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <div class="rounded bg-info-subtle d-flex align-items-center justify-content-center mx-auto">
-                                <img src="assets/images/product/p-9.png" alt="" class="avatar-xl">
-                            </div>
-                            <h4 class="mt-3 mb-0">Eye Ware & Sunglass</h4>
                         </div>
                     </div>
                 </div>
@@ -97,18 +146,6 @@
         </div>
         <!-- End Container Fluid -->
 
-        <!-- ========== Footer Start ========== -->
-        <footer class="footer">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-12 text-center">
-                        <script>document.write(new Date().getFullYear())</script> &copy; Manager <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                            href="/manager" class="fw-bold footer-text" target="_blank">Home</a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-        <!-- ========== Footer End ========== -->
 
     </div>
     <!-- ==================================================== -->
@@ -120,10 +157,16 @@
 <!-- END Wrapper -->
 
 <!-- Vendor Javascript (Require in all Page) -->
-<script src="assets/js/vendor.js"></script>
+<script th:src="@{/assets/js/vendor.js}"></script>
 
 <!-- App Javascript (Require in all Page) -->
-<script src="assets/js/app.js"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Manager Dashboard JS -->
+<script th:src="@{/js/manager/manager-dashboard.js}"></script>
 
 </body>
 

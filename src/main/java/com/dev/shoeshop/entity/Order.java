@@ -51,6 +51,52 @@ public class Order {
 //    @NotNull(message = "User cannot be null")
     @JoinColumn(name = "delivery_address_id", nullable = false) // Khóa ngoại đến User
     private Address address;
-
-
+    
+    // ========== THÊM MỚI: Discount & Flash Sale ==========
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "discount_id")
+    private Discount appliedDiscount; // Voucher/discount đã áp dụng
+    
+    @Column(name = "discount_amount")
+    private Double discountAmount; // Số tiền được giảm
+    
+    @Column(name = "original_total_price")
+    private Double originalTotalPrice; // Giá gốc trước khi giảm giá
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "flash_sale_id")
+    private FlashSale appliedFlashSale; // Nếu mua từ flash sale
+    
+    @Column(name = "discount_code")
+    private String discountCode; // Mã voucher (nếu có)
+    
+    // Business logic methods
+    
+    /**
+     * Tính giá cuối cùng sau khi áp dụng discount
+     */
+    public Double calculateFinalPrice() {
+        if (originalTotalPrice == null) {
+            return totalPrice;
+        }
+        if (discountAmount == null) {
+            return originalTotalPrice;
+        }
+        return Math.max(0, originalTotalPrice - discountAmount);
+    }
+    
+    /**
+     * Kiểm tra order có áp dụng discount không
+     */
+    public boolean hasDiscount() {
+        return appliedDiscount != null && discountAmount != null && discountAmount > 0;
+    }
+    
+    /**
+     * Kiểm tra order có từ flash sale không
+     */
+    public boolean isFromFlashSale() {
+        return appliedFlashSale != null;
+    }
 }

@@ -7,7 +7,7 @@
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Chi Tiết Đơn Hàng</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -35,11 +35,11 @@
      <div class="wrapper">
 
           <!-- ========== Topbar Start ========== -->
-          <div th:include="~{fragments/manager/header.html}"></div>
+          <div th:include="~{fragments/shipper/header.html}"></div>
           <!-- ========== Topbar End ========== -->
 
           <!-- ========== App Menu Start ========== -->
-          <div th:include="~{fragments/manager/menu_app.html}"></div>
+          <div th:include="~{fragments/shipper/menu_app.html}"></div>
           <!-- ========== App Menu End ========== -->
 
           <!-- ==================================================== -->
@@ -68,8 +68,8 @@
                                                        </div>
 
                                                        <div>
-                                                            <a th:href="@{/shipper/delivered(orderid=${order.id})}" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}" class="btn btn-outline-secondary">Delivered</a>
-                                                            <a th:href="@{/shipper/return(orderid=${order.id})}" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}" class="btn btn-primary">Product return</a>
+                                                            <a th:href="@{/shipper/delivered(orderid=${order.id})}" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}" class="btn btn-outline-secondary">Delivered</a>
+                                                            <a th:href="@{/shipper/return(orderid=${order.id})}" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}" class="btn btn-primary">Product return</a>
                                                        </div>
 
                                                   </div>
@@ -137,13 +137,13 @@
                                         </div>
                                    </div>
                               </div>
-                              <div class="card-body" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">
+                              <div class="card-body" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">
                                    <div class="position-relative ms-2">
                                         <p class="mb-1" >Need shipper for this order</p>
                                    </div>
                               </div>
                          </div>
-                              <div class="card bg-light-subtle">
+                              <div class="card bg-light-subtle" style="display: none;">
                                    <div class="card-body">
                                         <div class="row g-3 g-lg-0">
                                              <div class="col-lg-3 border-end">

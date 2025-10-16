@@ -44,6 +44,7 @@ public class ProductDetail {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<CartDetail> cartDetailSet;
+  
     @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -53,4 +54,54 @@ public class ProductDetail {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Rating> ratings;
+  
+    // ========== THÊM MỚI: Flash Sale Relationship ==========
+    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<FlashSaleItem> flashSaleItems;
+    
+    // Business logic methods
+    
+    /**
+     * Tính giá cuối cùng (bao gồm priceadd)
+     */
+    public double getFinalPrice() {
+        if (product == null) return priceadd;
+        return product.getPrice() + priceadd;
+    }
+    
+    /**
+     * Kiểm tra product detail có đang trong flash sale không
+     */
+    public boolean isInFlashSale() {
+        if (flashSaleItems == null || flashSaleItems.isEmpty()) return false;
+        
+        return flashSaleItems.stream()
+                .anyMatch(item -> item.getFlashSale() != null 
+                        && item.getFlashSale().isActive() 
+                        && item.hasStock());
+    }
+    
+    /**
+     * Lấy flash sale item đang active (nếu có)
+     */
+    public FlashSaleItem getActiveFlashSaleItem() {
+        if (flashSaleItems == null || flashSaleItems.isEmpty()) return null;
+        
+        return flashSaleItems.stream()
+                .filter(item -> item.getFlashSale() != null 
+                        && item.getFlashSale().isActive() 
+                        && item.hasStock())
+                .findFirst()
+                .orElse(null);
+    }
+    
+    /**
+     * Lấy giá flash sale (nếu có)
+     */
+    public Double getFlashSalePrice() {
+        FlashSaleItem activeItem = getActiveFlashSaleItem();
+        return activeItem != null ? activeItem.getFlashSalePrice() : null;
+    }
 }
