@@ -3,14 +3,9 @@
 <div class="main-nav" th:fragment="menu">
     <!-- Sidebar Logo -->
     <div class="logo-box">
-        <a href="index.html" class="logo-dark">
-            <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-            <img src="/assets/images/logo-dark.png" class="logo-lg" alt="logo dark">
-        </a>
-
-        <a href="index.html" class="logo-light">
-            <img src="/assets/images/logo-sm.png" class="logo-sm" alt="logo sm">
-            <img src="/assets/images/logo-light.png" class="logo-lg" alt="logo light">
+        <a th:href="@{/manager}" class="logo-dark d-flex align-items-center justify-content-center gap-2">
+            <iconify-icon icon="solar:bag-smile-bold" style="font-size: 2rem; color: #ff7043;"></iconify-icon>
+            <span class="fw-bold fs-24 text-white">DeeG</span>
         </a>
     </div>
 
@@ -22,14 +17,14 @@
     <div class="scrollbar" data-simplebar>
         <ul class="navbar-nav" id="navbar-nav">
 
-            <li class="menu-title">General</li>
+            <li class="menu-title">CHUNG</li>
 
             <li class="nav-item">
-                <a class="nav-link" href="index.html">
+                <a class="nav-link" th:href="@{/manager}">
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:widget-5-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Dashboard </span>
+                    <span class="nav-text"> Bảng Điều Khiển </span>
                 </a>
             </li>
 
@@ -38,37 +33,45 @@
                                    <span class="nav-icon">
                                         <iconify-icon icon="solar:bag-smile-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Orders </span>
+                    <span class="nav-text"> Đơn Hàng </span>
                 </a>
                 <div class="collapse" id="sidebarOrders">
                     <ul class="nav sub-navbar-nav">
-
                         <li class="sub-nav-item">
-                            <a class="sub-nav-link" th:href="@{/manager/order/list}">List</a>
-
-                            <!-- <a class="sub-nav-link" th:href="@{/manager/order/list}">List</a>-->
+                            <a class="sub-nav-link" th:href="@{/manager/orders}">Danh Sách</a>
                         </li>
                         <li class="sub-nav-item">
-                            <a class="sub-nav-link" href="order-detail.html">Details</a>
+                            <a class="sub-nav-link" th:href="@{/manager/orders/1}">Chi Tiết</a>
                         </li>
                     </ul>
                 </div>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/manager/products}">
+                                   <span class="nav-icon">
+                                        <iconify-icon icon="solar:box-bold-duotone"></iconify-icon>
+                                   </span>
+                    <span class="nav-text"> Sản Phẩm </span>
+                </a>
+            </li>
 
-            <li class="menu-title mt-2">Users</li>
+            <li class="menu-title mt-2">NGƯỜI DÙNG</li>
 
             <li class="nav-item">
-                <a th:href="@{/manager/profile}" class="nav-link" href="pages-profile.html">
+                <a th:href="@{/manager/profile}" class="nav-link">
                                    <span class="nav-icon">
-                                        <iconify-icon icon="solar:chat-square-like-bold-duotone"></iconify-icon>
+                                        <iconify-icon icon="solar:user-id-bold-duotone"></iconify-icon>
                                    </span>
-                    <span class="nav-text"> Profile </span>
+                    <span class="nav-text"> Hồ Sơ </span>
                 </a>
             </li>
             <li class="nav-item">
-                <a th:href="@{/logout}" class="nav-link" href="pages-profile.html">
-                    <span class="nav-text"> Logout </span>
+                <a th:href="@{/logout}" class="nav-link">
+                                   <span class="nav-icon">
+                                        <iconify-icon icon="solar:logout-2-bold-duotone"></iconify-icon>
+                                   </span>
+                    <span class="nav-text"> Đăng Xuất </span>
                 </a>
             </li>
         </ul>

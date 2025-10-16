@@ -1,32 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
-
-
-<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-     <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Chi Tiết Đơn Hàng | Deeg Manager</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="description" content="A fully responsive premium admin dashboard template" />
-     <meta name="author" content="Techzaa" />
-     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+     <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+     <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+     <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+     <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
+     <script th:src="@{/assets/js/config.js}"></script>
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-     <!-- App favicon -->
-     <link rel="shortcut icon" href="/assets/images/favicon.ico">
-
-     <!-- Vendor css (Require in all Page) -->
-     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- Icons css (Require in all Page) -->
-     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- App css (Require in all Page) -->
-     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- Theme Config js (Require in all Page) -->
-     <script src="/assets/js/config.js"></script>
+     <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
 </head>
 
 <body>
@@ -55,257 +40,156 @@
                          <div class="col-xl-9 col-lg-8">
                               <div class="row">
                                    <div class="col-lg-12">
+                                        <!-- Order Info Card -->
                                         <div class="card">
-                                             <div class="card-body">
-                                                  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                             <div class="card-header bg-light">
+                                                  <div class="d-flex justify-content-between align-items-center">
                                                        <div>
-                                                            <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
-                                                                 <span>Order id:</span>
-                                                                 <span th:text="${order.id}"></span>
-                                                                 <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" th:text="${order.payOption}">hehe</span>
-                                                                 <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
+                                                            <h4 class="card-title mb-0">
+                                                                 <iconify-icon icon="solar:bag-smile-bold-duotone" class="me-2"></iconify-icon>
+                                                                 Đơn Hàng #<span th:text="${order.id}"></span>
                                                             </h4>
-                                                            <p class="mb-0">Created date: <span th:text="${#dates.format(order.createdDate, 'MMM dd, yyyy')}"></span></p>
                                                        </div>
-                                                       <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-primary" style="margin-right: 100%">Cancel</a>
-                                                       <!-- Order cancel fragment-->
-                                                       <div th:include="~{fragments/order/order_cancel.html}"></div>
+                                                       <div>
+                                                            <a th:href="@{/manager/orders}" class="btn btn-outline-secondary btn-sm">
+                                                                 <iconify-icon icon="solar:arrow-left-bold-duotone" class="me-1"></iconify-icon>
+                                                                 Quay lại
+                                                            </a>
+                                                       </div>
                                                   </div>
-
                                              </div>
-                                             <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
-                                                  <p th:if="${order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL && order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}" class="border rounded mb-0 px-2 py-1 bg-body">
-                                                       <i class='bx bx-arrow-from-left align-middle fs-16'>
-                                                       </i> Last updated date: <span class="text-dark fw-medium" th:text="${#dates.format(shipper.updatedDate, 'MMM dd, yyyy')}"></span>
-                                                  </p>
-                                                  <div>
-                                                       <button onclick="turnOnSearch()" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}" href="#!" class="btn btn-primary" >Make as ready ship</button>
-                                                  </div>
-
-                                                  <script>
-                                                       function turnOnSearch(){
-                                                            const myDiv = document.getElementById('searchBox')
-                                                            myDiv.style.display='block'
-                                                       }
-                                                  </script>
-                                             </div>
-                                        </div>
-                                        <div class="card" style="display: none" id="searchBox">
                                              <div class="card-body">
-                                                  <!-- App Search-->
-                                                  <div class="position-relative">
-                                                       <input id="searchInput" type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
-<!--                                                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>-->
-                                                       <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Search</button>
+                                                  <div class="row">
+                                                       <div class="col-md-6">
+                                                            <h6 class="text-muted mb-3">Thông Tin Đơn Hàng</h6>
+                                                            <table class="table table-borderless table-sm">
+                                                                 <tr>
+                                                                      <td class="text-muted" style="width: 150px;">
+                                                                           <iconify-icon icon="solar:tag-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Mã đơn:
+                                                                      </td>
+                                                                      <td class="fw-bold">#<span th:text="${order.id}"></span></td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                      <td class="text-muted">
+                                                                           <iconify-icon icon="solar:calendar-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Ngày tạo:
+                                                                      </td>
+                                                                      <td th:text="${#temporals.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                      <td class="text-muted">
+                                                                           <iconify-icon icon="solar:shield-check-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Trạng thái:
+                                                                      </td>
+                                                                      <td>
+                                                                           <span class="badge" 
+                                                                                 th:classappend="${order.status.name() == 'IN_STOCK' ? 'bg-warning' : 
+                                                                                                  order.status.name() == 'SHIPPED' ? 'bg-info' : 
+                                                                                                  order.status.name() == 'DELIVERED' ? 'bg-success' : 
+                                                                                                  order.status.name() == 'CANCEL' ? 'bg-danger' : 'bg-secondary'}"
+                                                                                 th:text="${order.status.name() == 'IN_STOCK' ? 'Trong Kho' : 
+                                                                                            order.status.name() == 'SHIPPED' ? 'Đang Giao' : 
+                                                                                            order.status.name() == 'DELIVERED' ? 'Đã Giao' : 
+                                                                                            order.status.name() == 'CANCEL' ? 'Đã Hủy' : 'Trả Hàng'}">
+                                                                           </span>
+                                                                      </td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                      <td class="text-muted">
+                                                                           <iconify-icon icon="solar:card-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Thanh toán:
+                                                                      </td>
+                                                                      <td th:text="${order.payOption}"></td>
+                                                                 </tr>
+                                                            </table>
+                                                       </div>
+                                                       <div class="col-md-6">
+                                                            <h6 class="text-muted mb-3">Thông Tin Khách Hàng</h6>
+                                                            <table class="table table-borderless table-sm">
+                                                                 <tr>
+                                                                      <td class="text-muted" style="width: 150px;">
+                                                                           <iconify-icon icon="solar:user-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Tên:
+                                                                      </td>
+                                                                      <td th:text="${order.user.fullname}"></td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                      <td class="text-muted">
+                                                                           <iconify-icon icon="solar:phone-bold-duotone" class="me-2"></iconify-icon>
+                                                                           SĐT:
+                                                                      </td>
+                                                                      <td th:text="${order.user.phone}"></td>
+                                                                 </tr>
+                                                                 <tr>
+                                                                      <td class="text-muted">
+                                                                           <iconify-icon icon="solar:letter-bold-duotone" class="me-2"></iconify-icon>
+                                                                           Email:
+                                                                      </td>
+                                                                      <td th:text="${order.user.email}"></td>
+                                                                 </tr>
+                                                            </table>
+                                                       </div>
                                                   </div>
-                                                  <!-- search result -->
-                                                  <div class="table-responsive" >
-                                                       <table id="resultSearch" class="table align-middle mb-0 table-hover table-centered">
-                                                            <thead class="bg-light-subtle border-bottom">
-                                                            <tr>
-                                                                 <th>ID</th>
-                                                                 <th>Name</th>
-                                                                 <th>Action</th>
-                                                            </tr>
-                                                            </thead>
-                                                            <tbody>
-
-                                                            </tbody>
-                                                       </table>
-                                                  </div>
-<!--                                                  script get api-->
-                                                  <script>
-                                                       $(document).ready(function() {
-                                                            // Khi người dùng nhấn nút Tìm kiếm
-                                                            var currentUrl = window.location.pathname;  // Lấy đường dẫn hiện tại
-                                                            var orderid = currentUrl.split('/')[4];
-                                                            $("#searchButton").click(function() {
-                                                                 // Lấy giá trị nhập vào ô tìm kiếm
-                                                                 var fullname = $("#searchInput").val();
-
-                                                                 // Kiểm tra nếu ô tìm kiếm không rỗng
-                                                                 if (fullname.trim() !== "") {
-                                                                      // Gửi yêu cầu AJAX tới API của Spring Boot
-                                                                      $.ajax({
-                                                                           url: "/api/shipper/search",   // Đường dẫn tới API
-                                                                           type: "GET",               // Phương thức HTTP là GET
-                                                                           data: {
-                                                                                name: fullname    // Gửi tham số fullname qua API
-                                                                           },
-                                                                           success: function(response) {   // Hàm xử lý khi API trả về dữ liệu thành công
-                                                                                // Làm sạch kết quả cũ mỗi lần người dùng tìm kiếm
-                                                                                $("#resultSearch tbody").empty();
-
-                                                                                // Kiểm tra nếu có kết quả trả về
-                                                                                if (response.length > 0) {
-                                                                                     // Lặp qua danh sách người dùng trả về từ API
-                                                                                     response.forEach(function(user) {
-                                                                                          // Thêm từng người dùng vào phần tử #result
-                                                                                          $("#resultSearch tbody")
-                                                                                                  .append("<tr>\n" +
-                                                                                                          "<td>" + user.id + "</td>\n" +
-                                                                                                          "<td>" + user.name +"</td>\n" +
-                                                                                                          "<td><a class=\"btn btn-primary\" href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +  // Thêm thẻ <a> với orderid lấy từ URL
-                                                                                                          " </tr>");
-                                                                                     });
-                                                                                } else {
-                                                                                     // Nếu không có người dùng nào, hiển thị thông báo không tìm thấy
-                                                                                     $("#resultSearch tbody").append("<tr><td colspan='2'>Không tìm thấy người dùng nào.</td></tr>");
-                                                                                }
-                                                                           },
-                                                                           error: function(error) {    // Hàm xử lý khi có lỗi xảy ra khi gọi API
-                                                                                console.error("Lỗi khi gọi API", error);
-                                                                           }
-                                                                      });
-                                                                 }
-                                                            });
-                                                       });
-                                                  </script>
-
-
                                              </div>
                                         </div>
+
+                                        <!-- Order Items Card -->
                                         <div class="card">
-                                             <div class="card-header">
-                                                  <h4 class="card-title">Product</h4>
+                                             <div class="card-header bg-light">
+                                                  <h5 class="card-title mb-0">
+                                                       <iconify-icon icon="solar:box-bold-duotone" class="me-2"></iconify-icon>
+                                                       Chi Tiết Sản Phẩm
+                                                  </h5>
                                              </div>
                                              <div class="card-body">
                                                   <div class="table-responsive">
-                                                       <table class="table align-middle mb-0 table-hover table-centered">
-                                                            <thead class="bg-light-subtle border-bottom">
-                                                            <tr>
-                                                                 <th>Product Name & Size</th>
-                                                                 <th>Quantity</th>
-                                                                 <th>Price</th>
-                                                                 <th>Amount</th>
-                                                            </tr>
+                                                       <table class="table table-hover align-middle">
+                                                            <thead class="table-light">
+                                                                 <tr>
+                                                                      <th>Sản phẩm</th>
+                                                                      <th>Size</th>
+                                                                      <th class="text-center">Số lượng</th>
+                                                                      <th class="text-end">Đơn giá</th>
+                                                                      <th class="text-end">Thành tiền</th>
+                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                            <tr th:each="detail: ${list}">
-                                                                 <td th:text="${detail.product_name + ', size: ' + detail.size}"></td>
-                                                                 <td th:text="${detail.quantity}"></td>
-                                                                 <td th:text="${detail.price}"></td>
-                                                                 <td th:text="${detail.amount}"></td>
-                                                            </tr>
+                                                                 <tr th:each="detail : ${order.orderDetails}">
+                                                                      <td>
+                                                                           <div class="d-flex align-items-center">
+                                                                                <div>
+                                                                                     <h6 class="mb-0" th:text="${detail.productDetail.product.productName}"></h6>
+                                                                                     <small class="text-muted" th:text="${detail.productDetail.product.brand.brandName}"></small>
+                                                                                </div>
+                                                                           </div>
+                                                                      </td>
+                                                                      <td th:text="${detail.productDetail.size.sizeName}"></td>
+                                                                      <td class="text-center" th:text="${detail.quantity}"></td>
+                                                                      <td class="text-end" th:text="${#numbers.formatDecimal(detail.pricePerUnit, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                                      <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(detail.quantity * detail.pricePerUnit, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                                 </tr>
                                                             </tbody>
+                                                            <tfoot class="table-light">
+                                                                 <tr>
+                                                                      <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                                                      <td class="text-end fw-bold text-primary" 
+                                                                          th:text="${#numbers.formatDecimal(order.orderDetails.![quantity * pricePerUnit].sum(), 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                                                      </td>
+                                                                 </tr>
+                                                            </tfoot>
                                                        </table>
                                                   </div>
                                              </div>
                                         </div>
-                                        <div class="card">
-                              <div class="card-header">
-                                   <h4 class="card-title">Shipping detail</h4>
-                              </div>
-                              <div class="card-body" th:if="${order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL && order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
-                                   <div class="position-relative ms-2">
-                                        <div>
-                                             <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
-                                             <h5 class="">Shipper ID:</h5>
-                                             <p class="mb-1" th:text="${shipper.shipper.id}"></p>
-                                             <h5 class="">Shipper name:</h5>
-                                             <p class="mb-1" th:text="${shipper.shipper.fullname}">binh</p>
-                                             <h5 class="">Shipper note</h5>
-                                             <p class="mb-1" th:text="${shipper.note}"></p>
-                                        </div>
-                                   </div>
-                              </div>
-                              <div class="card-body" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
-                                   <div class="position-relative ms-2">
-                                        <p class="mb-1" >Need shipper for this order</p>
-                                   </div>
-                              </div>
-                         </div>
-                         </div>
-                    </div>
-                         </div>
-                         <div class="col-xl-3 col-lg-4">
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Order Summary</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="table-responsive">
-                                             <table class="table mb-0">
-                                                  <tbody>
-                                                       <tr>
-                                                            <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total : </p>
-                                                            </td>
-                                                            <td th:text="${payment.subtotal}" class="text-end text-dark fw-medium px-0"></td>
-                                                       </tr>
-                                                       <tr>
-                                                            <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount : </p>
-                                                            </td>
-                                                            <td th:text="${payment.discount}" class="text-end text-dark fw-medium px-0"></td>
-                                                       </tr>
-
-                                                  </tbody>
-                                             </table>
-                                        </div>
-                                   </div>
-                                   <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
-                                        <div>
-                                             <p class="fw-medium text-dark mb-0">Total Amount</p>
-                                        </div>
-                                        <div>
-                                             <p class="fw-medium text-dark mb-0" th:text="${payment.totalpay}"></p>
-                                        </div>
-
-                                   </div>
-                              </div>
-
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Customer Details</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="d-flex align-items-center gap-2">
-                                             <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar rounded-3 border border-light border-3">
-                                             <div>
-                                                  <p th:text="${user.fullname}" class="mb-1"></p>
-                                                  <a th:text="${user.email}"href="#!" class="link-primary fw-medium"></a>
-                                             </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between mt-3">
-                                             <h5 class="">Contact Number</h5>
-                                             <div>
-                                                  <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
-                                             </div>
-                                        </div>
-                                        <p class="mb-1">0968543251</p>
-
-                                        <div class="d-flex justify-content-between mt-3">
-                                             <h5 class="">Shipping Address</h5>
-                                             <div>
-                                                  <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
-                                             </div>
-                                        </div>
-
-                                        <div>
-                                             <p class="mb-1" th:text="${user.address}"></p>
-                                        </div>
                                    </div>
                               </div>
                          </div>
                     </div>
+
                </div>
+               <!-- End Container Fluid -->
 
-          </div>
-          <!-- End Container Fluid -->
-
-          <!-- ========== Footer Start ========== -->
-          <footer class="footer">
-              <div class="container-fluid">
-                  <div class="row">
-                      <div class="col-12 text-center">
-                          <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                              href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                      </div>
-                  </div>
-              </div>
-          </footer>
-          <!-- ========== Footer End ========== -->
 
      </div>
      <!-- ==================================================== -->
@@ -316,13 +200,12 @@
      <!-- END Wrapper -->
 
      <!-- Vendor Javascript (Require in all Page) -->
-     <script src="/assets/js/vendor.js"></script>
+     <script th:src="@{/assets/js/vendor.js}"></script>
 
      <!-- App Javascript (Require in all Page) -->
-     <script src="/assets/js/app.js"></script>
+     <script th:src="@{/assets/js/app.js}"></script>
 
 </body>
 
 
-<!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:47 GMT -->
 </html>

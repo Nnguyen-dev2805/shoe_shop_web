@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Danh Sách Sản Phẩm | Deeg Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hệ thống quản lý sản phẩm Deeg" />
+    <meta name="author" content="Deeg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+
+    <!-- Vendor css (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Icons css (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App css (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Manager Custom CSS -->
+    <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config js (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <div th:include="~{fragments/manager/header.html}"></div>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- Start menu app -->
+    <div th:include="~{fragments/manager/menu_app.html}"></div>
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <!-- Filter & Search Card -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                <iconify-icon icon="solar:filter-bold-duotone" class="me-2"></iconify-icon>
+                                Bộ Lọc & Tìm Kiếm
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Tìm kiếm sản phẩm</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="search-input" placeholder="Nhập tên sản phẩm...">
+                                        <button class="btn btn-primary" type="button" onclick="searchProducts()">
+                                            <iconify-icon icon="solar:magnifer-bold-duotone"></iconify-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Danh mục</label>
+                                    <select class="form-select" id="category-filter">
+                                        <option value="">Tất cả danh mục</option>
+                                        <!-- Categories will be loaded via Ajax -->
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Trạng thái</label>
+                                    <select class="form-select" id="status-filter">
+                                        <option value="">Tất cả</option>
+                                        <option value="false">Đang hiển thị</option>
+                                        <option value="true">Đã ẩn</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <div class="d-grid">
+                                        <button class="btn btn-success" onclick="clearFilters()">
+                                            <iconify-icon icon="solar:refresh-bold-duotone" class="me-1"></iconify-icon>
+                                            Xóa lọc
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="row" id="products-container">
+                <!-- Products will be loaded here via Ajax -->
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="mt-2 text-muted">Đang tải sản phẩm...</p>
+                </div>
+            </div>
+
+            <!-- Pagination -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <nav aria-label="Phân trang sản phẩm">
+                        <ul class="pagination justify-content-center" id="pagination-container">
+                            <!-- Pagination will be loaded here via Ajax -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Container Fluid -->
+
+
+    </div>
+    <!-- ==================================================== -->
+    <!-- End Page Content -->
+    <!-- ==================================================== -->
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- Manager Products JS -->
+<script th:src="@{/js/manager/manager-products.js}"></script>
+
+</body>
+
+</html>
