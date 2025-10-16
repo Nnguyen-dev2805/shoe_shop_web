@@ -28,6 +28,9 @@ public interface UserService {
     // Registration related methods
     void sendRegistrationVerificationCode(String email, String verificationCode);
     void registerNewUser(String email, String fullname, String password);
+    
+    // Change password for logged-in user
+    void changePassword(String email, String newPassword);
 //    List<Users> findByFullNameAndRole(String name, int roleId);
 //    Users findUserByUserID(int userId);
 //    void updateUser(Users user, String fullName, String address, String phone);

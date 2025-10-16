@@ -205,4 +205,18 @@ public class UserServiceImpl implements UserService {
         // Mark all verification tokens as used
         passwordResetTokenRepository.markAllTokensAsUsedForEmail(email);
     }
+    
+    @Override
+    @Transactional
+    public void changePassword(String email, String newPassword) {
+        // Find user
+        Users user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new RuntimeException("Email không tồn tại trong hệ thống.");
+        }
+
+        // Encode and update password
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
