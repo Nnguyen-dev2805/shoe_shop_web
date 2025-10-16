@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "rating")
 public class Rating {
     @Id
@@ -39,9 +41,9 @@ public class Rating {
     Date modified;
 
     // Quan hệ ManyToOne với Product
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
-//    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
+    private Product product;
 
     // Quan hệ ManyToOne với Users
     @ManyToOne
@@ -52,7 +54,7 @@ public class Rating {
     @JoinColumn(name = "order_detail_id", unique = true, nullable = false)
     private OrderDetail orderDetail;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_detail_id", unique = true, nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_detail_id", nullable = false)
     private ProductDetail productDetail;
 }

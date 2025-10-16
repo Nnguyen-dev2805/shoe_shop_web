@@ -12,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -32,6 +33,9 @@ public class OrderDTO {
     private PayOption payOption;
 
     private UserDTO user;
+    
+    // Danh sách chi tiết đơn hàng
+    private List<OrderDetailDTO> orderDetails;
     public OrderDTO convertToDTO(Order order) {
         return OrderDTO.builder()
                 .id(order.getId())

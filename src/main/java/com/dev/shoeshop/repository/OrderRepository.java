@@ -19,7 +19,11 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     public Page<Order> findByStatus(ShipmentStatus status, Pageable pageable);
 
     public Order findOrderById(Long id);
-
-
+    
+    // Lấy danh sách orders của user theo userId, sắp xếp theo ngày tạo mới nhất
+    public List<Order> findByUserIdOrderByCreatedDateDesc(Long userId);
+    
+    // Lấy danh sách orders của user theo userId và status
+    public List<Order> findByUserIdAndStatusOrderByCreatedDateDesc(Long userId, ShipmentStatus status);
 
 }

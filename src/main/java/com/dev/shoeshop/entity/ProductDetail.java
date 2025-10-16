@@ -44,14 +44,17 @@ public class ProductDetail {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<CartDetail> cartDetailSet;
+  
     @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<Inventory> inventories;
 
-    @OneToOne(mappedBy = "productDetail", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Rating rating;
-    
+    @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    private Set<Rating> ratings;
+  
     // ========== THÊM MỚI: Flash Sale Relationship ==========
     @OneToMany(mappedBy = "productDetail", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
