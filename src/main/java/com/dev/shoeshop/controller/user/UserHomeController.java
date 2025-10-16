@@ -1,11 +1,15 @@
 package com.dev.shoeshop.controller.user;
 
 import com.dev.shoeshop.dto.OrderDTO;
+import com.dev.shoeshop.dto.OrderDetailDTO;
+import com.dev.shoeshop.dto.RatingRequestDTO;
 import com.dev.shoeshop.dto.UserDTO;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.service.OrderService;
+import com.dev.shoeshop.service.RatingService;
 import com.dev.shoeshop.service.UserService;
+import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +36,8 @@ public class UserHomeController {
 
     private final UserService userService;
     private final OrderService orderService;
+    private final RatingService ratingService;
+    private final OrderDetailRepository orderDetailRepository;
 
     @GetMapping("/shop")
     public String userShop(HttpSession session) {
@@ -121,17 +127,131 @@ public class UserHomeController {
     public String orderDetail(@PathVariable Long orderId, HttpSession session, Model model) {
         Users u = (Users) session.getAttribute(Constant.SESSION_USER);
         if (u != null) {
-            try {
-                OrderDTO orderDetail = orderService.getOrderDetailById(orderId, u.getId());
-                model.addAttribute("order", orderDetail);
-                model.addAttribute("user", u);
-                return "user/order-detail";
-            } catch (RuntimeException e) {
-                model.addAttribute("error", e.getMessage());
-                return "user/order-detail";
+        try {
+            OrderDTO orderDetail = orderService.getOrderDetailById(orderId, u.getId());
+            
+            // Check rating status for each order detail
+            if (orderDetail.getOrderDetails() != null) {
+                for (OrderDetailDTO detail : orderDetail.getOrderDetails()) {
+                    // Temporarily set to false to avoid circular dependency
+                    // Rating status will be loaded via AJAX after page loads
+                    detail.setHasRating(false);
+                }
             }
+            
+            model.addAttribute("order", orderDetail);
+            model.addAttribute("user", u);
+            return "user/order-detail";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "user/order-detail";
+        }
         } else {
             return "redirect:/login";
+        }
+    }
+    
+    /**
+     * API endpoint để submit ratings
+     */
+    @PostMapping("/api/ratings")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> submitRatings(
+            @RequestBody RatingRequestDTO ratingRequest,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            System.out.println("=== Rating Request Received ===");
+            System.out.println("Order ID: " + ratingRequest.getOrderId());
+            System.out.println("Ratings count: " + (ratingRequest.getRatings() != null ? ratingRequest.getRatings().size() : 0));
+            
+            // Lấy user từ session
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                System.out.println("User not found in session");
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để đánh giá");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            System.out.println("User ID: " + user.getId());
+            
+            // Validate order belongs to user
+            OrderDTO order = orderService.getOrderDetailById(ratingRequest.getOrderId(), user.getId());
+            if (order == null) {
+                System.out.println("Order not found or not belongs to user");
+                response.put("success", false);
+                response.put("message", "Đơn hàng không tồn tại hoặc không thuộc về bạn");
+                return ResponseEntity.status(404).body(response);
+            }
+            
+            System.out.println("Order found - Status: " + order.getStatus());
+            
+            // Check if order is DELIVERED
+            if (order.getStatus() != ShipmentStatus.DELIVERED) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể đánh giá đơn hàng đã giao");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Submit ratings
+            System.out.println("Submitting ratings...");
+            ratingService.submitRatings(ratingRequest, user.getId());
+            System.out.println("Ratings submitted successfully");
+            
+            response.put("success", true);
+            response.put("message", "Đánh giá đã được gửi thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * API endpoint để kiểm tra trạng thái đánh giá của order details
+     */
+    @GetMapping("/api/order/{orderId}/rating-status")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> getRatingStatus(@PathVariable Long orderId, HttpSession session) {
+        Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (user == null) {
+            return ResponseEntity.status(401).body(Map.of("success", false, "message", "Bạn cần đăng nhập"));
+        }
+        
+        try {
+            OrderDTO order = orderService.getOrderDetailById(orderId, user.getId());
+            Map<String, Boolean> ratingStatus = new HashMap<>();
+            
+            if (order.getOrderDetails() != null) {
+                for (OrderDetailDTO detail : order.getOrderDetails()) {
+                    try {
+                        com.dev.shoeshop.entity.OrderDetail orderDetailEntity = 
+                            orderDetailRepository.findById(detail.getId().intValue()).orElse(null);
+                        
+                        if (orderDetailEntity != null) {
+                            boolean hasRating = ratingService.hasRating(orderDetailEntity, user);
+                            ratingStatus.put(detail.getId().toString(), hasRating);
+                        } else {
+                            ratingStatus.put(detail.getId().toString(), false);
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Error checking rating for order detail " + detail.getId() + ": " + e.getMessage());
+                        ratingStatus.put(detail.getId().toString(), false);
+                    }
+                }
+            }
+            
+            return ResponseEntity.ok(Map.of("success", true, "ratingStatus", ratingStatus));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("success", false, "message", "Có lỗi xảy ra: " + e.getMessage()));
         }
     }
     

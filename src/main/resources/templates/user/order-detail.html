@@ -283,7 +283,7 @@
                                                 <img th:src="${orderDetail.productDetail.product.image}" 
                                                      th:alt="${orderDetail.productDetail.product.title}"
                                                      class="product-image"
-                                                     onerror="this.src='/img/product/default-product.jpg'">
+                                                     onerror="this.src='/img/product/1.png'">
                                             </div>
                                             
                                             <!-- Product Info -->
@@ -316,9 +316,11 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Rating Form for DELIVERED orders -->
-                                    <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED}" 
-                                         class="rating-form" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+        <!-- Rating Form for DELIVERED orders -->
+        <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED && !orderDetail.hasRating}"
+             class="rating-form" 
+             th:data-order-detail-id="${orderDetail.id}"
+             style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
                                         
                                         <div class="rating-header" style="margin-bottom: 15px;">
                                             <h6 style="margin: 0; color: #333; font-size: 16px; font-weight: 600;">
@@ -411,6 +413,18 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Rating Status for DELIVERED orders that have been rated -->
+                                    <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED && orderDetail.hasRating}"
+                                         class="rating-status" 
+                                         th:data-order-detail-id="${orderDetail.id}"
+                                         style="margin-top: 20px; padding: 20px; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb; display: none;">
+                                        <div style="text-align: center; color: #155724;">
+                                            <i class="fa fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                            <h6 style="margin: 0; font-weight: 600;">Đã đánh giá sản phẩm</h6>
+                                            <p style="margin: 5px 0 0 0; font-size: 14px;">Cảm ơn bạn đã chia sẻ trải nghiệm!</p>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                             
@@ -481,19 +495,38 @@
     <!-- main JS -->
         <script src="/js/main.js"></script>
     
+    <!-- Hidden input for orderId -->
+    <input type="hidden" id="orderId" th:value="${order.id}">
+    
     <!-- Chat Widget -->
     <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
     
     <!-- Rating Form JavaScript -->
     <script>
         $(document).ready(function() {
+            // Load rating status after page loads
+            loadRatingStatus();
             // Handle star rating clicks
-            $('.star-rating label').on('click', function() {
+            $('.star-rating label').on('click', function(e) {
+                e.preventDefault();
                 const input = $(this).prev('input');
                 if (input.length) {
+                    // Uncheck all other inputs in the same group
+                    const name = input.attr('name');
+                    $(`input[name="${name}"]`).prop('checked', false);
+                    
+                    // Check the clicked input
                     input.prop('checked', true);
                     console.log('Star clicked:', input.attr('name'), input.val());
+                    
+                    // Trigger change event
+                    input.trigger('change');
                 }
+            });
+            
+            // Also handle direct input clicks (fallback)
+            $('.star-rating input[type="radio"]').on('change', function() {
+                console.log('Radio input changed:', $(this).attr('name'), $(this).val(), $(this).is(':checked'));
             });
             
             // Handle file upload click
@@ -572,24 +605,190 @@
                 $(fileInput).trigger('change');
             });
             
-            // Handle submit button click (placeholder)
+            // Handle submit button click
             $('.submit-rating').on('click', function() {
                 const orderDetailId = $(this).data('order-detail-id');
+                const button = $(this);
+                
                 console.log('Submit rating for order detail:', orderDetailId);
                 
-                // Get form data
-                const rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
+                // Get form data - try multiple approaches
+                let rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
+                console.log('Rating (method 1):', rating);
+                
+                // If not found, try finding within the same container
+                if (!rating) {
+                    const container = button.closest('.rating-form');
+                    rating = container.find('input[type="radio"]:checked').val();
+                    console.log('Rating (method 2):', rating);
+                }
+                
+                // If still not found, try with string conversion
+                if (!rating) {
+                    rating = $(`input[name="rating_${String(orderDetailId)}"]:checked`).val();
+                    console.log('Rating (method 3):', rating);
+                }
+                
                 const comment = $(`#comment_${orderDetailId}`).val();
                 const images = $(`#image_${orderDetailId}`)[0].files;
                 
-                console.log('Rating:', rating);
+                console.log('Final Rating:', rating);
                 console.log('Comment:', comment);
                 console.log('Images:', images.length);
                 
-                // TODO: Implement actual submission logic
-                alert('Chức năng đánh giá đang được phát triển!');
+                // Debug: Check all rating inputs for this order detail
+                const allRatingInputs = $(`input[name="rating_${orderDetailId}"]`);
+                console.log('All rating inputs found:', allRatingInputs.length);
+                allRatingInputs.each(function() {
+                    console.log('Input:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
+                });
+                
+                // Debug: Check all radio inputs in the container
+                const container = button.closest('.rating-form');
+                const containerRadios = container.find('input[type="radio"]');
+                console.log('Radio inputs in container:', containerRadios.length);
+                containerRadios.each(function() {
+                    console.log('Container Radio:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
+                });
+                
+                // Debug: Check any checked radio in the entire document
+                const anyCheckedRadio = $('input[type="radio"]:checked');
+                console.log('Any checked radio in document:', anyCheckedRadio.length);
+                anyCheckedRadio.each(function() {
+                    console.log('Any checked:', $(this).attr('name'), 'Value:', $(this).val());
+                });
+                
+                // Final attempt to get rating
+                if (!rating) {
+                    // Try to get from any checked radio in the container
+                    const container = button.closest('.rating-form');
+                    const checkedRadio = container.find('input[type="radio"]:checked');
+                    if (checkedRadio.length > 0) {
+                        rating = checkedRadio.val();
+                        console.log('Found rating from container:', rating);
+                    }
+                }
+                
+                // Validation
+                if (!rating) {
+                    alert('Vui lòng chọn số sao đánh giá!');
+                    return;
+                }
+                
+                if (!comment || comment.trim() === '') {
+                    alert('Vui lòng nhập bình luận!');
+                    return;
+                }
+                
+                // Get orderId from hidden input
+                const orderId = $('#orderId').val();
+                if (!orderId) {
+                    alert('Lỗi: Không tìm thấy ID đơn hàng!');
+                    return;
+                }
+                
+                // Show loading
+                const originalText = button.html();
+                button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
+                
+                // Prepare request data
+                const requestData = {
+                    orderId: parseInt(orderId),
+                    ratings: [{
+                        orderDetailId: parseInt(orderDetailId),
+                        star: parseInt(rating),
+                        comment: comment.trim(),
+                        image: null // TODO: Implement image upload
+                    }]
+                };
+                
+                console.log('Sending rating request:', requestData);
+                
+                // Send AJAX request
+                $.ajax({
+                    url: '/user/api/ratings',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(requestData),
+                    success: function(response) {
+                        console.log('Rating response received:', response);
+                        if (response && response.success) {
+                            alert('Cảm ơn bạn đã đánh giá!');
+                            // Hide the rating form after successful submission
+                            button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 20px;"><i class="fa fa-check-circle" style="font-size: 24px;"></i><br><strong>Đã đánh giá thành công!</strong></div>');
+                        } else {
+                            const errorMsg = response && response.message ? response.message : 'Có lỗi xảy ra';
+                            alert('Có lỗi xảy ra: ' + errorMsg);
+                            button.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('AJAX Error Details:');
+                        console.error('Status:', status);
+                        console.error('Error:', error);
+                        console.error('Response Text:', xhr.responseText);
+                        console.error('Status Code:', xhr.status);
+                        
+                        let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
+                        
+                        if (xhr.status === 401) {
+                            errorMessage = 'Bạn cần đăng nhập để đánh giá!';
+                        } else if (xhr.status === 404) {
+                            errorMessage = 'Đơn hàng không tồn tại!';
+                        } else if (xhr.status === 400) {
+                            errorMessage = 'Đơn hàng chưa được giao, không thể đánh giá!';
+                        } else if (xhr.responseText) {
+                            try {
+                                const errorResponse = JSON.parse(xhr.responseText);
+                                if (errorResponse.message) {
+                                    errorMessage = errorResponse.message;
+                                }
+                            } catch (e) {
+                                console.error('Could not parse error response:', e);
+                            }
+                        }
+                        
+                        alert(errorMessage);
+                        button.html(originalText).prop('disabled', false);
+                    }
+                });
             });
         });
+        
+        // Function to load rating status via AJAX
+        function loadRatingStatus() {
+            const orderId = $('#orderId').val();
+            if (!orderId) return;
+            
+            $.ajax({
+                url: '/user/api/order/' + orderId + '/rating-status',
+                method: 'GET',
+                success: function(response) {
+                    if (response && response.success && response.ratingStatus) {
+                        // Update rating status for each order detail
+                        Object.keys(response.ratingStatus).forEach(function(orderDetailId) {
+                            const hasRating = response.ratingStatus[orderDetailId];
+                            const ratingForm = $('.rating-form[data-order-detail-id="' + orderDetailId + '"]');
+                            const ratingStatus = $('.rating-status[data-order-detail-id="' + orderDetailId + '"]');
+                            
+                            if (hasRating) {
+                                // Hide rating form and show status
+                                ratingForm.hide();
+                                ratingStatus.show();
+                            } else {
+                                // Show rating form and hide status
+                                ratingForm.show();
+                                ratingStatus.hide();
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error loading rating status:', error);
+                    // Keep default behavior (show rating forms)
+                }
+            });
+        }
     </script>
     
     <!-- Rating Form CSS -->

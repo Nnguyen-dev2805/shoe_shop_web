@@ -24,6 +24,7 @@ import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.OrderService;
+import com.dev.shoeshop.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private AddressRepository addressRepository;
+    
+    @Autowired
+    private RatingService ratingService;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -488,6 +492,11 @@ public class OrderServiceImpl implements OrderService {
             
             dto.setProductDetail(productDetailDTO);
         }
+        
+        // Check if this order detail has been rated
+        // Note: We need to get the user from the order context
+        // For now, we'll set it to false and handle it in the controller
+        dto.setHasRating(false);
         
         return dto;
     }

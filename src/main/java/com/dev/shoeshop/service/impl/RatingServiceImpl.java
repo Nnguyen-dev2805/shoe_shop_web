@@ -57,10 +57,11 @@ public class RatingServiceImpl implements RatingService {
             Rating rating = Rating.builder()
                     .star(ratingItem.getStar())
                     .comment(ratingItem.getComment())
-                    .image(null) // Có thể mở rộng để upload hình ảnh sau
+                    .image(ratingItem.getImage()) // Lưu đường dẫn hình ảnh
                     .user(user)
                     .orderDetail(orderDetail)
                     .productDetail(orderDetail.getProduct())
+                    .product(orderDetail.getProduct().getProduct()) // Set product từ ProductDetail
                     .build(); // Bỏ createdDate và modified vì đã có @CreationTimestamp và @UpdateTimestamp
             
             // Save rating to database
@@ -69,5 +70,10 @@ public class RatingServiceImpl implements RatingService {
                              ", Star: " + savedRating.getStar() + 
                              ", Comment: " + savedRating.getComment());
         }
+    }
+    
+    @Override
+    public boolean hasRating(OrderDetail orderDetail, Users user) {
+        return ratingRepository.existsByOrderDetailAndUser(orderDetail, user);
     }
 }

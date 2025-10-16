@@ -24,5 +24,6 @@ public class RatingRequestDTO {
         private Long orderDetailId;
         private Integer star;
         private String comment;
+        private String image; // Đường dẫn hình ảnh (sẽ được lưu từ upload)
     }
 }

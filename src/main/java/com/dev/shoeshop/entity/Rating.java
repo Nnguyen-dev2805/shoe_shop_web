@@ -41,9 +41,9 @@ public class Rating {
     Date modified;
 
     // Quan hệ ManyToOne với Product
-//    @ManyToOne
-//    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
-//    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // Khóa ngoại đến Product
+    private Product product;
 
     // Quan hệ ManyToOne với Users
     @ManyToOne

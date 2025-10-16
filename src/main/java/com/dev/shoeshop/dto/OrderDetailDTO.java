@@ -22,6 +22,9 @@ public class OrderDetailDTO {
     // Thông tin sản phẩm
     private ProductDetailDTO productDetail;
     
+    // Trạng thái đánh giá
+    private Boolean hasRating = false;
+    
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
