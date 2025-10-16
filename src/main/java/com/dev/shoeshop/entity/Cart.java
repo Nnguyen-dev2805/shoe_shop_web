@@ -35,7 +35,7 @@ public class Cart {
     @Temporal(TemporalType.TIMESTAMP) // Định dạng DateTime
     private Date createdDate;
 
-    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, fetch = FetchType.LAZY,orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Set<CartDetail> cartDetails = new HashSet<>(); // Changed from orderDetailSet to cartDetails

@@ -10,17 +10,21 @@ import com.dev.shoeshop.dto.OrderStaticDTO;
 import com.dev.shoeshop.entity.Address;
 import com.dev.shoeshop.entity.Cart;
 import com.dev.shoeshop.entity.CartDetail;
+import com.dev.shoeshop.entity.Discount;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.OrderDetail;
 import com.dev.shoeshop.entity.ProductDetail;
+import com.dev.shoeshop.entity.ShippingCompany;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
+import com.dev.shoeshop.repository.DiscountRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
+import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -128,33 +133,63 @@ public class OrderServiceImpl implements OrderService {
     public OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                         Double finalTotalPrice, String payOption, 
                                         Long shippingCompanyId, Long discountId, 
-                                        java.util.List<Integer> selectedItemIds) {
+                                        java.util.List<Integer> selectedItemIds,
+                                        java.util.Map<Integer, Integer> itemQuantities) {
         try {
             System.out.println("=== Processing checkout in service ===");
             System.out.println("Cart ID: " + cartId);
             System.out.println("User ID: " + userId);
             System.out.println("Selected Item IDs: " + selectedItemIds);
             
-            // Validate cart belongs to user
-            Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-            
-            if (!cart.getUser().getId().equals(userId)) {
-                throw new RuntimeException("Unauthorized access to cart");
-            }
-            
             // Get address
             Address address = addressRepository.findById(addressId)
                 .orElseThrow(() -> new RuntimeException("Address not found"));
             
-            // Create order from selected cart items
-            Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, selectedItemIds);
-            Order savedOrder = orderRepository.save(order);
+            Order savedOrder;
             
-            System.out.println("Order created with ID: " + savedOrder.getId());
-            
-            // Remove selected items from cart (không xóa toàn bộ cart)
-            removeSelectedItemsFromCart(cart, selectedItemIds);
+            // Check if this is Buy Now mode (cartId null) or Cart mode
+            if (cartId == null) {
+                // BUY NOW MODE: Create order directly from selectedItemIds
+                System.out.println("Processing BUY NOW order (no cart)");
+                
+                // Get user
+                Users user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+                
+                // Create order directly from product details
+                Order order = createOrderFromProductDetails(user, address, finalTotalPrice, payOption, 
+                                                          shippingCompanyId, discountId, selectedItemIds, itemQuantities);
+                savedOrder = orderRepository.save(order);
+                
+                System.out.println("Buy Now order created with ID: " + savedOrder.getId());
+                
+            } else {
+                // CART MODE: Process from cart
+                System.out.println("Processing CART order");
+                
+                // Validate cart belongs to user
+                Cart cart = cartRepository.findById(cartId)
+                    .orElseThrow(() -> new RuntimeException("Cart not found"));
+                
+                if (!cart.getUser().getId().equals(userId)) {
+                    throw new RuntimeException("Unauthorized access to cart");
+                }
+                
+
+                
+                // Create order from selected cart items
+                Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, selectedItemIds);
+                
+                // Save order (sẽ cascade insert order_detail)
+                // Lúc này cart items đã bị xóa rồi
+                savedOrder = orderRepository.save(order);
+                                // XÓA CART ITEMS TRƯỚC KHI INSERT ORDER_DETAIL
+                // (để đảm bảo cart được clear ngay khi order_detail sắp được insert)
+                System.out.println("Removing cart items BEFORE creating order...");
+                removeSelectedItemsFromCart(cart, selectedItemIds);
+                
+                System.out.println("Cart order created with ID: " + savedOrder.getId());
+            }
             
             // Handle payment processing
             OrderResultDTO orderResult = OrderResultDTO.builder()
@@ -208,6 +243,64 @@ public class OrderServiceImpl implements OrderService {
         return cartDTO;
     }
     
+    /**
+     * Create order from product details directly (Buy Now mode)
+     */
+    private Order createOrderFromProductDetails(Users user, Address address, Double finalTotalPrice, 
+                                               String payOption, Long shippingCompanyId, Long discountId,
+                                               java.util.List<Integer> selectedItemIds,
+                                               java.util.Map<Integer, Integer> itemQuantities) {
+        System.out.println("Creating order from product details (Buy Now)...");
+        
+        // Create order
+        Order order = new Order();
+        order.setUser(user);
+        order.setAddress(address);
+        order.setTotalPrice(finalTotalPrice);
+        order.setCreatedDate(new Date());
+        order.setStatus(ShipmentStatus.IN_STOCK);
+        order.setPayOption(PayOption.valueOf(payOption));
+        
+        // Note: Order entity doesn't have shippingCompany and discount fields
+        // These are optional and not stored in the database schema
+        // The frontend handles shipping company selection for display purposes only
+        
+        // Create order details from product detail IDs
+        Set<OrderDetail> orderDetails = new HashSet<>();
+        
+        if (selectedItemIds != null && !selectedItemIds.isEmpty()) {
+            for (Integer productDetailId : selectedItemIds) {
+                ProductDetail productDetail = productDetailRepository.findById(Long.valueOf(productDetailId))
+                    .orElseThrow(() -> new RuntimeException("Product detail not found: " + productDetailId));
+                
+                // Get quantity from map or default to 1
+                Integer quantity = itemQuantities != null && itemQuantities.containsKey(productDetailId) ? 
+                                 itemQuantities.get(productDetailId) : 1;
+                
+                // Calculate price (base price + size fee)
+                Double unitPrice = productDetail.getProduct().getPrice() + productDetail.getPriceadd();
+                
+                OrderDetail orderDetail = new OrderDetail();
+                orderDetail.setOrder(order);
+                orderDetail.setProduct(productDetail);
+                orderDetail.setQuantity(quantity);
+                orderDetail.setPrice(unitPrice);
+                
+                orderDetails.add(orderDetail);
+                System.out.println("Added order detail (Buy Now): product=" + productDetail.getId() + 
+                                 ", quantity=" + quantity + ", price=" + unitPrice);
+            }
+        }
+        
+        order.setOrderDetailSet(orderDetails);
+        System.out.println("Buy Now order created with " + orderDetails.size() + " items");
+        
+        return order;
+    }
+    
+    /**
+     * Create order from cart (Cart mode)
+     */
     private Order createOrderFromCart(Cart cart, Address address, Double finalTotalPrice, 
                                     String payOption, java.util.List<Integer> selectedItemIds) {
         System.out.println("Creating order from cart...");
@@ -265,14 +358,7 @@ public class OrderServiceImpl implements OrderService {
             // Xóa các items
             cart.getCartDetails().removeAll(toRemove);
             
-            // Tính lại tổng tiền
-            Double newTotal = cart.getCartDetails().stream()
-                .mapToDouble(cd -> cd.getPrice() * cd.getQuantity())
-                .sum();
-            cart.setTotalPrice(newTotal);
-            
             System.out.println("Removed " + toRemove.size() + " items from cart");
-            System.out.println("New cart total: " + newTotal);
         }
         
         cartRepository.save(cart);

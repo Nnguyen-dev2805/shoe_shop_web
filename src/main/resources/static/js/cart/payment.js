@@ -103,8 +103,8 @@ function loadAddressInfo() {
         url: '/api/user/addresses',
         method: 'GET',
         success: function(response) {
-            console.log('Address API response:', response);  // Debug log
-            if (response.success && response.addresses) {  // ✅ Sửa: response.data → response.addresses
+            console.log('Address API response:', response);
+            if (response.success && response.addresses) {
                 const address = response.addresses.find(a => a.id == addressId);
                 if (address) {
                     $('#delivery-address').html(`
@@ -297,17 +297,22 @@ function handlePayment() {
     // Get final total
     const finalTotal = subtotal + shippingFee - discountAmount;
     
-    // Collect selected item IDs
+    // Collect selected item IDs and quantities
     const selectedItemIds = selectedItems.map(item => item.id);
+    const selectedItemsData = selectedItems.map(item => ({
+        id: item.id,
+        quantity: item.quantity
+    }));
     
     const paymentData = {
-        cartId: parseInt(cartId),
+        cartId: cartId ? parseInt(cartId) : null,
         addressId: parseInt(addressId),
         shippingCompanyId: parseInt(shippingCompanyId),
         discountId: discountId ? parseInt(discountId) : null,
         payOption: paymentMethod,
         finalTotalPrice: finalTotal,
-        selectedItemIds: selectedItemIds
+        selectedItemIds: selectedItemIds,
+        selectedItemsData: selectedItemsData  // Include quantity info
     };
     
     console.log('Payment data:', paymentData);

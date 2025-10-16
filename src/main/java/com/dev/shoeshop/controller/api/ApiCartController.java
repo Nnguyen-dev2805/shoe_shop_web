@@ -153,35 +153,6 @@ public class ApiCartController {
     }
 
 
-
-    // TẠM THỜI KHÔNG DÙNG
-    /**
-     * Get user addresses
-     * GET /api/user/addresses
-     */
-//    @GetMapping("/user/addresses")
-//    public ResponseEntity<?> getUserAddresses(HttpSession session) {
-//        try {
-//            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
-//            if (user == null) {
-//                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-//                    .body(createErrorResponse("User not authenticated"));
-//            }
-//
-//            List<AddressDTO> addresses = userService.getUserAddresses(user.getId());
-//
-//            Map<String, Object> response = new HashMap<>();
-//            response.put("success", true);
-//            response.put("data", addresses);
-//
-//            return ResponseEntity.ok(response);
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                .body(createErrorResponse("Error loading addresses: " + e.getMessage()));
-//        }
-//    }
-    
     /**
      * Update item quantity
      * PUT /api/cart/update-quantity/{id}
@@ -312,7 +283,8 @@ public class ApiCartController {
             System.out.println("Request: " + request);
             
             // Extract request data
-            Long cartId = Long.valueOf(request.get("cartId").toString());
+            Long cartId = request.get("cartId") != null && !request.get("cartId").toString().isEmpty() ? 
+                Long.valueOf(request.get("cartId").toString()) : null;
             Double finalTotalPrice = Double.valueOf(request.get("finalTotalPrice").toString());
             String payOption = (String) request.get("payOption");
             Long addressId = Long.valueOf(request.get("addressId").toString());
@@ -326,6 +298,21 @@ public class ApiCartController {
             java.util.List<Integer> selectedItemIds = request.get("selectedItemIds") != null ? 
                 (java.util.List<Integer>) request.get("selectedItemIds") : null;
             
+            // Get selected items with quantities (for Buy Now mode)
+            @SuppressWarnings("unchecked")
+            java.util.List<Map<String, Object>> selectedItemsData = request.get("selectedItemsData") != null ? 
+                (java.util.List<Map<String, Object>>) request.get("selectedItemsData") : null;
+            
+            // Convert to Map<ProductDetailId, Quantity> for easier access
+            Map<Integer, Integer> itemQuantities = new HashMap<>();
+            if (selectedItemsData != null) {
+                for (Map<String, Object> item : selectedItemsData) {
+                    Integer id = ((Number) item.get("id")).intValue();
+                    Integer quantity = ((Number) item.get("quantity")).intValue();
+                    itemQuantities.put(id, quantity);
+                }
+            }
+            
             System.out.println("Cart ID: " + cartId);
             System.out.println("User ID: " + user.getId());
             System.out.println("Address ID: " + addressId);
@@ -333,10 +320,11 @@ public class ApiCartController {
             System.out.println("Shipping Company ID: " + shippingCompanyId);
             System.out.println("Discount ID: " + discountId);
             System.out.println("Selected Item IDs: " + selectedItemIds);
+            System.out.println("Item Quantities: " + itemQuantities);
             System.out.println("Final Total Price: " + finalTotalPrice);
             
-            // Validate required fields
-            if (cartId == null || addressId == null || payOption == null) {
+            // Validate required fields (cartId can be null for Buy Now mode)
+            if (addressId == null || payOption == null) {
                 return ResponseEntity.badRequest()
                     .body(createErrorResponse("Missing required fields"));
             }
@@ -344,7 +332,7 @@ public class ApiCartController {
             // Process the order
             OrderResultDTO orderResult = orderService.processCheckout(
                 cartId, user.getId(), addressId, finalTotalPrice, 
-                payOption, shippingCompanyId, discountId, selectedItemIds
+                payOption, shippingCompanyId, discountId, selectedItemIds, itemQuantities
             );
             
             Map<String, Object> response = new HashMap<>();
@@ -377,12 +365,27 @@ public class ApiCartController {
                     .body(createErrorResponse("User not authenticated"));
             }
             
-            // Extract request data
+            System.out.println("=== Add to cart request ===");
+            System.out.println("Request data: " + request);
+            
+            // Validate and extract request data with null checks
+            if (request.get("productDetailId") == null) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Product detail ID is required"));
+            }
+            if (request.get("quantity") == null) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Quantity is required"));
+            }
+            if (request.get("pricePerUnit") == null) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Price per unit is required"));
+            }
+            
             Long productDetailId = Long.valueOf(request.get("productDetailId").toString());
             Integer quantity = Integer.valueOf(request.get("quantity").toString());
             Double pricePerUnit = Double.valueOf(request.get("pricePerUnit").toString());
             
-            System.out.println("=== Add to cart request ===");
             System.out.println("User ID: " + user.getId());
             System.out.println("Product Detail ID: " + productDetailId);
             System.out.println("Quantity: " + quantity);

@@ -29,5 +29,6 @@ public interface OrderService {
     OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                  Double finalTotalPrice, String payOption, 
                                  Long shippingCompanyId, Long discountId, 
-                                 java.util.List<Integer> selectedItemIds);
+                                 java.util.List<Integer> selectedItemIds,
+                                 java.util.Map<Integer, Integer> itemQuantities);
 }

@@ -56,6 +56,9 @@ function loadProductDetails(productId) {
  * Render thông tin sản phẩm vào HTML
  */
 function renderProductDetails(product) {
+    // Store product data globally for Buy Now feature
+    window.currentProduct = product;
+    
     // Render ảnh sản phẩm
     $('#product-image').attr('src', product.image);
     $('#product-image').attr('data-zoom-image', product.image);
@@ -139,28 +142,36 @@ function renderSizeButtons(sizeOptions, basePrice) {
  * Xử lý khi chọn size
  */
 function selectSize($button, basePrice) {
+    // Get data from button
+    const sizeId = $button.data('size-id');
+    const sizeName = $button.data('size');
+    const priceAdd = $button.data('price-add');
+    const stock = $button.data('stock');
+    
     // Remove active class from all buttons
     $('.size-btn').removeClass('active');
     
     // Add active class to selected button
     $button.addClass('active');
     
-    // Get size data including stock from data attribute
-    const sizeId = $button.data('size-id');
-    const sizeName = $button.data('size');
-    const priceAdd = parseFloat($button.data('price-add')) || 0;
-    const stock = parseInt($button.data('stock')) || 0;
-    
-    // Update global maxStock variable with stock from API
-    maxStock = stock;
-    
     // Store selected size data
     selectedSizeData = {
-        id: sizeId,
-        name: sizeName,
+        sizeId: sizeId,
+        sizeName: sizeName,
         priceAdd: priceAdd,
-        stock: stock
+        stock: stock,
+        basePrice: basePrice
     };
+    
+    // Store product detail globally for Buy Now feature
+    window.currentProductDetail = {
+        id: sizeId,
+        size: sizeName,
+        priceadd: priceAdd,
+        quantity: stock
+    };
+    
+    maxStock = stock;
     
     // Update hidden inputs
     $('#productDetailId').val(sizeId);
@@ -196,12 +207,20 @@ function selectSize($button, basePrice) {
     
     // Enable add to cart button
     const $addButton = $('#add-to-cart-btn');
+    const $buyNowButton = $('#buy-now-btn');
+    
     if (maxStock > 0) {
         $addButton.prop('disabled', false);
-        $addButton.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+        $addButton.html('<i class="fa fa-shopping-cart"></i> Thêm Vào Giỏ');
+        
+        $buyNowButton.prop('disabled', false);
+        $buyNowButton.html('<i class="fa fa-bolt"></i> Mua Ngay');
     } else {
         $addButton.prop('disabled', true);
         $addButton.html('<i class="fa fa-ban"></i> Hết hàng');
+        
+        $buyNowButton.prop('disabled', true);
+        $buyNowButton.html('<i class="fa fa-ban"></i> Hết hàng');
     }
 }
 
@@ -275,7 +294,7 @@ function setupAddToCartButton() {
         
         // Prepare data
         const cartData = {
-            productDetailId: selectedSizeData.id,
+            productDetailId: selectedSizeData.sizeId,
             quantity: currentQuantity,
             pricePerUnit: pricePerUnit
         };
