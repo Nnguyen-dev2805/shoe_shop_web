@@ -63,6 +63,7 @@
         <link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
         <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
         
+        
         <!-- modernizr JS
         ============================================ -->
         <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
@@ -328,7 +329,7 @@
                                         <h4 class="panel-title">
                                             <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                                 <i class="fa fa-user"></i>
-                                                My personal information
+                                                Thông Tin Cá Nhân
                                             </a>
                                         </h4>
                                     </div>
@@ -336,33 +337,41 @@
                                         <div class="panel-body">
                                             <div class="col-md-12">
                                                 <div class="delivery-details">
-                                                    <form action="/user/changeInformation" method="post">
+                                                    <form id="updateProfileForm">
                                                         <div class="list-style">
                                                             <div class="account-title">
-                                                                <h4>Please be sure to update your personal information if it has changed. </h4>
+                                                                <h4>Vui Lòng Cập Nhật Thông Tin Cá Nhân Nếu Có Thay Đổi</h4>
                                                             </div>
-                                                            <div id="success-message" class="alert alert-success" style="display: none;">
-                                                                <span id="success-text"></span>
+                                                            
+                                                            <!-- Error Message -->
+                                                            <div id="profile-error" class="alert alert-danger" style="display: none; font-size: 13px; padding: 10px 15px;">
+                                                                <span id="profile-error-text"></span>
                                                             </div>
-                                                            <div class="form-name">
-                                                                <label>Email</label>
-                                                                <input type="email" id="user-email" name="email" placeholder="Email" value="" readonly required>
-                                                            </div>
-                                                            <div class="form-name">
-                                                                <label>Full Name <em>*</em> </label>
-                                                                <input type="text" id="user-fullname" name="fullname" placeholder="First Name" value="" required>
+                                                            
+                                                            <!-- Success Message -->
+                                                            <div id="profile-success" class="alert alert-success" style="display: none; font-size: 13px; padding: 10px 15px;">
+                                                                <span id="profile-success-text"></span>
                                                             </div>
 
-                                                            <div class="form-name">
-                                                                <label>Phone <em>*</em> </label>
-                                                                <input type="text" id="user-phone" name="phone" placeholder="Phone" value="" required pattern="^0\d{9}$" title="Phone number must be a valid 10-digit number starting with 0">
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Email</label>
+                                                                <input type="email" id="user-email" name="email" placeholder="Email" readonly style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; background-color: #f5f5f5; cursor: not-allowed;">
                                                             </div>
-                                                            <div class="form-name">
-                                                                <label>Address</label>
-                                                                <input type="text" id="user-address" name="address" placeholder="Address" value="" readonly>
+
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Họ Và Tên <em>*</em></label>
+                                                                <input type="text" id="user-fullname" name="fullname" placeholder="Nhập họ và tên" required style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
+
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Số Điện Thoại <em>*</em></label>
+                                                                <input type="text" id="user-phone" name="phone" placeholder="Nhập số điện thoại (10 số)" required pattern="^0\d{9}$" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
+                                                            </div>
+
                                                             <div class="save-button">
-                                                                <button type="submit">save</button>
+                                                                <button type="submit">
+                                                                    <i class="fa fa-save"></i> Lưu Thay Đổi
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -371,12 +380,13 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- ========== PANEL ĐỔI MẬT KHẨU ========== -->
                                 <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
                                     <div class="panel-heading" role="tab" id="headingResetPassword" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
                                         <h4 class="panel-title">
-                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseResetPassword" aria-expanded="false" aria-controls="collapseFour">
+                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseResetPassword" aria-expanded="false" aria-controls="collapseResetPassword">
                                                 <i class="fa fa-lock"></i>
-                                                Reset password
+                                                Đổi Mật Khẩu
                                             </a>
                                         </h4>
                                     </div>
@@ -384,36 +394,41 @@
                                         <div class="panel-body">
                                             <div class="col-md-12">
                                                 <div class="delivery-details">
-                                                    <form action="/user/resetPassword" method="post">
+                                                    <form id="changePasswordForm">
                                                         <div class="list-style">
                                                             <div class="account-title">
-                                                                <h4>Please enter your current and new password to reset.</h4>
+                                                                <h4>Vui Lòng Nhập Mật Khẩu Hiện Tại Và Mật Khẩu Mới Để Thay Đổi</h4>
                                                             </div>
-                                                            <div id="password-error" class="alert alert-danger" style="display: none;">
+                                                            
+                                                            <!-- Error Message -->
+                                                            <div id="password-error" class="alert alert-danger" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="password-error-text"></span>
                                                             </div>
-                                                            <div id="password-success" class="alert alert-success" style="display: none;">
+                                                            
+                                                            <!-- Success Message -->
+                                                            <div id="password-success" class="alert alert-success" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="password-success-text"></span>
                                                             </div>
 
-                                                            <div class="form-name">
-                                                                <label>Email</label>
-                                                                <input type="email" id="reset-email" name="email" placeholder="Email" value="" readonly required>
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Mật Khẩu Hiện Tại <em>*</em></label>
+                                                                <input type="password" name="currentPassword" placeholder="Nhập mật khẩu hiện tại" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            <div class="form-name">
-                                                                <label>Current Password<em>*</em></label>
-                                                                <input type="password" name="currentPassword" placeholder="Current Password" required minlength="6" title="Password must be at least 6 characters long">
+                                                            
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Mật Khẩu Mới <em>*</em></label>
+                                                                <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            <div class="form-name">
-                                                                <label>New Password <em>*</em></label>
-                                                                <input type="password" name="newPassword" placeholder="New Password" required minlength="6" title="Password must be at least 6 characters long">
+                                                            
+                                                            <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Xác Nhận Mật Khẩu Mới <em>*</em></label>
+                                                                <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            <div class="form-name">
-                                                                <label>Confirm New Password <em>*</em></label>
-                                                                <input type="password" name="confirmPassword" placeholder="Confirm New Password" required minlength="6" title="Password must match the new password">
-                                                            </div>
+                                                            
                                                             <div class="save-button">
-                                                                <button type="submit">Save</button>
+                                                                <button type="submit">
+                                                                    <i class="fa fa-save"></i> Lưu Thay Đổi
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -422,6 +437,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- ========== KẾT THÚC PANEL ĐỔI MẬT KHẨU ========== -->
                                 <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
                                     <div class="panel-heading" role="tab" id="headingFive" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
                                         <h4 class="panel-title">
@@ -447,8 +463,8 @@
                                 </div>
                             </div>
                             <div class="account-button" style="margin-top: 30px; margin-bottom: 40px;">
-                                <div class="back-btn"> <a href="/user/my_account">Back to your Account</a> </div>
-                                <div class="home"> <a href="/user/shop"> home</a> </div>
+                                <div class="back-btn"> <a href="/user/my_account">Quay Lại Tài Khoản</a> </div>
+                                <div class="home"> <a href="/user/shop">Trang Chủ</a> </div>
                             </div>
                         </div>
                     </div>
@@ -499,11 +515,15 @@
         <!-- User Account JS -->
         <script src="/js/user/user-account.js"></script>
         
-        <!-- Address Manager JS -->
+        <!-- Address Manager Script -->
         <script src="/js/user/address-manager.js"></script>
-        
-        <!-- Goong Maps Integration -->
         <script src="/js/user/goong-maps.js"></script>
+        
+        <!-- Change Password Script (RESTful API + Ajax + jQuery) -->
+        <script src="/js/user/user-change-password.js"></script>
+        
+        <!-- User Profile Script (RESTful API + Ajax + jQuery) -->
+        <script src="/js/user/user-profile.js"></script>
         
         <!-- Chat Widget -->
         <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
