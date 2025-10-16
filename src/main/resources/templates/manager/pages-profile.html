@@ -1,152 +1,420 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
-
-<!-- Mirrored from techzaa.in/larkon/admin/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:37 GMT -->
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
-     <!-- Title Meta -->
-     <meta charset="utf-8" />
-     <title>Profile | Larkon - Responsive Admin Dashboard Template</title>
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="description" content="A fully responsive premium admin dashboard template" />
-     <meta name="author" content="Techzaa" />
-     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-     <!-- App favicon -->
-     <link rel="shortcut icon" href="/assets/images/favicon.ico">
-
-     <!-- Vendor css (Require in all Page) -->
-     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- Icons css (Require in all Page) -->
-     <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- App css (Require in all Page) -->
-     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-
-     <!-- Theme Config js (Require in all Page) -->
-     <script src="/assets/js/config.js"></script>
-     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <meta charset="utf-8" />
+    <title>Hồ Sơ | Deeg Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <script th:src="@{/assets/js/config.js}"></script>
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+    
+    <style>
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .profile-avatar {
+            transition: transform 0.3s ease;
+        }
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+        .profile-info-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .profile-info-table tr:last-child td {
+            border-bottom: none;
+        }
+        .profile-info-table .fw-medium {
+            min-width: 180px;
+        }
+        .btn-profile {
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-profile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+    </style>
 </head>
 
 <body>
+    <div class="wrapper">
+        <!-- Header -->
+        <div th:include="~{fragments/manager/header.html}"></div>
+        
+        <!-- Sidebar -->
+        <div th:include="~{fragments/manager/menu_app.html}"></div>
 
-     <!-- START Wrapper -->
-     <div class="wrapper">
+        <!-- Main Content -->
+        <div class="page-content">
+            <div class="container-xxl">
+                
 
-          <!-- ========== Topbar Start ========== -->
-          <div th:include="~{fragments/manager/header.html}"></div>
-          <!-- ========== Topbar End ========== -->
-
-          <!--               Start menu app-->
-          <div th:include="~{fragments/manager/menu_app.html}"></div>
-
-          <!-- ==================================================== -->
-          <!-- Start right Content here -->
-          <!-- ==================================================== -->
-          <div class="page-content">
-
-               <!-- Start Container xxl -->
-               <div class="container-xxl">
-
-                    <div class="row">
-                         <div class="col-xl-9 col-lg-8">
-                              <div class="card overflow-hidden">
-                                   <div class="card-body">
-                                        <div class="bg-primary profile-bg rounded-top position-relative mx-n3 mt-n3">
-                                             <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar-xl border border-light border-3 rounded-circle position-absolute top-100 start-0 translate-middle ms-5">
+                <!-- Profile Card -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card profile-card">
+                            <div class="card-header bg-light">
+                                <h5 class="card-title mb-0">
+                                    <iconify-icon icon="solar:user-id-bold-duotone" class="me-2 text-primary"></iconify-icon>
+                                    Thông Tin Cá Nhân
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <img th:src="@{/assets/images/users/avatar-1.jpg}" 
+                                             alt="Avatar" 
+                                             class="rounded-circle mb-3 profile-avatar" 
+                                             style="width: 150px; height: 150px; border: 4px solid #007bff; cursor: pointer;">
+                                        <h5 th:text="${user?.fullname ?: 'Manager'}" class="mb-1 fw-bold">Manager</h5>
+                                        <p class="text-muted" th:text="${user?.role?.roleName ?: 'Manager'}">Manager</p>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="table-responsive">
+                                            <table class="table table-borderless profile-info-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted" style="width: 200px;">
+                                                            <iconify-icon icon="solar:user-bold-duotone" class="me-2"></iconify-icon>
+                                                            Họ và tên:
+                                                        </td>
+                                                        <td th:text="${user?.fullname ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:letter-bold-duotone" class="me-2"></iconify-icon>
+                                                            Email:
+                                                        </td>
+                                                        <td th:text="${user?.email ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:phone-bold-duotone" class="me-2"></iconify-icon>
+                                                            Số điện thoại:
+                                                        </td>
+                                                        <td th:text="${user?.phone ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:map-point-bold-duotone" class="me-2"></iconify-icon>
+                                                            Địa chỉ:
+                                                        </td>
+                                                        <td>
+                                                            <span th:if="${user?.userAddresses != null and !user.userAddresses.empty}" 
+                                                                  th:text="${user.userAddresses[0].address.addressLine + ', ' + user.userAddresses[0].address.district + ', ' + user.userAddresses[0].address.city}">
+                                                            </span>
+                                                            <span th:unless="${user?.userAddresses != null and !user.userAddresses.empty}">
+                                                                Chưa cập nhật
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:shield-user-bold-duotone" class="me-2"></iconify-icon>
+                                                            Chức vụ:
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-primary" th:text="${user?.role?.roleName ?: 'Manager'}">Manager</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:user-id-bold-duotone" class="me-2"></iconify-icon>
+                                                            ID:
+                                                        </td>
+                                                        <td th:text="${user?.id ?: 'N/A'}">N/A</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:shield-check-bold-duotone" class="me-2"></iconify-icon>
+                                                            Provider:
+                                                        </td>
+                                                        <td>
+                                                            <span class="badge bg-info" th:text="${user?.provider ?: 'LOCAL'}">LOCAL</span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                        <div class="mt-5 d-flex flex-wrap align-items-center justify-content-between">
-                                             <div>
-                                                  <h4 th:text="${user.fullname}" class="mb-1"><i class='bx bxs-badge-check text-success align-middle'></i></h4>
-                                                  <p class="mb-0">Project Head Manager</p>
-                                             </div>
-                                             <div class="d-flex align-items-center gap-2 my-2 my-lg-0">
-<!--                                                  <a href="#!" class="btn btn-info"><i class='bx bx-message-dots'></i> Message</a>-->
-<!--                                                  <a href="#!" class="btn btn-outline-primary"><i class="bx bx-plus"></i> Follow</a>-->
-                                             </div>
+                                        
+                                        <div class="mt-4">
+                                            <button class="btn btn-primary btn-profile me-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                                <iconify-icon icon="solar:pen-bold-duotone" class="me-1"></iconify-icon>
+                                                Chỉnh sửa hồ sơ
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-profile" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                                <iconify-icon icon="solar:key-bold-duotone" class="me-1"></iconify-icon>
+                                                Đổi mật khẩu
+                                            </button>
                                         </div>
-
-                                   </div>
-                              </div>
-                         </div>
-                         <div class="col-xl-3 col-lg-4">
-                              <div class="card">
-                                   <div class="card-header">
-                                        <h4 class="card-title">Personal Information</h4>
-                                   </div>
-                                   <div class="card-body">
-                                        <div class="">
-                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                                       <iconify-icon icon="solar:backpack-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
-                                                  </div>
-                                                  <p th:text="${user.role.roleName}" class="mb-0 fs-14"></p>
-                                             </div>
-                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                                       <iconify-icon icon="solar:map-point-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
-                                                  </div>
-                                                  <p class="mb-0 fs-14">Lives in <span th:text="${user.address}" class="text-dark fw-semibold"></span></p>
-                                             </div>
-                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                                       <iconify-icon icon="solar:letter-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
-                                                  </div>
-                                                  <p th:text="${user.email}" class="mb-0 fs-14">Email <a href="#!" class="text-primary fw-semibold"></a></p>
-                                             </div>
-
-                                             <div class="d-flex align-items-center gap-2 mb-2">
-                                                  <div class="avatar-sm bg-light d-flex align-items-center justify-content-center rounded">
-                                                       <iconify-icon icon="solar:phone-bold-duotone" class="fs-20 text-secondary"></iconify-icon>
-                                                  </div>
-                                                  <p th:text="${user.phone}" class="mb-0 fs-14">Email <a href="#!" class="text-primary fw-semibold"></a></p>
-                                             </div>
-                                            <div th:include="~{fragments/user/user_edit.html}"></div>
-                                        </div>
-                                   </div>
-                              </div>
-                         </div>
-
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-               </div>
-               <!-- End Container Fluid -->
+            </div>
+            <!-- End Container -->
+            
+        </div>
+        <!-- End page-content -->
 
-               <!-- ========== Footer Start ========== -->
-               <footer class="footer">
-                   <div class="container-fluid">
-                       <div class="row">
-                           <div class="col-12 text-center">
-                               <script>document.write(new Date().getFullYear())</script> &copy; Larkon. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                   href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">Techzaa</a>
-                           </div>
-                       </div>
-                   </div>
-               </footer>
-               <!-- ========== Footer End ========== -->
+    </div>
+    <!-- End wrapper -->
 
-          </div>
-          <!-- ==================================================== -->
-          <!-- End Page Content -->
-          <!-- ==================================================== -->
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editProfileModalLabel">
+                        <iconify-icon icon="solar:pen-bold-duotone" class="me-2"></iconify-icon>
+                        Chỉnh Sửa Hồ Sơ
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editProfileForm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editFullname" class="form-label">
+                                        <iconify-icon icon="solar:user-bold-duotone" class="me-1"></iconify-icon>
+                                        Họ và tên
+                                    </label>
+                                    <input type="text" class="form-control" id="editFullname" th:value="${user?.fullname}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editEmail" class="form-label">
+                                        <iconify-icon icon="solar:letter-bold-duotone" class="me-1"></iconify-icon>
+                                        Email
+                                    </label>
+                                    <input type="email" class="form-control" id="editEmail" th:value="${user?.email}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editPhone" class="form-label">
+                                        <iconify-icon icon="solar:phone-bold-duotone" class="me-1"></iconify-icon>
+                                        Số điện thoại
+                                    </label>
+                                    <input type="tel" class="form-control" id="editPhone" th:value="${user?.phone}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="editAvatar" class="form-label">
+                                        <iconify-icon icon="solar:camera-bold-duotone" class="me-1"></iconify-icon>
+                                        Ảnh đại diện
+                                    </label>
+                                    <input type="file" class="form-control" id="editAvatar" accept="image/*">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary">
+                            <iconify-icon icon="solar:check-circle-bold-duotone" class="me-1"></iconify-icon>
+                            Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-     </div>
-     <!-- END Wrapper -->
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="changePasswordModalLabel">
+                        <iconify-icon icon="solar:key-bold-duotone" class="me-2"></iconify-icon>
+                        Đổi Mật Khẩu
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="changePasswordForm">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="currentPassword" class="form-label">
+                                <iconify-icon icon="solar:lock-password-bold-duotone" class="me-1"></iconify-icon>
+                                Mật khẩu hiện tại
+                            </label>
+                            <input type="password" class="form-control" id="currentPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="newPassword" class="form-label">
+                                <iconify-icon icon="solar:lock-keyhole-bold-duotone" class="me-1"></iconify-icon>
+                                Mật khẩu mới
+                            </label>
+                            <input type="password" class="form-control" id="newPassword" required minlength="6">
+                            <div class="form-text">Mật khẩu phải có ít nhất 6 ký tự</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">
+                                <iconify-icon icon="solar:lock-keyhole-minimalistic-bold-duotone" class="me-1"></iconify-icon>
+                                Xác nhận mật khẩu mới
+                            </label>
+                            <input type="password" class="form-control" id="confirmPassword" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">
+                            <iconify-icon icon="solar:shield-check-bold-duotone" class="me-1"></iconify-icon>
+                            Đổi mật khẩu
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-     <!-- Vendor Javascript (Require in all Page) -->
-     <script src="/assets/js/vendor.js"></script>
+    <!-- Scripts -->
+    <script th:src="@{/assets/js/vendor.js}"></script>
+    <script th:src="@{/assets/js/app.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-     <!-- App Javascript (Require in all Page) -->
-     <script src="/assets/js/app.js"></script>
+    <script>
+        // Edit Profile Form Handler
+        document.getElementById('editProfileForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('fullname', document.getElementById('editFullname').value);
+            formData.append('email', document.getElementById('editEmail').value);
+            formData.append('phone', document.getElementById('editPhone').value);
+            
+            const avatarFile = document.getElementById('editAvatar').files[0];
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+            
+            // Show loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang lưu...';
+            submitBtn.disabled = true;
+            
+            // Send AJAX request
+            fetch('/manager/profile/update', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showAlert('success', 'Cập nhật hồ sơ thành công!');
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+                    // Reload page to show updated data
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    showAlert('danger', data.message || 'Có lỗi xảy ra khi cập nhật hồ sơ');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('danger', 'Có lỗi xảy ra khi cập nhật hồ sơ');
+            })
+            .finally(() => {
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
 
-     <!-- Page Js -->
-     <!-- <script src="/assets/js/pages/profile.js"></script> -->
+        // Change Password Form Handler
+        document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validate password match
+            if (newPassword !== confirmPassword) {
+                showAlert('danger', 'Mật khẩu mới và xác nhận mật khẩu không khớp');
+                return;
+            }
+            
+            const data = {
+                currentPassword: document.getElementById('currentPassword').value,
+                newPassword: newPassword
+            };
+            
+            // Show loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang đổi...';
+            submitBtn.disabled = true;
+            
+            // Send AJAX request
+            fetch('/manager/profile/change-password', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', 'Đổi mật khẩu thành công!');
+                    // Close modal and reset form
+                    bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+                    this.reset();
+                } else {
+                    showAlert('danger', data.message || 'Có lỗi xảy ra khi đổi mật khẩu');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('danger', 'Có lỗi xảy ra khi đổi mật khẩu');
+            })
+            .finally(() => {
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
 
+        // Show alert function
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (alertDiv.parentNode) {
+                    alertDiv.remove();
+                }
+            }, 5000);
+        }
+    </script>
 
 </body>
-
-
-<!-- Mirrored from techzaa.in/larkon/admin/pages-profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:38 GMT -->
 </html>
