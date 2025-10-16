@@ -1,5 +1,6 @@
 package com.dev.shoeshop.entity;
 
+import com.dev.shoeshop.enums.DiscountType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -69,6 +70,26 @@ public class Discount {
 
     @Column(name = "updated_date")
     private LocalDate updatedDate;
+    
+    // ========== THÊM MỚI: Phân loại voucher ==========
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "discount_type", nullable = false, length = 20)
+    private DiscountType discountType = DiscountType.ORDER; // Mặc định là voucher order
+    
+    @Column(name = "max_discount_amount")
+    private Double maxDiscountAmount; // Giảm tối đa bao nhiêu (VD: Giảm 20% tối đa 100k)
+    
+    @Column(name = "applies_to_sale_items", nullable = false)
+    private Boolean appliesToSaleItems = true; // Có áp dụng cho sản phẩm đang sale không
+    
+    // Nếu discountType = PRODUCT, lưu danh sách product IDs (JSON hoặc bảng riêng)
+    @Column(name = "applicable_product_ids", columnDefinition = "TEXT")
+    private String applicableProductIds; // Lưu dạng "1,2,3,5" hoặc JSON
+    
+    // Nếu discountType = CATEGORY, lưu danh sách category IDs
+    @Column(name = "applicable_category_ids", columnDefinition = "TEXT")
+    private String applicableCategoryIds; // Lưu dạng "1,2,3"
 
     // Quan hệ với DiscountUsed (Many-to-Many với Users thông qua bảng trung gian)
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -142,7 +163,81 @@ public class Discount {
             return 0.0;
         }
         
-        return orderValue * percent;
+        Double discountAmount = orderValue * percent;
+        
+        // Áp dụng max discount amount nếu có
+        if (maxDiscountAmount != null && discountAmount > maxDiscountAmount) {
+            discountAmount = maxDiscountAmount;
+        }
+        
+        return discountAmount;
+    }
+    
+    /**
+     * Kiểm tra discount có áp dụng cho product này không
+     * @param productId ID của product cần kiểm tra
+     * @return true nếu discount áp dụng cho product
+     */
+    public boolean isApplicableToProduct(Long productId) {
+        if (discountType == null || !DiscountType.PRODUCT.equals(discountType)) {
+            return false;
+        }
+        
+        if (applicableProductIds == null || applicableProductIds.isEmpty()) {
+            return false;
+        }
+        
+        // Parse danh sách product IDs (dạng "1,2,3,5")
+        String[] productIds = applicableProductIds.split(",");
+        for (String id : productIds) {
+            if (id.trim().equals(productId.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Kiểm tra discount có áp dụng cho category này không
+     * @param categoryId ID của category cần kiểm tra
+     * @return true nếu discount áp dụng cho category
+     */
+    public boolean isApplicableToCategory(Long categoryId) {
+        if (discountType == null || !DiscountType.CATEGORY.equals(discountType)) {
+            return false;
+        }
+        
+        if (applicableCategoryIds == null || applicableCategoryIds.isEmpty()) {
+            return false;
+        }
+        
+        // Parse danh sách category IDs
+        String[] categoryIds = applicableCategoryIds.split(",");
+        for (String id : categoryIds) {
+            if (id.trim().equals(categoryId.toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Kiểm tra discount type
+     */
+    public boolean isOrderDiscount() {
+        return DiscountType.ORDER.equals(discountType);
+    }
+    
+    public boolean isProductDiscount() {
+        return DiscountType.PRODUCT.equals(discountType);
+    }
+    
+    public boolean isCategoryDiscount() {
+        return DiscountType.CATEGORY.equals(discountType);
+    }
+    
+    public boolean isShippingDiscount() {
+        return DiscountType.SHIPPING.equals(discountType);
     }
 
     /**
@@ -198,6 +293,12 @@ public class Discount {
         }
         if (this.status == null) {
             this.status = "INACTIVE";
+        }
+        if (this.discountType == null) {
+            this.discountType = DiscountType.ORDER;
+        }
+        if (this.appliesToSaleItems == null) {
+            this.appliesToSaleItems = true;
         }
     }
 
