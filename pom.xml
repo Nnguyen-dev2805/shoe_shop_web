@@ -126,6 +126,12 @@
             <version>1.21.0</version>
         </dependency>
 
+        <!-- WebSocket Support for Real-time Notifications -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

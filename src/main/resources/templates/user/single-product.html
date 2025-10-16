@@ -516,6 +516,31 @@
                         <a href="#"><img class="optima_zoom" id="product-image" src="" alt="Product Image"/></a>
                     </div>
                 </div>
+                
+                <!-- Address Selection Section -->
+                <div style="margin-top: 30px; background: rgb(229, 229, 229); border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                    <h4 style="margin-bottom: 20px; color: rgb(224, 53, 80); border-bottom: none; padding-bottom: 10px; font-weight: bold;">
+                        <i class="fa fa-map-marker"></i> ĐỊA CHỈ GIAO HÀNG
+                    </h4>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <select name="addressId" id="addressSelectProduct" required 
+                                class="form-control" 
+                                style="border: 1px solid #ccc; border-radius: 8px; padding: 14px; font-size: 15px; background-color: white; font-weight: 500;">
+                            <!-- User addresses will be loaded dynamically via AJAX -->
+                            <option value="">
+                                <i class="fa fa-spinner fa-spin"></i> Đang tải địa chỉ...
+                            </option>
+                        </select>
+                        <small style="color: rgb(35, 34, 34); margin-top: 10px; display: block;">
+                            <i class="fa fa-info-circle"></i> Chọn địa chỉ giao hàng để sử dụng tính năng "Mua Ngay"
+                        </small>
+                    </div>
+                    <a href="/user/my-account" 
+                       class="btn btn-block btn-add-address"
+                       style="background: rgb(224, 53, 80); color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; display: block; text-align: center; transition: all 0.3s; border: none;">
+                        <i class="fa fa-plus-circle"></i> Thêm Địa Chỉ Mới
+                    </a>
+                </div>
             </div>
             <div class="col-lg-6">
                 <form action="#" method="post">
@@ -630,9 +655,17 @@
                                 <!-- Hidden inputs -->
                                 <input type="hidden" id="productDetailId" name="productDetailId" value="">
                                 <input type="hidden" id="selectedSize" name="selectedSize" value="">
-                                <button class="cart-btn" type="button" id="add-to-cart-btn" disabled>
-                                    <i class="fa fa-shopping-cart"></i> Chọn size để tiếp tục
-                                </button>
+                                
+                                <!-- Action buttons container -->
+                                <div style="display: flex; gap: 10px; width: 100%;">
+                                    <button class="cart-btn" type="button" id="add-to-cart-btn" disabled style="flex: 1;">
+                                        <i class="fa fa-shopping-cart"></i> Thêm Vào Giỏ
+                                    </button>
+                                    <button class="cart-btn" type="button" id="buy-now-btn" disabled 
+                                            style="flex: 1; background: #ff6b35; box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);">
+                                        <i class="fa fa-bolt"></i> Mua Ngay
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1356,6 +1389,119 @@
 
 <!-- Product Details AJAX Script -->
 <script src="/js/web/product-details.js"></script>
+
+<!-- Buy Now Feature Script -->
+<script>
+$(document).ready(function() {
+    // Load addresses on page load
+    loadProductAddresses();
+    
+    /**
+     * Load user addresses into dropdown
+     */
+    function loadProductAddresses() {
+        $.ajax({
+            url: '/api/user/addresses',
+            method: 'GET',
+            success: function(response) {
+                console.log('Address API response:', response);
+                
+                if (response.success && response.addresses) {
+                    const addresses = response.addresses;
+                    const $select = $('#addressSelectProduct');
+                    $select.empty();
+                    
+                    if (addresses.length === 0) {
+                        $select.append('<option value="">Chưa có địa chỉ giao hàng</option>');
+                        return;
+                    }
+                    
+                    // Add default option
+                    $select.append('<option value="">-- Chọn địa chỉ giao hàng --</option>');
+                    
+                    // Add addresses
+                    addresses.forEach(function(address) {
+                        const isDefault = address.isDefault;
+                        const option = `<option value="${address.id}" ${isDefault ? 'selected' : ''}>
+                            ${address.address} ${isDefault ? '(Mặc định)' : ''}
+                        </option>`;
+                        $select.append(option);
+                    });
+                } else {
+                    $('#addressSelectProduct').html('<option value="">Không thể tải địa chỉ</option>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading addresses:', error);
+                $('#addressSelectProduct').html('<option value="">Lỗi khi tải địa chỉ</option>');
+            }
+        });
+    }
+    
+    /**
+     * Handle Buy Now button click
+     */
+    $('#buy-now-btn').on('click', function() {
+        // Validate selection
+        const productDetailId = $('#productDetailId').val();
+        const quantity = parseInt($('#qty-input').val());
+        const selectedSize = $('#selectedSize').val();
+        const selectedAddressId = $('#addressSelectProduct').val();
+        
+        if (!productDetailId) {
+            alert('Vui lòng chọn size sản phẩm!');
+            return;
+        }
+        
+        if (quantity < 1) {
+            alert('Số lượng phải lớn hơn 0!');
+            return;
+        }
+        
+        if (!selectedAddressId) {
+            alert('Vui lòng chọn địa chỉ giao hàng!');
+            return;
+        }
+        
+        // Get product detail data from window object (loaded by product-details.js)
+        const productDetail = window.currentProductDetail;
+        
+        if (!productDetail) {
+            alert('Không tải được thông tin sản phẩm. Vui lòng thử lại!');
+            return;
+        }
+
+        // Calculate price
+        const basePrice = window.currentProduct.price || 0;
+        const sizePrice = productDetail.priceadd || 0;
+        const unitPrice = basePrice + sizePrice;
+        
+        // Create order item data (same format as cart items)
+        const orderItem = {
+            id: productDetail.id, // product detail ID
+            product: {
+                id: productDetail.id,
+                product: window.currentProduct,
+                size: selectedSize,
+                priceadd: sizePrice,
+                quantity: productDetail.quantity
+            },
+            quantity: quantity,
+            price: unitPrice
+        };
+        
+        // Store in sessionStorage
+        sessionStorage.setItem('selectedItems', JSON.stringify([orderItem]));
+        sessionStorage.setItem('selectedAddressId', selectedAddressId); // Store selected address
+        sessionStorage.setItem('cartId', ''); // No cart ID for buy now
+        sessionStorage.setItem('buyNowMode', 'true'); // Flag to indicate buy now mode
+        
+        // Redirect to payment page
+        window.location.href = '/user/payment';
+    });
+});
+</script>
+
 <!-- Chat Widget -->
 <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
 </body>
