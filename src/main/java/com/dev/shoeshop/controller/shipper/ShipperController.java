@@ -6,7 +6,6 @@ import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.ShipmentStatus;
-import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.ShipmentService;
@@ -19,10 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +33,6 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class ShipperController {
 
-    private final OrderRepository orderRepository;
     private final OrderService orderService;
     private final ShipmentService shipmentService;
     private final OrderDetailService orderDetailService;
@@ -53,9 +50,11 @@ public class ShipperController {
             return "redirect:/login";
         }
 
-        // Setup pagination
+        // Setup pagination (Sort đã có trong @Query)
         int pageSize = 10;
-        Pageable pageable = PageRequest.of(pageNum, pageSize, Sort.by("createdDate").descending());
+        Pageable pageable = PageRequest.of(pageNum, pageSize);
+        
+        Long shipperId = loggedInUser.getId();
         
         Page<Order> orderPage;
         
@@ -63,21 +62,22 @@ public class ShipperController {
         if (status != null && !status.isEmpty()) {
             try {
                 ShipmentStatus shipmentStatus = ShipmentStatus.valueOf(status);
-                orderPage = orderRepository.findByStatus(shipmentStatus, pageable);
+                orderPage = shipmentService.getOrdersByShipperIdAndStatus(shipperId, shipmentStatus, pageable);
             } catch (IllegalArgumentException e) {
-                // If invalid status, get all orders
-                orderPage = orderRepository.findAll(pageable);
+                // If invalid status, get all orders of this shipper
+                orderPage = shipmentService.getOrdersByShipperId(shipperId, pageable);
             }
         } else {
-            orderPage = orderRepository.findAll(pageable);
+            // Lấy tất cả orders của shipper
+            orderPage = shipmentService.getOrdersByShipperId(shipperId, pageable);
         }
 
-        // Calculate statistics
+        // Calculate statistics - Gọi Service thay vì Repository
         Map<String, Long> statistics = new HashMap<>();
-        statistics.put("cancel", orderRepository.countByStatus(ShipmentStatus.CANCEL));
-        statistics.put("shipping", orderRepository.countByStatus(ShipmentStatus.SHIPPED));
-        statistics.put("delivered", orderRepository.countByStatus(ShipmentStatus.DELIVERED));
-        statistics.put("preturn", orderRepository.countByStatus(ShipmentStatus.RETURN));
+        statistics.put("cancel", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.CANCEL));
+        statistics.put("shipping", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.SHIPPED));
+        statistics.put("delivered", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.DELIVERED));
+        statistics.put("preturn", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.RETURN));
 
         // Setup pagination
         int totalPages = orderPage.getTotalPages();
@@ -146,5 +146,124 @@ public class ShipperController {
         model.addAttribute("user", loggedInUser);
 
         return "shipper/pages-profile";
+    }
+    
+    /**
+     * API: Đánh dấu đơn hàng đã giao thành công
+     */
+    @GetMapping("/delivered")
+    @ResponseBody
+    public ResponseEntity<?> markAsDelivered(
+            @RequestParam("orderid") Long orderId,
+            HttpSession session
+    ) {
+        try {
+            // Check authentication
+            Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (loggedInUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "Chưa đăng nhập"));
+            }
+            
+            // Find order
+            Order order = orderService.findById(orderId);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("success", false, "message", "Không tìm thấy đơn hàng"));
+            }
+            
+            // MVC: Gọi OrderService để update status
+            orderService.markOrderAsDelivered(orderId);
+            
+            // Update shipment status và update date
+            shipmentService.updateShipmentStatusAndDate(orderId, ShipmentStatus.DELIVERED);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Đã cập nhật trạng thái đơn hàng thành DELIVERED",
+                "newStatus", "DELIVERED"
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "Lỗi hệ thống: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * API: Đánh dấu đơn hàng bị hoàn trả
+     */
+    @GetMapping("/return")
+    @ResponseBody
+    public ResponseEntity<?> markAsReturn(
+            @RequestParam("orderid") Long orderId,
+            HttpSession session
+    ) {
+        try {
+            // Check authentication
+            Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (loggedInUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "Chưa đăng nhập"));
+            }
+            
+            // Find order
+            Order order = orderService.findById(orderId);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(Map.of("success", false, "message", "Không tìm thấy đơn hàng"));
+            }
+            
+            // MVC: Gọi OrderService để update status
+            orderService.markOrderAsReturn(orderId);
+            
+            // Update shipment status và update date
+            shipmentService.updateShipmentStatusAndDate(orderId, ShipmentStatus.RETURN);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Đã cập nhật trạng thái đơn hàng thành RETURN",
+                "newStatus", "RETURN"
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "Lỗi hệ thống: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * API: Lưu ghi chú của shipper
+     */
+    @PostMapping("/note")
+    @ResponseBody
+    public ResponseEntity<?> saveNote(
+            @RequestParam("shipmentId") Long shipmentId,
+            @RequestParam("note") String note,
+            HttpSession session
+    ) {
+        try {
+            // Check authentication
+            Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (loggedInUser == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of("success", false, "message", "Chưa đăng nhập"));
+            }
+            
+            // Save note
+            shipmentService.saveNote(shipmentId, note);
+            
+            return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "Đã lưu ghi chú thành công"
+            ));
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "Lỗi hệ thống: " + e.getMessage()));
+        }
     }
 }

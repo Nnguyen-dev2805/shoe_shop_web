@@ -191,8 +191,9 @@
                                                        <td th:text="${order.status}"> <span class="badge border border-secondary text-secondary  px-2 py-1 fs-13"></span></td>
                                                        <td>
                                                             <div class="d-flex gap-2">
-                                                                 <a th:href="@{/shipper/order/detail/{id}(id=${order.id})}" href="" class="btn btn-light btn-sm"><iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon></a>
-<!--                                                                 <a href="#!" class="btn btn-soft-primary btn-sm"><iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon></a>-->
+                                                                 <a th:href="@{/shipper/order/detail/{id}(id=${order.id})}" class="btn btn-light btn-sm" title="Xem chi tiết">
+                                                                      <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+                                                                 </a>
                                                             </div>
                                                        </td>
                                                   </tr>
