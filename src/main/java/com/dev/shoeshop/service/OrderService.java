@@ -42,7 +42,7 @@ public interface OrderService {
     
     OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                  Double finalTotalPrice, String payOption, 
-                                 Long shippingCompanyId, Long discountId, 
+                                 Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
                                  java.util.List<Integer> selectedItemIds,
                                  java.util.Map<Integer, Integer> itemQuantities);
     

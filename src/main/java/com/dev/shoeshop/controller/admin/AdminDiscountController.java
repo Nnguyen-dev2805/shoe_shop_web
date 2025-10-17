@@ -9,6 +9,7 @@ import com.dev.shoeshop.service.DiscountService;
 import com.dev.shoeshop.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
@@ -237,35 +239,96 @@ public class AdminDiscountController {
             @RequestParam(required = false) Double minOrderValue,
             @RequestParam String startDate,
             @RequestParam String endDate,
+            @RequestParam(defaultValue = "ORDER_DISCOUNT") String type,
+            @RequestParam(defaultValue = "PERCENTAGE") String discountValueType,
+            @RequestParam(required = false) Double maxDiscountAmount,
             HttpSession session,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        
+        log.info("========== ADD DISCOUNT DEBUG START ==========");
+        log.info("📝 Form Parameters Received:");
+        log.info("  - name: {}", name);
+        log.info("  - quantity: {}", quantity);
+        log.info("  - percent: {}", percent);
+        log.info("  - status: {}", status);
+        log.info("  - minOrderValue: {}", minOrderValue);
+        log.info("  - startDate: {}", startDate);
+        log.info("  - endDate: {}", endDate);
+        log.info("  - type: {}", type);
+        log.info("  - discountValueType: {}", discountValueType);
+        log.info("  - maxDiscountAmount: {}", maxDiscountAmount);
         
         // Kiểm tra đăng nhập
         Users user = (Users) session.getAttribute(Constant.SESSION_USER);
         if (user == null) {
+            log.error("❌ User not logged in!");
             return "redirect:/login";
         }
+        log.info("👤 User ID: {}", user.getId());
         
         try {
+            log.info("🔄 Creating DiscountCreateRequest...");
+            
             // Tạo DiscountCreateRequest
             DiscountCreateRequest createRequest = new DiscountCreateRequest();
             createRequest.setName(name);
-            createRequest.setPercent(percent / 100.0); // Convert từ phần trăm sang decimal
+            
+            // Convert percent dựa trên discount value type
+            if ("PERCENTAGE".equals(discountValueType)) {
+                double convertedPercent = percent / 100.0;
+                log.info("💯 Converting percentage: {} -> {}", percent, convertedPercent);
+                createRequest.setPercent(convertedPercent);
+            } else {
+                log.info("💰 Using fixed amount: {}", percent);
+                createRequest.setPercent(percent);
+            }
+            
             createRequest.setStatus(status);
             createRequest.setMinOrderValue(minOrderValue);
             createRequest.setQuantity(quantity != null ? quantity : 1000);
             createRequest.setStartDate(java.time.LocalDate.parse(startDate));
             createRequest.setEndDate(java.time.LocalDate.parse(endDate));
             
+            // Set new shipping voucher fields
+            log.info("🚚 Setting voucher type fields...");
+            createRequest.setType(com.dev.shoeshop.enums.VoucherType.valueOf(type));
+            createRequest.setDiscountValueType(com.dev.shoeshop.enums.DiscountValueType.valueOf(discountValueType));
+            createRequest.setMaxDiscountAmount(maxDiscountAmount);
+            
+            log.info("✅ DiscountCreateRequest created: {}", createRequest);
+            
             // Sử dụng service method với mapper
+            log.info("💾 Calling discountService.createDiscount()...");
             discountService.createDiscount(createRequest, user.getId());
             
-            redirectAttributes.addFlashAttribute("success", "Tạo discount '" + name + "' thành công!");
+            log.info("✅ Discount created successfully!");
+            
+            String voucherTypeDisplay = "ORDER_DISCOUNT".equals(type) ? "đơn hàng" : "phí vận chuyển";
+            String successMsg = "Tạo voucher " + voucherTypeDisplay + " '" + name + "' thành công!";
+            
+            log.info("🎉 {}", successMsg);
+            log.info("========== ADD DISCOUNT DEBUG END (SUCCESS) ==========");
+            
+            // Redirect với flash message
+            redirectAttributes.addFlashAttribute("success", successMsg);
+            return "redirect:/admin/discount-list";
             
         }
         catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Có lỗi xảy ra khi tạo discount: " + e.getMessage());
+            log.error("❌ ERROR CREATING DISCOUNT:", e);
+            log.error("   Error Type: {}", e.getClass().getName());
+            log.error("   Error Message: {}", e.getMessage());
+            log.error("   Stack Trace:", e);
+            
+            String errorMsg = "Có lỗi xảy ra khi tạo voucher: " + e.getMessage();
+            model.addAttribute("error", errorMsg);
+            model.addAttribute("errorDetail", e.getClass().getName());
+            
+            log.info("========== ADD DISCOUNT DEBUG END (ERROR) ==========");
+            
+            // Return về form với error message
+            return "admin/discount/discount_add";
         }
-        return "redirect:/admin/discount-list";
     }
 }

@@ -1,5 +1,7 @@
 package com.dev.shoeshop.dto.discount;
 
+import com.dev.shoeshop.enums.VoucherType;
+import com.dev.shoeshop.enums.DiscountValueType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,6 +21,11 @@ public class DiscountResponse {
     private LocalDate startDate;
     private LocalDate endDate;
     private LocalDate createdDate;
+    
+    // Shipping voucher support
+    private VoucherType type;
+    private DiscountValueType discountValueType;
+    private Double maxDiscountAmount;
     
     // Helper method để format percent cho hiển thị
     public String getPercentDisplay() {

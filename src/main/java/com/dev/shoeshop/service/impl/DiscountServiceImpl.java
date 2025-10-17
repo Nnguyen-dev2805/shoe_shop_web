@@ -307,4 +307,128 @@ public class DiscountServiceImpl implements DiscountService {
         log.info("Getting available discounts for users");
         return getUsableDiscounts(); // Delegate to existing method
     }
+    
+    // ========== SHIPPING VOUCHER IMPLEMENTATIONS ==========
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiscountResponse> getActiveOrderVouchers() {
+        log.info("Getting active order vouchers");
+        
+        List<Discount> orderVouchers = discountRepository.findByIsDeleteFalse().stream()
+                .filter(d -> "ACTIVE".equals(d.getStatus()))
+                .filter(d -> d.getType() == com.dev.shoeshop.enums.VoucherType.ORDER_DISCOUNT)
+                .filter(d -> d.getStartDate() != null && !LocalDate.now().isBefore(d.getStartDate()))
+                .filter(d -> d.getEndDate() != null && !LocalDate.now().isAfter(d.getEndDate()))
+                .toList();
+        
+        log.info("Found {} active order vouchers", orderVouchers.size());
+        return orderVouchers.stream()
+                .map(discountMapper::toResponse)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public List<DiscountResponse> getActiveShippingVouchers() {
+        log.info("Getting active shipping vouchers");
+        
+        List<Discount> shippingVouchers = discountRepository.findByIsDeleteFalse().stream()
+                .filter(d -> "ACTIVE".equals(d.getStatus()))
+                .filter(d -> d.getType() == com.dev.shoeshop.enums.VoucherType.SHIPPING_DISCOUNT)
+                .filter(d -> d.getStartDate() != null && !LocalDate.now().isBefore(d.getStartDate()))
+                .filter(d -> d.getEndDate() != null && !LocalDate.now().isAfter(d.getEndDate()))
+                .toList();
+        
+        log.info("Found {} active shipping vouchers", shippingVouchers.size());
+        return shippingVouchers.stream()
+                .map(discountMapper::toResponse)
+                .toList();
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Double calculateShippingDiscount(Long voucherId, Double shippingFee, Double orderValue) {
+        log.info("Calculating shipping discount for voucher ID: {}, shipping fee: {}, order value: {}", 
+                voucherId, shippingFee, orderValue);
+        
+        if (voucherId == null || shippingFee == null || shippingFee <= 0) {
+            log.warn("Invalid parameters for shipping discount calculation");
+            return 0.0;
+        }
+        
+        Discount voucher = getDiscountById(voucherId);
+        if (voucher == null) {
+            log.warn("Voucher not found: {}", voucherId);
+            return 0.0;
+        }
+        
+        Double discountAmount = voucher.calculateShippingDiscount(shippingFee, orderValue);
+        log.info("Calculated shipping discount: {} for voucher: {}", discountAmount, voucher.getName());
+        
+        return discountAmount;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean validateShippingVoucher(Long voucherId, Double orderValue, Double shippingFee) {
+        log.info("Validating shipping voucher ID: {} for order value: {}, shipping fee: {}", 
+                voucherId, orderValue, shippingFee);
+        
+        try {
+            Discount voucher = getDiscountById(voucherId);
+            
+            if (voucher == null) {
+                log.warn("Voucher not found: {}", voucherId);
+                return false;
+            }
+            
+            // Check if it's a shipping voucher
+            if (!voucher.isShippingVoucher()) {
+                log.warn("Voucher {} is not a shipping voucher", voucherId);
+                return false;
+            }
+            
+            // Check status
+            if (!"ACTIVE".equals(voucher.getStatus())) {
+                log.warn("Voucher {} is not active. Status: {}", voucherId, voucher.getStatus());
+                return false;
+            }
+            
+            // Check date range
+            LocalDate now = LocalDate.now();
+            if (voucher.getStartDate() != null && now.isBefore(voucher.getStartDate())) {
+                log.warn("Voucher {} has not started yet", voucherId);
+                return false;
+            }
+            
+            if (voucher.getEndDate() != null && now.isAfter(voucher.getEndDate())) {
+                log.warn("Voucher {} has expired", voucherId);
+                return false;
+            }
+            
+            // Check min order value
+            if (voucher.getMinOrderValue() != null && orderValue != null) {
+                if (orderValue < voucher.getMinOrderValue()) {
+                    log.warn("Order value {} is less than min order value {}", 
+                            orderValue, voucher.getMinOrderValue());
+                    return false;
+                }
+            }
+            
+            // Check if can calculate discount
+            Double discount = voucher.calculateShippingDiscount(shippingFee, orderValue);
+            if (discount == null || discount <= 0) {
+                log.warn("Cannot calculate valid discount for voucher {}", voucherId);
+                return false;
+            }
+            
+            log.info("✅ Shipping voucher {} is valid", voucherId);
+            return true;
+            
+        } catch (Exception e) {
+            log.error("Error validating shipping voucher: {}", e.getMessage(), e);
+            return false;
+        }
+    }
 }

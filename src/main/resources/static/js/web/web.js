@@ -293,7 +293,7 @@ function renderProducts(products) {
                                 <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
                                     <i class="fa fa-star" style="font-size: 11px;"></i> 5.0
                                 </span>
-                                <span style="color: #757575; font-weight: 400;">Đã bán 0</span>
+                                <span style="color: #757575; font-weight: 400;">Đã bán ${formatSoldQuantity(product.soldQuantity || 0)}</span>
                             </div>
                         </div>
                         
@@ -362,4 +362,24 @@ function renderPagination(data) {
     // Xóa pagination cũ rồi thêm mới
     $('#productList').next('.col-12').remove();
     $('#productList').after(paginationHtml);
+}
+
+/**
+ * Format sold quantity (Shopee style)
+ * Examples: 12 -> 12, 1234 -> 1.2k, 45678 -> 45.6k, 1500000 -> 1.5tr
+ */
+function formatSoldQuantity(quantity) {
+    if (!quantity) return '0';
+    
+    if (quantity < 1000) {
+        return quantity.toString();
+    } else if (quantity < 1000000) {
+        // Format as "k" (thousands)
+        const k = (quantity / 1000).toFixed(1);
+        return k.endsWith('.0') ? Math.floor(quantity / 1000) + 'k' : k + 'k';
+    } else {
+        // Format as "tr" (triệu - millions)
+        const m = (quantity / 1000000).toFixed(1);
+        return m.endsWith('.0') ? Math.floor(quantity / 1000000) + 'tr' : m + 'tr';
+    }
 }

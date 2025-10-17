@@ -56,6 +56,9 @@ public class Product {
     @Column(name = "average_stars", nullable = false, columnDefinition = "float default 0.0")
     private Double average_stars = 0.0;
 
+    @Column(name = "sold_quantity", nullable = false, columnDefinition = "bigint default 0")
+    private Long soldQuantity = 0L;
+
     @ManyToOne
     @JoinColumn(name = "category_id")
     @EqualsAndHashCode.Exclude

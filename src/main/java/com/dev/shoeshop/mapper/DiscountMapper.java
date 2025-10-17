@@ -33,6 +33,11 @@ public class DiscountMapper {
         discount.setCreatedDate(LocalDate.now());
         discount.setIsDelete(false);
         
+        // Shipping voucher fields
+        discount.setType(request.getType());
+        discount.setDiscountValueType(request.getDiscountValueType());
+        discount.setMaxDiscountAmount(request.getMaxDiscountAmount());
+        
         return discount;
     }
 
@@ -75,6 +80,11 @@ public class DiscountMapper {
         response.setStartDate(discount.getStartDate());
         response.setEndDate(discount.getEndDate());
         response.setCreatedDate(discount.getCreatedDate());
+        
+        // Shipping voucher fields
+        response.setType(discount.getType());
+        response.setDiscountValueType(discount.getDiscountValueType());
+        response.setMaxDiscountAmount(discount.getMaxDiscountAmount());
         
         return response;
     }

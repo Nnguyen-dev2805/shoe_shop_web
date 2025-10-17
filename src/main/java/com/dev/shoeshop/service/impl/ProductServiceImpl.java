@@ -104,6 +104,7 @@ public class ProductServiceImpl implements ProductService {
                             .image(product.getImage())
                             .categoryName(product.getCategory().getName())
                             .brandName(product.getBrand().getName())
+                            .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
                             .flashSale(flashSaleInfo)  // ✅ Include flash sale
                             .build();
                 })
@@ -127,6 +128,7 @@ public class ProductServiceImpl implements ProductService {
                             .image(product.getImage())
                             .categoryName(product.getCategory().getName())
                             .brandName(product.getBrand().getName())
+                            .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
                             .flashSale(flashSaleInfo)  // ✅ Include flash sale
                             .build();
                 })
@@ -183,6 +185,7 @@ public class ProductServiceImpl implements ProductService {
                 .sizeOptions(sizeOptions)
                 .avgRating(avgRating)
                 .totalReviews(totalReviews)
+                .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
                 .flashSale(getFlashSaleInfoForDetail(product))  // ← NEW: Add flash sale info
                 .build();
     }

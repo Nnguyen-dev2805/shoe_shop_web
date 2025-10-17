@@ -256,9 +256,10 @@ public class FlashSaleService {
                 .orElseThrow(() -> new FlashSaleException("Product detail " + productDetailId + " không tồn tại"));
             
             // Tính giá gốc và giá flash sale
-            // ✅ getFinalPrice() = product.getPrice() + priceadd
-            double originalPrice = productDetail.getFinalPrice();
-            double flashPrice = originalPrice * (1 - request.getDiscountPercent() / 100.0);
+            // ✅ Flash Sale CHỈ áp dụng trên BASE PRICE, KHÔNG bao gồm size fee
+            double basePrice = productDetail.getProduct().getPrice();
+            double flashPrice = basePrice * (1 - request.getDiscountPercent() / 100.0);
+            double originalPrice = basePrice;
             
             // Tạo flash sale item (không có stock/sold nữa)
             FlashSaleItem item = FlashSaleItem.builder()
@@ -413,9 +414,13 @@ public class FlashSaleService {
             }
             
             // Tính flash sale price
-            // ✅ getFinalPrice() = product.getPrice() + priceadd
-            Double originalPrice = productDetail.getFinalPrice();
-            Double flashSalePrice = originalPrice * (1 - discountPercent / 100);
+            // ✅ Flash Sale CHỈ áp dụng trên BASE PRICE, KHÔNG bao gồm size fee
+            // Size fee sẽ được cộng thêm ở frontend khi user chọn size
+            Double basePrice = productDetail.getProduct().getPrice(); // Base price only
+            Double flashSalePrice = basePrice * (1 - discountPercent / 100); // Discount on base only
+            
+            // originalPrice cũng chỉ lưu base price để hiển thị đúng
+            Double originalPrice = basePrice;
             
             // Tạo FlashSaleItem
             FlashSaleItem item = FlashSaleItem.builder()
@@ -429,7 +434,7 @@ public class FlashSaleService {
             
             flashSaleItems.add(item);
             
-            log.info("Created flash sale item: ProductDetail {} - Original: {} - Flash: {} (-{}%)",
+            log.info("Created flash sale item: ProductDetail {} - Base: {} - Flash: {} (-{}%) [Size fee will be added at frontend]",
                      productDetail.getId(), originalPrice, flashSalePrice, discountPercent);
         }
         

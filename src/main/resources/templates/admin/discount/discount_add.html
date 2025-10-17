@@ -635,6 +635,21 @@
             <div class="row">
                 <form action="/admin/discount/add" method="post">
                     <div class="col-xl-9 col-lg-8">
+                        
+                        <!-- Success/Error Messages -->
+                        <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>✅ Thành công!</strong> <span th:text="${success}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>❌ Lỗi!</strong> <span th:text="${error}"></span>
+                            <div th:if="${errorDetail}" style="margin-top: 10px; font-size: 12px; font-family: monospace; background: #f8f9fa; padding: 10px; border-radius: 4px;">
+                                <strong>Error Type:</strong> <span th:text="${errorDetail}"></span>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
                         <div class="card">
                             <div class="card-header">
                                 <h4 class="card-title">Thông Tin Voucher</h4>
@@ -649,12 +664,50 @@
                                         </div>
                                     </div>
 
-
-                                    <!-- Discount Percent -->
+                                    <!-- Voucher Type -->
                                     <div class="col-lg-6">
                                         <div class="mb-3">
-                                            <label for="discount-percent" class="form-label">Phần trăm giảm</label>
-                                            <input type="number" id="discount-percent" class="form-control" name="percent" placeholder="Nhập phần trăm" min="0" max="100" required>
+                                            <label for="voucher-type" class="form-label">Loại voucher</label>
+                                            <select id="voucher-type" class="form-select" name="type" required>
+                                                <option value="ORDER_DISCOUNT" selected>Giảm giá đơn hàng</option>
+                                                <option value="SHIPPING_DISCOUNT">Giảm phí vận chuyển</option>
+                                            </select>
+                                            <small class="form-text text-muted">
+                                                <i class="bx bx-info-circle"></i> Order: giảm % tổng đơn | Shipping: giảm phí ship
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Discount Value Type -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="discount-value-type" class="form-label">Kiểu giảm giá</label>
+                                            <select id="discount-value-type" class="form-select" name="discountValueType" required>
+                                                <option value="PERCENTAGE" selected>Phần trăm (%)</option>
+                                                <option value="FIXED_AMOUNT">Số tiền cố định (VNĐ)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <!-- Discount Percent/Amount -->
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label for="discount-percent" class="form-label" id="discount-value-label">Giá trị giảm</label>
+                                            <input type="number" id="discount-percent" class="form-control" name="percent" placeholder="Nhập giá trị" min="0" required>
+                                            <small class="form-text text-muted" id="discount-value-hint">
+                                                <i class="bx bx-info-circle"></i> <span id="hint-text">Nhập 0-100 cho phần trăm</span>
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <!-- Max Discount Amount -->
+                                    <div class="col-lg-6" id="max-discount-container" style="display: none;">
+                                        <div class="mb-3">
+                                            <label for="max-discount" class="form-label">Giảm tối đa (VNĐ)</label>
+                                            <input type="number" id="max-discount" class="form-control" name="maxDiscountAmount" placeholder="VD: 20000" min="0">
+                                            <small class="form-text text-muted">
+                                                <i class="bx bx-info-circle"></i> Chỉ cho shipping voucher % (VD: Giảm 50% tối đa 20.000đ)
+                                            </small>
                                         </div>
                                     </div>
 
@@ -817,6 +870,92 @@
         });
     });
 
+</script>
+
+<script>
+    // ========== SHIPPING VOUCHER DYNAMIC UI ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        const voucherTypeSelect = document.getElementById('voucher-type');
+        const discountValueTypeSelect = document.getElementById('discount-value-type');
+        const maxDiscountContainer = document.getElementById('max-discount-container');
+        const discountPercentInput = document.getElementById('discount-percent');
+        const discountValueLabel = document.getElementById('discount-value-label');
+        const hintText = document.getElementById('hint-text');
+        
+        // Function to update UI based on selections
+        function updateVoucherUI() {
+            const voucherType = voucherTypeSelect.value;
+            const valueType = discountValueTypeSelect.value;
+            
+            // Show/hide max discount field
+            // Only show for SHIPPING_DISCOUNT + PERCENTAGE
+            if (voucherType === 'SHIPPING_DISCOUNT' && valueType === 'PERCENTAGE') {
+                maxDiscountContainer.style.display = 'block';
+            } else {
+                maxDiscountContainer.style.display = 'none';
+            }
+            
+            // Update label and hint based on value type
+            if (valueType === 'PERCENTAGE') {
+                discountValueLabel.textContent = 'Phần trăm giảm (%)';
+                hintText.textContent = 'Nhập 0-100 cho phần trăm';
+                discountPercentInput.setAttribute('max', '100');
+                discountPercentInput.setAttribute('step', '0.01');
+                discountPercentInput.setAttribute('placeholder', 'VD: 10 (cho 10%)');
+            } else {
+                // FIXED_AMOUNT
+                discountValueLabel.textContent = 'Số tiền giảm (VNĐ)';
+                hintText.textContent = 'Nhập số tiền cố định (VD: 30000 cho 30.000đ)';
+                discountPercentInput.removeAttribute('max');
+                discountPercentInput.setAttribute('step', '1000');
+                discountPercentInput.setAttribute('placeholder', 'VD: 30000');
+            }
+            
+            // Update min order value hint based on voucher type
+            const minOrderHint = document.getElementById('min-order-value');
+            if (voucherType === 'ORDER_DISCOUNT') {
+                minOrderHint.setAttribute('placeholder', 'VD: 100000 (đơn tối thiểu 100.000đ)');
+            } else {
+                minOrderHint.setAttribute('placeholder', 'VD: 200000 (áp dụng khi đơn >= 200.000đ)');
+            }
+        }
+        
+        // Event listeners
+        voucherTypeSelect.addEventListener('change', updateVoucherUI);
+        discountValueTypeSelect.addEventListener('change', updateVoucherUI);
+        
+        // Initial update
+        updateVoucherUI();
+        
+        // Form validation
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const valueType = discountValueTypeSelect.value;
+            const percentValue = parseFloat(discountPercentInput.value);
+            
+            // Validate percentage
+            if (valueType === 'PERCENTAGE') {
+                if (percentValue < 0 || percentValue > 100) {
+                    e.preventDefault();
+                    alert('Phần trăm giảm phải từ 0 đến 100!');
+                    return false;
+                }
+            } else {
+                // FIXED_AMOUNT
+                if (percentValue < 0) {
+                    e.preventDefault();
+                    alert('Số tiền giảm phải >= 0!');
+                    return false;
+                }
+            }
+            
+            // If PERCENTAGE for order voucher, convert to decimal (0.1 for 10%)
+            if (valueType === 'PERCENTAGE') {
+                // Let backend handle the conversion
+                // Or convert here: discountPercentInput.value = percentValue / 100;
+            }
+        });
+    });
 </script>
 
 </body>

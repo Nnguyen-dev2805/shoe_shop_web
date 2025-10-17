@@ -14,6 +14,7 @@ public class ProductResponse {
     private String image;
     private String categoryName;
     private String brandName;
+    private Long soldQuantity;  // ← NEW: Số lượng đã bán
     
     // ========== FLASH SALE FIELDS ==========
     private FlashSaleInfo flashSale;  // Thông tin flash sale nếu product đang trong flash sale
