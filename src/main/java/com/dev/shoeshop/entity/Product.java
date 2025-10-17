@@ -44,8 +44,17 @@ public class Product {
     @Column(name = "total_reviews", nullable = false, columnDefinition = "bigint default 0")
     private Long total_reviews = 0L;
 
+    @Column(name = "total_reviewers", nullable = false, columnDefinition = "bigint default 0")
+    private Long total_reviewers = 0L;
+
+    @Column(name = "total_stars", nullable = false, columnDefinition = "bigint default 0")
+    private Long total_stars = 0L;
+
     @Column(name = "average_rating", nullable = false, columnDefinition = "float default 0.0")
     private Double average_rating = 0.0;
+
+    @Column(name = "average_stars", nullable = false, columnDefinition = "float default 0.0")
+    private Double average_stars = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
