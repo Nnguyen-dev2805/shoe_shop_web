@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <title>Single Shop || DeeG Shop</title>
+    <title>Thông Tin Sản Phẩm || DeeG Shop</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -478,6 +478,401 @@
             background: #eee;
             margin: 20px 0;
         }
+        
+        /* ========== SHOPEE STYLE PRODUCT DETAILS ========== */
+        .shopee-product-title {
+            font-size: 20px;
+            font-weight: 400;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .shopee-rating-bar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #ebebeb;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .shopee-rating-score {
+            display: flex;
+            align-items: baseline;
+            gap: 5px;
+        }
+        
+        .rating-number {
+            color: #ee4d2d;
+            font-size: 16px;
+            text-decoration: underline;
+        }
+        
+        .rating-stars {
+            color: #ee4d2d;
+            font-size: 14px;
+        }
+        
+        .rating-separator {
+            color: #ccc;
+        }
+        
+        .rating-stats {
+            color: #767676;
+            font-size: 14px;
+        }
+        
+        .sold-count {
+            color: #767676;
+            font-size: 14px;
+        }
+        
+        .shopee-price-section {
+            background: #fafafa;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .shopee-price-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .shopee-price-original {
+            color: #929292;
+            font-size: 16px;
+            text-decoration: line-through;
+        }
+        
+        .shopee-price-sale {
+            color: #ee4d2d;
+            font-size: 30px;
+            font-weight: 500;
+        }
+        
+        .shopee-price-discount {
+            background: #ee4d2d;
+            color: #fff;
+            padding: 2px 4px;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .shopee-info-row {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ebebeb;
+        }
+        
+        .shopee-info-label {
+            min-width: 120px;
+            color: #757575;
+            font-size: 14px;
+        }
+        
+        .shopee-info-content {
+            flex: 1;
+        }
+        
+        .shopee-size-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .shopee-size-btn {
+            min-width: 80px;
+            padding: 8px 12px;
+            border: 1px solid rgba(0,0,0,.09);
+            background: #fff;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.1s;
+            text-align: center;
+            font-size: 14px;
+            position: relative;
+        }
+        
+        .shopee-size-btn:hover {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+        }
+        
+        .shopee-size-btn.active {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+        }
+        
+        .shopee-size-btn.active::before {
+            content: "✓";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 15px;
+            height: 15px;
+            background: #ee4d2d;
+            color: #fff;
+            font-size: 10px;
+            line-height: 15px;
+            text-align: center;
+        }
+        
+        .shopee-qty-selector {
+            display: flex;
+            align-items: center;
+        }
+        
+        .shopee-qty-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(0,0,0,.09);
+            background: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #757575;
+        }
+        
+        .shopee-qty-btn:hover {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+        }
+        
+        .shopee-qty-input {
+            width: 50px;
+            height: 32px;
+            border: 1px solid rgba(0,0,0,.09);
+            border-left: none;
+            border-right: none;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .shopee-action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .shopee-btn-add-cart {
+            flex: 1;
+            min-width: 200px;
+            height: 48px;
+            border: 1px solid #ee4d2d;
+            background: rgba(255,87,34,.1);
+            color: #ee4d2d;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            padding: 0 20px;
+        }
+        
+        .shopee-btn-add-cart:hover:not(:disabled) {
+            background: rgba(255,87,34,.15);
+        }
+        
+        .shopee-btn-buy-now {
+            flex: 1;
+            min-width: 160px;
+            height: 48px;
+            border: none;
+            background: #ee4d2d;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 400;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            white-space: nowrap;
+            padding: 0 20px;
+        }
+        
+        .shopee-btn-buy-now:hover:not(:disabled) {
+            background: #d73211;
+        }
+        
+        .shopee-btn-add-cart:disabled,
+        .shopee-btn-buy-now:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Price breakdown section */
+        .shopee-price-breakdown {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        
+        .price-breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .price-breakdown-row.total {
+            border-top: 1px dashed #ccc;
+            margin-top: 10px;
+            padding-top: 15px;
+        }
+        
+        .price-breakdown-label {
+            color: #757575;
+        }
+        
+        .price-breakdown-value {
+            font-weight: 500;
+        }
+        
+        .price-breakdown-total {
+            color: #ee4d2d;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        /* Voucher section */
+        .shopee-voucher-section {
+            padding: 15px 0;
+            border-bottom: 1px solid #ebebeb;
+        }
+        
+        .shopee-voucher-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #757575;
+            margin-bottom: 12px;
+        }
+        
+        .shopee-voucher-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .shopee-voucher-badge {
+            padding: 4px 8px;
+            background: #fff;
+            border: 1px solid #ee4d2d;
+            color: #ee4d2d;
+            font-size: 12px;
+            border-radius: 2px;
+            white-space: nowrap;
+        }
+        
+        /* Flash Sale Styles */
+        .flash-sale-badge-container {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .flash-sale-badge {
+            background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+            color: white;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(255,75,43,0.4);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .flash-sale-timer {
+            background: rgba(0,0,0,0.85);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .flash-sale-timer i {
+            color: #ff4b2b;
+        }
+        
+        .shopee-price-flash {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+            border: 2px solid #ff4b2b;
+        }
+        
+        .flash-sale-stock-bar {
+            margin-top: 15px;
+            padding: 12px;
+            background: #fff5f5;
+            border-radius: 4px;
+            border-left: 3px solid #ff4b2b;
+        }
+        
+        .stock-progress-container {
+            margin-bottom: 8px;
+        }
+        
+        .stock-progress-bar {
+            height: 16px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stock-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%);
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            transition: width 0.3s ease;
+        }
+        
+        .stock-progress-text {
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .stock-info-text {
+            font-size: 12px;
+            color: #ff4b2b;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -498,7 +893,7 @@
                 <div class="location">
                     <ul>
                         <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a></li>
-                        <li><strong> Chi Tiết sản phẩm</strong></li>
+                        <li><strong> Thông tin sản phẩm</strong></li>
                     </ul>
                 </div>
             </div>
@@ -516,71 +911,74 @@
                         <a href="#"><img class="optima_zoom" id="product-image" src="" alt="Product Image"/></a>
                     </div>
                 </div>
-                
-                <!-- Address Selection Section -->
-                <div style="margin-top: 30px; background: rgb(229, 229, 229); border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    <h4 style="margin-bottom: 20px; color: rgb(224, 53, 80); border-bottom: none; padding-bottom: 10px; font-weight: bold;">
-                        <i class="fa fa-map-marker"></i> ĐỊA CHỈ GIAO HÀNG
-                    </h4>
-                    <div class="form-group" style="margin-bottom: 20px;">
-                        <select name="addressId" id="addressSelectProduct" required 
-                                class="form-control" 
-                                style="border: 1px solid #ccc; border-radius: 8px; padding: 14px; font-size: 15px; background-color: white; font-weight: 500;">
-                            <!-- User addresses will be loaded dynamically via AJAX -->
-                            <option value="">
-                                <i class="fa fa-spinner fa-spin"></i> Đang tải địa chỉ...
-                            </option>
-                        </select>
-                        <small style="color: rgb(35, 34, 34); margin-top: 10px; display: block;">
-                            <i class="fa fa-info-circle"></i> Chọn địa chỉ giao hàng để sử dụng tính năng "Mua Ngay"
-                        </small>
-                    </div>
-                    <a href="/user/my-account" 
-                       class="btn btn-block btn-add-address"
-                       style="background: rgb(224, 53, 80); color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600; display: block; text-align: center; transition: all 0.3s; border: none;">
-                        <i class="fa fa-plus-circle"></i> Thêm Địa Chỉ Mới
-                    </a>
-                </div>
             </div>
             <div class="col-lg-6">
                 <form action="#" method="post">
                     <div class="single-product-details product-details-card">
-                        <!-- Product Title -->
-                        <a href="#" class="product-name" id="product-title">Loading...</a>
+                        <!-- Product Title (Shopee Style) -->
+                        <h1 class="shopee-product-title" id="product-title">Loading...</h1>
                         
-                        <!-- Rating Section -->
-                        <div class="rating-section">
-                            <div class="ratings">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        <!-- Rating Bar (Shopee Style) -->
+                        <div class="shopee-rating-bar">
+                            <div class="shopee-rating-score">
+                                <span class="rating-number" id="product-rating-number">0.0</span>
+                                <span class="rating-stars">
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                    <i class="fa fa-star"></i>
+                                </span>
                             </div>
-                            <div class="rating-info">
-                                <strong id="product-rating">Điểm đánh giá: 0.0</strong>
-                                <strong id="product-reviews">Chưa có đánh giá</strong>
+                            <span class="rating-separator">|</span>
+                            <span class="rating-stats" id="product-reviews">0 Đánh Giá</span>
+                            <span class="rating-separator">|</span>
+                            <span class="sold-count">Đã Bán <strong>0</strong></span>
+                        </div>
+                        
+                        <!-- Flash Sale Timer (if active) -->
+                        <div class="flash-sale-timer" id="flash-sale-timer" style="display: none;">
+                            <i class="fa fa-bolt"></i>
+                            <span>FLASH SALE KẾT THÚC SAU:</span>
+                            <span id="flash-sale-countdown">--:--:--</span>
+                        </div>
+                        
+                        <!-- Price Section (Shopee Style) -->
+                        <div class="shopee-price-section" id="price-section">
+                            <div class="shopee-price-row">
+                                <span class="shopee-price-original" id="original-price" style="display:none;">0₫</span>
+                                <span class="shopee-price-sale" id="product-price">0₫</span>
+                                <span class="shopee-price-discount" id="discount-badge" style="display:none;">0% GIẢM</span>
                             </div>
                         </div>
                         
-                        <!-- Availability Badge -->
-                        <span class="availability-badge">
-                            <i class="fa fa-check-circle"></i> Còn hàng
-                        </span>
-                        
-                        <!-- Price Section -->
-                        <div class="price-section">
-                            <div class="item-price">
-                                <span id="product-price">0 đ</span>
+                        <!-- Flash Sale Stock Progress (if active) -->
+                        <div class="flash-sale-stock-bar" id="flash-sale-stock" style="display: none;">
+                            <div class="stock-progress-container">
+                                <div class="stock-progress-bar">
+                                    <div class="stock-progress-fill" id="stock-progress-fill" style="width: 0%">
+                                        <span class="stock-progress-text">Đã bán <span id="sold-count">0</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="stock-info-text">
+                                Còn lại: <span id="remaining-count">0</span> sản phẩm
                             </div>
                         </div>
                         
-                        <!-- Description -->
-                        <div class="description-section">
-                            <p><strong>Mô tả:</strong> <span id="product-description">Loading...</span></p>
+                        <!-- Voucher Section -->
+                        <div class="shopee-voucher-section">
+                            <div class="shopee-voucher-label">
+                                <i class="fa fa-ticket" style="color: #ee4d2d;"></i>
+                                <span>Voucher Của Shop</span>
+                            </div>
+                            <div class="shopee-voucher-list">
+                                <span class="shopee-voucher-badge">Giảm 10%</span>
+                                <span class="shopee-voucher-badge">Giảm 10%</span>
+                                <span class="shopee-voucher-badge">Giảm 10%</span>
+                                <span class="shopee-voucher-badge">Giảm 10%</span>
+                            </div>
                         </div>
-                        
-                        <div class="divider"></div>
                         
                         <!-- Action Buttons -->
                         <div class="action">
@@ -603,54 +1001,56 @@
                                     </a>
                                 </li>
                             </ul>
+                        <!-- Description (Shopee Style Row) -->
+                        <div class="shopee-info-row" style="display:none;" id="description-row">
+                            <div class="shopee-info-label">Mô tả</div>
+                            <div class="shopee-info-content" id="product-description">Loading...</div>
                         </div>
                         
-                        <!-- Size Selection -->
-                        <div class="size-selection-section">
-                        <div class="select-catagory">
-                            <div class="size-select">
-                                <label class="required">
-                                    <em>*</em> Chọn Size
-                                </label>
-                                <div class="size-buttons" id="size-buttons">
+                        <!-- Size Selection (Shopee Style) -->
+                        <div class="shopee-info-row">
+                            <div class="shopee-info-label">Size</div>
+                            <div class="shopee-info-content">
+                                <div class="shopee-size-grid" id="size-buttons">
                                     <!-- Size buttons will be loaded via AJAX -->
                                     <p>Đang tải sizes...</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <!-- Stock Information -->
-                        <div class="stock-info" id="stock-info" style="display: none;">
-                            <i class="fa fa-check-circle"></i>
-                            <strong>Số lượng còn lại:</strong> <span id="stock-quantity">10</span> sản phẩm
-                        </div>
-                        
-                        <!-- Quantity Selector -->
-                        <div class="quantity-selector" id="quantity-selector" style="display: none;">
-                            <label>Số lượng:</label>
-                            <div class="qty-controls">
-                                <button type="button" class="qty-btn" id="qty-minus">-</button>
-                                <input type="text" class="qty-input" id="qty-input" name="quantity" value="1" readonly>
-                                <button type="button" class="qty-btn" id="qty-plus">+</button>
+                        <!-- Quantity Selector (Shopee Style) -->
+                        <div class="shopee-info-row" id="quantity-row" style="display: none;">
+                            <div class="shopee-info-label">Số Lượng</div>
+                            <div class="shopee-info-content">
+                                <div class="shopee-qty-selector">
+                                    <button type="button" class="shopee-qty-btn" id="qty-minus">−</button>
+                                    <input type="text" class="shopee-qty-input" id="qty-input" name="quantity" value="1" readonly>
+                                    <button type="button" class="shopee-qty-btn" id="qty-plus">+</button>
+                                    <span style="margin-left: 15px; color: #757575; font-size: 14px;">
+                                        <span id="stock-quantity">0</span> sản phẩm có sẵn
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         
-                        <!-- Price Breakdown -->
-                        <div class="price-breakdown" id="price-breakdown" style="display: none;">
-                            <div class="price-row">
-                                <span>Giá cơ bản:</span>
-                                <span id="base-price-display">0 đ</span>
+                        <!-- Price Breakdown Section -->
+                        <div class="shopee-price-breakdown" id="price-breakdown" style="display: none;">
+                            <div class="price-breakdown-row">
+                                <span class="price-breakdown-label">Giá cơ bản:</span>
+                                <span class="price-breakdown-value" id="base-price-display">0₫</span>
                             </div>
-                            <div class="price-row">
-                                <span>Phụ phí size:</span>
-                                <span id="size-fee-display">0 đ</span>
+                            <div class="price-breakdown-row">
+                                <span class="price-breakdown-label">Phụ phí size:</span>
+                                <span class="price-breakdown-value" id="size-fee-display">0₫</span>
                             </div>
-                            <div class="price-row total">
-                                <span>Tổng cộng:</span>
-                                <span id="final-price">0 đ</span>
+                            <div class="price-breakdown-row total">
+                                <span class="price-breakdown-label">Tổng cộng:</span>
+                                <span class="price-breakdown-total" id="final-price-display">0₫</span>
                             </div>
                         </div>
-                        </div>
+                        
+                        <!-- Hidden Price Data -->
+                        <input type="hidden" id="final-price" value="0">
                         
                         <div class="cart-item">
                             <div class="single-cart">
@@ -658,14 +1058,14 @@
                                 <input type="hidden" id="productDetailId" name="productDetailId" value="">
                                 <input type="hidden" id="selectedSize" name="selectedSize" value="">
                                 
-                                <!-- Action buttons container -->
-                                <div style="display: flex; gap: 10px; width: 100%;">
-                                    <button class="cart-btn" type="button" id="add-to-cart-btn" disabled style="flex: 1;">
-                                        <i class="fa fa-shopping-cart"></i> Thêm Vào Giỏ
+                                <!-- Action buttons (Shopee Style) -->
+                                <div class="shopee-action-buttons">
+                                    <button class="shopee-btn-add-cart" type="button" id="add-to-cart-btn" disabled>
+                                        <i class="fa fa-shopping-cart"></i>
+                                        <span>Thêm Vào Giỏ Hàng</span>
                                     </button>
-                                    <button class="cart-btn" type="button" id="buy-now-btn" disabled 
-                                            style="flex: 1; background: #ff6b35; box-shadow: 0 5px 15px rgba(255, 107, 53, 0.3);">
-                                        <i class="fa fa-bolt"></i> Mua Ngay
+                                    <button class="shopee-btn-buy-now" type="button" id="buy-now-btn" disabled>
+                                        <span>Mua Ngay</span>
                                     </button>
                                 </div>
                             </div>
@@ -1359,7 +1759,6 @@ $(document).ready(function() {
         const productDetailId = $('#productDetailId').val();
         const quantity = parseInt($('#qty-input').val());
         const selectedSize = $('#selectedSize').val();
-        const selectedAddressId = $('#addressSelectProduct').val();
         
         if (!productDetailId) {
             alert('Vui lòng chọn size sản phẩm!');
@@ -1368,11 +1767,6 @@ $(document).ready(function() {
         
         if (quantity < 1) {
             alert('Số lượng phải lớn hơn 0!');
-            return;
-        }
-        
-        if (!selectedAddressId) {
-            alert('Vui lòng chọn địa chỉ giao hàng!');
             return;
         }
         

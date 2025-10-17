@@ -36,16 +36,31 @@ function getProductIdFromUrl() {
  * Gọi API để load thông tin chi tiết sản phẩm
  */
 function loadProductDetails(productId) {
+    console.log('📡 Loading product details for ID:', productId);
     $.ajax({
         url: `/api/product/${productId}`,
         type: 'GET',
         dataType: 'json',
         success: function(product) {
-            console.log('✅ Dữ liệu sản phẩm:', product);
+            console.log('✅ API Response - Full Product Data:', product);
+            console.log('🔥 API Response - FlashSale Field:', product.flashSale);
+            
+            if (product.flashSale) {
+                console.log('  flashSale.active:', product.flashSale.active);
+                console.log('  flashSale.flashSalePrice:', product.flashSale.flashSalePrice);
+                console.log('  flashSale.discountPercent:', product.flashSale.discountPercent);
+                console.log('  flashSale.endTime:', product.flashSale.endTime);
+                console.log('  flashSale.stock:', product.flashSale.stock);
+                console.log('  flashSale.sold:', product.flashSale.sold);
+            } else {
+                console.log('⚠️ No flashSale field in API response');
+            }
+            
             renderProductDetails(product);
         },
         error: function(xhr, status, error) {
             console.error('❌ Lỗi khi load product:', error);
+            console.error('XHR Response:', xhr.responseText);
             alert('Không thể tải thông tin sản phẩm. Vui lòng thử lại sau.');
             window.location.href = '/';
         }
@@ -56,6 +71,10 @@ function loadProductDetails(productId) {
  * Render thông tin sản phẩm vào HTML
  */
 function renderProductDetails(product) {
+    console.log('=== 🔍 DEBUG renderProductDetails() ===');
+    console.log('📦 Full Product Data:', product);
+    console.log('🔥 FlashSale Object:', product.flashSale);
+    
     // Store product data globally for Buy Now feature
     window.currentProduct = product;
     
@@ -66,18 +85,39 @@ function renderProductDetails(product) {
     // Render tên sản phẩm
     $('#product-title').text(product.title);
     
-    // Render rating
+    // Render rating (Shopee style)
     const avgRating = product.avgRating ? product.avgRating.toFixed(1) : '0.0';
-    $('#product-rating').text(`Điểm đánh giá: ${avgRating}`);
+    $('#product-rating-number').text(avgRating);
     if (product.totalReviews && product.totalReviews > 0) {
-        $('#product-reviews').text(`${product.totalReviews} đánh giá`);
+        $('#product-reviews').text(`${product.totalReviews} Đánh Giá`);
     } else {
-        $('#product-reviews').text("Chưa có đánh giá");
+        $('#product-reviews').text("0 Đánh Giá");
     }
 
-    // Render giá
-    const formattedPrice = formatVND(product.price);
-    $('#product-price').text(formattedPrice);
+    // Check Flash Sale
+    console.log('🔍 Checking Flash Sale...');
+    console.log('  product.flashSale exists?', !!product.flashSale);
+    if (product.flashSale) {
+        console.log('  product.flashSale.active?', product.flashSale.active);
+    }
+    
+    const hasFlashSale = product.flashSale && product.flashSale.active;
+    console.log('✅ Has Flash Sale?', hasFlashSale);
+    
+    if (hasFlashSale) {
+        console.log('🔥 Flash Sale DETECTED! Rendering...');
+        // Store flash sale data
+        window.currentFlashSale = product.flashSale;
+        
+        // Show flash sale UI
+        renderFlashSale(product.flashSale, product.price);
+    } else {
+        console.log('❌ No Flash Sale - Normal price display');
+        // Normal price display
+        const formattedPrice = formatVND(product.price);
+        $('#product-price').text(formattedPrice);
+    }
+    
     baseProductPrice = product.price; // Store base price
     
     // Render mô tả
@@ -108,19 +148,16 @@ function renderSizeButtons(sizeOptions, basePrice) {
         sizeOptions.forEach(function(size) {
             const priceAdd = size.priceAdd || 0;
             const stock = size.stock || 0; // Get stock from API
-            const sizeLabel = `Size ${size.size}`;
-            
-            // Add badge for out of stock
-            const stockBadge = stock === 0 ? ' <span class="badge bg-danger">Hết hàng</span>' : '';
+            const sizeLabel = size.size; // Just show size number
             
             const button = $(`
-                <button type="button" class="size-btn ${stock === 0 ? 'disabled' : ''}" 
+                <button type="button" class="shopee-size-btn ${stock === 0 ? 'disabled' : ''}" 
                         data-size-id="${size.id}" 
                         data-size="${size.size}"
                         data-price-add="${priceAdd}"
                         data-stock="${stock}"
                         ${stock === 0 ? 'disabled' : ''}>
-                    ${sizeLabel}${stockBadge}
+                    ${sizeLabel}
                 </button>
             `);
             
@@ -149,7 +186,7 @@ function selectSize($button, basePrice) {
     const stock = $button.data('stock');
     
     // Remove active class from all buttons
-    $('.size-btn').removeClass('active');
+    $('.shopee-size-btn').removeClass('active');
     
     // Add active class to selected button
     $button.addClass('active');
@@ -177,26 +214,12 @@ function selectSize($button, basePrice) {
     $('#productDetailId').val(sizeId);
     $('#selectedSize').val(sizeName);
     
-    // Show stock info
-    $('#stock-info').show();
-    $('#stock-quantity').text(maxStock);
+    // Show quantity row (Shopee style)
+    $('#quantity-row').show();
+    $('#stock-quantity').text(stock);
     
-    // Update stock info class based on quantity
-    const $stockInfo = $('#stock-info');
-    $stockInfo.removeClass('low-stock out-of-stock');
-    if (maxStock === 0) {
-        $stockInfo.addClass('out-of-stock');
-        $stockInfo.find('i').removeClass('fa-check-circle').addClass('fa-times-circle');
-        $('#stock-quantity').parent().html('<strong>Hết hàng</strong>');
-    } else if (maxStock <= 3) {
-        $stockInfo.addClass('low-stock');
-        $stockInfo.find('i').removeClass('fa-times-circle').addClass('fa-exclamation-triangle');
-    } else {
-        $stockInfo.find('i').removeClass('fa-times-circle fa-exclamation-triangle').addClass('fa-check-circle');
-    }
-    
-    // Show quantity selector
-    $('#quantity-selector').show();
+    // Show price breakdown
+    $('#price-breakdown').show()
     
     // Reset quantity to 1
     currentQuantity = 1;
@@ -211,16 +234,16 @@ function selectSize($button, basePrice) {
     
     if (maxStock > 0) {
         $addButton.prop('disabled', false);
-        $addButton.html('<i class="fa fa-shopping-cart"></i> Thêm Vào Giỏ');
+        $addButton.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
         
         $buyNowButton.prop('disabled', false);
-        $buyNowButton.html('<i class="fa fa-bolt"></i> Mua Ngay');
+        $buyNowButton.html('<span>Mua Ngay</span>');
     } else {
         $addButton.prop('disabled', true);
-        $addButton.html('<i class="fa fa-ban"></i> Hết hàng');
+        $addButton.html('<i class="fa fa-ban"></i><span>Hết Hàng</span>');
         
         $buyNowButton.prop('disabled', true);
-        $buyNowButton.html('<i class="fa fa-ban"></i> Hết hàng');
+        $buyNowButton.html('<span>Hết Hàng</span>');
     }
 }
 
@@ -228,19 +251,17 @@ function selectSize($button, basePrice) {
  * Cập nhật hiển thị giá
  */
 function updatePriceDisplay(basePrice, sizeFee) {
-    const pricePerUnit = basePrice + sizeFee; // Giá 1 đôi giày
+    const pricePerUnit = basePrice + sizeFee; // Giá 1 đôi giày (base + size fee)
     const totalPrice = pricePerUnit * currentQuantity; // Tổng tiền = giá 1 đôi * số lượng
     
-    // Update main product price (tổng tiền)
-    $('#product-price').text(formatVND(totalPrice));
+    // Main product price KHÔNG ĐỔI (giữ giá gốc)
+    // $('#product-price').text(formatVND(totalPrice)); // REMOVED
     
-    // Update price breakdown
-    $('#base-price-display').text(formatVND(basePrice)); // Giá cơ bản cho 1 sản phẩm (không đổi)
-    $('#size-fee-display').text(formatVND(sizeFee)); // Phụ phí size cho 1 sản phẩm (không đổi)
-    $('#final-price').text(formatVND(totalPrice)); // Tổng cộng tăng theo số lượng
-    
-    // Show price breakdown
-    $('#price-breakdown').show();
+    // Update price breakdown section
+    $('#base-price-display').text(formatVND(basePrice)); // Giá cơ bản
+    $('#size-fee-display').text(formatVND(sizeFee)); // Phụ phí size
+    $('#final-price-display').text(formatVND(totalPrice)); // Tổng cộng (hiển thị)
+    $('#final-price').val(totalPrice); // Hidden input (for form submission)
 }
 
 /**
@@ -320,14 +341,14 @@ function setupAddToCartButton() {
                     
                     // Reset button
                     $btn.prop('disabled', false);
-                    $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+                    $btn.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
                     
                     // Optional: Redirect to cart page
                     // window.location.href = '/user/cart';
                 } else {
                     alert(' ' + response.message);
                     $btn.prop('disabled', false);
-                    $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+                    $btn.html('<i class="fa fa-shopping-cart"></i><span>Thêm vào giỏ hàng</span>');
                 }
             },
             error: function(xhr, status, error) {
@@ -342,7 +363,7 @@ function setupAddToCartButton() {
                 }
                 
                 $btn.prop('disabled', false);
-                $btn.html('<i class="fa fa-shopping-cart"></i> Thêm vào giỏ hàng');
+                $btn.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
             }
         });
     });
@@ -356,4 +377,95 @@ function formatVND(price) {
         style: 'currency', 
         currency: 'VND' 
     }).format(price);
+}
+
+/**
+ * Render Flash Sale UI
+ */
+function renderFlashSale(flashSale, originalPrice) {
+    console.log('=== 🔥 renderFlashSale() CALLED ===');
+    console.log('  flashSale data:', flashSale);
+    console.log('  originalPrice:', originalPrice);
+    
+    // Show flash sale timer
+    console.log('  ✅ Showing timer...');
+    $('#flash-sale-timer').show();
+    startCountdown(flashSale.endTime);
+    
+    // Update price section
+    const flashPrice = flashSale.flashSalePrice;
+    const discountPercent = flashSale.discountPercent;
+    
+    console.log('  ✅ Updating prices...');
+    console.log('    Original:', originalPrice, '→', formatVND(originalPrice));
+    console.log('    Flash:', flashPrice, '→', formatVND(flashPrice));
+    console.log('    Discount:', discountPercent + '%');
+    
+    $('#original-price').text(formatVND(originalPrice)).show();
+    $('#product-price').text(formatVND(flashPrice));
+    $('#discount-badge').text(`-${Math.round(discountPercent)}% GIẢM`).show();
+    
+    // Add flash style to price section
+    console.log('  ✅ Adding flash style to price section');
+    $('#price-section').addClass('shopee-price-flash');
+    
+    // Show stock progress
+    if (flashSale.stock) {
+        console.log('  ✅ Showing stock progress...');
+        $('#flash-sale-stock').show();
+        updateStockProgress(flashSale);
+    } else {
+        console.log('  ⚠️ No stock data - hiding progress bar');
+    }
+    
+    console.log('=== 🔥 renderFlashSale() COMPLETE ===');
+}
+
+/**
+ * Update stock progress bar
+ */
+function updateStockProgress(flashSale) {
+    const sold = flashSale.sold || 0;
+    const remaining = flashSale.remaining || flashSale.stock;
+    const total = sold + remaining;
+    const soldPercentage = total > 0 ? Math.round((sold / total) * 100) : 0;
+    
+    $('#stock-progress-fill').css('width', soldPercentage + '%');
+    $('#sold-count').text(sold);
+    $('#remaining-count').text(remaining);
+}
+
+/**
+ * Countdown timer for flash sale
+ */
+function startCountdown(endTime) {
+    console.log('⏰ Starting countdown with endTime:', endTime);
+    const countdownElement = $('#flash-sale-countdown');
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const end = new Date(endTime).getTime();
+        const distance = end - now;
+        
+        console.log('  Countdown update - Distance:', distance, 'ms');
+        
+        if (distance < 0) {
+            console.log('  ❌ Flash Sale ended');
+            countdownElement.text('ĐÃ KẾT THÚC');
+            $('#flash-sale-timer').css('background', '#666');
+            return;
+        }
+        
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        const timeText = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        console.log('  ✅ Countdown:', timeText);
+        countdownElement.text(timeText);
+    }
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    console.log('  ✅ Countdown interval started');
 }

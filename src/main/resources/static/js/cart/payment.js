@@ -57,42 +57,57 @@ function loadDataFromSession() {
 }
 
 /**
- * Render selected products (read-only)
+ * Render selected products (Shopee table style)
  */
 function renderSelectedProducts() {
     console.log('Rendering selected products...');
     console.log('Selected items count:', selectedItems.length);
     
-    const tbody = $('#selected-products-tbody');
-    tbody.empty();
+    const container = $('#selected-products-list');
+    container.empty();
     
     if (selectedItems.length === 0) {
-        tbody.append(`
-            <tr>
-                <td colspan="6" class="text-center">Không có sản phẩm</td>
-            </tr>
-        `);
+        container.html('<div class="loading-text">Không có sản phẩm</div>');
         return;
     }
     
+    // Add table header
+    const headerHtml = `
+        <div class="product-table-header">
+            <div>Sản phẩm</div>
+            <div>Đơn giá</div>
+            <div>Số lượng</div>
+            <div>Thành tiền</div>
+        </div>
+    `;
+    container.append(headerHtml);
+    
+    // Add product rows
     selectedItems.forEach(function(item) {
         const unitPrice = item.product.product.price + item.product.priceadd;
-        const row = `
-            <tr style="background-color: #fafafa;">
-                <td>
-                    <img src="${item.product.product.image}" alt="image" 
-                         style="max-width: 60px; max-height: 60px; object-fit: cover;">
-                </td>
-                <td>${item.product.product.title}</td>
-                <td>${item.product.size}</td>
-                <td>${formatPrice(unitPrice)}</td>
-                <td><strong>${item.quantity}</strong></td>
-                <td><strong>${formatPrice(item.price * item.quantity)}</strong></td>
-            </tr>
+        const totalPrice = item.price * item.quantity;
+        
+        const productHtml = `
+            <div class="product-table-row">
+                <div class="product-info">
+                    <img src="${item.product.product.image}" 
+                         alt="${item.product.product.title}" 
+                         class="product-image">
+                    <div class="product-details">
+                        <div class="product-name">${item.product.product.title}</div>
+                        <div class="product-variant">Phân loại: ${item.product.size}</div>
+                    </div>
+                </div>
+                <div class="product-price">${formatPrice(unitPrice)}</div>
+                <div class="product-qty">${item.quantity}</div>
+                <div class="product-total">${formatPrice(totalPrice)}</div>
+            </div>
         `;
-        tbody.append(row);
+        container.append(productHtml);
     });
 }
+
+let allAddresses = [];  // ✅ Store all addresses
 
 /**
  * Load address info from API
@@ -105,12 +120,14 @@ function loadAddressInfo() {
         success: function(response) {
             console.log('Address API response:', response);
             if (response.success && response.addresses) {
+                allAddresses = response.addresses;  // ✅ Store addresses
+                
                 const address = response.addresses.find(a => a.id == addressId);
                 if (address) {
-                    $('#delivery-address').html(`
-                        <i class="fa fa-check-circle text-success"></i> 
-                        <strong>${address.address}</strong>
-                    `);
+                    displayAddress(address);
+                    
+                    // ✅ Populate address modal
+                    populateAddressModal(response.addresses);
                 } else {
                     console.warn('Address not found with ID:', addressId);
                 }
@@ -121,6 +138,71 @@ function loadAddressInfo() {
             console.error('Response:', xhr.responseJSON);
         }
     });
+}
+
+/**
+ * Display selected address
+ */
+function displayAddress(address) {
+    const defaultBadge = address.isDefault ? '<span class="address-default-badge" style="margin-left: 10px;">Mặc định</span>' : '';
+    
+    $('#delivery-address').html(`
+        <div class="address-name">
+            <i class="fa fa-user"></i> ${address.recipientName || 'Người nhận'}
+            <span style="margin-left: 10px; color: #888;">|</span>
+            <span style="margin-left: 10px; color: #666;">${address.recipientPhone || ''}</span>
+            ${defaultBadge}
+        </div>
+        <div class="address-detail">
+            ${address.address}
+        </div>
+    `);
+}
+
+/**
+ * Populate address modal with radio buttons
+ */
+function populateAddressModal(addresses) {
+    const container = $('#address-modal-list');
+    container.empty();
+    
+    if (!addresses || addresses.length === 0) {
+        container.html('<div class="loading-text">Không có địa chỉ</div>');
+        return;
+    }
+    
+    addresses.forEach(function(addr) {
+        const isSelected = addr.id == addressId;
+        const defaultBadge = addr.isDefault ? '<span class="address-default-badge">Mặc định</span>' : '';
+        
+        const html = `
+            <div class="address-radio-item ${isSelected ? 'selected' : ''}" data-address-id="${addr.id}">
+                <input type="radio" name="address-radio" value="${addr.id}" ${isSelected ? 'checked' : ''}>
+                <div class="address-radio-content">
+                    <div class="address-radio-header">
+                        <span class="address-radio-name">${addr.recipientName || 'Người nhận'}</span>
+                        <span class="address-radio-phone">| ${addr.recipientPhone || ''}</span>
+                        ${defaultBadge}
+                    </div>
+                    <div class="address-radio-detail">
+                        ${addr.address}
+                    </div>
+                </div>
+                <button class="address-update-btn" data-address-id="${addr.id}">
+                    Cập nhật
+                </button>
+            </div>
+        `;
+        container.append(html);
+    });
+    
+    // Add "Thêm Địa Chỉ Mới" button
+    container.append(`
+        <div class="address-add-new" id="btn-add-address">
+            <i class="fa fa-plus"></i>
+            <span>Thêm Địa Chỉ Mới</span>
+        </div>
+    `);
 }
 
 /**
@@ -151,14 +233,16 @@ function renderDiscounts(discounts) {
     container.empty();
     
     if (!discounts || discounts.length === 0) {
-        container.append('<p class="text-center">Không có mã giảm giá</p>');
+        container.html('<div class="loading-text">Không có mã giảm giá</div>');
         return;
     }
     
     // Add "No discount" option
     container.append(`
-        <div class="discount-item" data-id="" data-percent="0">
-            <strong>Không sử dụng mã giảm giá</strong>
+        <div class="voucher-row" data-id="" data-percent="0">
+            <div class="voucher-info">
+                <div class="voucher-name">Không sử dụng mã giảm giá</div>
+            </div>
         </div>
     `);
     
@@ -166,10 +250,12 @@ function renderDiscounts(discounts) {
         if (discount.status === 'EXPIRED') return;
         
         const item = `
-            <div class="discount-item" data-id="${discount.id}" data-percent="${discount.percent * 100}">
-                <strong>${discount.name}</strong><br>
-                <small>Giảm ${(discount.percent * 100).toFixed(0)}% - 
-                ${discount.description || ''}</small>
+            <div class="voucher-row" data-id="${discount.id}" data-percent="${discount.percent * 100}">
+                <div class="voucher-info">
+                    <div class="voucher-name">${discount.name}</div>
+                    <div class="voucher-desc">${discount.description || 'Giảm ' + (discount.percent * 100).toFixed(0) + '%'}</div>
+                </div>
+                <div class="voucher-badge">-${(discount.percent * 100).toFixed(0)}%</div>
             </div>
         `;
         container.append(item);
@@ -253,10 +339,110 @@ function calculatePrices() {
  */
 function bindEventHandlers() {
     // Discount selection
-    $(document).on('click', '.discount-item', handleDiscountSelection);
+    $(document).on('click', '.voucher-row', handleDiscountSelection);
     
     // Payment button
     $('#btn-payment').on('click', handlePayment);
+    
+    // ✅ Address modal handlers
+    $('#btn-change-address').on('click', handleOpenAddressModal);
+    $('#btn-modal-confirm').on('click', handleModalConfirm);
+    $('#btn-modal-cancel').on('click', handleModalCancel);
+    
+    // Close modal when clicking outside
+    $(document).on('click', '#address-modal', function(e) {
+        if (e.target.id === 'address-modal') {
+            handleModalCancel();
+        }
+    });
+    
+    // Handle radio item selection
+    $(document).on('click', '.address-radio-item', handleRadioItemClick);
+    
+    // Handle add new address
+    $(document).on('click', '#btn-add-address', handleAddNewAddress);
+    
+    // Handle update address
+    $(document).on('click', '.address-update-btn', handleUpdateAddress);
+}
+
+/**
+ * Handle open address modal
+ */
+function handleOpenAddressModal() {
+    $('#address-modal').fadeIn(200);
+    populateAddressModal(allAddresses);
+}
+
+/**
+ * Handle modal confirm
+ */
+function handleModalConfirm() {
+    const selectedRadio = $('input[name="address-radio"]:checked');
+    const newAddressId = selectedRadio.val();
+    
+    if (!newAddressId) {
+        alert('Vui lòng chọn địa chỉ!');
+        return;
+    }
+    
+    // Update addressId
+    addressId = newAddressId;
+    sessionStorage.setItem('selectedAddressId', newAddressId);
+    
+    // Find and display new address
+    const newAddress = allAddresses.find(a => a.id == newAddressId);
+    if (newAddress) {
+        displayAddress(newAddress);
+    }
+    
+    // Close modal
+    $('#address-modal').fadeOut(200);
+}
+
+/**
+ * Handle modal cancel
+ */
+function handleModalCancel() {
+    $('#address-modal').fadeOut(200);
+}
+
+/**
+ * Handle radio item click
+ */
+function handleRadioItemClick(e) {
+    // Don't trigger if clicking update button
+    if ($(e.target).hasClass('address-update-btn')) {
+        return;
+    }
+    
+    // Remove selected class from all items
+    $('.address-radio-item').removeClass('selected');
+    
+    // Add selected class to clicked item
+    $(this).addClass('selected');
+    
+    // Check the radio button
+    $(this).find('input[type="radio"]').prop('checked', true);
+}
+
+/**
+ * Handle add new address
+ */
+function handleAddNewAddress(e) {
+    e.stopPropagation();
+    // TODO: Implement add address functionality
+    alert('Chức năng thêm địa chỉ mới đang phát triển');
+}
+
+/**
+ * Handle update address
+ */
+function handleUpdateAddress(e) {
+    e.stopPropagation();
+    const addressId = $(this).data('address-id');
+    // TODO: Implement update address functionality
+    alert('Chức năng cập nhật địa chỉ đang phát triển');
 }
 
 /**
@@ -264,7 +450,7 @@ function bindEventHandlers() {
  */
 function handleDiscountSelection() {
     // Remove previous selection
-    $('.discount-item').removeClass('selected');
+    $('.voucher-row').removeClass('selected');
     
     // Add selected class
     $(this).addClass('selected');
@@ -343,13 +529,13 @@ function handlePayment() {
                 }
             } else {
                 alert('❌ ' + (response.message || 'Có lỗi xảy ra'));
-                $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Xác nhận thanh toán');
+                $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Đặt hàng');
             }
         },
         error: function(xhr, status, error) {
             console.error('Payment error:', error);
             alert('❌ Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!');
-            $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Xác nhận thanh toán');
+            $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Đặt hàng');
         }
     });
 }

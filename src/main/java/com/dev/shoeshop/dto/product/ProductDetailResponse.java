@@ -2,6 +2,7 @@ package com.dev.shoeshop.dto.product;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @NoArgsConstructor
@@ -20,6 +21,7 @@ public class ProductDetailResponse {
     private List<SizeOption> sizeOptions;
     private Double avgRating;
     private Integer totalReviews;
+    private FlashSaleInfo flashSale; // ← NEW: Flash Sale information
 
     @NoArgsConstructor
     @AllArgsConstructor
@@ -31,5 +33,21 @@ public class ProductDetailResponse {
         private Integer size;
         private Double priceAdd;
         private Integer stock; // Quantity available in inventory
+    }
+    
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
+    public static class FlashSaleInfo {
+        private Boolean active;
+        private Double flashSalePrice;
+        private Double discountPercent;
+        private LocalDateTime endTime;
+        private Integer stock;
+        private Integer sold;
+        private Integer remaining;
+        private Double soldPercentage;
     }
 }

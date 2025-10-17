@@ -381,7 +381,7 @@
 
 /* Product card với flash sale */
 .single-product.flash-sale-product {
-    border: 2px solid #e5e5e5;  /* ✅ BỎ viền đỏ - dùng viền xám như product thường */
+    border: 2px solid #e5e5e5 !important;  /* ✅ BỎ viền đỏ - dùng viền xám như product thường + important */
     position: relative;
     transition: all 0.3s ease;  /* Smooth transition */
     border-radius: 8px;  /* ✅ Bo tròn khung flash sale */
@@ -391,7 +391,7 @@
 .single-product.flash-sale-product:hover {
     transform: translateY(-5px);  /* Nâng card lên như Flash Sale */
     box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);  /* Shadow đỏ khi hover */
-    border-color: #ff4b2b;  /* ✅ Viền đỏ chỉ khi hover */
+    border-color: #ff4b2b !important;  /* ✅ Viền đỏ chỉ khi hover */
 }
 
 /* ========================================
@@ -403,7 +403,7 @@
 .single-product {
     position: relative;  /* ✅ Container cho absolute positioning */
     transition: all 0.3s ease;
-    border: 2px solid #e5e5e5;  /* ✅ FIX: Dùng 2px luôn để tránh shift */
+    border: 2px solid #e5e5e5 !important;  /* ✅ FIX: Dùng 2px luôn để tránh shift + important để không bị override */
     border-radius: 8px;  /* ✅ Bo tròn toàn bộ khung sản phẩm */
     /* ✅ BỎ overflow: hidden để badges và level-pro-new hiển thị */
 }
@@ -411,7 +411,7 @@
 .single-product:hover {
     transform: translateY(-5px);  /* Nâng card lên */
     box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);  /* ✅ Shadow đỏ khi hover */
-    border-color: #ff4b2b;  /* ✅ Chỉ đổi màu, không đổi size */
+    border-color: #ff4b2b !important;  /* ✅ Chỉ đổi màu, không đổi size */
 }
 
 /* Hiệu ứng zoom ảnh khi hover (giống Flash Sale) */
