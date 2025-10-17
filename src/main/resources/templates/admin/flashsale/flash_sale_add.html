@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Thêm Flash Sale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <script th:src="@{/assets/js/config.js}"></script>
+    
+    <style>
+        .flash-sale-form {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #ff4b2b;
+            box-shadow: 0 0 0 0.2rem rgba(255, 75, 43, 0.25);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            border: none;
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #ff4b2b 0%, #ff416c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 75, 43, 0.4);
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Thêm Flash Sale</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+    
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+    
+    <!-- Page Content -->
+    <div class="page-content">
+        <div class="container-xxl">
+            
+            <div class="row">
+                <div class="col-xl-8 offset-xl-2">
+                    <div class="card flash-sale-form">
+                        <div class="card-header bg-danger-subtle">
+                            <h4 class="card-title mb-0">
+                                <i class="bx bx-bolt"></i> Tạo Flash Sale Mới
+                            </h4>
+                        </div>
+                        
+                        <div class="card-body">
+                            <form id="flashSaleForm">
+                                
+                                <!-- Tên Flash Sale -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Tên Flash Sale <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="name" 
+                                           placeholder="VD: Flash Sale 12H Trưa - Giảm Giá Cực Sốc" 
+                                           required>
+                                    <small class="text-muted">Tên hiển thị cho người dùng</small>
+                                </div>
+                                
+                                <!-- Mô tả -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Mô tả</label>
+                                    <textarea class="form-control" name="description" rows="3" 
+                                              placeholder="Mô tả ngắn gọn về flash sale..."></textarea>
+                                </div>
+                                
+                                <!-- Thời gian -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Thời gian bắt đầu <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="datetime-local" class="form-control" name="startTime" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Thời gian kết thúc <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="datetime-local" class="form-control" name="endTime" required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Banner Image (Optional) -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Banner Image URL</label>
+                                    <input type="text" class="form-control" name="bannerImage" 
+                                           placeholder="/img/banner/flash-sale.jpg">
+                                    <small class="text-muted">URL của ảnh banner (tùy chọn)</small>
+                                </div>
+                                
+                                <!-- Alert -->
+                                <div id="alertMessage" class="alert d-none" role="alert"></div>
+                                
+                                <!-- Buttons -->
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="/admin/flash-sale-list" class="btn btn-light">
+                                        <i class="bx bx-x"></i> Hủy
+                                    </a>
+                                    <button type="submit" class="btn btn-danger" id="submitBtn">
+                                        <i class="bx bx-save"></i> Tạo Flash Sale
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Card -->
+                    <div class="card bg-info-subtle">
+                        <div class="card-body">
+                            <h5 class="text-info"><i class="bx bx-info-circle"></i> Lưu ý:</h5>
+                            <ul class="mb-0">
+                                <li>Sau khi tạo Flash Sale, bạn cần thêm sản phẩm vào flash sale ở trang danh sách</li>
+                                <li>Thời gian bắt đầu phải sau thời điểm hiện tại</li>
+                                <li>Thời gian kết thúc phải sau thời gian bắt đầu</li>
+                                <li>Flash Sale sẽ tự động ACTIVE khi đến thời gian bắt đầu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Vendor Javascript -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<script>
+$(document).ready(function() {
+    // Set min datetime to now
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.querySelector('input[name="startTime"]').min = now.toISOString().slice(0, 16);
+    
+    // Form submit
+    $('#flashSaleForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var formData = new FormData(this);
+        var data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        
+        console.log('📤 Submitting flash sale data:', data);
+        
+        // Validate
+        if (new Date(data.endTime) <= new Date(data.startTime)) {
+            showAlert('danger', 'Thời gian kết thúc phải sau thời gian bắt đầu!');
+            return;
+        }
+        
+        // Disable submit button
+        var $btn = $('#submitBtn');
+        $btn.prop('disabled', true).html('<i class="bx bx-loader bx-spin"></i> Đang tạo...');
+        
+        // Ajax call
+        $.ajax({
+            url: '/admin/api/flash-sale',
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                console.log('✅ Create flash sale success:', response);
+                showAlert('success', 'Tạo Flash Sale thành công! Đang chuyển hướng...');
+                
+                setTimeout(function() {
+                    window.location.href = '/admin/flash-sale-list';
+                }, 1500);
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ Create flash sale error:', xhr, status, error);
+                
+                var msg = 'Lỗi tạo Flash Sale: ';
+                if (xhr.status === 400) {
+                    msg += xhr.responseText || 'Dữ liệu không hợp lệ';
+                } else if (xhr.status === 500) {
+                    msg += 'Lỗi server';
+                } else {
+                    msg += 'Status ' + xhr.status;
+                }
+                
+                showAlert('danger', msg);
+                $btn.prop('disabled', false).html('<i class="bx bx-save"></i> Tạo Flash Sale');
+            }
+        });
+    });
+    
+    function showAlert(type, message) {
+        var $alert = $('#alertMessage');
+        $alert.removeClass('d-none alert-success alert-danger alert-info')
+              .addClass('alert-' + type)
+              .html('<i class="bx bx-' + (type === 'success' ? 'check-circle' : 'error-circle') + '"></i> ' + message);
+    }
+});
+</script>
+
+</body>
+</html>

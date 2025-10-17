@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Chỉnh Sửa Flash Sale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+    <script th:src="@{/assets/js/config.js}"></script>
+    
+    <style>
+        .flash-sale-form {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: #ff4b2b;
+            box-shadow: 0 0 0 0.2rem rgba(255, 75, 43, 0.25);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            border: none;
+        }
+        
+        .product-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-item:hover {
+            background-color: rgba(255, 75, 43, 0.05);
+            transform: scale(1.02);
+        }
+        
+        .product-item.selected {
+            background-color: rgba(255, 75, 43, 0.1);
+            border-left: 4px solid #ff4b2b;
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">🔥 Chỉnh Sửa Flash Sale</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+    
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+    
+    <!-- Page Content -->
+    <div class="page-content">
+        <div class="container-xxl">
+            
+            <div class="row">
+                <!-- Left: Form Edit -->
+                <div class="col-xl-5">
+                    <div class="card flash-sale-form">
+                        <div class="card-header bg-danger-subtle">
+                            <h4 class="card-title mb-0">
+                                <i class="bx bx-edit"></i> Chỉnh Sửa Flash Sale
+                            </h4>
+                        </div>
+                        
+                        <div class="card-body">
+                            <form id="flashSaleForm">
+                                <input type="hidden" name="id" id="flashSaleId">
+                                
+                                <!-- Tên Flash Sale -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Tên Flash Sale <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="name" id="name" required>
+                                </div>
+                                
+                                <!-- Mô tả -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Mô tả</label>
+                                    <textarea class="form-control" name="description" id="description" rows="3"></textarea>
+                                </div>
+                                
+                                <!-- Thời gian -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Bắt đầu <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="datetime-local" class="form-control" name="startTime" id="startTime" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">
+                                            Kết thúc <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="datetime-local" class="form-control" name="endTime" id="endTime" required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Banner -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Banner Image URL</label>
+                                    <input type="text" class="form-control" name="bannerImage" id="bannerImage">
+                                </div>
+                                
+                                <!-- Alert -->
+                                <div id="alertMessage" class="alert d-none" role="alert"></div>
+                                
+                                <!-- Buttons -->
+                                <div class="d-flex gap-2 justify-content-end">
+                                    <a href="/admin/flash-sale-list" class="btn btn-light">
+                                        <i class="bx bx-x"></i> Hủy
+                                    </a>
+                                    <button type="submit" class="btn btn-danger" id="submitBtn">
+                                        <i class="bx bx-save"></i> Cập nhật
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right: Add Products -->
+                <div class="col-xl-7">
+                    <div class="card">
+                        <div class="card-header bg-primary-subtle">
+                            <h4 class="card-title mb-0">
+                                <i class="bx bx-plus-circle"></i> Thêm Sản Phẩm Vào Flash Sale
+                            </h4>
+                        </div>
+                        
+                        <div class="card-body">
+                            <!-- Product Search -->
+                            <div class="mb-3">
+                                <input type="text" class="form-control" id="productSearch" 
+                                       placeholder="Tìm kiếm sản phẩm...">
+                            </div>
+                            
+                            <!-- Product List -->
+                            <div id="productList" style="max-height: 400px; overflow-y: auto;">
+                                <!-- Products will be loaded here -->
+                            </div>
+                            
+                            <!-- Add Product Form -->
+                            <div id="addProductForm" class="mt-3 p-3 bg-light rounded d-none">
+                                <h5>Thêm: <span id="selectedProductName"></span></h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">% Giảm giá</label>
+                                        <input type="number" class="form-control" id="discountPercent" 
+                                               min="1" max="99" value="50" required>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <label class="form-label">Preview giá</label>
+                                        <div id="pricePreview" class="form-control-plaintext text-danger fw-bold"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="addProductToFlashSale()">
+                                        <i class="bx bx-plus"></i> Thêm vào Flash Sale
+                                    </button>
+                                    <button type="button" class="btn btn-light btn-sm" onclick="cancelAddProduct()">
+                                        Hủy
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Products in Flash Sale -->
+                    <div class="card">
+                        <div class="card-header bg-success-subtle">
+                            <h4 class="card-title mb-0">
+                                <i class="bx bx-list-ul"></i> Sản Phẩm Trong Flash Sale (<span id="itemCount">0</span>)
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="flashSaleItems">
+                                <!-- Flash sale items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Vendor Javascript -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<script>
+var selectedProduct = null;
+var flashSaleId = null;
+
+$(document).ready(function() {
+    // Get flash sale ID from URL
+    var path = window.location.pathname;
+    flashSaleId = path.split('/').pop();
+    
+    console.log('🔥 Loading flash sale:', flashSaleId);
+    
+    // Load flash sale data
+    loadFlashSale();
+    loadProducts();
+    loadFlashSaleItems();
+    
+    // Form submit
+    $('#flashSaleForm').on('submit', function(e) {
+        e.preventDefault();
+        updateFlashSale();
+    });
+    
+    // Product search
+    $('#productSearch').on('keyup', function() {
+        var query = $(this).val().toLowerCase();
+        $('.product-item').each(function() {
+            var name = $(this).data('name').toLowerCase();
+            $(this).toggle(name.indexOf(query) > -1);
+        });
+    });
+    
+    // Discount percent change
+    $('#discountPercent').on('input', function() {
+        if (selectedProduct) {
+            updatePricePreview();
+        }
+    });
+});
+
+function loadFlashSale() {
+    $.ajax({
+        url: '/admin/api/flash-sale/' + flashSaleId,
+        type: 'GET',
+        success: function(data) {
+            console.log('✅ Flash sale data:', data);
+            
+            $('#flashSaleId').val(data.id);
+            $('#name').val(data.name);
+            $('#description').val(data.description || '');
+            $('#bannerImage').val(data.bannerImage || '');
+            
+            // Format datetime for input
+            $('#startTime').val(formatDateTimeForInput(data.startTime));
+            $('#endTime').val(formatDateTimeForInput(data.endTime));
+        },
+        error: function(xhr) {
+            console.error('❌ Load error:', xhr);
+            alert('Lỗi load flash sale!');
+        }
+    });
+}
+
+function updateFlashSale() {
+    var data = {
+        name: $('#name').val(),
+        description: $('#description').val(),
+        startTime: $('#startTime').val(),
+        endTime: $('#endTime').val(),
+        bannerImage: $('#bannerImage').val()
+    };
+    
+    var $btn = $('#submitBtn');
+    $btn.prop('disabled', true).html('<i class="bx bx-loader bx-spin"></i> Đang cập nhật...');
+    
+    $.ajax({
+        url: '/admin/api/flash-sale/' + flashSaleId,
+        type: 'PUT',
+        data: data,
+        success: function(response) {
+            console.log('✅ Update success:', response);
+            showAlert('success', 'Cập nhật thành công!');
+            $btn.prop('disabled', false).html('<i class="bx bx-save"></i> Cập nhật');
+        },
+        error: function(xhr) {
+            console.error('❌ Update error:', xhr);
+            showAlert('danger', 'Lỗi cập nhật: ' + (xhr.responseText || 'Unknown error'));
+            $btn.prop('disabled', false).html('<i class="bx bx-save"></i> Cập nhật');
+        }
+    });
+}
+
+function loadProducts() {
+    $.ajax({
+        url: '/api/product?page=0&size=100',
+        type: 'GET',
+        success: function(response) {
+            var products = response.content || response;
+            renderProducts(products);
+        }
+    });
+}
+
+function renderProducts(products) {
+    var html = '';
+    products.forEach(function(product) {
+        html += `
+            <div class="product-item p-2 mb-2 border rounded" data-name="${product.title}" 
+                 onclick="selectProduct(${product.id}, '${product.title}', ${product.price})">
+                <div class="d-flex align-items-center gap-2">
+                    <img src="${product.image}" alt="" style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                    <div class="flex-grow-1">
+                        <p class="mb-0 fw-semibold">${product.title}</p>
+                        <small class="text-muted">${formatCurrency(product.price)} đ</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    $('#productList').html(html);
+}
+
+function selectProduct(id, name, price) {
+    selectedProduct = { id: id, name: name, price: price };
+    
+    // Highlight selected
+    $('.product-item').removeClass('selected');
+    event.currentTarget.classList.add('selected');
+    
+    // Show add form
+    $('#selectedProductName').text(name);
+    $('#addProductForm').removeClass('d-none');
+    
+    updatePricePreview();
+}
+
+function updatePricePreview() {
+    var discount = $('#discountPercent').val();
+    var flashPrice = selectedProduct.price * (1 - discount / 100);
+    
+    $('#pricePreview').html(
+        '<span class="text-decoration-line-through text-muted">' + formatCurrency(selectedProduct.price) + ' đ</span> → ' +
+        '<span class="text-danger">' + formatCurrency(flashPrice) + ' đ</span> ' +
+        '(-' + discount + '%)'
+    );
+}
+
+function addProductToFlashSale() {
+    var discountPercent = $('#discountPercent').val();
+    
+    if (!discountPercent || discountPercent < 1 || discountPercent > 99) {
+        alert('% Giảm giá phải từ 1-99!');
+        return;
+    }
+    
+    $.ajax({
+        url: '/admin/api/flash-sale/' + flashSaleId + '/add-product',
+        type: 'POST',
+        data: {
+            productId: selectedProduct.id,
+            discountPercent: discountPercent
+        },
+        success: function(response) {
+            console.log('✅ Add product success:', response);
+            alert('Đã thêm ' + response.itemsCreated + ' sizes vào flash sale!');
+            loadFlashSaleItems();
+            cancelAddProduct();
+        },
+        error: function(xhr) {
+            console.error('❌ Add product error:', xhr);
+            alert('Lỗi: ' + (xhr.responseJSON?.message || xhr.responseText || 'Unknown error'));
+        }
+    });
+}
+
+function cancelAddProduct() {
+    selectedProduct = null;
+    $('.product-item').removeClass('selected');
+    $('#addProductForm').addClass('d-none');
+}
+
+function loadFlashSaleItems() {
+    $.ajax({
+        url: '/admin/api/flash-sale/' + flashSaleId + '/items',
+        type: 'GET',
+        success: function(items) {
+            console.log('✅ Flash sale items:', items);
+            renderFlashSaleItems(items);
+            // ✅ itemCount được set trong renderFlashSaleItems (số products, không phải số items)
+        }
+    });
+}
+
+function renderFlashSaleItems(items) {
+    var html = '';
+    
+    if (items.length === 0) {
+        html = '<p class="text-muted text-center">Chưa có sản phẩm nào</p>';
+    } else {
+        // ✅ GROUP BY PRODUCT (không hiển thị từng size)
+        var productMap = {};
+        
+        items.forEach(function(item) {
+            var key = item.productName;
+            
+            if (!productMap[key]) {
+                productMap[key] = {
+                    productName: item.productName,
+                    productImage: item.productImage,  // ✅ Thêm hình ảnh
+                    productDetailId: item.productDetailId,
+                    flashSalePrice: item.flashSalePrice,
+                    originalPrice: item.originalPrice,
+                    discountPercent: item.discountPercent,
+                    sizes: [],
+                    itemIds: []
+                };
+            }
+            
+            productMap[key].sizes.push(item.size);
+            productMap[key].itemIds.push(item.id);
+        });
+        
+        // Render từng product (1 dòng)
+        Object.values(productMap).forEach(function(product) {
+            var sizeList = product.sizes.sort((a, b) => a - b).join(', ');
+            
+            html += `
+                <div class="border-bottom pb-3 mb-3">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <!-- ✅ Hình ảnh sản phẩm -->
+                        <img src="${product.productImage || '/img/product/default.jpg'}" 
+                             alt="${product.productName}" 
+                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #e5e5e5;">
+                        
+                        <!-- Thông tin sản phẩm -->
+                        <div class="flex-grow-1">
+                            <strong>${product.productName}</strong>
+                            <br><small class="text-muted">Sizes: ${sizeList} (${product.sizes.length} sizes)</small>
+                            <br><small class="text-danger fw-bold">${formatCurrency(product.flashSalePrice)} đ</small>
+                            <small class="text-muted text-decoration-line-through">${formatCurrency(product.originalPrice)} đ</small>
+                            <span class="badge bg-danger-subtle text-danger">-${Math.round(product.discountPercent)}%</span>
+                        </div>
+                        
+                        <!-- Nút xóa -->
+                        <button class="btn btn-sm btn-soft-danger" onclick='removeProduct(${JSON.stringify(product.itemIds)}, "${product.productName}")'>
+                            <i class="bx bx-trash"></i> Xóa ${product.sizes.length} sizes
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // ✅ Update count (số products, không phải số items)
+        $('#itemCount').text(Object.keys(productMap).length);
+    }
+    
+    $('#flashSaleItems').html(html);
+}
+
+// ✅ XÓA PRODUCT (tất cả sizes)
+function removeProduct(itemIds, productName) {
+    if (!confirm(`Xóa "${productName}" (${itemIds.length} sizes) khỏi flash sale?`)) return;
+    
+    var deletedCount = 0;
+    var errors = [];
+    
+    // Xóa từng item (tất cả sizes)
+    itemIds.forEach(function(itemId) {
+        $.ajax({
+            url: '/admin/api/flash-sale/item/' + itemId,
+            type: 'DELETE',
+            async: false,  // Chờ xóa xong từng cái
+            success: function() {
+                deletedCount++;
+            },
+            error: function(xhr) {
+                errors.push('Item ' + itemId + ': ' + xhr.responseText);
+            }
+        });
+    });
+    
+    if (errors.length > 0) {
+        alert('Lỗi xóa:\n' + errors.join('\n'));
+    } else {
+        alert(`Đã xóa ${deletedCount} sizes của "${productName}"!`);
+    }
+    
+    loadFlashSaleItems();
+}
+
+// Keep old function for compatibility (if needed)
+function removeItem(itemId) {
+    if (!confirm('Xóa sản phẩm này khỏi flash sale?')) return;
+    
+    $.ajax({
+        url: '/admin/api/flash-sale/item/' + itemId,
+        type: 'DELETE',
+        success: function() {
+            alert('Đã xóa!');
+            loadFlashSaleItems();
+        },
+        error: function(xhr) {
+            alert('Lỗi xóa: ' + xhr.responseText);
+        }
+    });
+}
+
+function formatCurrency(amount) {
+    return new Intl.NumberFormat('vi-VN').format(amount);
+}
+
+function formatDateTimeForInput(dateTimeString) {
+    if (!dateTimeString) return '';
+    var date = new Date(dateTimeString);
+    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+    return date.toISOString().slice(0, 16);
+}
+
+function showAlert(type, message) {
+    var $alert = $('#alertMessage');
+    $alert.removeClass('d-none alert-success alert-danger')
+          .addClass('alert-' + type)
+          .html('<i class="bx bx-' + (type === 'success' ? 'check-circle' : 'error-circle') + '"></i> ' + message);
+}
+</script>
+
+</body>
+</html>

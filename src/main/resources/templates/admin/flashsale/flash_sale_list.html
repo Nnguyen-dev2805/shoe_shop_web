@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Danh Sách Flash Sale</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Flash Sale Management" />
+    <meta name="author" content="Techzaa" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
+
+    <!-- Vendor CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Icons CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config JS (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+    
+    <style>
+        /* Hiệu ứng cho card */
+        .card {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Hiệu ứng cho table */
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+        
+        .table tbody tr:hover {
+            background-color: rgba(255, 75, 43, 0.05);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Hiệu ứng cho buttons */
+        .btn {
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Flash sale badge */
+        .flash-sale-badge {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+        
+        /* Loading effect */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #ff4b2b;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">🔥 Danh Sách Flash Sale</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center gap-1">
+                            <h4 class="card-title flex-grow-1">
+                                <i class="bx bx-shopping-bag"></i> Danh Sách Flash Sale
+                            </h4>
+                            <a th:href="@{/admin/flash-sale-add}" class="btn btn-sm btn-danger">
+                                <i class="bx bx-plus"></i> Thêm Flash Sale
+                            </a>
+                        </div>
+                        <div>
+                            <div class="table-responsive">
+                                <div class="p-3">
+                                    <div class="mb-3 d-flex gap-2 align-items-center">
+                                        <input type="text" id="searchInput" class="form-control" placeholder="Tìm theo tên" onkeyup="searchFlashSaleTable()" style="width: 300px;">
+                                        <select id="statusSelect" class="form-control" style="width: 200px;" onchange="filterByStatus()">
+                                            <option value="">Tất cả trạng thái</option>
+                                            <option value="SCHEDULED">Sắp diễn ra</option>
+                                            <option value="ACTIVE">Đang diễn ra</option>
+                                            <option value="ENDED">Đã kết thúc</option>
+                                            <option value="CANCELLED">Đã hủy</option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearFilter()">
+                                            <i class="bx bx-refresh"></i> Xóa bộ lọc
+                                        </button>
+                                    </div>
+                                </div>
+                                <table class="table align-middle mb-0 table-hover table-centered" id="flashSaleTable">
+                                    <thead class="bg-danger-subtle">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Tên Flash Sale</th>
+                                        <th>Thời gian bắt đầu</th>
+                                        <th>Thời gian kết thúc</th>
+                                        <th>Trạng thái</th>
+                                        <th>Số sản phẩm</th>
+                                        <th>Đã bán</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="flashSaleTbody">
+                                        <!-- Rows sẽ được thêm động bởi jQuery -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="card-footer border-top">
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end mb-0" id="pagination">
+                                    <!-- Pagination sẽ được thêm động bởi jQuery -->
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- Flash Sale Admin JavaScript -->
+<script th:src="@{/js/admin/flash-sale-admin.js}"></script>
+
+<script>
+    function searchFlashSaleTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toLowerCase();
+        table = document.getElementById("flashSaleTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none";
+            td = tr[i].getElementsByTagName("td");
+
+            if (td[1]) {
+                txtValue = td[1].textContent || td[1].innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                }
+            }
+        }
+    }
+
+    function filterByStatus() {
+        var selectedStatus = document.getElementById("statusSelect").value;
+        window.FlashSaleAdmin.loadFlashSales(0, selectedStatus);
+    }
+
+    function clearFilter() {
+        document.getElementById("searchInput").value = "";
+        document.getElementById("statusSelect").value = "";
+        window.FlashSaleAdmin.loadFlashSales(0, "");
+    }
+</script>
+
+</body>
+</html>

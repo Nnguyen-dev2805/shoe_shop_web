@@ -688,10 +688,7 @@
 <!--                                Description</a>-->
 <!--                        </li>-->
                         <li role="presentation">
-                            <a href="#tab2" aria-controls="tab2" role="tab" data-bs-toggle="tab">Đánh giá</a>
-                        </li>
-                        <li role="presentation">
-                            <a href="#tab3" aria-controls="tab3" role="tab" data-bs-toggle="tab" id="viewAllReview" data-product-id="">Xem danh sách đánh giá</a>
+                            <a href="#tab2" aria-controls="tab2" role="tab" data-bs-toggle="tab" id="viewAllReview" data-product-id="">Xem danh sách đánh giá</a>
                         </li>
                     </ul>
 
@@ -710,52 +707,7 @@
 <!--                                    mattis lobortis. </p>-->
 <!--                            </div>-->
 <!--                        </div>-->
-                        <div role="tabpanel" class="tab-pane fade" id="tab2" aria-labelledby="tab2-tab">
-                            <div class="single-p-tab-content">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="rate-product hidden-xs">
-                                            <div class="rate-product-heading">
-                                                <h3 id="product-review-title">You are reviewing: Product</h3>
-                                                <h3>How do you rate this product? <em>*</em></h3>
-                                            </div>
-                                            <form id="ratingForm" th:action="@{/rating/add}" method="post" enctype="multipart/form-data">
-                                                <div class="rating-container">
-                                                    <span class="star" data-value="1"><i class="fa fa-star" title="Rất tệ"></i></span>
-                                                    <span class="star" data-value="2"><i class="fa fa-star" title="Không hài lòng"></i></span>
-                                                    <span class="star" data-value="3"><i class="fa fa-star" title="Bình thường"></i></span>
-                                                    <span class="star" data-value="4"><i class="fa fa-star" title="Hài lòng"></i></span>
-                                                    <span class="star" data-value="5"><i class="fa fa-star" title="Rất hài lòng"></i></span>
-                                                </div>
-                                                <input type="hidden" id="rating" name="star" value="" required>
-                                                <ul class="form-list">
-                                                    <li>
-                                                        <label>Nickname <em>*</em></label>
-                                                        <input type="hidden" value="" name="productId">
-                                                        <input type="text" th:value="${session.user != null ? session.user.fullname : ''}" name="fullname" placeholder="Your name">
-                                                        <input type="hidden" th:value="${session.user != null ? session.user.email : ''}" name="email">
-                                                    </li>
-                                                    <li>
-                                                        <label for="image">Thêm hình ảnh kèm theo(nếu có)</label>
-                                                        <input type="file" id="image" name="image" placeholder="Ảnh kèm theo">
-                                                    </li>
-                                                    <li>
-                                                        <label>Review description<em>*</em></label>
-                                                        <textarea cols="3" rows="5" name="comment"></textarea>
-                                                    </li>
-                                                </ul>
-                                                <button type="submit">Submit Review</button>
-                                            </form>
-
-
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                        <div role="tabpanel" class="tab-pane fade" id="tab3">
+                        <div role="tabpanel" class="tab-pane fade" id="tab2">
                             <div class="single-p-tab-content" id="reviewsContent">
 
                             </div>
@@ -1499,6 +1451,331 @@ $(document).ready(function() {
         // Redirect to payment page
         window.location.href = '/user/payment';
     });
+});
+
+// Load ratings when tab is clicked
+$(document).ready(function() {
+    // Function to get product ID from URL path (same as existing function)
+    function getProductIdFromUrl() {
+        var path = window.location.pathname;
+        var parts = path.split('/');
+        return parts[parts.length - 1];
+    }
+    
+    // Get product ID and set it to data attribute
+    const productId = getProductIdFromUrl();
+    console.log('Product ID from URL:', productId);
+    
+    if (productId) {
+        $('#viewAllReview').data('product-id', productId);
+    }
+    
+    // Handle tab click to load ratings
+    $('#viewAllReview').on('click', function() {
+        const productId = $(this).data('product-id');
+        console.log('Loading ratings for product ID:', productId);
+        if (productId) {
+            loadProductRatings(productId);
+        } else {
+            console.error('No product ID found');
+            $('#reviewsContent').html('<p class="text-danger">Không tìm thấy ID sản phẩm</p>');
+        }
+    });
+    
+    // Function to load and display ratings
+    function loadProductRatings(productId) {
+        console.log('Making API call to:', '/api/ratings/product/' + productId);
+        
+        $.ajax({
+            url: '/api/ratings/product/' + productId,
+            method: 'GET',
+            success: function(response) {
+                console.log('API Response:', response);
+                if (response.success) {
+                    console.log('Ratings found:', response.ratings.length);
+                    console.log('Summary:', response.summary);
+                    
+                    // Store all ratings for button counting (only on initial load)
+                    if (!currentFilterState) {
+                        allRatings = response.ratings;
+                    }
+                    
+                    displayRatings(response.ratings, response.summary, currentFilterState);
+                } else {
+                    console.error('API Error:', response.message);
+                    $('#reviewsContent').html('<p class="text-danger">' + response.message + '</p>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', xhr, status, error);
+                console.error('Response Text:', xhr.responseText);
+                $('#reviewsContent').html('<p class="text-danger">Lỗi khi tải danh sách đánh giá: ' + error + '</p>');
+            }
+        });
+    }
+    
+    // Function to display ratings
+    function displayRatings(ratings, summary, currentFilter) {
+        const reviewsContent = $('#reviewsContent');
+        
+        if (ratings.length === 0) {
+            let message = 'Chưa có đánh giá nào cho sản phẩm này.';
+            if (currentFilter) {
+                if (currentFilter.star) {
+                    message = `Chưa có đánh giá ${currentFilter.star} sao nào.`;
+                } else if (currentFilter.hasComment) {
+                    message = 'Chưa có đánh giá nào có bình luận.';
+                } else if (currentFilter.hasImage) {
+                    message = 'Chưa có đánh giá nào có hình ảnh.';
+                }
+            }
+            reviewsContent.html(`<div style="text-align: center; padding: 40px; color: #999;"><p>${message}</p></div>`);
+            return;
+        }
+        
+        // Get real data from summary
+        const averageStars = summary ? summary.averageStars || 0.0 : 0.0;
+        const totalReviewers = summary ? summary.totalReviewers || 0 : 0;
+        
+        let html = `
+            <div class="product-ratings" style="background: #fff; border-radius: 8px; padding: 20px;">
+                <div class="product-rating-overview" style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #f0f0f0;">
+                    <div class="product-rating-overview__briefing" style="display: flex; align-items: center; gap: 20px;">
+                        <div class="product-rating-overview__score-wrapper" style="text-align: center;">
+                            <span class="product-rating-overview__rating-score" style="font-size: 32px; font-weight: bold; color: #ee4d2d;">${averageStars.toFixed(1)}</span>
+                            <span class="product-rating-overview__rating-score-out-of" style="color: #999; font-size: 14px;"> trên 5</span>
+                        </div>
+                        <div class="shopee-rating-stars" style="display: flex; gap: 2px;">
+                            ${generateShopeeStars(averageStars)}
+                        </div>
+                    </div>
+                </div>
+                <div class="product-rating-overview__filters" style="margin-bottom: 20px; display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${window.generateFilterButtons(ratings, summary, currentFilter)}
+                </div>
+                <div class="product-ratings__list">
+        `;
+        
+        ratings.forEach(function(rating) {
+            const stars = generateShopeeStars(rating.star);
+            const date = new Date(rating.createdDate).toLocaleDateString('vi-VN');
+            const userName = rating.userName || 'Khách hàng';
+            
+            html += `
+                <div class="q2b7Oq" style="border-bottom: 1px solid #f0f0f0; padding: 20px 0;">
+                    <div class="kRbrbH" style="display: flex; gap: 12px;">
+                        <div class="shopee-avatar" style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <svg width="20" height="20" viewBox="0 0 15 15" fill="#999">
+                                <circle cx="7.5" cy="4.5" fill="none" r="3.8" stroke="#999" stroke-width="1"></circle>
+                                <path d="m1.5 14.2c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="none" stroke="#999" stroke-width="1"></path>
+                            </svg>
+                        </div>
+                        <div class="A7MThp" style="flex: 1;">
+                            <div class="d72He7" style="margin-bottom: 8px;">
+                                <div class="InK5kS" style="font-weight: 600; color: #333; margin-bottom: 4px;">${userName}</div>
+                                <div class="BnXxkm" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                                    <div class="rGdC5O" style="display: flex; gap: 1px;">
+                                        ${stars}
+                                    </div>
+                                    <span style="background: #f0f0f0; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #666;">
+                                        Size ${rating.productSize}
+                                    </span>
+                                </div>
+                                <div class="j5ucs4">
+                                    <div class="XYk98l" style="color: #999; font-size: 12px;">${date}</div>
+                                </div>
+                            </div>
+                            <div class="meQyXP">
+                                <div style="color: #888; font-size: 13px; margin-bottom: 8px;">
+                                    📦 ${rating.productName}
+                                </div>
+                                <div class="YNedDV" style="color: #333; line-height: 1.5; margin-bottom: 12px;">${rating.comment}</div>
+                                ${rating.image ? `
+                                    <div class="ZBCPg1">
+                                        <div class="rating-media-list">
+                                            <div class="rating-media-list__container" style="display: flex; gap: 8px;">
+                                                <div class="rating-media-list__image-wrapper" style="width: 72px; height: 72px; border-radius: 4px; overflow: hidden; cursor: pointer;">
+                                                    <img src="${rating.image}" alt="Review image" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        html += `
+                </div>
+            </div>
+        `;
+        
+        reviewsContent.html(html);
+    }
+    
+    // Function to generate filter buttons - moved outside document.ready
+    window.generateFilterButtons = function(ratings, summary, currentFilter) {
+        const productId = $('#viewAllReview').data('product-id');
+        let html = '';
+        
+        // Tất cả button
+        const isAllActive = !currentFilter || (!currentFilter.star && !currentFilter.hasComment && !currentFilter.hasImage);
+        html += `
+            <div class="product-rating-overview__filter ${isAllActive ? 'product-rating-overview__filter--active' : ''}" 
+                 style="padding: 8px 16px; border: 1px solid ${isAllActive ? '#ee4d2d' : '#ddd'}; border-radius: 4px; cursor: pointer; background: ${isAllActive ? '#ee4d2d' : 'white'}; color: ${isAllActive ? 'white' : '#333'}; font-size: 14px;"
+                 onclick="window.filterRatings(${productId}, null, null, null, this)">
+                <span>Tất cả</span>
+            </div>
+        `;
+        
+        // Show all star filter buttons (5, 4, 3, 2, 1) - use allRatings for counting
+        for (let star = 5; star >= 1; star--) {
+            const count = window.getStarCount(allRatings, star);
+            if (count > 0) {
+                const isActive = currentFilter && currentFilter.star === star;
+                html += `
+                    <div class="product-rating-overview__filter ${isActive ? 'product-rating-overview__filter--active' : ''}" 
+                         style="padding: 8px 16px; border: 1px solid ${isActive ? '#ee4d2d' : '#ddd'}; border-radius: 4px; cursor: pointer; background: ${isActive ? '#ee4d2d' : 'white'}; color: ${isActive ? 'white' : '#333'}; font-size: 14px;"
+                         onclick="window.filterRatings(${productId}, ${star}, null, null, this)">
+                        <span>${star} Sao (${count})</span>
+                    </div>
+                `;
+            }
+        }
+        
+        // Image filter - use allRatings for counting
+        const imageCount = window.getImageCount(allRatings);
+        if (imageCount > 0) {
+            const isActive = currentFilter && currentFilter.hasImage === true;
+            html += `
+                <div class="product-rating-overview__filter ${isActive ? 'product-rating-overview__filter--active' : ''}" 
+                     style="padding: 8px 16px; border: 1px solid ${isActive ? '#ee4d2d' : '#ddd'}; border-radius: 4px; cursor: pointer; background: ${isActive ? '#ee4d2d' : 'white'}; color: ${isActive ? 'white' : '#333'}; font-size: 14px;"
+                     onclick="window.filterRatings(${productId}, null, null, true, this)">
+                    <span>Có hình ảnh / video (${imageCount})</span>
+                </div>
+            `;
+        }
+        
+        return html;
+    };
+    
+    // Helper functions to count ratings - moved outside document.ready
+    window.getStarCount = function(ratings, star) {
+        return ratings.filter(rating => rating.star === star).length;
+    };
+    
+    window.getCommentCount = function(ratings) {
+        return ratings.filter(rating => rating.comment && rating.comment.trim() !== '').length;
+    };
+    
+    window.getImageCount = function(ratings) {
+        return ratings.filter(rating => rating.image && rating.image.trim() !== '').length;
+    };
+    
+    // Global variable to store current filter state
+    let currentFilterState = null;
+    
+    // Global variable to store all ratings for button counting
+    let allRatings = [];
+    
+    // Function to filter ratings - moved outside document.ready
+    window.filterRatings = function(productId, star, hasComment, hasImage, clickedElement) {
+        // Store current filter state
+        currentFilterState = {
+            star: star,
+            hasComment: hasComment,
+            hasImage: hasImage
+        };
+        
+        // Build query parameters
+        let url = '/api/ratings/product/' + productId;
+        const params = [];
+        
+        if (star !== null) params.push('star=' + star);
+        if (hasComment !== null) params.push('hasComment=' + hasComment);
+        if (hasImage !== null) params.push('hasImage=' + hasImage);
+        
+        if (params.length > 0) {
+            url += '?' + params.join('&');
+        }
+        
+        console.log('Filtering with URL:', url);
+        console.log('Current filter state:', currentFilterState);
+        
+        // Make API call
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(response) {
+                console.log('Filtered API Response:', response);
+                if (response.success) {
+                    console.log('Filtered ratings found:', response.ratings.length);
+                    displayRatings(response.ratings, response.summary, currentFilterState);
+                } else {
+                    console.error('API Error:', response.message);
+                    $('#reviewsContent').html('<p class="text-danger">' + response.message + '</p>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('AJAX Error:', xhr, status, error);
+                $('#reviewsContent').html('<p class="text-danger">Lỗi khi lọc đánh giá: ' + error + '</p>');
+            }
+        });
+    };
+    
+    // Function to generate star HTML
+    function generateStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars += '<i class="fa fa-star" style="color: #ffc107;"></i>';
+            } else {
+                stars += '<i class="fa fa-star-o" style="color: #ddd;"></i>';
+            }
+        }
+        return stars;
+    }
+    
+    // Function to generate Shopee-style stars
+    function generateShopeeStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(rating)) {
+                // Full star
+                stars += `
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="#ffc107">
+                        <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                    </svg>
+                `;
+            } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+                // Half star
+                const percentage = (rating % 1) * 100;
+                stars += `
+                    <div style="position: relative; width: 15px; height: 15px;">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="#ddd">
+                            <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                        </svg>
+                        <div style="position: absolute; top: 0; left: 0; width: ${percentage}%; height: 100%; overflow: hidden;">
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="#ffc107">
+                                <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Empty star
+                stars += `
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="#ddd">
+                        <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                    </svg>
+                `;
+            }
+        }
+        return stars;
+    }
 });
 </script>
 

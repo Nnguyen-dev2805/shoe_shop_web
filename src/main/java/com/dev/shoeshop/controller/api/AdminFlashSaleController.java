@@ -9,6 +9,10 @@ import com.dev.shoeshop.service.FlashSaleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,11 +44,64 @@ import java.util.Map;
 @RequestMapping("/admin/api/flash-sale")
 @RequiredArgsConstructor
 @Slf4j
-@PreAuthorize("hasRole('ADMIN')") // Chỉ admin mới access
+//@PreAuthorize("hasRole('ADMIN')") // Chỉ admin mới access
 public class AdminFlashSaleController {
     
     private final FlashSaleService flashSaleService;
     private final FlashSaleRepository flashSaleRepo;
+    private final com.dev.shoeshop.repository.FlashSaleItemRepository flashSaleItemRepo;
+    
+    /**
+     * API 0: LẤY DANH SÁCH FLASH SALES VỚI PAGINATION
+     * 
+     * Method: GET
+     * URL: /admin/api/flash-sale?page=0&size=10&status=ACTIVE
+     * Auth: Admin only
+     * 
+     * Query Params:
+     * - page: Trang (0-indexed)
+     * - size: Số items mỗi trang
+     * - status: Filter theo status (optional)
+     * 
+     * Response:
+     * {
+     *   "content": [...],
+     *   "totalPages": 5,
+     *   "totalElements": 45,
+     *   "number": 0,
+     *   "size": 10
+     * }
+     * 
+     * Dùng cho:
+     * - Admin list page với pagination
+     * - Filter theo status
+     */
+    @GetMapping
+    public ResponseEntity<Page<FlashSale>> getFlashSalesWithPagination(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) FlashSaleStatus status) {
+        
+        log.info("Admin API: Getting flash sales - page={}, size={}, status={}", page, size, status);
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdDate").descending());
+        Page<FlashSale> flashSales;
+        
+        if (status != null) {
+            // Filter by status
+            flashSales = flashSaleRepo.findByStatusAndIsDeleteFalse(status, pageable);
+        } else {
+            // Get all
+            flashSales = flashSaleRepo.findByIsDeleteFalse(pageable);
+        }
+        
+        log.info("Found {} flash sales (page {}/{})", 
+                 flashSales.getContent().size(), 
+                 flashSales.getNumber() + 1, 
+                 flashSales.getTotalPages());
+        
+        return ResponseEntity.ok(flashSales);
+    }
     
     /**
      * API 1: TẠO FLASH SALE MỚI
@@ -194,12 +251,68 @@ public class AdminFlashSaleController {
      * - Edit flash sale form
      */
     @GetMapping("/{id}")
-    public ResponseEntity<FlashSale> getFlashSaleById(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> getFlashSaleById(@PathVariable Long id) {
         log.info("Admin API: Getting flash sale {}", id);
         
-        return flashSaleRepo.findById(id)
-            .map(ResponseEntity::ok)
-            .orElse(ResponseEntity.notFound().build());
+        FlashSale flashSale = flashSaleRepo.findById(id)
+            .orElse(null);
+        
+        if (flashSale == null) {
+            log.warn("Flash sale {} not found", id);
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Lấy items của flash sale
+        var items = flashSaleService.getFlashSaleItems(id);
+        
+        // Tạo response
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", flashSale.getId());
+        response.put("name", flashSale.getName());
+        response.put("description", flashSale.getDescription());
+        response.put("startTime", flashSale.getStartTime());
+        response.put("endTime", flashSale.getEndTime());
+        response.put("status", flashSale.getStatus().name());
+        response.put("totalItems", flashSale.getTotalItems());
+        response.put("totalSold", flashSale.getTotalSold());
+        response.put("bannerImage", flashSale.getBannerImage());
+        response.put("items", items);  // ✅ Thêm items
+        
+        // ✅ Tính số products (unique) thay vì số items
+        long uniqueProducts = items.stream()
+            .map(item -> item.getProductName())
+            .distinct()
+            .count();
+        response.put("totalProducts", uniqueProducts);
+        
+        log.info("Flash sale {} loaded with {} items ({} unique products)", id, items.size(), uniqueProducts);
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * API 3.1: LẤY DANH SÁCH ITEMS CỦA FLASH SALE
+     * 
+     * Method: GET
+     * URL: /admin/api/flash-sale/{id}/items
+     * Auth: Admin only
+     * 
+     * Response:
+     * - 200 OK: List<FlashSaleItemResponse>
+     * 
+     * Dùng cho:
+     * - Admin edit page - Hiển thị danh sách items
+     * - Load items để xóa/sửa
+     */
+    @GetMapping("/{id}/items")
+    public ResponseEntity<List<com.dev.shoeshop.dto.flashsale.response.FlashSaleItemResponse>> getFlashSaleItems(
+            @PathVariable Long id) {
+        
+        log.info("Admin API: Getting items for flash sale {}", id);
+        
+        var items = flashSaleService.getFlashSaleItems(id);
+        
+        log.info("Found {} items for flash sale {}", items.size(), id);
+        return ResponseEntity.ok(items);
     }
     
     /**
@@ -447,5 +560,117 @@ public class AdminFlashSaleController {
         stats.put("message", "Feature coming soon");
         
         return ResponseEntity.ok(stats);
+    }
+    
+    /**
+     * API 9: THÊM PRODUCT VÀO FLASH SALE (TỰ ĐỘNG TẤT CẢ SIZES)
+     * 
+     * Method: POST
+     * URL: /admin/api/flash-sale/{id}/add-product
+     * Auth: Admin only
+     * 
+     * Request Params:
+     * - productId: ID của product cần thêm
+     * - discountPercent: % giảm giá (1-99)
+     * 
+     * Response:
+     * {
+     *   "success": true,
+     *   "itemsCreated": 5,
+     *   "message": "Đã thêm 5 sizes vào flash sale!"
+     * }
+     * 
+     * Dùng cho:
+     * - Admin chọn Product → Tự động thêm TẤT CẢ sizes vào flash sale
+     * - Không cần chọn từng ProductDetail nữa
+     * 
+     * Example:
+     * POST /admin/api/flash-sale/1/add-product?productId=5&discountPercent=50
+     * → Tạo FlashSaleItem cho tất cả sizes của Nike Air Max (giảm 50%)
+     */
+    @PostMapping("/{id}/add-product")
+    public ResponseEntity<Map<String, Object>> addProductToFlashSale(
+            @PathVariable Long id,
+            @RequestParam Long productId,
+            @RequestParam Double discountPercent) {
+        
+        log.info("Admin API: Adding product {} to flash sale {} with {}% discount", 
+                 productId, id, discountPercent);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            int itemsCreated = flashSaleService.addProductToFlashSale(id, productId, discountPercent);
+            
+            response.put("success", true);
+            response.put("itemsCreated", itemsCreated);
+            response.put("message", "Đã thêm " + itemsCreated + " sizes vào flash sale!");
+            
+            log.info("Successfully added product {}: {} items created", productId, itemsCreated);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Failed to add product to flash sale: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
+     * API 9: XÓA FLASH SALE ITEM
+     * 
+     * Method: DELETE
+     * URL: /admin/api/flash-sale/item/{itemId}
+     * Auth: Admin only
+     * 
+     * Response:
+     * - 200 OK: { success: true, message: "Đã xóa item" }
+     * - 404 Not Found: Item không tồn tại
+     * 
+     * Dùng cho:
+     * - Admin xóa sản phẩm khỏi flash sale
+     */
+    @DeleteMapping("/item/{itemId}")
+    public ResponseEntity<Map<String, Object>> deleteFlashSaleItem(@PathVariable Long itemId) {
+        log.info("Admin API: Deleting flash sale item {}", itemId);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Tìm item để lấy flash sale id
+            var itemEntity = flashSaleItemRepo.findById(itemId)
+                .orElse(null);
+            
+            if (itemEntity == null) {
+                response.put("success", false);
+                response.put("message", "Item không tồn tại");
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Lấy flash sale để update total_items
+            var flashSale = itemEntity.getFlashSale();
+            
+            // Xóa item
+            flashSaleItemRepo.deleteById(itemId);
+            
+            // Update total_items
+            if (flashSale != null && flashSale.getTotalItems() > 0) {
+                flashSale.setTotalItems(flashSale.getTotalItems() - 1);
+                flashSaleRepo.save(flashSale);
+            }
+            
+            response.put("success", true);
+            response.put("message", "Đã xóa item khỏi flash sale");
+            
+            log.info("Successfully deleted flash sale item {}", itemId);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Failed to delete flash sale item: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 }

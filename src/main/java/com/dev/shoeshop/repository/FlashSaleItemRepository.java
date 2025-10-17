@@ -36,4 +36,15 @@ public interface FlashSaleItemRepository extends JpaRepository<FlashSaleItem, Lo
     // Đếm số lượng items trong flash sale dùng cho thống kê
     @Query("SELECT COUNT(fsi) FROM FlashSaleItem fsi WHERE fsi.flashSale.id = :flashSaleId")
     Long countByFlashSaleId(@Param("flashSaleId") Long flashSaleId);
+    
+    // Kiểm tra ProductDetail đã có trong flash sale chưa
+    // Dùng để tránh duplicate khi thêm product vào flash sale
+    @Query("SELECT CASE WHEN COUNT(fsi) > 0 THEN true ELSE false END " +
+           "FROM FlashSaleItem fsi " +
+           "WHERE fsi.flashSale.id = :flashSaleId " +
+           "AND fsi.productDetail.id = :productDetailId")
+    boolean existsByFlashSaleIdAndProductDetailId(
+        @Param("flashSaleId") Long flashSaleId, 
+        @Param("productDetailId") Long productDetailId
+    );
 }
