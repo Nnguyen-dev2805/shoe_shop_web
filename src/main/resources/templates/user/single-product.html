@@ -980,6 +980,27 @@
                             </div>
                         </div>
                         
+                        <!-- Action Buttons -->
+                        <div class="action">
+                            <ul class="add-to-links">
+                                <li>
+                                    <a href="#" class="add-to-wishlist" data-product-id="" 
+                                       onclick="toggleWishlist(this.getAttribute('data-product-id'), this); return false;" 
+                                       title="Thêm vào yêu thích">
+                                        <i class="fa fa-heart-o"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" title="So sánh">
+                                        <i class="fa fa-refresh"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" title="Chia sẻ">
+                                        <i class="fa fa-share-alt"></i>
+                                    </a>
+                                </li>
+                            </ul>
                         <!-- Description (Shopee Style Row) -->
                         <div class="shopee-info-row" style="display:none;" id="description-row">
                             <div class="shopee-info-label">Mô tả</div>
@@ -1566,49 +1587,8 @@
 ============================================ -->
 <script src="/js/main.js"></script>
 <!-- Size price calculator đã được chuyển vào product-details.js -->
-<script>
-    $(document).ready(function () {
-        // Bắt sự kiện khi nhấn vào liên kết "add-to-wishlist"
-        $('.add-to-wishlist').click(function (e) {
-            e.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
-
-            var productIdStr = $(this).data('product-id'); // Lấy productId từ thuộc tính data-product-id
-            var productId = parseInt(productIdStr, 10); // Chuyển đổi productId sang số nguyên
-            if (isNaN(productId) || productId <= 0) {
-                alert('ID sản phẩm không hợp lệ');
-                return;
-            }
-
-            var heartIcon = $(this).find('i'); // Lấy thẻ <i> chứa biểu tượng trái tim
-
-            // Gửi yêu cầu AJAX đến server
-            $.ajax({
-                url: '/wishlist/toggle', // URL của endpoint thêm/xóa sản phẩm vào wishlist
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({productId: productId}), // Gửi productId dưới dạng JSON
-                success: function (response) {
-                    if (response === 'ADDED') {
-                        // Nếu thêm thành công, thay đổi biểu tượng trái tim thành màu đỏ
-                        heartIcon.removeClass('fa-heart-o').addClass('fa-heart');
-                        heartIcon.css('color', 'red');
-                    } else if (response === 'REMOVED') {
-                        // Nếu bị xóa, đổi biểu tượng trái tim thành không màu
-                        heartIcon.removeClass('fa-heart').addClass('fa-heart-o');
-                        heartIcon.css('color', '');
-                    } else if (response === 'LOGIN_REQUIRED') {
-                        alert('Vui lòng đăng nhập để thêm sản phẩm vào wishlist');
-                    } else if (response === 'ALREADY_EXISTS') {
-                        alert('Sản phẩm đã có trong wishlist');
-                    }
-                },
-                error: function () {
-                    alert('Đã có lỗi xảy ra, vui lòng thử lại sau');
-                }
-            });
-        });
-    });
-</script>
+<!-- Wishlist Handler JS - RESTful API + Ajax + jQuery -->
+<script src="/js/user/wishlist-handler.js"></script>
 <script>
     $(document).ready(function () {
         // Hàm lấy ProductID từ URL
