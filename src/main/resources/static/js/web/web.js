@@ -202,7 +202,7 @@ function loadProducts(page) {
     }
     
     $.ajax({
-        url: '/api/product',
+        url: '/api/shop/products',  // ✅ FIX: Endpoint đúng
         type: 'GET',
         data: params,
         dataType: 'json',
@@ -225,35 +225,89 @@ function loadProducts(page) {
 function renderProducts(products) {
     let productHtml = '';
     
+    // 🔍 DEBUG: Log toàn bộ products array
+    console.log('=== 🔍 DEBUG renderProducts() ===');
+    console.log('📦 Total products:', products.length);
+    console.log('📄 Full products array:', products);
+    
     if (products && products.length > 0) {
-        products.forEach(function (product) {
-            let formattedPrice = new Intl.NumberFormat('vi-VN').format(product.price);
+        products.forEach(function (product, index) {
+            // 🔍 DEBUG: Log từng product
+            console.log(`\n--- Product #${index + 1}: ${product.title} ---`);
+            console.log('  💰 Price:', product.price);
+            console.log('  🔥 Flash Sale Object:', product.flashSale);
+            
+            // Check if product has flash sale
+            const hasFlashSale = product.flashSale && product.flashSale.active;
+            console.log('  ✅ Has Flash Sale?', hasFlashSale);
+            const flashSalePrice = hasFlashSale ? product.flashSale.flashSalePrice : null;
+            const originalPrice = product.price;
+            const discountPercent = hasFlashSale ? product.flashSale.discountPercent : 0;
+            
+            let formattedPrice = new Intl.NumberFormat('vi-VN').format(hasFlashSale ? flashSalePrice : originalPrice);
+            let formattedOriginalPrice = new Intl.NumberFormat('vi-VN').format(originalPrice);
             
             productHtml += `
                 <div class="col-lg-4 col-md-6">
-                    <div class="single-product">
-                        <div class="level-pro-new">
-                            <span>Mới</span>
-                        </div>
+                    <div class="single-product ${hasFlashSale ? 'flash-sale-product' : ''}">
+                        ${hasFlashSale ? `
+                            <!-- Flash Sale Badges -->
+                            <div class="flash-sale-badges">
+                                <div class="voucher-badge">VOUCHER XTRA</div>
+                                <div class="discount-badge">-${Math.round(discountPercent)}%</div>
+                            </div>
+                        ` : `
+<!--                            <div class="level-pro-new">-->
+<!--                                <span>Mới</span>-->
+<!--                            </div>-->
+                        `}
+                        
                         <div class="product-img">
                             <a href="/product/details/${product.id}">
                                 <img src="${product.image}" alt="${product.title}" class="primary-img">
                                 <img src="/img/logo-1.png" alt="Image2" class="secondary-img">
                             </a>
                         </div>
-                        <div class="product-name">
+                        
+                        <div class="product-name" style="padding: 0 12px;">
                             <a href="/product/details/${product.id}" title="${product.title}">${product.title}</a>
                         </div>
-                        <div class="price-rating">
-                            <span class="formatted-price">${formattedPrice} đ</span>
-                            <div class="ratings">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                        
+                        <div class="price-rating" style="padding: 0 12px;">
+                            ${hasFlashSale ? `
+                                <!-- Flash Sale Price -->
+                                <div style="margin-bottom: 6px;">
+                                    <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                                        <span style="color: #ff4b2b; font-size: 20px; font-weight: 700; line-height: 1.2;">${formattedPrice} đ</span>
+                                        <span style="color: #999; font-size: 14px; text-decoration: line-through;">${formattedOriginalPrice} đ</span>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div style="margin-bottom: 6px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">${formattedPrice} đ</span>
+                                </div>
+                            `}
+                            
+                            <!-- Rating và Đã bán (theo style Shopee) -->
+                            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                                <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
+                                    <i class="fa fa-star" style="font-size: 11px;"></i> 5.0
+                                </span>
+                                <span style="color: #757575; font-weight: 400;">Đã bán 0</span>
                             </div>
                         </div>
+                        
+                        ${hasFlashSale && product.flashSale.stock ? `
+                            <!-- Stock Progress Bar -->
+                            <div class="flash-sale-stock">
+                                <div class="stock-progress-bar">
+                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%">
+                                        <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
+                                    </div>
+                                </div>
+                                <div class="stock-remaining">Còn lại: ${product.flashSale.remaining || 0} sản phẩm</div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;

@@ -1,0 +1,590 @@
+/* ========================================
+   FLASH SALE SECTION - SHOPEE STYLE
+   ======================================== */
+
+/* Flash Sale Container */
+.flash-sale-section {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    padding: 0;
+    margin: 30px 0;
+    overflow: hidden;
+}
+
+/* Flash Sale Header */
+.flash-sale-header {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    padding: 15px 0;
+    text-align: center;
+    position: relative;
+}
+
+.flash-sale-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin: 0;
+}
+
+.flash-sale-title h2 {
+    color: white;
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.flash-icon {
+    font-size: 36px;
+    color: #FFD700;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* Countdown Timer */
+.flash-sale-countdown {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.countdown-label {
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.countdown-timer {
+    display: flex;
+    gap: 5px;
+}
+
+.countdown-time {
+    background: white;
+    color: #ff4b2b;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    min-width: 50px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.countdown-separator {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* Flash Sale Product Grid */
+.flash-sale-products {
+    background: white;
+    padding: 20px 0;
+}
+
+.flash-product-grid {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    padding: 10px;
+    scroll-behavior: smooth;
+}
+
+.flash-product-grid::-webkit-scrollbar {
+    height: 8px;
+}
+
+.flash-product-grid::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.flash-product-grid::-webkit-scrollbar-thumb {
+    background: #ff4b2b;
+    border-radius: 10px;
+}
+
+.flash-product-grid::-webkit-scrollbar-thumb:hover {
+    background: #ff416c;
+}
+
+/* Flash Product Card */
+.flash-product-card {
+    flex: 0 0 auto;
+    width: 220px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.flash-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);
+    border-color: #ff4b2b;
+}
+
+/* Flash Badge */
+.flash-badge-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.voucher-badge {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #000;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.discount-badge {
+    background: #ff4b2b;
+    color: white;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 0 8px 8px 0;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Product Image */
+.flash-product-image {
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    background: #f8f8f8;
+    position: relative;
+}
+
+.flash-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.flash-product-card:hover .flash-product-image img {
+    transform: scale(1.1);
+}
+
+/* Product Info */
+.flash-product-info {
+    padding: 12px;
+}
+
+.flash-product-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+/* Price Section */
+.flash-product-price {
+    margin-bottom: 10px;
+}
+
+.flash-price {
+    color: #ff4b2b;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.original-price {
+    color: #999;
+    font-size: 14px;
+    text-decoration: line-through;
+    margin-left: 8px;
+}
+
+.savings {
+    color: #27ae60;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+/* Stock Progress Bar */
+.stock-progress {
+    margin-bottom: 8px;
+}
+
+.stock-progress-bar {
+    height: 16px;
+    background: #f0f0f0;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.stock-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.stock-progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: white;
+    line-height: 16px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.stock-remaining {
+    font-size: 12px;
+    color: #666;
+    text-align: center;
+}
+
+/* Buy Button */
+.flash-buy-button {
+    width: 100%;
+    padding: 10px;
+    background: linear-gradient(135deg, #ff6a00 0%, #ee0979 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(238, 9, 121, 0.3);
+}
+
+.flash-buy-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(238, 9, 121, 0.5);
+}
+
+.flash-buy-button.sold-out {
+    background: #cccccc;
+    cursor: not-allowed;
+}
+
+.flash-buy-button.sold-out:hover {
+    transform: none;
+}
+
+/* Sold Count */
+.sold-count {
+    font-size: 12px;
+    color: #666;
+    text-align: right;
+    margin-top: 5px;
+}
+
+/* View All Button */
+.view-all-flash-sale {
+    text-align: center;
+    padding: 20px;
+    background: white;
+}
+
+.view-all-button {
+    display: inline-block;
+    padding: 12px 40px;
+    background: white;
+    color: #ff4b2b;
+    border: 2px solid #ff4b2b;
+    border-radius: 25px;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.view-all-button:hover {
+    background: #ff4b2b;
+    color: white;
+    box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
+}
+
+/* Empty State */
+.flash-sale-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+}
+
+.flash-sale-empty i {
+    font-size: 80px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.flash-sale-empty h3 {
+    color: #999;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.flash-sale-empty p {
+    color: #ccc;
+    font-size: 14px;
+}
+
+/* Upcoming Flash Sale */
+.upcoming-flash-sale {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.upcoming-flash-sale h3 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 15px;
+}
+
+.upcoming-flash-sale .countdown-timer {
+    justify-content: center;
+}
+
+/* ========================================
+   FLASH SALE IN PRODUCT GRID (INLINE)
+   ======================================== */
+
+/* Product card với flash sale */
+.single-product.flash-sale-product {
+    border: 2px solid #e5e5e5;  /* ✅ BỎ viền đỏ - dùng viền xám như product thường */
+    position: relative;
+    transition: all 0.3s ease;  /* Smooth transition */
+    border-radius: 8px;  /* ✅ Bo tròn khung flash sale */
+    /* ✅ BỎ overflow: hidden để badges hiển thị */
+}
+
+.single-product.flash-sale-product:hover {
+    transform: translateY(-5px);  /* Nâng card lên như Flash Sale */
+    box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);  /* Shadow đỏ khi hover */
+    border-color: #ff4b2b;  /* ✅ Viền đỏ chỉ khi hover */
+}
+
+/* ========================================
+   PRODUCT CARD HOVER EFFECTS (ALL PRODUCTS)
+   Áp dụng cho tất cả product cards (có và không có flash sale)
+   ======================================== */
+
+/* Product card thường (không flash sale) */
+.single-product {
+    position: relative;  /* ✅ Container cho absolute positioning */
+    transition: all 0.3s ease;
+    border: 2px solid #e5e5e5;  /* ✅ FIX: Dùng 2px luôn để tránh shift */
+    border-radius: 8px;  /* ✅ Bo tròn toàn bộ khung sản phẩm */
+    /* ✅ BỎ overflow: hidden để badges và level-pro-new hiển thị */
+}
+
+.single-product:hover {
+    transform: translateY(-5px);  /* Nâng card lên */
+    box-shadow: 0 10px 30px rgba(255, 75, 43, 0.3);  /* ✅ Shadow đỏ khi hover */
+    border-color: #ff4b2b;  /* ✅ Chỉ đổi màu, không đổi size */
+}
+
+/* Hiệu ứng zoom ảnh khi hover (giống Flash Sale) */
+.single-product:hover .product-img img {
+    transform: scale(1.05);  /* ✅ FIX: Giảm zoom xuống 105% (tránh ảnh mất) */
+}
+
+/* Product image - ảnh sản phẩm */
+.single-product .product-img {
+    position: relative;  /* ✅ Để swap ảnh */
+    overflow: hidden;  /* ✅ Clip ảnh khi zoom */
+    border-radius: 8px 8px 0 0;  /* ✅ Bo tròn góc trên (theo card) */
+}
+
+.single-product .product-img img {
+    transition: transform 0.3s ease, opacity 0.3s ease;  /* Smooth zoom + fade */
+    width: 100%;  /* ✅ Đảm bảo ảnh luôn full width */
+    display: block;  /* ✅ Bỏ gap dưới ảnh */
+}
+
+/* Secondary image - ẩn mặc định, hiện khi hover */
+.single-product .product-img .secondary-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;  /* Ẩn mặc định */
+    pointer-events: none;
+}
+
+.single-product:hover .product-img .primary-img {
+    opacity: 0;  /* ✅ Ẩn ảnh chính khi hover */
+}
+
+.single-product:hover .product-img .secondary-img {
+    opacity: 1;  /* ✅ Hiện ảnh phụ khi hover */
+}
+
+/* Badge "Mới" cho product thường */
+.single-product .level-pro-new {
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    position: absolute;  /* ✅ Đảm bảo position */
+    top: 10px;
+    right: 10px;
+    z-index: 100;  /* ✅ Hiển thị trên ảnh */
+}
+
+/* Ẩn badge "Mới" khi hover */
+.single-product:hover .level-pro-new {
+    opacity: 0;  /* ✅ Ẩn badge khi hover */
+    visibility: hidden;
+}
+
+/* Flash Sale Badges in Product Grid */
+.flash-sale-badges {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 100;  /* ✅ Tăng z-index để hiển thị trên ảnh */
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.flash-sale-badges .voucher-badge {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #000;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.flash-sale-badges .discount-badge {
+    background: #ff4b2b;
+    color: white;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 700;
+    border-radius: 3px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Flash Sale Price Container */
+.flash-sale-price-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.flash-sale-price {
+    color: #ff4b2b;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.original-price-strike {
+    color: #999;
+    font-size: 14px;
+    text-decoration: line-through;
+}
+
+.flash-sale-savings {
+    color: #27ae60;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+/* Flash Sale Stock in Product Grid */
+.flash-sale-stock {
+    margin-top: 10px;
+    padding: 0 10px 10px 10px;
+}
+
+.flash-sale-stock .stock-progress-bar {
+    height: 14px;
+    background: #f0f0f0;
+    border-radius: 7px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 5px;
+}
+
+.flash-sale-stock .stock-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.flash-sale-stock .stock-progress-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    font-size: 10px;
+    font-weight: 600;
+    color: white;
+    line-height: 14px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.flash-sale-stock .stock-remaining {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flash-sale-title h2 {
+        font-size: 24px;
+    }
+    
+    .flash-product-card {
+        width: 180px;
+    }
+    
+    .countdown-time {
+        padding: 6px 10px;
+        font-size: 20px;
+        min-width: 40px;
+    }
+}
+
+@media (max-width: 576px) {
+    .flash-sale-title h2 {
+        font-size: 20px;
+    }
+    
+    .flash-product-card {
+        width: 160px;
+    }
+}

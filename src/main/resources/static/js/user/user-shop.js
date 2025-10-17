@@ -218,33 +218,74 @@ function loadProducts(page) {
 }
 
 /**
- * Render products to the DOM
+ * Render products to the DOM with Flash Sale support
  * @param {Array} products - Array of product objects
  */
 function renderProducts(products) {
     let productHtml = '';
     
+    // 🔍 DEBUG: Log toàn bộ products array
+    console.log('=== 🔍 DEBUG renderProducts() [user-shop.js] ===');
+    console.log('📦 Total products:', products.length);
+    console.log('📄 Full products array:', products);
+    
     if (products && products.length > 0) {
-        products.forEach(function (product) {
-            let formattedPrice = new Intl.NumberFormat('vi-VN').format(product.price);
+        products.forEach(function (product, index) {
+            // 🔍 DEBUG: Log từng product
+            console.log(`\n--- Product #${index + 1}: ${product.title} ---`);
+            console.log('  💰 Price:', product.price);
+            console.log('  🔥 Flash Sale Object:', product.flashSale);
+            
+            // Check if product has flash sale
+            const hasFlashSale = product.flashSale && product.flashSale.active;
+            console.log('  ✅ Has Flash Sale?', hasFlashSale);
+            const flashSalePrice = hasFlashSale ? product.flashSale.flashSalePrice : null;
+            const originalPrice = product.price;
+            const discountPercent = hasFlashSale ? product.flashSale.discountPercent : 0;
+            
+            let formattedPrice = new Intl.NumberFormat('vi-VN').format(hasFlashSale ? flashSalePrice : originalPrice);
+            let formattedOriginalPrice = new Intl.NumberFormat('vi-VN').format(originalPrice);
             
             productHtml += `
                 <div class="col-lg-4 col-md-6">
-                    <div class="single-product">
-                        <div class="level-pro-new">
-                            <span>Mới</span>
-                        </div>
+                    <div class="single-product ${hasFlashSale ? 'flash-sale-product' : ''}">
+                        ${hasFlashSale ? `
+                            <!-- Flash Sale Badges -->
+                            <div class="flash-sale-badges">
+                                <div class="voucher-badge">VOUCHER XTRA</div>
+                                <div class="discount-badge">-${Math.round(discountPercent)}%</div>
+                            </div>
+                        ` : `
+                            <div class="level-pro-new">
+                                <span>Mới</span>
+                            </div>
+                        `}
+                        
                         <div class="product-img">
                             <a href="/product/details/${product.id}">
                                 <img src="${product.image}" alt="${product.title}" class="primary-img">
                                 <img src="/img/logo-1.png" alt="Image2" class="secondary-img">
                             </a>
                         </div>
+                        
                         <div class="product-name">
                             <a href="/product/details/${product.id}" title="${product.title}">${product.title}</a>
                         </div>
+                        
                         <div class="price-rating">
-                            <span class="formatted-price">${formattedPrice} đ</span>
+                            ${hasFlashSale ? `
+                                <!-- Flash Sale Price -->
+                                <div class="flash-sale-price-container">
+                                    <span class="flash-sale-price">${formattedPrice} đ</span>
+                                    <span class="original-price-strike">${formattedOriginalPrice} đ</span>
+                                </div>
+                                <div class="flash-sale-savings">
+                                    Tiết kiệm ${new Intl.NumberFormat('vi-VN').format(originalPrice - flashSalePrice)} đ
+                                </div>
+                            ` : `
+                                <span class="formatted-price">${formattedPrice} đ</span>
+                            `}
+                            
                             <div class="ratings">
                                 <i class="fa fa-star"></i>
                                 <i class="fa fa-star"></i>
@@ -253,6 +294,18 @@ function renderProducts(products) {
                                 <i class="fa fa-star"></i>
                             </div>
                         </div>
+                        
+                        ${hasFlashSale && product.flashSale.stock ? `
+                            <!-- Stock Progress Bar -->
+                            <div class="flash-sale-stock">
+                                <div class="stock-progress-bar">
+                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%">
+                                        <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
+                                    </div>
+                                </div>
+                                <div class="stock-remaining">Còn lại: ${product.flashSale.remaining || 0} sản phẩm</div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;

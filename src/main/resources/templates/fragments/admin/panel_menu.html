@@ -126,9 +126,6 @@
                             <li class="sub-nav-item">
                                 <a class="sub-nav-link" th:href="@{/admin/order/list}">Danh Sách Đơn Hàng</a>
                             </li>
-                            <li class="sub-nav-item">
-                                <a class="sub-nav-link" href="order-detail.html">Chi Tiết Đơn Hàng</a>
-                            </li>
                         </ul>
                     </div>
                 </li>
@@ -136,8 +133,8 @@
                 <li class="nav-item">
                     <a class="nav-link menu-arrow" href="#sidebarDiscount" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarDiscount">
                     <span class="nav-icon">
-                        <!-- Sử dụng biểu tượng giảm giá từ Iconify -->
                         <iconify-icon icon="mdi:tag-heart-outline"></iconify-icon>
+
                     </span>
                         <span class="nav-text"> Mã Giảm Giá </span>
                     </a>
@@ -149,6 +146,31 @@
                             </li>
                             <li class="sub-nav-item">
                                 <a class="sub-nav-link" href="/admin/discount-add">Thêm Mã Giảm Giá</a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                
+                <!-- Flash Sale Menu - Ngang cấp với Mã Giảm Giá -->
+                <li class="nav-item">
+                    <a class="nav-link menu-arrow" href="#sidebarFlashSale" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarFlashSale">
+                    <span class="nav-icon">
+                        <iconify-icon icon="solar:fire-bold-duotone"></iconify-icon>
+                    </span>
+                        <span class="nav-text"> Flash Sale </span>
+                    </a>
+
+                    <div class="collapse" id="sidebarFlashSale">
+                        <ul class="nav sub-navbar-nav">
+                            <li class="sub-nav-item">
+                                <a class="sub-nav-link" href="/admin/flash-sale-list">
+                                    Danh Sách Flash Sale
+                                </a>
+                            </li>
+                            <li class="sub-nav-item">
+                                <a class="sub-nav-link" href="/admin/flash-sale-add">
+                                    Thêm Flash Sale
+                                </a>
                             </li>
                         </ul>
                     </div>
