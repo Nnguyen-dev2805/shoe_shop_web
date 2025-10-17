@@ -256,9 +256,9 @@ function renderProducts(products) {
                                 <div class="discount-badge">-${Math.round(discountPercent)}%</div>
                             </div>
                         ` : `
-                            <div class="level-pro-new">
-                                <span>Mới</span>
-                            </div>
+<!--                            <div class="level-pro-new">-->
+<!--                                <span>Mới</span>-->
+<!--                            </div>-->
                         `}
                         
                         <div class="product-img">
@@ -268,30 +268,31 @@ function renderProducts(products) {
                             </a>
                         </div>
                         
-                        <div class="product-name">
+                        <div class="product-name" style="padding: 0 12px;">
                             <a href="/product/details/${product.id}" title="${product.title}">${product.title}</a>
                         </div>
                         
-                        <div class="price-rating">
+                        <div class="price-rating" style="padding: 0 12px;">
                             ${hasFlashSale ? `
                                 <!-- Flash Sale Price -->
-                                <div class="flash-sale-price-container">
-                                    <span class="flash-sale-price">${formattedPrice} đ</span>
-                                    <span class="original-price-strike">${formattedOriginalPrice} đ</span>
-                                </div>
-                                <div class="flash-sale-savings">
-                                    Tiết kiệm ${new Intl.NumberFormat('vi-VN').format(originalPrice - flashSalePrice)} đ
+                                <div style="margin-bottom: 6px;">
+                                    <div style="display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;">
+                                        <span style="color: #ff4b2b; font-size: 20px; font-weight: 700; line-height: 1.2;">${formattedPrice} đ</span>
+                                        <span style="color: #999; font-size: 14px; text-decoration: line-through;">${formattedOriginalPrice} đ</span>
+                                    </div>
                                 </div>
                             ` : `
-                                <span class="formatted-price">${formattedPrice} đ</span>
+                                <div style="margin-bottom: 6px;">
+                                    <span style="color: #333; font-size: 16px; font-weight: 600;">${formattedPrice} đ</span>
+                                </div>
                             `}
                             
-                            <div class="ratings">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
+                            <!-- Rating và Đã bán (theo style Shopee) -->
+                            <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                                <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
+                                    <i class="fa fa-star" style="font-size: 11px;"></i> 5.0
+                                </span>
+                                <span style="color: #757575; font-weight: 400;">Đã bán 0</span>
                             </div>
                         </div>
                         

@@ -183,11 +183,62 @@ public class ProductServiceImpl implements ProductService {
                 .sizeOptions(sizeOptions)
                 .avgRating(avgRating)
                 .totalReviews(totalReviews)
+                .flashSale(getFlashSaleInfoForDetail(product))  // ← NEW: Add flash sale info
                 .build();
     }
     
     /**
-     * Helper method: Lấy thông tin Flash Sale của Product (nếu có)
+     * Helper method for ProductDetailResponse: Lấy thông tin Flash Sale của Product (nếu có)
+     */
+    private ProductDetailResponse.FlashSaleInfo getFlashSaleInfoForDetail(Product product) {
+        if (product.getDetails() == null || product.getDetails().isEmpty()) {
+            return null;
+        }
+        
+        // Duyệt qua tất cả ProductDetail của product
+        for (ProductDetail detail : product.getDetails()) {
+            // Check xem detail có flash sale item nào đang active không
+            if (detail.getFlashSaleItems() != null && !detail.getFlashSaleItems().isEmpty()) {
+                // Tìm flash sale item đầu tiên đang active
+                var activeFlashSaleItem = detail.getFlashSaleItems().stream()
+                        .filter(item -> item.getFlashSale() != null && item.getFlashSale().isActive())
+                        .findFirst();
+                
+                if (activeFlashSaleItem.isPresent()) {
+                    var item = activeFlashSaleItem.get();
+                    var flashSale = item.getFlashSale();
+                    
+                    // Tính giá flash sale
+                    double flashSalePrice = item.getFlashSalePrice();
+                    double discountPercent = item.getDiscountPercent();
+                    
+                    // Tính stock info từ FlashSale entity
+                    int totalStock = flashSale.getTotalItems() != null ? flashSale.getTotalItems() : 0;
+                    int sold = flashSale.getTotalSold() != null ? flashSale.getTotalSold() : 0;
+                    int remaining = totalStock - sold;
+                    double soldPercentage = totalStock > 0 ? ((double) sold / totalStock) * 100 : 0;
+                    
+                    // Return Flash Sale Info for ProductDetailResponse
+                    return ProductDetailResponse.FlashSaleInfo.builder()
+                            .active(true)
+                            .flashSalePrice(flashSalePrice)
+                            .discountPercent(discountPercent)
+                            .endTime(flashSale.getEndTime())
+                            .stock(totalStock)
+                            .sold(sold)
+                            .remaining(remaining)
+                            .soldPercentage(soldPercentage)
+                            .build();
+                }
+            }
+        }
+        
+        // Không có flash sale active
+        return null;
+    }
+    
+    /**
+     * Helper method for ProductResponse: Lấy thông tin Flash Sale của Product (nếu có)
      * 
      * Logic:
      * - Duyệt qua tất cả ProductDetail của Product

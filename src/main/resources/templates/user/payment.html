@@ -13,203 +13,677 @@
     <link rel="stylesheet" href="/style.css">
     
     <style>
-        .readonly-input {
-            background-color: #f5f5f5;
-            cursor: not-allowed;
+        /* ========== SHOPEE STYLE REDESIGN ========== */
+        
+        body {
+            background: #f5f5f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
-        .product-info-locked {
-            background-color: #fafafa;
-            padding: 15px;
-            border: 1px solid #e0e0e0;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-        
-        .payment-section {
+        /* Header */
+        .payment-header {
             background: #fff;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 15px 0;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
             margin-bottom: 20px;
         }
         
-        .discount-item {
-            cursor: pointer;
-            padding: 10px;
-            border: 1px solid #ddd;
-            margin-bottom: 5px;
-            border-radius: 3px;
+        .payment-header h2 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
         }
         
-        .discount-item:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .discount-item.selected {
-            background-color: #d4edda;
-            border-color: #28a745;
-        }
-        
-        .btn-pay {
-            background-color: #e74c3c;
-            color: white;
-            padding: 15px 40px;
+        .back-button {
+            color: #ee4d2d;
             font-size: 18px;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+        
+        .back-button:hover {
+            color: #d73211;
+        }
+        
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
+        }
+        
+        /* Section Cards */
+        .payment-card {
+            background: #fff;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title i {
+            color: #ee4d2d;
+        }
+        
+        /* Address */
+        .address-info {
+            border-left: 3px solid #ee4d2d;
+            padding-left: 15px;
+        }
+        
+        .address-name {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .address-detail {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        /* Product Table */
+        .product-table-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 12px 15px;
+            background: #fafafa;
+            border-radius: 3px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+        }
+        
+        .product-table-header > div:first-child {
+            text-align: left;
+        }
+        
+        .product-table-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+        
+        .product-table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .product-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 3px;
+            border: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+        
+        .product-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .product-name {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 6px;
+            font-weight: 400;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-variant {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .product-price,
+        .product-qty,
+        .product-total {
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .product-price {
+            color: #333;
+        }
+        
+        .product-qty {
+            color: #666;
+        }
+        
+        .product-total {
+            color: #ee4d2d;
+            font-weight: 500;
+            font-size: 15px;
+        }
+        
+        /* Address Modal */
+        .address-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+        
+        .address-modal-content {
+            background: #fff;
+            margin: 50px auto;
+            max-width: 600px;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .address-modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .address-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .address-modal-body {
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .address-radio-item {
+            display: flex;
+            padding: 15px;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .address-radio-item:hover {
+            background: #fafafa;
+            border-color: #ee4d2d;
+        }
+        
+        .address-radio-item input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .address-radio-item.selected {
+            border-color: #ee4d2d;
+            background: #fff9f5;
+        }
+        
+        .address-radio-content {
+            flex: 1;
+        }
+        
+        .address-radio-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .address-radio-name {
+            font-weight: 500;
+            color: #333;
+            font-size: 15px;
+        }
+        
+        .address-radio-phone {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .address-default-badge {
+            background: #fff;
+            border: 1px solid #ee4d2d;
+            color: #ee4d2d;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .address-radio-detail {
+            color: #666;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .address-update-btn {
+            color: #ee4d2d;
+            background: none;
             border: none;
-            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .address-update-btn:hover {
+            text-decoration: underline;
+        }
+        
+        .address-add-new {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        
+        .address-add-new:hover {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+        }
+        
+        .address-add-new i {
+            margin-right: 8px;
+        }
+        
+        .address-modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .btn-modal-cancel {
+            padding: 10px 30px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .btn-modal-confirm {
+            padding: 10px 30px;
+            background: #ee4d2d;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 500;
+        }
+        
+        .btn-modal-confirm:hover {
+            background: #d73211;
+        }
+        
+        /* Voucher */
+        .voucher-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            background: #fafafa;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 8px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .voucher-row:hover {
+            background: #f5f5f5;
+        }
+        
+        .voucher-row.selected {
+            background: #fff9f5;
+            border-color: #ee4d2d;
+        }
+        
+        .voucher-info {
+            flex: 1;
+        }
+        
+        .voucher-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .voucher-desc {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .voucher-badge {
+            background: #ee4d2d;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Payment & Shipping */
+        .payment-option,
+        .shipping-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #f0f0f0;
+            border-radius: 3px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .payment-option:hover,
+        .shipping-option:hover {
+            background: #fafafa;
+        }
+        
+        .payment-option input[type="radio"],
+        .shipping-option input[type="radio"] {
+            margin-right: 10px;
             cursor: pointer;
         }
         
-        .btn-pay:hover {
-            background-color: #c0392b;
+        .payment-option label,
+        .shipping-option label {
+            margin: 0;
+            cursor: pointer;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        /* Price Summary */
+        .price-summary {
+            position: sticky;
+            top: 20px;
+        }
+        
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        
+        .price-row.total {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ee4d2d;
+            padding-top: 15px;
+            border-top: 1px dashed #e0e0e0;
+            margin-top: 10px;
+        }
+        
+        .price-label {
+            color: #666;
+        }
+        
+        .price-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .price-value.discount {
+            color: #ee4d2d;
+        }
+        
+        /* Order Button */
+        .btn-order {
+            background: #ee4d2d;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 3px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        
+        .btn-order:hover {
+            background: #d73211;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(238, 77, 45, 0.3);
+        }
+        
+        .btn-order:active {
+            transform: translateY(0);
+        }
+        
+        /* Loading */
+        .loading-text {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+            font-size: 14px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .payment-card {
+                padding: 15px;
+            }
+            
+            .product-image {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .price-summary {
+                position: static;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header Area -->
-<!--    <header th:replace="/fragments/user/header :: header"></header>-->
+    <!-- Header -->
     <div th:include="~{fragments/user/header.html}"></div>
+    
     <!-- Breadcrumb Area -->
-    <div class="breadcrumb-area">
+    <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
         <div class="container">
-            <ol class="breadcrumb">
-                <li><a href="/">Trang chủ</a></li>
-                <li><a href="/cart/view">Giỏ hàng</a></li>
-                <li class="active">Thanh toán</li>
-            </ol>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/cart/view" style="color: #ee4d2d; font-size: 18px; text-decoration: none;">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                    <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                    <span style="color: #ccc;">/</span>
+                    <a href="/cart/view" class="breadcrumb-link" style="color: #666; text-decoration: none;">Giỏ hàng</a>
+                    <span style="color: #ccc;">/</span>
+                    <span style="color: #333; font-weight: 500;">Thanh toán</span>
+                </div>
+            </div>
         </div>
     </div>
     
     <!-- Main Content -->
-    <div class="shopping-cart-area">
-        <div class="container">
-            <h2 class="text-center mb-4">XÁC NHẬN THANH TOÁN</h2>
-            
-            <!-- Selected Products (Read-only) -->
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Sản phẩm đã chọn</h3>
-                    <div class="table-responsive">
-                        <table class="table-bordered table table-hover">
-                            <thead>
-                                <tr style="text-align: center">
-                                    <th>Hình ảnh</th>
-                                    <th>Tên sản phẩm</th>
-                                    <th>Size</th>
-                                    <th>Đơn giá</th>
-                                    <th>Số lượng</th>
-                                    <th>Thành tiền</th>
-                                </tr>
-                            </thead>
-                            <tbody id="selected-products-tbody" class="text-center">
-                                <tr>
-                                    <td colspan="6" class="text-center">
-                                        <div class="loading-spinner">
-                                            <i class="fa fa-spinner fa-spin"></i> Đang tải...
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Address Info (Read-only) -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="payment-section">
-                        <h4><i class="fa fa-map-marker"></i> Địa chỉ giao hàng</h4>
-                        <p id="delivery-address" style="font-size: 16px; margin: 10px 0;">Đang tải...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Discount Selection -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="payment-section">
-                        <h4><i class="fa fa-tag"></i> Mã giảm giá</h4>
-                        <div id="discount-list">
-                            <p class="text-center">Đang tải mã giảm giá...</p>
+    <div class="container" style="padding-bottom: 50px;">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-8">
+                <!-- Address Section -->
+                <div class="payment-card">
+                    <div class="section-title" style="justify-content: space-between;">
+                        <div>
+                            <i class="fa fa-map-marker"></i>
+                            Địa chỉ nhận hàng
                         </div>
-                        <input type="hidden" id="selected-discount-id" value="">
+                        <button class="btn btn-sm btn-link" id="btn-change-address" style="color: #ee4d2d; text-decoration: none; font-size: 14px;">
+                            <i class="fa fa-edit"></i> Thay đổi
+                        </button>
+                    </div>
+                    <div class="address-info">
+                        <div id="delivery-address" class="loading-text">
+                            <i class="fa fa-spinner fa-spin"></i> Đang tải địa chỉ...
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Payment Method Selection -->
-                <div class="col-md-6">
-                    <div class="payment-section">
-                        <h4><i class="fa fa-credit-card"></i> Hình thức thanh toán</h4>
-                        <div class="form-group">
-                            <label>
-                                <input type="radio" name="paymentMethod" value="COD" checked> 
-                                Thanh toán khi nhận hàng (COD)
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="radio" name="paymentMethod" value="VNPAY"> 
-                                Thanh toán qua VNPay
-                            </label>
-                        </div>
-                        <div class="form-group">
-                            <label>
-                                <input type="radio" name="paymentMethod" value="MOMO"> 
-                                Thanh toán qua Momo
-                            </label>
-                        </div>
+                <!-- Products Section -->
+                <div class="payment-card">
+                    <div class="section-title">
+                        <i class="fa fa-shopping-bag"></i>
+                        Sản phẩm đã chọn
+                    </div>
+                    <div id="selected-products-list" class="loading-text">
+                        <i class="fa fa-spinner fa-spin"></i> Đang tải sản phẩm...
+                    </div>
+                </div>
+                
+                <!-- Voucher Section -->
+                <div class="payment-card">
+                    <div class="section-title">
+                        <i class="fa fa-ticket"></i>
+                        Mã giảm giá
+                    </div>
+                    <div id="discount-list" class="loading-text">
+                        <i class="fa fa-spinner fa-spin"></i> Đang tải voucher...
+                    </div>
+                    <input type="hidden" id="selected-discount-id" value="">
+                </div>
+                
+                <!-- Shipping Section -->
+                <div class="payment-card">
+                    <div class="section-title">
+                        <i class="fa fa-truck"></i>
+                        Phương thức vận chuyển
+                    </div>
+                    <select class="form-control" id="shippingCompanySelect" name="shippingCompanyId" 
+                            style="border: 1px solid #f0f0f0; padding: 12px; border-radius: 3px; font-size: 14px;">
+                        <option value="">Đang tải...</option>
+                    </select>
+                </div>
+                
+                <!-- Payment Method Section -->
+                <div class="payment-card">
+                    <div class="section-title">
+                        <i class="fa fa-credit-card"></i>
+                        Phương thức thanh toán
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="COD" id="payment-cod" checked>
+                        <label for="payment-cod">
+                            <i class="fa fa-money"></i> Thanh toán khi nhận hàng (COD)
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="VNPAY" id="payment-vnpay">
+                        <label for="payment-vnpay">
+                            <i class="fa fa-credit-card"></i> Thanh toán qua VNPay
+                        </label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="paymentMethod" value="MOMO" id="payment-momo">
+                        <label for="payment-momo">
+                            <i class="fa fa-mobile"></i> Thanh toán qua Momo
+                        </label>
                     </div>
                 </div>
             </div>
             
-            <!-- Shipping Company -->
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="payment-section">
-                        <h4><i class="fa fa-truck"></i> Đơn vị vận chuyển</h4>
-                        <select class="form-control" id="shippingCompanySelect" name="shippingCompanyId">
-                            <option value="">Đang tải...</option>
-                        </select>
+            <!-- Right Column - Price Summary -->
+            <div class="col-md-4">
+                <div class="price-summary">
+                    <div class="payment-card">
+                        <div class="section-title">
+                            Chi tiết thanh toán
+                        </div>
+                        
+                        <div class="price-row">
+                            <span class="price-label">Tổng tiền hàng</span>
+                            <span class="price-value" id="subtotal-price">0đ</span>
+                        </div>
+                        
+                        <div class="price-row">
+                            <span class="price-label">Phí vận chuyển</span>
+                            <span class="price-value" id="shipping-fee">5,000đ</span>
+                        </div>
+                        
+                        <div class="price-row" id="discount-row" style="display: none;">
+                            <span class="price-label">Giảm giá (<span id="discount-percent">0</span>%)</span>
+                            <span class="price-value discount">-<span id="discount-amount">0đ</span></span>
+                        </div>
+                        
+                        <div class="price-row total">
+                            <span class="price-label">Tổng thanh toán</span>
+                            <span class="price-value" id="final-total-price">0đ</span>
+                        </div>
+                        
+                        <button type="button" id="btn-payment" class="btn-order">
+                            <i class="fa fa-check-circle"></i> Đặt hàng
+                        </button>
+                        
+                        <p style="font-size: 12px; color: #888; text-align: center; margin-top: 15px; margin-bottom: 0;">
+                            Nhấn "Đặt hàng" đồng nghĩa với việc bạn đồng ý tuân theo 
+                            <a href="#" style="color: #ee4d2d;">Điều khoản DeeG Shop</a>
+                        </p>
                     </div>
                 </div>
             </div>
-            
-            <!-- Price Summary -->
-            <div class="row mt-4">
-                <div class="col-md-12">
-                    <div class="payment-section">
-                        <h4>Chi tiết thanh toán</h4>
-                        <table class="table">
-                            <tr>
-                                <td>Tổng tiền hàng:</td>
-                                <td class="text-right" id="subtotal-price">0 đ</td>
-                            </tr>
-                            <tr>
-                                <td>Phí vận chuyển:</td>
-                                <td class="text-right" id="shipping-fee">5,000 đ</td>
-                            </tr>
-                            <tr id="discount-row" style="display: none;">
-                                <td>Giảm giá (<span id="discount-percent">0</span>%):</td>
-                                <td class="text-right text-success">-<span id="discount-amount">0 đ</span></td>
-                            </tr>
-                            <tr style="font-size: 18px; font-weight: bold; color: #e74c3c;">
-                                <td>Tổng thanh toán:</td>
-                                <td class="text-right" id="final-total-price">0 đ</td>
-                            </tr>
-                        </table>
-                    </div>
+        </div>
+    </div>
+    
+    <!-- Address Selection Modal -->
+    <div id="address-modal" class="address-modal">
+        <div class="address-modal-content">
+            <div class="address-modal-header">
+                <h3>Địa Chỉ Của Tôi</h3>
+            </div>
+            <div class="address-modal-body" id="address-modal-list">
+                <div class="loading-text">
+                    <i class="fa fa-spinner fa-spin"></i> Đang tải...
                 </div>
             </div>
-            
-            <!-- Payment Button -->
-            <div class="row mt-4">
-                <div class="col-md-12 text-center">
-                    <button type="button" id="btn-payment" class="btn-pay">
-                        <i class="fa fa-check-circle"></i> Xác nhận thanh toán
-                    </button>
-                </div>
+            <div class="address-modal-footer">
+                <button class="btn-modal-cancel" id="btn-modal-cancel">Hủy</button>
+                <button class="btn-modal-confirm" id="btn-modal-confirm">Xác nhận</button>
             </div>
         </div>
     </div>
