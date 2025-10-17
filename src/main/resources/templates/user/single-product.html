@@ -362,9 +362,112 @@
             font-weight: 600;
         }
         
-        /* Action buttons */
-        .action {
-            margin-bottom: 25px;
+        /* Action buttons - Shopee Style */
+        .shopee-action-section {
+            padding: 20px 0;
+            border-bottom: 1px solid #ebebeb;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .shopee-share-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .shopee-share-label {
+            font-size: 14px;
+            color: #757575;
+        }
+        
+        .shopee-share-icons {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .shopee-share-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .shopee-share-icon.facebook {
+            background: #3b5998;
+            color: white;
+        }
+        
+        .shopee-share-icon.facebook:hover {
+            background: #2d4373;
+        }
+        
+        .shopee-share-icon.messenger {
+            background: #0084ff;
+            color: white;
+        }
+        
+        .shopee-share-icon.messenger:hover {
+            background: #006acc;
+        }
+        
+        .shopee-share-icon.pinterest {
+            background: #e60023;
+            color: white;
+        }
+        
+        .shopee-share-icon.pinterest:hover {
+            background: #b5001a;
+        }
+        
+        .shopee-share-icon.twitter {
+            background: #000;
+            color: white;
+        }
+        
+        .shopee-share-icon.twitter:hover {
+            background: #333;
+        }
+        
+        .shopee-wishlist-section {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border: 1px solid #ee4d2d;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .shopee-wishlist-section:hover {
+            background: #fef6f5;
+        }
+        
+        .shopee-wishlist-icon {
+            color: #ee4d2d;
+            font-size: 16px;
+        }
+        
+        .shopee-wishlist-icon.active {
+            color: #ee4d2d;
+        }
+        
+        .shopee-wishlist-text {
+            font-size: 14px;
+            color: #ee4d2d;
+        }
+        
+        .shopee-wishlist-count {
+            font-size: 14px;
+            color: #757575;
         }
         
         .add-to-links {
@@ -579,6 +682,14 @@
             flex: 1;
         }
         
+        #product-description {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
         .shopee-size-grid {
             display: flex;
             flex-wrap: wrap;
@@ -780,6 +891,72 @@
             font-size: 12px;
             border-radius: 2px;
             white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .shopee-voucher-badge:hover {
+            background: #fff5f5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(238, 77, 45, 0.2);
+        }
+        
+        /* Voucher Tooltip */
+        .voucher-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 12px;
+            min-width: 280px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .shopee-voucher-badge:hover .voucher-tooltip {
+            display: block;
+        }
+        
+        .voucher-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: white;
+        }
+        
+        .voucher-tooltip-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ee4d2d;
+            margin-bottom: 8px;
+        }
+        
+        .voucher-tooltip-body {
+            font-size: 12px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .voucher-tooltip-condition {
+            padding: 6px 0;
+            border-top: 1px dashed #e0e0e0;
+            margin-top: 6px;
+            font-size: 11px;
+            color: #767676;
+        }
+        
+        .voucher-tooltip-quantity {
+            color: #ee4d2d;
+            font-weight: 600;
         }
         
         /* Flash Sale Styles */
@@ -811,26 +988,98 @@
             50% { transform: scale(1.05); }
         }
         
-        .flash-sale-timer {
-            background: rgba(0,0,0,0.85);
-            color: #fff;
-            padding: 6px 12px;
+        /* Flash Sale Banner - Shopee Style */
+        .flash-sale-banner {
+            background: linear-gradient(90deg, #ee4d2d 0%, #ff6b35 100%);
+            padding: 8px 16px;
             border-radius: 4px;
-            font-size: 13px;
-            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .flash-sale-left {
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-bottom: 10px;
         }
         
-        .flash-sale-timer i {
-            color: #ff4b2b;
+        .flash-sale-logo {
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .flash-sale-logo i {
+            font-size: 18px;
+        }
+        
+        .flash-sale-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .flash-sale-label {
+            color: white;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .flash-sale-label i {
+            font-size: 14px;
+        }
+        
+        .flash-sale-countdown {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .countdown-digit {
+            background: #000;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
         }
         
         .shopee-price-flash {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
-            border: 2px solid #ff4b2b;
+            background: #fef6f5;
+            padding: 16px;
+            border-radius: 4px;
+        }
+        
+        .shopee-price-flash .shopee-price-sale {
+            color: #ee4d2d !important;
+            font-size: 32px !important;
+            font-weight: 700 !important;
+        }
+        
+        .shopee-price-flash .shopee-price-original {
+            color: #929292 !important;
+            font-size: 16px !important;
+            text-decoration: line-through;
+            margin-right: 10px;
+        }
+        
+        .shopee-price-flash .shopee-price-discount {
+            background: #ee4d2d !important;
+            color: white !important;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 13px !important;
+            font-weight: 600 !important;
         }
         
         .flash-sale-stock-bar {
@@ -936,73 +1185,85 @@
                             <span class="sold-count">Đã Bán <strong>0</strong></span>
                         </div>
                         
-                        <!-- Flash Sale Timer (if active) -->
-                        <div class="flash-sale-timer" id="flash-sale-timer" style="display: none;">
-                            <i class="fa fa-bolt"></i>
-                            <span>FLASH SALE KẾT THÚC SAU:</span>
-                            <span id="flash-sale-countdown">--:--:--</span>
+                        <!-- Flash Sale Banner (Shopee Style) -->
+                        <div class="flash-sale-banner" id="flash-sale-banner" style="display: none;">
+                            <div class="flash-sale-left">
+                                <div class="flash-sale-logo">
+                                    <i class="fa fa-bolt"></i>
+                                    <span>FLASH SALE</span>
+                                </div>
+                            </div>
+                            <div class="flash-sale-right">
+                                <div class="flash-sale-label">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>KẾT THÚC TRONG</span>
+                                </div>
+                                <div class="flash-sale-countdown" id="flash-sale-countdown">
+                                    <span class="countdown-digit">00</span>
+                                    <span class="countdown-digit">00</span>
+                                    <span class="countdown-digit">00</span>
+                                </div>
+                            </div>
                         </div>
                         
                         <!-- Price Section (Shopee Style) -->
                         <div class="shopee-price-section" id="price-section">
                             <div class="shopee-price-row">
-                                <span class="shopee-price-original" id="original-price" style="display:none;">0₫</span>
                                 <span class="shopee-price-sale" id="product-price">0₫</span>
+                                <span class="shopee-price-original" id="original-price" style="display:none;">0₫</span>
                                 <span class="shopee-price-discount" id="discount-badge" style="display:none;">0% GIẢM</span>
                             </div>
                         </div>
                         
-                        <!-- Flash Sale Stock Progress (if active) -->
-                        <div class="flash-sale-stock-bar" id="flash-sale-stock" style="display: none;">
-                            <div class="stock-progress-container">
-                                <div class="stock-progress-bar">
-                                    <div class="stock-progress-fill" id="stock-progress-fill" style="width: 0%">
-                                        <span class="stock-progress-text">Đã bán <span id="sold-count">0</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="stock-info-text">
-                                Còn lại: <span id="remaining-count">0</span> sản phẩm
-                            </div>
-                        </div>
+                        <!-- Flash Sale Stock Info (Hidden - Shopee style without progress bar) -->
+                        <div id="flash-sale-stock" style="display: none;"></div>
                         
                         <!-- Voucher Section -->
-                        <div class="shopee-voucher-section">
+                        <div class="shopee-voucher-section" id="voucher-section" style="display: none;">
                             <div class="shopee-voucher-label">
                                 <i class="fa fa-ticket" style="color: #ee4d2d;"></i>
                                 <span>Voucher Của Shop</span>
                             </div>
-                            <div class="shopee-voucher-list">
-                                <span class="shopee-voucher-badge">Giảm 10%</span>
-                                <span class="shopee-voucher-badge">Giảm 10%</span>
-                                <span class="shopee-voucher-badge">Giảm 10%</span>
-                                <span class="shopee-voucher-badge">Giảm 10%</span>
+                            <div class="shopee-voucher-list" id="voucher-list">
+                                <!-- Vouchers will be loaded via JavaScript -->
+                                <span style="font-size: 12px; color: #999;">Đang tải vouchers...</span>
                             </div>
                         </div>
                         
-                        <!-- Action Buttons -->
-                        <div class="action">
-                            <ul class="add-to-links">
-                                <li>
-                                    <a href="#" class="add-to-wishlist" data-product-id="" 
-                                       onclick="toggleWishlist(this.getAttribute('data-product-id'), this); return false;" 
-                                       title="Thêm vào yêu thích">
-                                        <i class="fa fa-heart-o"></i>
+                        <!-- Action Buttons - Shopee Style -->
+                        <div class="shopee-action-section">
+                            <!-- Share Section -->
+                            <div class="shopee-share-section">
+                                <span class="shopee-share-label">Chia sẻ:</span>
+                                <div class="shopee-share-icons">
+                                    <a href="#" class="shopee-share-icon facebook" onclick="shareOnFacebook(); return false;" title="Facebook">
+                                        <i class="fa fa-facebook"></i>
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="#" title="So sánh">
-                                        <i class="fa fa-refresh"></i>
+<!--                                    <a href="#" class="shopee-share-icon messenger" onclick="shareOnMessenger(); return false;" title="Messenger">-->
+<!--                                        <i class="fa fa-facebook-messenger"></i>-->
+<!--                                    </a>-->
+                                    <a href="#" class="shopee-share-icon pinterest" onclick="shareOnPinterest(); return false;" title="Pinterest">
+                                        <i class="fa fa-pinterest"></i>
                                     </a>
-                                </li>
-                                <li>
-                                    <a href="#" title="Chia sẻ">
-                                        <i class="fa fa-share-alt"></i>
+                                    <a href="#" class="shopee-share-icon twitter" onclick="shareOnTwitter(); return false;" title="Twitter">
+                                        <i class="fa fa-twitter"></i>
                                     </a>
-                                </li>
-                            </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Wishlist Section -->
+                            <div class="shopee-wishlist-section" 
+                                 onclick="toggleWishlist(document.querySelector('.add-to-wishlist').getAttribute('data-product-id'), this);">
+                                <i class="fa fa-heart-o shopee-wishlist-icon" id="wishlist-icon"></i>
+                                <span class="shopee-wishlist-text">Đã thích</span>
+                                <span class="shopee-wishlist-count" id="wishlist-count">(0)</span>
+                                <!-- Hidden link for compatibility -->
+                                <a href="#" class="add-to-wishlist" data-product-id="" style="display: none;"></a>
+                            </div>
+                        </div>
+                        
                         <!-- Description (Shopee Style Row) -->
-                        <div class="shopee-info-row" style="display:none;" id="description-row">
+                        <div class="shopee-info-row" id="description-row">
                             <div class="shopee-info-label">Mô tả</div>
                             <div class="shopee-info-content" id="product-description">Loading...</div>
                         </div>
@@ -1589,8 +1850,134 @@
 <!-- Size price calculator đã được chuyển vào product-details.js -->
 <!-- Wishlist Handler JS - RESTful API + Ajax + jQuery -->
 <script src="/js/user/wishlist-handler.js"></script>
+
+<!-- Share Functions -->
+<script>
+    function shareOnFacebook() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent(document.getElementById('product-title').textContent);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+    }
+    
+    function shareOnMessenger() {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/dialog/send?link=${url}&app_id=YOUR_APP_ID&redirect_uri=${url}`, '_blank', 'width=600,height=400');
+    }
+    
+    function shareOnPinterest() {
+        const url = encodeURIComponent(window.location.href);
+        const imageUrl = encodeURIComponent(document.getElementById('product-image').src);
+        const description = encodeURIComponent(document.getElementById('product-title').textContent);
+        window.open(`https://pinterest.com/pin/create/button/?url=${url}&media=${imageUrl}&description=${description}`, '_blank', 'width=600,height=400');
+    }
+    
+    function shareOnTwitter() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent(document.getElementById('product-title').textContent);
+        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+    }
+</script>
+
+<!-- Voucher Loader Script -->
+<script>
+    /**
+     * Load active vouchers from API and render them
+     */
+    function loadActiveVouchers() {
+        console.log('Loading active vouchers...');
+        
+        $.ajax({
+            url: '/api/discount/active-vouchers',
+            type: 'GET',
+            dataType: 'json',
+            success: function(vouchers) {
+                console.log('✅ Vouchers loaded:', vouchers);
+                
+                if (vouchers && vouchers.length > 0) {
+                    renderVouchers(vouchers);
+                    $('#voucher-section').show();
+                } else {
+                    console.log('ℹ️ No active vouchers found');
+                    $('#voucher-section').hide();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ Error loading vouchers:', error);
+                $('#voucher-section').hide();
+            }
+        });
+    }
+    
+    /**
+     * Render vouchers to HTML
+     */
+    function renderVouchers(vouchers) {
+        const $voucherList = $('#voucher-list');
+        $voucherList.empty();
+        
+        // Limit to 4 vouchers display
+        const displayVouchers = vouchers.slice(0, 4);
+        
+        displayVouchers.forEach(voucher => {
+            const badge = createVoucherBadge(voucher);
+            $voucherList.append(badge);
+        });
+    }
+    
+    /**
+     * Create voucher badge with tooltip
+     */
+    function createVoucherBadge(voucher) {
+        const percentDisplay = Math.round(voucher.percent * 100);
+        const minOrderDisplay = formatVND(voucher.minOrderValue || 0);
+        const maxDiscountDisplay = voucher.maxDiscountAmount ? formatVND(voucher.maxDiscountAmount) : 'Không giới hạn';
+        
+        return `
+            <span class="shopee-voucher-badge">
+                Giảm ${percentDisplay}%
+                <div class="voucher-tooltip">
+                    <div class="voucher-tooltip-header">
+                        ${voucher.name}
+                    </div>
+                    <div class="voucher-tooltip-body">
+                        Giảm ${percentDisplay}% cho đơn hàng
+                    </div>
+                    <div class="voucher-tooltip-condition">
+                        <div>• Đơn tối thiểu: <strong>${minOrderDisplay}</strong></div>
+                        <div>• Giảm tối đa: <strong>${maxDiscountDisplay}</strong></div>
+                        <div>• HSD: ${formatDate(voucher.endDate)}</div>
+                    </div>
+                </div>
+            </span>
+        `;
+    }
+    
+    /**
+     * Format VND currency
+     */
+    function formatVND(amount) {
+        if (!amount) return '0₫';
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
+    }
+    
+    /**
+     * Format date
+     */
+    function formatDate(dateString) {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('vi-VN');
+    }
+</script>
+
 <script>
     $(document).ready(function () {
+        // Load vouchers on page load
+        loadActiveVouchers();
+        
         // Hàm lấy ProductID từ URL
         function getProductIdFromUrl() {
             var path = window.location.pathname; // Lấy đường dẫn hiện tại
@@ -1706,66 +2093,40 @@
 <!-- Buy Now Feature Script -->
 <script>
 $(document).ready(function() {
-    // Load addresses on page load
-    loadProductAddresses();
-    
-    /**
-     * Load user addresses into dropdown
-     */
-    function loadProductAddresses() {
-        $.ajax({
-            url: '/api/user/addresses',
-            method: 'GET',
-            success: function(response) {
-                console.log('Address API response:', response);
-                
-                if (response.success && response.addresses) {
-                    const addresses = response.addresses;
-                    const $select = $('#addressSelectProduct');
-                    $select.empty();
-                    
-                    if (addresses.length === 0) {
-                        $select.append('<option value="">Chưa có địa chỉ giao hàng</option>');
-                        return;
-                    }
-                    
-                    // Add default option
-                    $select.append('<option value="">-- Chọn địa chỉ giao hàng --</option>');
-                    
-                    // Add addresses
-                    addresses.forEach(function(address) {
-                        const isDefault = address.isDefault;
-                        const option = `<option value="${address.id}" ${isDefault ? 'selected' : ''}>
-                            ${address.address} ${isDefault ? '(Mặc định)' : ''}
-                        </option>`;
-                        $select.append(option);
-                    });
-                } else {
-                    $('#addressSelectProduct').html('<option value="">Không thể tải địa chỉ</option>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error loading addresses:', error);
-                $('#addressSelectProduct').html('<option value="">Lỗi khi tải địa chỉ</option>');
-            }
-        });
-    }
+    console.log('🚀 Buy Now script loaded!');
     
     /**
      * Handle Buy Now button click
      */
-    $('#buy-now-btn').on('click', function() {
+    console.log('🔗 Binding Buy Now button event handler...');
+    const $buyNowBtn = $('#buy-now-btn');
+    console.log('Buy Now button found:', $buyNowBtn.length, 'element(s)');
+    
+    $buyNowBtn.on('click', function(e) {
+        console.log('🛒 Buy Now button clicked!');
+        console.log('Button disabled?', $(this).prop('disabled'));
+        console.log('Event:', e);
+        
         // Validate selection
         const productDetailId = $('#productDetailId').val();
         const quantity = parseInt($('#qty-input').val());
         const selectedSize = $('#selectedSize').val();
         
+        console.log('Validation data:', {
+            productDetailId,
+            quantity,
+            selectedSize,
+            currentProductDetail: window.currentProductDetail
+        });
+        
         if (!productDetailId) {
+            console.log('❌ Validation failed: No product detail ID');
             alert('Vui lòng chọn size sản phẩm!');
             return;
         }
         
         if (quantity < 1) {
+            console.log('❌ Validation failed: Invalid quantity');
             alert('Số lượng phải lớn hơn 0!');
             return;
         }
@@ -1774,37 +2135,84 @@ $(document).ready(function() {
         const productDetail = window.currentProductDetail;
         
         if (!productDetail) {
+            console.log('❌ Validation failed: No product detail in window');
             alert('Không tải được thông tin sản phẩm. Vui lòng thử lại!');
             return;
         }
+        
+        console.log('✅ Validation passed, proceeding to authentication check...');
 
-        // Calculate price
-        const basePrice = window.currentProduct.price || 0;
-        const sizePrice = productDetail.priceadd || 0;
-        const unitPrice = basePrice + sizePrice;
-        
-        // Create order item data (same format as cart items)
-        const orderItem = {
-            id: productDetail.id, // product detail ID
-            product: {
-                id: productDetail.id,
-                product: window.currentProduct,
-                size: selectedSize,
-                priceadd: sizePrice,
-                quantity: productDetail.quantity
+        // Disable button and show loading
+        const $btn = $(this);
+        $btn.prop('disabled', true);
+        $btn.html('<i class="fa fa-spinner fa-spin"></i> Đang xử lý...');
+
+        // Check if user is logged in by calling a simple API
+        $.ajax({
+            url: '/api/cart/count', // API endpoint that requires authentication
+            method: 'GET',
+            success: function(response) {
+                // User is logged in, proceed with buy now
+                console.log('✅ User is authenticated, proceeding to payment...');
+                console.log('API /api/cart/count response:', response);
+                
+                // Calculate price
+                const basePrice = window.currentProduct.price || 0;
+                const sizePrice = productDetail.priceadd || 0;
+                const unitPrice = basePrice + sizePrice;
+                
+                // Create order item data (same format as cart items)
+                const orderItem = {
+                    id: productDetail.id, // product detail ID
+                    product: {
+                        id: productDetail.id,
+                        product: window.currentProduct,
+                        size: selectedSize,
+                        priceadd: sizePrice,
+                        quantity: productDetail.quantity
+                    },
+                    quantity: quantity,
+                    price: unitPrice
+                };
+                
+                // Store in sessionStorage
+                sessionStorage.setItem('selectedItems', JSON.stringify([orderItem]));
+                sessionStorage.setItem('selectedAddressId', ''); // User will select address in payment page
+                sessionStorage.setItem('cartId', ''); // No cart ID for buy now
+                sessionStorage.setItem('buyNowMode', 'true'); // Flag to indicate buy now mode
+                
+                console.log('📦 Order data saved to sessionStorage:', {
+                    orderItem,
+                    buyNowMode: true
+                });
+                
+                // Redirect to payment page
+                console.log('🚀 Redirecting to payment page...');
+                window.location.href = '/user/payment';
             },
-            quantity: quantity,
-            price: unitPrice
-        };
-        
-        // Store in sessionStorage
-        sessionStorage.setItem('selectedItems', JSON.stringify([orderItem]));
-        sessionStorage.setItem('selectedAddressId', selectedAddressId); // Store selected address
-        sessionStorage.setItem('cartId', ''); // No cart ID for buy now
-        sessionStorage.setItem('buyNowMode', 'true'); // Flag to indicate buy now mode
-        
-        // Redirect to payment page
-        window.location.href = '/user/payment';
+            error: function(xhr, status, error) {
+                console.error('❌ Authentication check error:', {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error,
+                    response: xhr.responseText
+                });
+                
+                // Reset button
+                $btn.prop('disabled', false);
+                $btn.html('<span>Mua Ngay</span>');
+                
+                if (xhr.status === 401) {
+                    // User is not logged in
+                    console.log('🔒 User not authenticated, redirecting to login...');
+                    alert('Vui lòng đăng nhập để mua hàng!');
+                    window.location.href = '/login';
+                } else {
+                    console.log('⚠️ Other error occurred:', xhr.status);
+                    alert('Có lỗi xảy ra. Vui lòng thử lại!');
+                }
+            }
+        });
     });
 });
 

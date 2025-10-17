@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Quản Lý Phí Ship</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý mức phí ship theo khoảng cách" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
+
+    <!-- Vendor CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Icons CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config JS (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+</head>
+<body>
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <!-- Menu Toggle Button -->
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Page Title -->
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">
+                            <iconify-icon icon="mdi:currency-usd" class="me-1"></iconify-icon>
+                            Quản Lý Phí Ship
+                        </h4>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                    <!-- Theme Color (Light/Dark) -->
+                    <div class="topbar-item">
+                        <button type="button" class="topbar-button" id="light-dark-mode">
+                            <iconify-icon icon="solar:moon-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div class="dropdown topbar-item">
+                        <a type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown">
+                            <span class="d-flex align-items-center">
+                                <img class="rounded-circle" width="32" src="/assets/images/users/avatar-1.jpg" alt="avatar">
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Admin</h6>
+                            <a class="dropdown-item" th:href="@{/logout}">
+                                <i class="bx bx-log-out fs-18 align-middle me-1"></i><span class="align-middle">Đăng xuất</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <!-- Flash Messages -->
+            <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="mdi mdi-check-circle me-2"></i>
+                <span th:text="${successMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="mdi mdi-alert-circle me-2"></i>
+                <span th:text="${errorMessage}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <!-- Add/Edit Rate Form -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">
+                                <i class="mdi mdi-plus-circle me-2"></i>
+                                Thêm/Sửa Mức Phí Ship
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <form th:action="@{/admin/shipping-rates/save}" method="post" th:object="${rate}">
+                                <input type="hidden" th:field="*{id}">
+                                
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Từ km <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control" th:field="*{minDistanceKm}" required 
+                                                   placeholder="0.00">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Đến km <span class="text-danger">*</span></label>
+                                            <input type="number" step="0.01" class="form-control" th:field="*{maxDistanceKm}" required 
+                                                   placeholder="5.00">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Phí ship (VNĐ) <span class="text-danger">*</span></label>
+                                            <input type="number" class="form-control" th:field="*{fee}" required 
+                                                   placeholder="15000">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="mb-3">
+                                            <label class="form-label fw-semibold">Mô tả</label>
+                                            <input type="text" class="form-control" th:field="*{description}" 
+                                                   placeholder="VD: Nội thành">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check form-switch">
+                                            <input type="checkbox" class="form-check-input" th:field="*{isActive}" id="isActive">
+                                            <label class="form-check-label fw-semibold" for="isActive">
+                                                <i class="mdi mdi-check-circle text-success"></i> Đang áp dụng
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 text-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="mdi mdi-content-save me-1"></i> Lưu
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rates List -->
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title mb-0">
+                                <i class="mdi mdi-format-list-bulleted me-2"></i>
+                                Danh Sách Mức Phí (<span th:text="${#lists.size(rates)}">0</span>)
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Khoảng Cách</th>
+                                            <th>Phí Ship</th>
+                                            <th>Mô Tả</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Hành Động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="r : ${rates}">
+                                            <td>
+                                                <span class="badge bg-info" style="font-size: 13px;">
+                                                    <span th:text="${r.minDistanceKm}"></span> - 
+                                                    <span th:text="${r.maxDistanceKm}"></span> km
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <strong class="text-primary" style="font-size: 15px;">
+                                                    <span th:text="${#numbers.formatInteger(r.fee, 0, 'COMMA')}"></span>đ
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                <span th:text="${r.description}"></span>
+                                            </td>
+                                            <td>
+                                                <span th:if="${r.isActive}" class="badge bg-success">
+                                                    <i class="mdi mdi-check"></i> Đang áp dụng
+                                                </span>
+                                                <span th:if="${!r.isActive}" class="badge bg-secondary">
+                                                    <i class="mdi mdi-pause"></i> Tạm dừng
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2">
+                                                    <form th:action="@{/admin/shipping-rates/toggle-active/{id}(id=${r.id})}" 
+                                                          method="post" style="display: inline;">
+                                                        <button type="submit" class="btn btn-sm btn-soft-warning">
+                                                            <i class="mdi mdi-sync"></i>
+                                                        </button>
+                                                    </form>
+                                                    <form th:action="@{/admin/shipping-rates/delete/{id}(id=${r.id})}" 
+                                                          method="post" style="display: inline;"
+                                                          onsubmit="return confirm('Bạn có chắc muốn xóa mức phí này?');">
+                                                        <button type="submit" class="btn btn-sm btn-soft-danger">
+                                                            <i class="mdi mdi-delete"></i>
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Container Fluid -->
+    </div>
+    <!-- End Page Content -->
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script src="/assets/js/vendor.js"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script src="/assets/js/app.js"></script>
+
+</body>
+</html>

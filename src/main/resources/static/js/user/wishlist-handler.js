@@ -190,15 +190,26 @@ function updateWishlistIcon(buttonElement, isInWishlist) {
     
     const $icon = $(buttonElement).find('i');
     
+    // Update Shopee-style wishlist section icon (if exists)
+    const $shopeeIcon = $('#wishlist-icon');
+    
     if (isInWishlist) {
         // Filled heart (trong wishlist)
         $icon.removeClass('fa-heart-o').addClass('fa-heart');
         $(buttonElement).attr('title', 'Xóa khỏi yêu thích');
+        
+        // Update Shopee icon
+        $shopeeIcon.removeClass('fa-heart-o').addClass('fa-heart');
+        
         console.log('Icon updated to filled heart');
     } else {
         // Outline heart (không trong wishlist)
         $icon.removeClass('fa-heart').addClass('fa-heart-o');
         $(buttonElement).attr('title', 'Thêm vào yêu thích');
+        
+        // Update Shopee icon
+        $shopeeIcon.removeClass('fa-heart').addClass('fa-heart-o');
+        
         console.log('Icon updated to outline heart');
     }
 }
@@ -224,6 +235,13 @@ function updateWishlistCounter(count) {
         }
         
         console.log('Counter badge updated');
+    }
+    
+    // Update Shopee-style wishlist count (if exists)
+    const $shopeeCount = $('#wishlist-count');
+    if ($shopeeCount.length > 0) {
+        $shopeeCount.text(`(${wishlistCount})`);
+        console.log('Shopee wishlist count updated:', wishlistCount);
     }
 }
 

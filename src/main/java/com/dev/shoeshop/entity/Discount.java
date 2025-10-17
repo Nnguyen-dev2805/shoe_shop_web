@@ -1,6 +1,8 @@
 package com.dev.shoeshop.entity;
 
 import com.dev.shoeshop.enums.DiscountType;
+import com.dev.shoeshop.enums.VoucherType;
+import com.dev.shoeshop.enums.DiscountValueType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -73,14 +75,34 @@ public class Discount {
     @Column(name = "updated_date")
     private LocalDate updatedDate;
     
-    // ========== THÊM MỚI: Phân loại voucher ==========
+    // ========== THÊM MỚI: Shipping Voucher Support ==========
+    
+    /**
+     * Loại voucher: ORDER_DISCOUNT (giảm đơn hàng) hoặc SHIPPING_DISCOUNT (giảm phí ship)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type", nullable = false, length = 50)
+    private VoucherType type = VoucherType.ORDER_DISCOUNT;
+    
+    /**
+     * Kiểu giảm: PERCENTAGE (%) hoặc FIXED_AMOUNT (VNĐ)
+     */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "discount_type", nullable = false, length = 50)
+    private DiscountValueType discountValueType = DiscountValueType.PERCENTAGE;
+    
+    /**
+     * Giảm tối đa (chỉ dùng cho shipping voucher %)
+     * Ví dụ: Giảm 50% phí ship tối đa 20.000đ
+     */
+    @Column(name = "max_discount_amount")
+    private Double maxDiscountAmount;
+    
+    // ========== CŨ: Phân loại voucher theo scope ==========
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "discount_type", nullable = false, length = 20)
-    private DiscountType discountType = DiscountType.ORDER; // Mặc định là voucher order
-    
-    @Column(name = "max_discount_amount")
-    private Double maxDiscountAmount; // Giảm tối đa bao nhiêu (VD: Giảm 20% tối đa 100k)
+    @Column(name = "discount_scope", length = 20)
+    private DiscountType discountType = DiscountType.ORDER; // ORDER, PRODUCT, CATEGORY, SHIPPING
     
     @Column(name = "applies_to_sale_items", nullable = false)
     private Boolean appliesToSaleItems = true; // Có áp dụng cho sản phẩm đang sale không
@@ -154,7 +176,7 @@ public class Discount {
     }
 
     /**
-     * Tính giá trị giảm giá
+     * Tính giá trị giảm giá (cho ORDER voucher)
      */
     public Double calculateDiscountAmount(Double orderValue) {
         if (orderValue == null || percent == null) {
@@ -173,6 +195,63 @@ public class Discount {
         }
         
         return discountAmount;
+    }
+    
+    /**
+     * Tính giá trị giảm phí ship (cho SHIPPING voucher)
+     * @param shippingFee Phí ship ban đầu
+     * @param orderValue Giá trị đơn hàng (để check minOrderValue)
+     * @return Số tiền được giảm
+     */
+    public Double calculateShippingDiscount(Double shippingFee, Double orderValue) {
+        if (shippingFee == null || shippingFee <= 0) {
+            return 0.0;
+        }
+        
+        // Check voucher type
+        if (type != VoucherType.SHIPPING_DISCOUNT) {
+            return 0.0;
+        }
+        
+        // Check min order value
+        if (minOrderValue != null && (orderValue == null || orderValue < minOrderValue)) {
+            return 0.0;
+        }
+        
+        Double discountAmount = 0.0;
+        
+        if (discountValueType == DiscountValueType.FIXED_AMOUNT) {
+            // Fixed amount: Giảm cố định (ví dụ: 30.000đ)
+            // percent field chứa giá trị fixed amount
+            discountAmount = Math.min(percent, shippingFee);
+        } else if (discountValueType == DiscountValueType.PERCENTAGE) {
+            // Percentage: Giảm % (ví dụ: 50%)
+            discountAmount = shippingFee * percent;
+            
+            // Apply max discount nếu có
+            if (maxDiscountAmount != null && discountAmount > maxDiscountAmount) {
+                discountAmount = maxDiscountAmount;
+            }
+            
+            // Không được giảm quá shipping fee
+            discountAmount = Math.min(discountAmount, shippingFee);
+        }
+        
+        return discountAmount;
+    }
+    
+    /**
+     * Kiểm tra có phải shipping voucher không
+     */
+    public boolean isShippingVoucher() {
+        return type == VoucherType.SHIPPING_DISCOUNT;
+    }
+    
+    /**
+     * Kiểm tra có phải order voucher không
+     */
+    public boolean isOrderVoucher() {
+        return type == VoucherType.ORDER_DISCOUNT;
     }
     
     /**

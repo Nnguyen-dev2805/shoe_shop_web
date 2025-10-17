@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/style.css">
     
+    <!-- Goong Maps CSS & JS -->
+    <link href="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@goongmaps/goong-js@1.0.9/dist/goong-js.js"></script>
+    
     <style>
         /* ========== SHOPEE STYLE REDESIGN ========== */
         
@@ -355,52 +359,484 @@
             background: #d73211;
         }
         
-        /* Voucher */
-        .voucher-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 15px;
-            background: #fafafa;
-            border-radius: 3px;
+        /* ========== VOUCHER SHOPEE STYLE ========== */
+        
+        /* Voucher Select Button (Full Width) */
+        .voucher-select-btn-full {
+            width: 100%;
+            padding: 12px 20px;
+            background: #fff;
+            border: 1px solid #ee4d2d;
+            color: #ee4d2d;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            margin-bottom: 8px;
-            border: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         
-        .voucher-row:hover {
-            background: #f5f5f5;
+        .voucher-select-btn-full:hover {
+            background: #fff5f0;
+            border-color: #d73211;
         }
         
-        .voucher-row.selected {
-            background: #fff9f5;
-            border-color: #ee4d2d;
+        .voucher-select-btn-full i {
+            font-size: 16px;
         }
         
-        .voucher-info {
+        /* Selected Voucher Card */
+        .selected-voucher-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: linear-gradient(135deg, #fff5f0 0%, #ffffff 100%);
+            border: 1px solid #ffcab8;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .voucher-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff6b4a 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+        
+        .selected-voucher-card .voucher-info {
             flex: 1;
         }
         
-        .voucher-name {
-            font-size: 14px;
-            font-weight: 500;
+        .selected-voucher-card .voucher-name {
+            font-weight: 600;
             color: #333;
-            margin-bottom: 3px;
+            font-size: 15px;
+            margin-bottom: 4px;
         }
         
-        .voucher-desc {
+        .selected-voucher-card .voucher-desc {
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .selected-voucher-card .voucher-discount {
+            font-weight: 700;
+            color: #ee4d2d;
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        
+        .voucher-remove-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 24px;
+            height: 24px;
+            background: rgba(0,0,0,0.05);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .voucher-remove-btn:hover {
+            background: rgba(238, 77, 45, 0.1);
+            color: #ee4d2d;
+        }
+        
+        /* ========== VOUCHER MODAL ========== */
+        
+        .voucher-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            overflow-y: auto;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        .voucher-modal-content {
+            background: #fff;
+            margin: 30px auto;
+            max-width: 650px;
+            height: calc(100vh - 60px);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        .voucher-modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .voucher-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .voucher-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+        
+        .voucher-modal-close:hover {
+            background: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Voucher Search */
+        .voucher-search-container {
+            padding: 16px 24px;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+        
+        .voucher-search-box {
+            position: relative;
+        }
+        
+        .voucher-search-input {
+            width: 100%;
+            padding: 12px 45px 12px 40px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .voucher-search-input:focus {
+            outline: none;
+            border-color: #ee4d2d;
+        }
+        
+        .voucher-search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+        
+        .voucher-search-apply {
+            position: absolute;
+            right: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 6px 16px;
+            background: #ee4d2d;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .voucher-search-apply:hover {
+            background: #d73211;
+        }
+        
+        /* Voucher Modal Body */
+        .voucher-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 24px;
+        }
+        
+        .voucher-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+        
+        /* Voucher Card in Modal */
+        .voucher-card {
+            position: relative;
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        
+        .voucher-card:hover {
+            border-color: #ee4d2d;
+            box-shadow: 0 2px 8px rgba(238, 77, 45, 0.1);
+        }
+        
+        .voucher-card.selected {
+            border-color: #ee4d2d;
+            background: #fff9f5;
+        }
+        
+        .voucher-card.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .voucher-card.disabled:hover {
+            border-color: #f0f0f0;
+            box-shadow: none;
+        }
+        
+        /* Voucher Icon (FREE SHIP style) */
+        .voucher-card-icon {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            text-align: center;
+            line-height: 1.2;
+            background: linear-gradient(135deg, #06c270 0%, #00ab56 100%);
+        }
+        
+        .voucher-card-icon.type-shipping {
+            background: linear-gradient(135deg, #06c270 0%, #00ab56 100%);
+        }
+        
+        .voucher-card-icon.type-discount {
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff6b4a 100%);
+        }
+        
+        .voucher-icon-text {
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+        
+        .voucher-icon-subtext {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+        
+        /* Voucher Content */
+        .voucher-card-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .voucher-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        
+        .voucher-card-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+        
+        .voucher-best-badge {
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff6b4a 100%);
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-right: 30px; /* Space for checkbox */
+        }
+        
+        .voucher-card-subtitle {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .voucher-card-special-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background: #fff5e6;
+            color: #ff8800;
+            border: 1px solid #ffd699;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .voucher-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             font-size: 12px;
             color: #888;
         }
         
-        .voucher-badge {
+        .voucher-expiry {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .voucher-min-order {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        /* Voucher Checkbox */
+        .voucher-card-checkbox {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* Modal Footer */
+        .voucher-modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+        
+        .voucher-modal-footer-info {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        
+        .voucher-modal-footer-info span {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+        
+        .voucher-confirm-btn {
+            width: 100%;
+            padding: 14px;
             background: #ee4d2d;
             color: #fff;
-            padding: 4px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: 500;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .voucher-confirm-btn:hover {
+            background: #d73211;
+        }
+        
+        .voucher-confirm-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        /* ========== INLINE VOUCHER DISPLAY ========== */
+        
+        #voucher-cards-wrapper {
+            margin-top: 15px;
+        }
+        
+        #voucher-cards-list .voucher-card {
+            margin-bottom: 12px;
+        }
+        
+        .voucher-footer-inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 15px;
+        }
+        
+        .voucher-footer-info {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .voucher-footer-info span {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+        
+        .voucher-confirm-btn-inline {
+            padding: 10px 32px;
+            background: #ee4d2d;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .voucher-confirm-btn-inline:hover {
+            background: #d73211;
+        }
+        
+        .voucher-confirm-btn-inline:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
         
         /* Payment & Shipping */
@@ -577,15 +1013,36 @@
                     </div>
                 </div>
                 
-                <!-- Voucher Section -->
+                <!-- Voucher Section - Direct Display (No Modal) -->
                 <div class="payment-card">
                     <div class="section-title">
                         <i class="fa fa-ticket"></i>
                         Mã giảm giá
                     </div>
-                    <div id="discount-list" class="loading-text">
-                        <i class="fa fa-spinner fa-spin"></i> Đang tải voucher...
+                    
+                    <!-- Voucher List (Direct Display) -->
+                    <div id="voucher-list-container">
+                        <!-- Loading state -->
+                        <div id="voucher-loading" style="text-align: center; padding: 20px; color: #999;">
+                            <i class="fa fa-spinner fa-spin"></i> Đang tải voucher...
+                        </div>
+                        
+                        <!-- Vouchers will be rendered here -->
+                        <div id="voucher-cards-wrapper" style="display: none;">
+                            <div id="voucher-cards-list"></div>
+                            
+                            <!-- Footer: Selected count + Confirm button -->
+                            <div class="voucher-footer-inline">
+                                <div class="voucher-footer-info">
+                                    <span id="voucher-selected-count-inline">0</span> Voucher được chọn
+                                </div>
+                                <button type="button" class="voucher-confirm-btn-inline" id="btn-confirm-voucher-inline">
+                                    Áp dụng
+                                </button>
+                            </div>
+                        </div>
                     </div>
+                    
                     <input type="hidden" id="selected-discount-id" value="">
                 </div>
                 
@@ -642,8 +1099,18 @@
                         </div>
                         
                         <div class="price-row">
-                            <span class="price-label">Phí vận chuyển</span>
-                            <span class="price-value" id="shipping-fee">5,000đ</span>
+                            <span class="price-label">
+                                Phí vận chuyển
+                                <div id="shipping-detail" style="font-size: 11px; color: #888; margin-top: 3px; display: none;">
+                                    <i class="fa fa-truck"></i> <span id="shipping-distance">0 km</span>
+                                    <span style="margin: 0 5px;">•</span>
+                                    <span id="shipping-duration">0 phút</span>
+                                </div>
+                            </span>
+                            <span class="price-value">
+                                <span id="shipping-fee">5,000đ</span>
+                                <i id="shipping-loading" class="fa fa-spinner fa-spin" style="display: none; margin-left: 5px;"></i>
+                            </span>
                         </div>
                         
                         <div class="price-row" id="discount-row" style="display: none;">
@@ -710,6 +1177,320 @@
     </script>
     
     <script src="/js/cart/payment.js"></script>
+    
+    <!-- Goong Maps Init Script for Payment Modal -->
+    <script>
+        // Goong Maps Configuration
+        goongjs.accessToken = '4pXmjW7ligFfpjNVlkIx7pvbzKHU3KCkhFRZKRR2';
+        const GOONG_API_KEY = 'xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU';
+        
+        let paymentMap, paymentMarker;
+        
+        function initPaymentGoongMap() {
+            console.log('🗺️ Initializing Payment Goong Map...');
+            
+            try {
+                // Khởi tạo bản đồ (Hồ Chí Minh)
+                paymentMap = new goongjs.Map({
+                    container: 'paymentGoongMap',
+                    style: 'https://tiles.goong.io/assets/goong_map_web.json',
+                    center: [106.6297, 10.8231], // [lng, lat]
+                    zoom: 13,
+                    attributionControl: false
+                });
+                
+                paymentMap.on('load', function() {
+                    console.log('✅ Payment Goong Map loaded!');
+                });
+                
+                paymentMap.on('error', function(e) {
+                    console.error('❌ Payment Goong Map error:', e);
+                });
+                
+                // Thêm marker
+                paymentMarker = new goongjs.Marker({
+                    draggable: true,
+                    color: '#ee4d2d'
+                })
+                .setLngLat([106.6297, 10.8231])
+                .addTo(paymentMap);
+                
+                // Click vào bản đồ
+                paymentMap.on('click', function(e) {
+                    paymentMarker.setLngLat(e.lngLat);
+                    updatePaymentAddressFromCoords(e.lngLat.lng, e.lngLat.lat);
+                });
+                
+                // Kéo marker
+                paymentMarker.on('dragend', function() {
+                    const lngLat = paymentMarker.getLngLat();
+                    updatePaymentAddressFromCoords(lngLat.lng, lngLat.lat);
+                });
+                
+                // Tìm kiếm địa điểm
+                document.getElementById('paymentMapSearchInput').addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        searchPaymentPlace();
+                    }
+                });
+                
+            } catch (error) {
+                console.error('❌ Error initializing Payment Goong Map:', error);
+            }
+        }
+        
+        // Tìm kiếm địa điểm
+        function searchPaymentPlace() {
+            const query = document.getElementById('paymentMapSearchInput').value;
+            if (!query) return;
+            
+            console.log('🔍 Searching for:', query);
+            
+            fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Search data:', data);
+                    if (data.predictions && data.predictions.length > 0) {
+                        const placeId = data.predictions[0].place_id;
+                        getPaymentPlaceDetail(placeId);
+                    } else {
+                        alert('Không tìm thấy địa điểm này!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Search error:', error);
+                    alert('Lỗi tìm kiếm địa điểm!');
+                });
+        }
+        
+        // Lấy chi tiết địa điểm
+        function getPaymentPlaceDetail(placeId) {
+            fetch(`https://rsapi.goong.io/Place/Detail?place_id=${placeId}&api_key=${GOONG_API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Place detail data:', data);
+                    if (data.result && data.result.geometry) {
+                        const location = data.result.geometry.location;
+                        paymentMap.flyTo({
+                            center: [location.lng, location.lat],
+                            zoom: 16
+                        });
+                        paymentMarker.setLngLat([location.lng, location.lat]);
+                        
+                        // Cập nhật form
+                        document.getElementById('paymentSelectedAddress').value = data.result.formatted_address || data.result.name;
+                        document.getElementById('paymentLatitude').value = location.lat;
+                        document.getElementById('paymentLongitude').value = location.lng;
+                    }
+                })
+                .catch(error => {
+                    console.error('Place detail error:', error);
+                });
+        }
+        
+        // Chuyển tọa độ thành địa chỉ
+        function updatePaymentAddressFromCoords(lng, lat) {
+            console.log('📍 Reverse geocoding:', lat, lng);
+            
+            fetch(`https://rsapi.goong.io/Geocode?latlng=${lat},${lng}&api_key=${GOONG_API_KEY}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Geocoding data:', data);
+                    if (data.results && data.results.length > 0) {
+                        const result = data.results[0];
+                        document.getElementById('paymentSelectedAddress').value = result.formatted_address;
+                        document.getElementById('paymentLatitude').value = lat;
+                        document.getElementById('paymentLongitude').value = lng;
+                        
+                        // Parse address
+                        parsePaymentVietnameseAddress(result);
+                    }
+                })
+                .catch(error => {
+                    console.error('Geocoding error:', error);
+                });
+        }
+        
+        // Parse địa chỉ Việt Nam
+        function parsePaymentVietnameseAddress(result) {
+            const fullAddress = result.formatted_address || '';
+            console.log('📍 Full address:', fullAddress);
+            
+            const parts = fullAddress.split(',').map(p => p.trim());
+            
+            let street = '';
+            let city = '';
+            
+            if (parts.length >= 2) {
+                city = parts[parts.length - 1];
+                street = parts.slice(0, -1).join(', ');
+            } else {
+                street = fullAddress;
+            }
+            
+            console.log('✅ Parsed:', { street, city });
+            
+            // Fill form fields
+            const streetInput = document.getElementById('paymentStreet');
+            if (streetInput) {
+                streetInput.value = street;
+            }
+            
+            const cityInput = document.getElementById('paymentCity');
+            if (cityInput) {
+                cityInput.value = city;
+            }
+        }
+        
+        // Khởi tạo map khi modal mở
+        $(document).ready(function() {
+            $('#paymentAddAddressModal').on('shown.bs.modal', function() {
+                console.log('💬 Payment modal opened');
+                if (!paymentMap) {
+                    setTimeout(initPaymentGoongMap, 300); // Delay để modal render xong
+                } else {
+                    paymentMap.resize(); // Resize map nếu đã tồn tại
+                }
+            });
+            
+            // Reset form khi modal đóng
+            $('#paymentAddAddressModal').on('hidden.bs.modal', function() {
+                if (document.getElementById('paymentSelectedAddress')) {
+                    document.getElementById('paymentSelectedAddress').value = '';
+                }
+                if (document.getElementById('paymentMapSearchInput')) {
+                    document.getElementById('paymentMapSearchInput').value = '';
+                }
+            });
+        });
+    </script>
+
+    <!-- Add Address Modal (for users without address) -->
+    <div class="modal fade" id="paymentAddAddressModal" tabindex="-1" aria-labelledby="paymentAddAddressModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-xl" style="max-width: 1200px;">
+            <div class="modal-content">
+                <div class="modal-header" style="border-bottom: 1px solid #e5e5e5; padding: 20px 30px; background: #fff;">
+                    <h5 class="modal-title" id="paymentAddAddressModalLabel" style="font-size: 18px; font-weight: 600; color: #333;">
+                        <i class="fa fa-map-marker" style="color: #ee4d2d;"></i> Thêm địa chỉ giao hàng
+                    </h5>
+                    <button type="button" class="btn-close" id="cancelAddressBtn" aria-label="Close" style="font-size: 20px;"></button>
+                </div>
+                <div class="modal-body" style="padding: 25px 30px; background: #f8f8f8;">
+                    <div class="row">
+                        <!-- Google Maps Column -->
+                        <div class="col-md-7">
+                            <div class="map-container" style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                                <div style="position: relative; margin-bottom: 12px;">
+                                    <i class="fa fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                    <input type="text" id="paymentMapSearchInput" placeholder="Tìm kiếm địa chỉ" 
+                                       style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;" 
+                                       onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
+                                </div>
+                                <div id="paymentGoongMap" style="width: 100%; height: 420px; border-radius: 6px; overflow: hidden;"></div>
+                                <p style="font-size: 12px; color: #999; margin-top: 8px; margin-bottom: 0;">
+                                    <i class="fa fa-info-circle" style="color: #ee4d2d;"></i> Click vào bản đồ để chọn vị trí chính xác
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Column -->
+                        <div class="col-md-5">
+                            <form id="paymentAddAddressForm" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08);">
+                                <!-- Thông tin người nhận -->
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                        <i class="fa fa-user" style="color: #ee4d2d; width: 16px;"></i> Tên người nhận <span style="color: #ee4d2d;">*</span>
+                                    </label>
+                                    <input type="text" id="paymentRecipientName" name="recipientName" placeholder="Nhập họ tên" required
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
+                                           onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
+                                </div>
+                                
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                        <i class="fa fa-phone" style="color: #ee4d2d; width: 16px;"></i> Số điện thoại <span style="color: #ee4d2d;">*</span>
+                                    </label>
+                                    <input type="tel" id="paymentRecipientPhone" name="recipientPhone" placeholder="0901234567" required
+                                           pattern="^0\d{9}$" title="Số điện thoại phải là 10 số và bắt đầu bằng 0"
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
+                                           onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
+                                </div>
+                                
+                                <!-- Địa chỉ từ Map -->
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                        <i class="fa fa-map-marker" style="color: #ee4d2d; width: 16px;"></i> Địa chỉ đã chọn <span style="color: #ee4d2d;">*</span>
+                                    </label>
+                                    <textarea id="paymentSelectedAddress" name="selectedAddress" placeholder="Chọn vị trí trên bản đồ" readonly
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 13px; height: 65px; resize: none; background: #f9f9f9; color: #666;"></textarea>
+                                </div>
+                                
+                                <!-- Hidden fields for coordinates -->
+                                <input type="hidden" id="paymentLatitude" name="latitude">
+                                <input type="hidden" id="paymentLongitude" name="longitude">
+                                
+                                <!-- Số nhà, tên đường -->
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                        <i class="fa fa-home" style="color: #ee4d2d; width: 16px;"></i> Số nhà, tên đường <span style="color: #ee4d2d;">*</span>
+                                    </label>
+                                    <textarea id="paymentStreet" name="street" placeholder="Số nhà, tên đường, phường/xã, quận/huyện" required
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; height: 70px; resize: none; outline: none; transition: border-color 0.3s;"
+                                           onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'"></textarea>
+                                </div>
+                        
+                        <!-- Tỉnh/Thành phố -->
+                        <div class="form-group" style="margin-bottom: 18px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                <i class="fa fa-building-o" style="color: #ee4d2d; width: 16px;"></i> Tỉnh/Thành phố <span style="color: #ee4d2d;">*</span>
+                            </label>
+                            <input type="text" id="paymentCity" name="city" placeholder="Tự động điền từ bản đồ" required readonly
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; background-color: #f9f9f9; color: #666;">
+                        </div>
+                        
+                        <!-- Hidden: Country mặc định Việt Nam -->
+                        <input type="hidden" id="paymentCountry" name="country" value="Việt Nam">
+                        
+                        <!-- Loại địa chỉ -->
+                        <div class="form-group" style="margin-bottom: 18px;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
+                                <i class="fa fa-tag" style="color: #ee4d2d; width: 16px;"></i> Loại địa chỉ
+                            </label>
+                            <select id="paymentAddressType" name="addressType"
+                                    style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; cursor: pointer; background: white;">
+                                <option value="HOME">Nhà riêng</option>
+                                <option value="OFFICE">Văn phòng</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Checkbox: Đặt làm địa chỉ mặc định -->
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #fff8f0; border: 1px solid #ffe8cc; border-radius: 6px;">
+                                <input type="checkbox" id="paymentIsDefault" name="isDefault" value="true" checked
+                                       style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer; accent-color: #ee4d2d;">
+                                <span style="font-weight: 500; font-size: 14px; color: #333;">
+                                    <i class="fa fa-star" style="color: #ee4d2d;"></i> Đặt làm địa chỉ mặc định
+                                </span>
+                            </label>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="modal-footer" style="border-top: 1px solid #e5e5e5; padding: 15px 30px; background: white;">
+                <button type="button" class="btn btn-secondary" id="cancelAddressFooterBtn" 
+                        style="padding: 10px 24px; font-size: 14px; border-radius: 6px; border: 1px solid #ddd; background: white; color: #666;">
+                    Hủy
+                </button>
+                <button type="submit" form="paymentAddAddressForm" 
+                        style="padding: 10px 24px; font-size: 14px; border-radius: 6px; background: #ee4d2d; color: white; border: none; font-weight: 500; cursor: pointer;">
+                    Lưu Địa Chỉ
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Chat Widget -->
     <div th:replace="fragments/user/chat-widget :: chat-widget"></div>

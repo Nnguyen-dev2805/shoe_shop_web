@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/discount")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ApiDiscountController {
 
     private final DiscountService discountService;
@@ -153,6 +152,21 @@ public class ApiDiscountController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 
+    }
+    
+    /**
+     * Lấy danh sách voucher đang active để hiển thị trên shop (product page)
+     * Chỉ lấy vouchers có status ACTIVE, chưa hết hạn, còn số lượng
+     * URL: GET /api/discount/active-vouchers
+     */
+    @GetMapping("/active-vouchers")
+    public ResponseEntity<List<DiscountResponse>> getActiveVouchers() {
+        try {
+            List<DiscountResponse> discounts = discountService.getActiveDiscounts();
+            return ResponseEntity.ok(discounts);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
 }
