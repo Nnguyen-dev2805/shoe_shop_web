@@ -53,6 +53,19 @@ public class UserHomeController {
     public String blog(){
         return "/user/blog";
     }
+    
+    /**
+     * Wishlist page - Load via Ajax
+     */
+    @GetMapping("/wishlist")
+    public String wishlist(HttpSession session) {
+        Users u = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (u != null) {
+            return "user/wishlist";
+        } else {
+            return "redirect:/login";
+        }
+    }
 
     @GetMapping("/my_account")
     public String myAccount(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
