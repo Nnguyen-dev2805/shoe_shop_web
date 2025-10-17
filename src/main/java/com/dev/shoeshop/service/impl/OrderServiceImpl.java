@@ -9,15 +9,7 @@ import com.dev.shoeshop.dto.OrderNotificationDTO;
 import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
-import com.dev.shoeshop.entity.Address;
-import com.dev.shoeshop.entity.Cart;
-import com.dev.shoeshop.entity.CartDetail;
-import com.dev.shoeshop.entity.Discount;
-import com.dev.shoeshop.entity.Order;
-import com.dev.shoeshop.entity.OrderDetail;
-import com.dev.shoeshop.entity.ProductDetail;
-import com.dev.shoeshop.entity.ShippingCompany;
-import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.repository.AddressRepository;
@@ -26,6 +18,7 @@ import com.dev.shoeshop.repository.CartRepository;
 import com.dev.shoeshop.repository.DiscountRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
+import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.NotificationService;
@@ -36,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +60,12 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private AddressRepository addressRepository;
+    
+    @Autowired
+    private DiscountRepository discountRepository;
+    
+    @Autowired
+    private ProductRepository productRepository;
     
     @Autowired
     private NotificationService notificationService;
@@ -179,13 +179,15 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                         Double finalTotalPrice, String payOption, 
-                                        Long shippingCompanyId, Long discountId, 
+                                        Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
                                         java.util.List<Integer> selectedItemIds,
                                         java.util.Map<Integer, Integer> itemQuantities) {
         try {
             System.out.println("=== Processing checkout in service ===");
             System.out.println("Cart ID: " + cartId);
             System.out.println("User ID: " + userId);
+            System.out.println("✅ Order Discount ID: " + orderDiscountId);
+            System.out.println("✅ Shipping Discount ID: " + shippingDiscountId);
             System.out.println("Selected Item IDs: " + selectedItemIds);
             
             // Get address
@@ -205,7 +207,8 @@ public class OrderServiceImpl implements OrderService {
                 
                 // Create order directly from product details
                 Order order = createOrderFromProductDetails(user, address, finalTotalPrice, payOption, 
-                                                          shippingCompanyId, discountId, selectedItemIds, itemQuantities);
+                                                          shippingCompanyId, orderDiscountId, shippingDiscountId,
+                                                          selectedItemIds, itemQuantities);
                 savedOrder = orderRepository.save(order);
                 
                 System.out.println("Buy Now order created with ID: " + savedOrder.getId());
@@ -225,7 +228,8 @@ public class OrderServiceImpl implements OrderService {
 
                 
                 // Create order from selected cart items
-                Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, selectedItemIds);
+                Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, 
+                                                orderDiscountId, shippingDiscountId, selectedItemIds);
                 
                 // Save order (sẽ cascade insert order_detail)
                 // Lúc này cart items đã bị xóa rồi
@@ -298,7 +302,7 @@ public class OrderServiceImpl implements OrderService {
      * Create order from product details directly (Buy Now mode)
      */
     private Order createOrderFromProductDetails(Users user, Address address, Double finalTotalPrice, 
-                                               String payOption, Long shippingCompanyId, Long discountId,
+                                               String payOption, Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
                                                java.util.List<Integer> selectedItemIds,
                                                java.util.Map<Integer, Integer> itemQuantities) {
         System.out.println("Creating order from product details (Buy Now)...");
@@ -312,9 +316,29 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(ShipmentStatus.IN_STOCK);
         order.setPayOption(PayOption.valueOf(payOption));
         
-        // Note: Order entity doesn't have shippingCompany and discount fields
-        // These are optional and not stored in the database schema
-        // The frontend handles shipping company selection for display purposes only
+        // ✅ Set order discount if applied
+        if (orderDiscountId != null) {
+            Discount orderDiscount = discountRepository.findById(orderDiscountId)
+                .orElse(null);
+            if (orderDiscount != null) {
+                order.setAppliedDiscount(orderDiscount);
+                // Calculate discount amount (assuming percent is already decimal 0-1)
+                // discountAmount will be calculated by frontend and reflected in finalTotalPrice
+                order.setDiscountAmount(0.0); // Will be set properly if needed
+                System.out.println("✅ Applied order discount: " + orderDiscount.getName());
+            }
+        }
+        
+        // ✅ Set shipping discount if applied
+        if (shippingDiscountId != null) {
+            Discount shippingDiscount = discountRepository.findById(shippingDiscountId)
+                .orElse(null);
+            if (shippingDiscount != null) {
+                order.setShippingDiscount(shippingDiscount);
+                order.setShippingDiscountAmount(0.0); // Will be set properly if needed
+                System.out.println("✅ Applied shipping discount: " + shippingDiscount.getName());
+            }
+        }
         
         // Create order details from product detail IDs
         Set<OrderDetail> orderDetails = new HashSet<>();
@@ -353,7 +377,8 @@ public class OrderServiceImpl implements OrderService {
      * Create order from cart (Cart mode)
      */
     private Order createOrderFromCart(Cart cart, Address address, Double finalTotalPrice, 
-                                    String payOption, java.util.List<Integer> selectedItemIds) {
+                                    String payOption, Long orderDiscountId, Long shippingDiscountId,
+                                    java.util.List<Integer> selectedItemIds) {
         System.out.println("Creating order from cart...");
         
         // Create order
@@ -364,6 +389,28 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedDate(new Date());
         order.setStatus(ShipmentStatus.IN_STOCK);
         order.setPayOption(PayOption.valueOf(payOption));
+        
+        // ✅ Set order discount if applied
+        if (orderDiscountId != null) {
+            Discount orderDiscount = discountRepository.findById(orderDiscountId)
+                .orElse(null);
+            if (orderDiscount != null) {
+                order.setAppliedDiscount(orderDiscount);
+                order.setDiscountAmount(0.0); // Frontend already calculated in finalTotalPrice
+                System.out.println("✅ Applied order discount: " + orderDiscount.getName());
+            }
+        }
+        
+        // ✅ Set shipping discount if applied
+        if (shippingDiscountId != null) {
+            Discount shippingDiscount = discountRepository.findById(shippingDiscountId)
+                .orElse(null);
+            if (shippingDiscount != null) {
+                order.setShippingDiscount(shippingDiscount);
+                order.setShippingDiscountAmount(0.0); // Frontend already calculated in finalTotalPrice
+                System.out.println("✅ Applied shipping discount: " + shippingDiscount.getName());
+            }
+        }
         
         // Create order details
         Set<OrderDetail> orderDetails = new HashSet<>();
@@ -669,8 +716,20 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
         
+        ShipmentStatus oldStatus = order.getStatus();
         order.setStatus(newStatus);
         orderRepository.save(order);
+        
+        // ✅ Update sold_quantity when order status changes to DELIVERED
+        if (newStatus == ShipmentStatus.DELIVERED && oldStatus != ShipmentStatus.DELIVERED) {
+            updateProductSoldQuantity(order, true);
+            System.out.println("✅ Updated sold_quantity for order ID: " + orderId);
+        }
+        // ✅ Decrease sold_quantity if order was DELIVERED but now changed to other status
+        else if (oldStatus == ShipmentStatus.DELIVERED && newStatus != ShipmentStatus.DELIVERED) {
+            updateProductSoldQuantity(order, false);
+            System.out.println("⚠️ Decreased sold_quantity for order ID: " + orderId);
+        }
     }
     
     @Override
@@ -679,8 +738,15 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
         
+        ShipmentStatus oldStatus = order.getStatus();
         order.setStatus(ShipmentStatus.DELIVERED);
         orderRepository.save(order);
+        
+        // ✅ Update sold_quantity when marking as delivered
+        if (oldStatus != ShipmentStatus.DELIVERED) {
+            updateProductSoldQuantity(order, true);
+            System.out.println("✅ Updated sold_quantity for delivered order ID: " + orderId);
+        }
     }
     
     @Override
@@ -691,5 +757,65 @@ public class OrderServiceImpl implements OrderService {
         
         order.setStatus(ShipmentStatus.RETURN);
         orderRepository.save(order);
+    }
+    
+    // ========== HELPER METHOD: Update Product Sold Quantity ==========
+    
+    /**
+     * Update sold_quantity for all products in the order
+     * @param order The order containing products
+     * @param increase true to increase, false to decrease
+     */
+    private void updateProductSoldQuantity(Order order, boolean increase) {
+        if (order.getOrderDetailSet() == null || order.getOrderDetailSet().isEmpty()) {
+            return;
+        }
+        
+        System.out.println("=== Updating Product Sold Quantity ===");
+        System.out.println("Order ID: " + order.getId());
+        System.out.println("Action: " + (increase ? "INCREASE" : "DECREASE"));
+        
+        // Group order details by product to sum quantities
+        Map<Long, Integer> productQuantities = new HashMap<>();
+        
+        for (OrderDetail orderDetail : order.getOrderDetailSet()) {
+            ProductDetail productDetail = orderDetail.getProduct();
+            if (productDetail != null && productDetail.getProduct() != null) {
+                Long productId = productDetail.getProduct().getId();
+                int quantity = orderDetail.getQuantity();
+                
+                productQuantities.put(
+                    productId, 
+                    productQuantities.getOrDefault(productId, 0) + quantity
+                );
+            }
+        }
+        
+        // Update each product's sold_quantity
+        for (Map.Entry<Long, Integer> entry : productQuantities.entrySet()) {
+            Long productId = entry.getKey();
+            int totalQuantity = entry.getValue();
+            
+            Product product = productRepository.findById(productId).orElse(null);
+            if (product != null) {
+                long currentSold = product.getSoldQuantity() != null ? product.getSoldQuantity() : 0L;
+                long newSold;
+                
+                if (increase) {
+                    newSold = currentSold + totalQuantity;
+                } else {
+                    newSold = Math.max(0, currentSold - totalQuantity); // Don't go below 0
+                }
+                
+                product.setSoldQuantity(newSold);
+                productRepository.save(product);
+                
+                System.out.println("  Product ID " + productId + ": " + 
+                                 currentSold + " -> " + newSold + 
+                                 " (qty: " + totalQuantity + ")");
+            }
+        }
+        
+        System.out.println("=== Sold Quantity Update Complete ===");
     }
 }

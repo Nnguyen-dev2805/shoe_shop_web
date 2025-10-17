@@ -39,7 +39,9 @@ public class Discount {
 
     @NotNull(message = "Percent cannot be null")
     @DecimalMin(value = "0.0", message = "Percent must be at least 0%")
-    @DecimalMax(value = "1.0", message = "Percent cannot exceed 100% (1.0)")
+    // Removed @DecimalMax - This field now serves dual purpose:
+    // - For PERCENTAGE type: value is 0-1.0 (0%-100%)
+    // - For FIXED_AMOUNT type: value is the actual amount (e.g., 30000 VND)
     @Column(name = "discount_percent", nullable = false)
     private Double percent;
 

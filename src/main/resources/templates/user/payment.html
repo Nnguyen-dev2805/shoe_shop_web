@@ -955,6 +955,186 @@
                 position: static;
             }
         }
+        
+        /* ========== SHOPEE VOUCHER CARD STYLES ========== */
+        .shopee-voucher-card {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            background: white;
+        }
+        
+        .shopee-voucher-card:hover {
+            border-color: #ee4d2d;
+            box-shadow: 0 2px 8px rgba(238, 77, 45, 0.15);
+        }
+        
+        /* Left Badge Section */
+        .voucher-left {
+            width: 90px;
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff6b45 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .voucher-left.shipping {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        }
+        
+        .voucher-left::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .voucher-badge {
+            text-align: center;
+            color: white;
+        }
+        
+        .badge-percent {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        
+        .badge-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Middle Content Section */
+        .voucher-middle {
+            flex: 1;
+            padding: 15px 20px;
+        }
+        
+        .voucher-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .best-choice-badge {
+            background: #ee4d2d;
+            color: white;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 2px;
+            font-weight: 500;
+        }
+        
+        .voucher-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .voucher-expiry {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .voucher-expiry i {
+            margin-right: 4px;
+        }
+        
+        /* Right Section */
+        .voucher-right {
+            width: 180px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-left: 1px dashed #e5e5e5;
+        }
+        
+        .voucher-min-order {
+            font-size: 13px;
+            color: #666;
+            text-align: right;
+        }
+        
+        .voucher-checkbox {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .voucher-checkbox input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* Footer Inline */
+        .voucher-footer-inline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .voucher-footer-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .voucher-confirm-btn-inline {
+            background: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 10px 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .voucher-confirm-btn-inline:hover {
+            background: #d73211;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .voucher-left {
+                width: 70px;
+            }
+            
+            .badge-percent {
+                font-size: 18px;
+            }
+            
+            .voucher-right {
+                width: 120px;
+                padding: 10px;
+            }
+            
+            .voucher-middle {
+                padding: 12px 15px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1013,30 +1193,27 @@
                     </div>
                 </div>
                 
-                <!-- Voucher Section - Direct Display (No Modal) -->
+                <!-- Order Voucher Section -->
                 <div class="payment-card">
                     <div class="section-title">
                         <i class="fa fa-ticket"></i>
-                        Mã giảm giá
+                        Mã giảm giá đơn hàng
                     </div>
                     
-                    <!-- Voucher List (Direct Display) -->
-                    <div id="voucher-list-container">
-                        <!-- Loading state -->
-                        <div id="voucher-loading" style="text-align: center; padding: 20px; color: #999;">
+                    <!-- Order Voucher List -->
+                    <div id="order-voucher-container">
+                        <div id="order-voucher-loading" style="text-align: center; padding: 20px; color: #999;">
                             <i class="fa fa-spinner fa-spin"></i> Đang tải voucher...
                         </div>
                         
-                        <!-- Vouchers will be rendered here -->
-                        <div id="voucher-cards-wrapper" style="display: none;">
-                            <div id="voucher-cards-list"></div>
+                        <div id="order-voucher-wrapper" style="display: none;">
+                            <div id="order-voucher-list"></div>
                             
-                            <!-- Footer: Selected count + Confirm button -->
                             <div class="voucher-footer-inline">
                                 <div class="voucher-footer-info">
-                                    <span id="voucher-selected-count-inline">0</span> Voucher được chọn
+                                    <span id="order-voucher-count">0</span> Voucher được chọn
                                 </div>
-                                <button type="button" class="voucher-confirm-btn-inline" id="btn-confirm-voucher-inline">
+                                <button type="button" class="voucher-confirm-btn-inline" id="btn-confirm-order-voucher">
                                     Áp dụng
                                 </button>
                             </div>
@@ -1044,6 +1221,36 @@
                     </div>
                     
                     <input type="hidden" id="selected-discount-id" value="">
+                </div>
+                
+                <!-- Shipping Voucher Section -->
+                <div class="payment-card">
+                    <div class="section-title">
+                        <i class="fa fa-truck"></i>
+                        Mã giảm phí vận chuyển
+                    </div>
+                    
+                    <!-- Shipping Voucher List -->
+                    <div id="shipping-voucher-container">
+                        <div id="shipping-voucher-loading" style="text-align: center; padding: 20px; color: #999;">
+                            <i class="fa fa-spinner fa-spin"></i> Đang tải voucher ship...
+                        </div>
+                        
+                        <div id="shipping-voucher-wrapper" style="display: none;">
+                            <div id="shipping-voucher-list"></div>
+                            
+                            <div class="voucher-footer-inline">
+                                <div class="voucher-footer-info">
+                                    <span id="shipping-voucher-count">0</span> Voucher được chọn
+                                </div>
+                                <button type="button" class="voucher-confirm-btn-inline" id="btn-confirm-shipping-voucher">
+                                    Áp dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <input type="hidden" id="selected-shipping-voucher-id" value="">
                 </div>
                 
                 <!-- Shipping Section -->

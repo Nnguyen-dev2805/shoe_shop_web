@@ -21,6 +21,7 @@ public class ProductDetailResponse {
     private List<SizeOption> sizeOptions;
     private Double avgRating;
     private Integer totalReviews;
+    private Long soldQuantity; // ← NEW: Total sold quantity
     private FlashSaleInfo flashSale; // ← NEW: Flash Sale information
 
     @NoArgsConstructor

@@ -93,6 +93,11 @@ function renderProductDetails(product) {
     } else {
         $('#product-reviews').text("0 Đánh Giá");
     }
+    
+    // Render sold quantity
+    const soldQty = product.soldQuantity || 0;
+    $('#product-sold-count').text(formatSoldQuantity(soldQty));
+    console.log('💰 Sold Quantity:', soldQty);
 
     // Check Flash Sale
     console.log('🔍 Checking Flash Sale...');
@@ -398,6 +403,24 @@ function formatVND(price) {
         style: 'currency', 
         currency: 'VND' 
     }).format(price);
+}
+
+/**
+ * Format sold quantity (Shopee style)
+ * Examples: 12 -> 12, 1234 -> 1.2k, 45678 -> 45.6k, 1500000 -> 1.5tr
+ */
+function formatSoldQuantity(quantity) {
+    if (quantity < 1000) {
+        return quantity.toString();
+    } else if (quantity < 1000000) {
+        // Format as "k" (thousands)
+        const k = (quantity / 1000).toFixed(1);
+        return k.endsWith('.0') ? Math.floor(quantity / 1000) + 'k' : k + 'k';
+    } else {
+        // Format as "tr" (triệu - millions)
+        const m = (quantity / 1000000).toFixed(1);
+        return m.endsWith('.0') ? Math.floor(quantity / 1000000) + 'tr' : m + 'tr';
+    }
 }
 
 /**

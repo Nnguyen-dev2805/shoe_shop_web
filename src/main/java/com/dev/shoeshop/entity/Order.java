@@ -58,10 +58,17 @@ public class Order {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "discount_id")
-    private Discount appliedDiscount; // Voucher/discount đã áp dụng
+    private Discount appliedDiscount; // Order voucher/discount đã áp dụng
     
     @Column(name = "discount_amount")
-    private Double discountAmount; // Số tiền được giảm
+    private Double discountAmount; // Số tiền được giảm từ order voucher
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_discount_id")
+    private Discount shippingDiscount; // Shipping voucher đã áp dụng
+    
+    @Column(name = "shipping_discount_amount")
+    private Double shippingDiscountAmount; // Số tiền được giảm từ shipping voucher
     
     @Column(name = "original_total_price")
     private Double originalTotalPrice; // Giá gốc trước khi giảm giá

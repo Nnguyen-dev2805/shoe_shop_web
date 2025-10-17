@@ -120,4 +120,34 @@ public interface DiscountService {
      * Tự động cập nhật status của discount dựa trên ngày tháng
      */
     void autoUpdateDiscountStatus();
+    
+    // ========== SHIPPING VOUCHER METHODS ==========
+    
+    /**
+     * Lấy tất cả order vouchers đang active
+     */
+    List<DiscountResponse> getActiveOrderVouchers();
+    
+    /**
+     * Lấy tất cả shipping vouchers đang active
+     */
+    List<DiscountResponse> getActiveShippingVouchers();
+    
+    /**
+     * Tính giá trị giảm phí ship
+     * @param voucherId ID của shipping voucher
+     * @param shippingFee Phí ship ban đầu
+     * @param orderValue Giá trị đơn hàng (để check minOrderValue)
+     * @return Số tiền được giảm
+     */
+    Double calculateShippingDiscount(Long voucherId, Double shippingFee, Double orderValue);
+    
+    /**
+     * Validate shipping voucher có thể sử dụng không
+     * @param voucherId ID của voucher
+     * @param orderValue Giá trị đơn hàng
+     * @param shippingFee Phí ship
+     * @return true nếu valid
+     */
+    boolean validateShippingVoucher(Long voucherId, Double orderValue, Double shippingFee);
 }

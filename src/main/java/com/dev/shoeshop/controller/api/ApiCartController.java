@@ -290,8 +290,12 @@ public class ApiCartController {
             Long addressId = Long.valueOf(request.get("addressId").toString());
             Long shippingCompanyId = request.get("shippingCompanyId") != null ? 
                 Long.valueOf(request.get("shippingCompanyId").toString()) : null;
-            Long discountId = request.get("discountId") != null && !request.get("discountId").toString().isEmpty() ? 
-                Long.valueOf(request.get("discountId").toString()) : null;
+            
+            // ✅ UPDATED: Get both order and shipping voucher IDs
+            Long orderDiscountId = request.get("orderDiscountId") != null && !request.get("orderDiscountId").toString().isEmpty() ? 
+                Long.valueOf(request.get("orderDiscountId").toString()) : null;
+            Long shippingDiscountId = request.get("shippingDiscountId") != null && !request.get("shippingDiscountId").toString().isEmpty() ? 
+                Long.valueOf(request.get("shippingDiscountId").toString()) : null;
             
             // Get selected item IDs (only items user selected to purchase)
             @SuppressWarnings("unchecked")
@@ -318,7 +322,8 @@ public class ApiCartController {
             System.out.println("Address ID: " + addressId);
             System.out.println("Payment Option: " + payOption);
             System.out.println("Shipping Company ID: " + shippingCompanyId);
-            System.out.println("Discount ID: " + discountId);
+            System.out.println("✅ Order Discount ID: " + orderDiscountId);
+            System.out.println("✅ Shipping Discount ID: " + shippingDiscountId);
             System.out.println("Selected Item IDs: " + selectedItemIds);
             System.out.println("Item Quantities: " + itemQuantities);
             System.out.println("Final Total Price: " + finalTotalPrice);
@@ -329,10 +334,11 @@ public class ApiCartController {
                     .body(createErrorResponse("Missing required fields"));
             }
             
-            // Process the order
+            // Process the order with both voucher IDs
             OrderResultDTO orderResult = orderService.processCheckout(
                 cartId, user.getId(), addressId, finalTotalPrice, 
-                payOption, shippingCompanyId, discountId, selectedItemIds, itemQuantities
+                payOption, shippingCompanyId, orderDiscountId, shippingDiscountId, 
+                selectedItemIds, itemQuantities
             );
             
             Map<String, Object> response = new HashMap<>();
