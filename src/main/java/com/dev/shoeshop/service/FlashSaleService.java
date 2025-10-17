@@ -5,6 +5,7 @@ import com.dev.shoeshop.dto.flashsale.request.PurchaseFlashSaleRequest;
 import com.dev.shoeshop.dto.flashsale.response.FlashSaleItemResponse;
 import com.dev.shoeshop.dto.flashsale.response.FlashSaleResponse;
 import com.dev.shoeshop.dto.flashsale.response.StockResponse;
+import com.dev.shoeshop.dto.response.ProductWithFlashSaleResponse;
 import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.FlashSaleStatus;
 import com.dev.shoeshop.repository.*;
@@ -255,6 +256,7 @@ public class FlashSaleService {
                 .orElseThrow(() -> new FlashSaleException("Product detail " + productDetailId + " không tồn tại"));
             
             // Tính giá gốc và giá flash sale
+            // ✅ getFinalPrice() = product.getPrice() + priceadd
             double originalPrice = productDetail.getFinalPrice();
             double flashPrice = originalPrice * (1 - request.getDiscountPercent() / 100.0);
             
@@ -264,6 +266,7 @@ public class FlashSaleService {
                 .productDetail(productDetail)
                 .originalPrice(originalPrice)
                 .flashSalePrice(flashPrice)
+                .discountPercent(request.getDiscountPercent())  // ✅ Thêm discount percent
                 .position(position++)
                 .build();
             
@@ -348,6 +351,114 @@ public class FlashSaleService {
             .sold(0) // Không track sold nữa
             .remaining(totalStock) // Từ inventory
             .build();
+    }
+    
+    /**
+     * ========================================
+     * THÊM PRODUCT VÀO FLASH SALE
+     * Tự động tạo FlashSaleItem cho TẤT CẢ sizes
+     * ========================================
+     * 
+     * @param flashSaleId ID của flash sale
+     * @param productId ID của product
+     * @param discountPercent % giảm giá (VD: 50 = giảm 50%)
+     * @return số lượng FlashSaleItem đã tạo
+     * 
+     * Flow:
+     * 1. Lấy flash sale
+     * 2. Lấy tất cả ProductDetails của Product
+     * 3. Với mỗi ProductDetail:
+     *    - Tính flash sale price = original price * (1 - discountPercent/100)
+     *    - Tạo FlashSaleItem
+     * 4. Save tất cả FlashSaleItems
+     * 5. Update flash sale total_items
+     */
+    @Transactional
+    public int addProductToFlashSale(Long flashSaleId, Long productId, Double discountPercent) {
+        log.info("Adding product {} to flash sale {} with {}% discount", 
+                 productId, flashSaleId, discountPercent);
+        
+        // 1. Validate flash sale tồn tại
+        FlashSale flashSale = flashSaleRepo.findById(flashSaleId)
+            .orElseThrow(() -> new FlashSaleException("Flash sale không tồn tại!"));
+        
+        // 2. Validate discount percent
+        if (discountPercent == null || discountPercent <= 0 || discountPercent >= 100) {
+            throw new FlashSaleException("Discount percent phải từ 1-99%!");
+        }
+        
+        // 3. Lấy tất cả ProductDetails của Product
+        List<ProductDetail> productDetails = productDetailRepo.findByProductId(productId);
+        
+        if (productDetails.isEmpty()) {
+            throw new FlashSaleException("Product không có ProductDetail nào!");
+        }
+        
+        log.info("Found {} product details for product {}", productDetails.size(), productId);
+        
+        // 4. Tạo FlashSaleItem cho từng ProductDetail
+        List<FlashSaleItem> flashSaleItems = new ArrayList<>();
+        int position = flashSaleItemRepo.countByFlashSaleId(flashSaleId).intValue();
+        
+        for (ProductDetail productDetail : productDetails) {
+            // Kiểm tra đã tồn tại trong flash sale chưa
+            boolean exists = flashSaleItemRepo.existsByFlashSaleIdAndProductDetailId(
+                flashSaleId, productDetail.getId()
+            );
+            
+            if (exists) {
+                log.warn("ProductDetail {} đã tồn tại trong flash sale, skip", 
+                         productDetail.getId());
+                continue;
+            }
+            
+            // Tính flash sale price
+            // ✅ getFinalPrice() = product.getPrice() + priceadd
+            Double originalPrice = productDetail.getFinalPrice();
+            Double flashSalePrice = originalPrice * (1 - discountPercent / 100);
+            
+            // Tạo FlashSaleItem
+            FlashSaleItem item = FlashSaleItem.builder()
+                .flashSale(flashSale)
+                .productDetail(productDetail)
+                .originalPrice(originalPrice)
+                .flashSalePrice(flashSalePrice)
+                .discountPercent(discountPercent)
+                .position(position++)
+                .build();
+            
+            flashSaleItems.add(item);
+            
+            log.info("Created flash sale item: ProductDetail {} - Original: {} - Flash: {} (-{}%)",
+                     productDetail.getId(), originalPrice, flashSalePrice, discountPercent);
+        }
+        
+        // 5. Save tất cả items
+        if (!flashSaleItems.isEmpty()) {
+            flashSaleItemRepo.saveAll(flashSaleItems);
+            
+            // Update flash sale total_items
+            flashSale.setTotalItems(flashSale.getTotalItems() + flashSaleItems.size());
+            flashSaleRepo.save(flashSale);
+            
+            log.info("Successfully added {} flash sale items for product {}", 
+                     flashSaleItems.size(), productId);
+        }
+        
+        return flashSaleItems.size();
+    }
+    
+    /**
+     * Lấy danh sách Products trong Flash Sale hiện tại
+     * Trả về 1 Product duy nhất (không duplicate theo size)
+     * Kèm thông tin flash sale (giá thấp nhất, stock tổng)
+     * 
+     * @param flashSaleId ID của flash sale
+     * @return List các product (không duplicate)
+     */
+    public List<ProductWithFlashSaleResponse> getProductsInFlashSale(Long flashSaleId) {
+        // TODO: Implement sau khi có ProductRepository methods
+        return new ArrayList<>();
     }
 }
 

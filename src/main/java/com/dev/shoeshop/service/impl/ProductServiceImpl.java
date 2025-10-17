@@ -92,14 +92,21 @@ public class ProductServiceImpl implements ProductService {
         }
         
         List<ProductResponse> responses = productPage.getContent().stream()
-                .map(cat -> new ProductResponse(
-                        cat.getId(),
-                        cat.getTitle(),
-                        cat.getPrice(),
-                        cat.getImage(),
-                        cat.getCategory().getName(),
-                        cat.getBrand().getName()
-                ))
+                .map(product -> {
+                    // ========== CHECK FLASH SALE ==========
+                    ProductResponse.FlashSaleInfo flashSaleInfo = getFlashSaleInfo(product);
+                    
+                    // Tạo ProductResponse với Builder pattern (tránh lỗi constructor)
+                    return ProductResponse.builder()
+                            .id(product.getId())
+                            .title(product.getTitle())
+                            .price(product.getPrice())
+                            .image(product.getImage())
+                            .categoryName(product.getCategory().getName())
+                            .brandName(product.getBrand().getName())
+                            .flashSale(flashSaleInfo)  // ✅ Include flash sale
+                            .build();
+                })
                 .collect(Collectors.toList());
         return new PageImpl<>(responses, pageable, productPage.getTotalElements());
     }
@@ -108,14 +115,21 @@ public class ProductServiceImpl implements ProductService {
     public List<ProductResponse> getAllProductsList() {
         List<Product> products = productRepository.findAll();
         return products.stream()
-                .map(cat -> new ProductResponse(
-                        cat.getId(),
-                        cat.getTitle(),
-                        cat.getPrice(),
-                        cat.getImage(),
-                        cat.getCategory().getName(),
-                        cat.getBrand().getName()
-                ))
+                .map(product -> {
+                    // Check flash sale
+                    ProductResponse.FlashSaleInfo flashSaleInfo = getFlashSaleInfo(product);
+                    
+                    // Build response với Builder pattern
+                    return ProductResponse.builder()
+                            .id(product.getId())
+                            .title(product.getTitle())
+                            .price(product.getPrice())
+                            .image(product.getImage())
+                            .categoryName(product.getCategory().getName())
+                            .brandName(product.getBrand().getName())
+                            .flashSale(flashSaleInfo)  // ✅ Include flash sale
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -170,5 +184,54 @@ public class ProductServiceImpl implements ProductService {
                 .avgRating(avgRating)
                 .totalReviews(totalReviews)
                 .build();
+    }
+    
+    /**
+     * Helper method: Lấy thông tin Flash Sale của Product (nếu có)
+     * 
+     * Logic:
+     * - Duyệt qua tất cả ProductDetail của Product
+     * - Check xem ProductDetail có FlashSaleItem nào đang active không
+     * - Nếu có → return FlashSaleInfo
+     * - Nếu không → return null
+     */
+    private ProductResponse.FlashSaleInfo getFlashSaleInfo(Product product) {
+        if (product.getDetails() == null || product.getDetails().isEmpty()) {
+            return null;
+        }
+        
+        // Duyệt qua tất cả ProductDetail của product
+        for (ProductDetail detail : product.getDetails()) {
+            // Check xem detail có flash sale item nào đang active không
+            if (detail.getFlashSaleItems() != null && !detail.getFlashSaleItems().isEmpty()) {
+                // Tìm flash sale item đầu tiên đang active
+                var activeFlashSaleItem = detail.getFlashSaleItems().stream()
+                        .filter(item -> item.getFlashSale() != null && item.getFlashSale().isActive())
+                        .findFirst();
+                
+                if (activeFlashSaleItem.isPresent()) {
+                    var item = activeFlashSaleItem.get();
+                    var flashSale = item.getFlashSale();
+                    
+                    // Tính giá flash sale
+                    double originalPrice = detail.getFinalPrice();
+                    double flashSalePrice = item.getFlashSalePrice();
+                    double discountPercent = item.getDiscountPercent();
+                    
+                    // Return Flash Sale Info
+                    return ProductResponse.FlashSaleInfo.builder()
+                            .active(true)
+                            .flashSalePrice(flashSalePrice)
+                            .originalPrice(originalPrice)
+                            .discountPercent(discountPercent)
+                            .flashSaleName(flashSale.getName())
+                            .stock(null)  // TODO: Implement stock tracking nếu cần
+                            .build();
+                }
+            }
+        }
+        
+        // Không có flash sale active
+        return null;
     }
 }

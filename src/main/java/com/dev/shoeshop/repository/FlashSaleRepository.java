@@ -2,6 +2,8 @@ package com.dev.shoeshop.repository;
 
 import com.dev.shoeshop.entity.FlashSale;
 import com.dev.shoeshop.enums.FlashSaleStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -55,4 +57,18 @@ public interface FlashSaleRepository extends JpaRepository<FlashSale, Long> {
     // Lấy tất cả flash sales chưa bị xóa
     // Dùng cho Admin
     List<FlashSale> findByIsDeleteFalseOrderByCreatedDateDesc();
+    
+    // ========== PAGINATION METHODS FOR ADMIN ==========
+    
+    /**
+     * Lấy tất cả flash sales với pagination
+     * Dùng cho Admin list page
+     */
+    Page<FlashSale> findByIsDeleteFalse(Pageable pageable);
+    
+    /**
+     * Lấy flash sales theo status với pagination
+     * Dùng cho Admin filter
+     */
+    Page<FlashSale> findByStatusAndIsDeleteFalse(FlashSaleStatus status, Pageable pageable);
 }
