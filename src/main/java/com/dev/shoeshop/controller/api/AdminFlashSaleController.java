@@ -618,18 +618,68 @@ public class AdminFlashSaleController {
     }
     
     /**
-     * API 9: XÓA FLASH SALE ITEM
+     * API 10: XÓA SẢN PHẨM KHỎI FLASH SALE (theo flashSaleId + productDetailId)
+     * 
+     * Method: DELETE
+     * URL: /admin/api/flash-sale/{flashSaleId}/product/{productDetailId}
+     * Auth: Admin only
+     * 
+     * Path Variables:
+     * - flashSaleId: ID của flash sale
+     * - productDetailId: ID của product detail cần xóa
+     * 
+     * Response:
+     * {
+     *   "success": true,
+     *   "message": "Đã xóa sản phẩm khỏi flash sale"
+     * }
+     * 
+     * Flow:
+     * 1. Validate flash sale tồn tại
+     * 2. Xóa flash_sale_item (WHERE flash_sale_id = ? AND product_detail_id = ?)
+     * 3. Trigger after_delete_flash_sale_item_update_total tự động giảm total_items
+     * 
+     * Dùng cho:
+     * - Admin xóa 1 sản phẩm cụ thể khỏi flash sale trong giao diện quản lý
+     */
+    @DeleteMapping("/{flashSaleId}/product/{productDetailId}")
+    public ResponseEntity<Map<String, Object>> removeProductFromFlashSale(
+            @PathVariable Long flashSaleId,
+            @PathVariable Long productDetailId) {
+        
+        log.info("Admin API: Removing product detail {} from flash sale {}", 
+                 productDetailId, flashSaleId);
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Gọi service để xóa
+            flashSaleService.removeProductFromFlashSale(flashSaleId, productDetailId);
+            
+            response.put("success", true);
+            response.put("message", "Đã xóa sản phẩm khỏi flash sale");
+            
+            log.info("Successfully removed product detail {} from flash sale {}", 
+                     productDetailId, flashSaleId);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Failed to remove product from flash sale: {}", e.getMessage(), e);
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    /**
+     * API 11: XÓA FLASH SALE ITEM (theo itemId - cũ)
      * 
      * Method: DELETE
      * URL: /admin/api/flash-sale/item/{itemId}
      * Auth: Admin only
      * 
-     * Response:
-     * - 200 OK: { success: true, message: "Đã xóa item" }
-     * - 404 Not Found: Item không tồn tại
-     * 
      * Dùng cho:
-     * - Admin xóa sản phẩm khỏi flash sale
+     * - Admin xóa sản phẩm khỏi flash sale (cách cũ)
      */
     @DeleteMapping("/item/{itemId}")
     public ResponseEntity<Map<String, Object>> deleteFlashSaleItem(@PathVariable Long itemId) {

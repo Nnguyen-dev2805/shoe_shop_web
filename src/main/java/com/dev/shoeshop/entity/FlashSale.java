@@ -59,8 +59,8 @@ public class FlashSale {
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "created_by")
-    private Long createdBy;
+    // @Column(name = "created_by")
+    // private Long createdBy;
 
     @Column(name = "is_delete", nullable = false, columnDefinition = "boolean default false")
     private Boolean isDelete = false;

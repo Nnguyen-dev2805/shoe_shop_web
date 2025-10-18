@@ -4,6 +4,7 @@ import com.dev.shoeshop.entity.FlashSaleItem;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -44,6 +45,28 @@ public interface FlashSaleItemRepository extends JpaRepository<FlashSaleItem, Lo
            "WHERE fsi.flashSale.id = :flashSaleId " +
            "AND fsi.productDetail.id = :productDetailId")
     boolean existsByFlashSaleIdAndProductDetailId(
+        @Param("flashSaleId") Long flashSaleId, 
+        @Param("productDetailId") Long productDetailId
+    );
+    
+    // Tìm FlashSaleItem theo flash sale ID và product detail ID
+    // Dùng để check sản phẩm trong cart có đang flash sale không
+    @Query("SELECT fsi FROM FlashSaleItem fsi " +
+           "WHERE fsi.flashSale.id = :flashSaleId " +
+           "AND fsi.productDetail.id = :productDetailId")
+    Optional<FlashSaleItem> findByFlashSaleIdAndProductDetailId(
+        @Param("flashSaleId") Long flashSaleId, 
+        @Param("productDetailId") Long productDetailId
+    );
+    
+    // Xóa FlashSaleItem theo flash sale ID và product detail ID
+    // Dùng trong giao diện quản lý flash sale khi xóa 1 sản phẩm cụ thể
+    // Trigger after_delete_flash_sale_item_update_total sẽ tự động giảm total_items
+    @Modifying
+    @Query("DELETE FROM FlashSaleItem fsi " +
+           "WHERE fsi.flashSale.id = :flashSaleId " +
+           "AND fsi.productDetail.id = :productDetailId")
+    void deleteByFlashSaleIdAndProductDetailId(
         @Param("flashSaleId") Long flashSaleId, 
         @Param("productDetailId") Long productDetailId
     );

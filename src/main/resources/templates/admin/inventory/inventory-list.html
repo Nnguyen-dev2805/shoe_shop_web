@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8"/>
+    <title>Danh Sách Tồn Kho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý tồn kho sản phẩm"/>
+    <meta name="author" content="Techzaa"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"/>
+
+    <!-- Vendor CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css"/>
+
+    <!-- Icons CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+
+    <!-- App CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css"/>
+
+    <!-- Theme Config JS (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <div th:replace="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <!-- Page Title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title">Danh Sách Tồn Kho</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory List Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row align-items-center">
+                                <div class="col">
+                                    <h4 class="card-title">Quản lý tồn kho sản phẩm</h4>
+                                </div>
+                                <div class="col-auto">
+                                    <a href="/admin/inventory/add" class="btn btn-primary">
+                                        <i class="bx bx-plus me-1"></i> Thêm Tồn Kho
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <!-- Search and Filter -->
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Sản phẩm</label>
+                                    <select id="productFilter" class="form-select">
+                                        <option value="">Tất cả sản phẩm</option>
+                                        <!-- Load via AJAX -->
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Size</label>
+                                    <select id="sizeFilter" class="form-select">
+                                        <option value="">Tất cả size</option>
+                                        <option value="38">Size 38</option>
+                                        <option value="39">Size 39</option>
+                                        <option value="40">Size 40</option>
+                                        <option value="41">Size 41</option>
+                                        <option value="42">Size 42</option>
+                                        <option value="43">Size 43</option>
+                                        <option value="44">Size 44</option>
+                                        <option value="45">Size 45</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button id="btnSearch" class="btn btn-secondary w-100 d-block">
+                                        <i class="bx bx-search-alt"></i> Lọc
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Inventory Table -->
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Sản phẩm</th>
+                                            <th>Size</th>
+                                            <th class="text-center">Số lượng</th>
+                                            <th class="text-center">Trạng thái</th>
+                                            <th class="text-center">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventoryTableBody">
+                                        <!-- Load via AJAX -->
+                                        <tr>
+                                            <td colspan="6" class="text-center">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="row mt-3">
+                                <div class="col-sm-12 col-md-5">
+                                    <div class="dataTables_info" id="tableInfo">
+                                        Hiển thị 0 đến 0 của 0 bản ghi
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <ul class="pagination justify-content-end mb-0" id="pagination">
+                                        <!-- Pagination buttons will be generated here -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Container Fluid -->
+
+    </div>
+    <!-- End Page Content -->
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script src="/assets/js/vendor.js"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script src="/assets/js/app.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- Inventory List Script -->
+<script>
+let currentPage = 1;
+const itemsPerPage = 10;
+let totalPages = 0;
+let productFilter = '';
+let sizeFilter = '';
+
+$(document).ready(function() {
+    console.log('📦 Inventory List Page Loaded');
+    
+    // Load products for filter
+    loadProducts();
+    
+    // Load inventory data
+    loadInventory(currentPage);
+    
+    // Product filter change
+    $('#productFilter').on('change', function() {
+        productFilter = $(this).val();
+        loadInventory(1);
+    });
+    
+    // Size filter change
+    $('#sizeFilter').on('change', function() {
+        sizeFilter = $(this).val();
+        loadInventory(1);
+    });
+    
+    // Filter button click
+    $('#btnSearch').on('click', function() {
+        productFilter = $('#productFilter').val();
+        sizeFilter = $('#sizeFilter').val();
+        loadInventory(1);
+    });
+});
+
+// Load products for dropdown
+function loadProducts() {
+    $.ajax({
+        url: '/api/product/list',
+        type: 'GET',
+        success: function(products) {
+            console.log('📦 Products loaded:', products);
+            products.forEach(function(product) {
+                $('#productFilter').append(
+                    `<option value="${product.id}">${product.title}</option>`
+                );
+            });
+        },
+        error: function(xhr) {
+            console.error('❌ Failed to load products:', xhr);
+        }
+    });
+}
+
+// Load inventory data
+function loadInventory(page) {
+    console.log(`📦 Loading inventory - page: ${page}, product: "${productFilter}", size: "${sizeFilter}"`);
+    
+    const tbody = $('#inventoryTableBody');
+    tbody.html('<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary"></div></td></tr>');
+    
+    // Build filter params
+    const params = {
+        page: page - 1,
+        size: itemsPerPage
+    };
+    
+    // Add filters if selected
+    if (productFilter) {
+        // Get product name to search
+        const selectedProduct = $('#productFilter option:selected').text();
+        params.search = selectedProduct;
+    }
+    if (sizeFilter) {
+        params.productSize = sizeFilter;
+    }
+    
+    $.ajax({
+        url: '/api/inventory',
+        type: 'GET',
+        data: params,
+        success: function(response) {
+            console.log('✅ Inventory loaded:', response);
+            
+            currentPage = response.currentPage || page;
+            totalPages = response.totalPages || 1;
+            
+            renderInventoryTable(response.content || response);
+            renderPagination();
+            updateTableInfo(response);
+        },
+        error: function(xhr) {
+            console.error('❌ Failed to load inventory:', xhr);
+            tbody.html(`
+                <tr>
+                    <td colspan="6" class="text-center text-danger">
+                        Lỗi tải dữ liệu: ${xhr.status} - ${xhr.statusText}
+                    </td>
+                </tr>
+            `);
+        }
+    });
+}
+
+// Render inventory table
+function renderInventoryTable(inventories) {
+    const tbody = $('#inventoryTableBody');
+    
+    if (!inventories || inventories.length === 0) {
+        tbody.html('<tr><td colspan="6" class="text-center">Không có dữ liệu tồn kho</td></tr>');
+        return;
+    }
+    
+    let rows = '';
+    inventories.forEach(function(inv) {
+        const stockStatus = getStockStatus(inv.quantity);
+        
+        rows += `
+            <tr>
+                <td>${inv.id}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0 me-2">
+                            <img src="${inv.productImage || '/assets/images/no-image.png'}" 
+                                 alt="${inv.productName}" 
+                                 class="rounded" 
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                        </div>
+                        <div>
+                            <h6 class="mb-0">${inv.productName}</h6>
+                        </div>
+                    </div>
+                </td>
+                <td><span class="badge bg-secondary">Size ${inv.size}</span></td>
+                <td class="text-center">
+                    <h5 class="mb-0 ${stockStatus.class}">${inv.quantity}</h5>
+                </td>
+                <td class="text-center">
+                    <span class="badge ${stockStatus.badgeClass}">${stockStatus.text}</span>
+                </td>
+                <td class="text-center">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-sm btn-soft-primary" 
+                                onclick="editInventory(${inv.id})" title="Chỉnh sửa">
+                            <i class="bx bx-edit"></i>
+                        </button>
+                        <button type="button" class="btn btn-sm btn-soft-danger" 
+                                onclick="deleteInventory(${inv.id})" title="Xóa">
+                            <i class="bx bx-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tbody.html(rows);
+}
+
+// Get stock status
+function getStockStatus(quantity) {
+    if (quantity === 0) {
+        return {
+            class: 'text-danger',
+            badgeClass: 'bg-danger',
+            text: 'Hết hàng'
+        };
+    } else if (quantity < 10) {
+        return {
+            class: 'text-warning',
+            badgeClass: 'bg-warning',
+            text: 'Sắp hết'
+        };
+    } else {
+        return {
+            class: 'text-success',
+            badgeClass: 'bg-success',
+            text: 'Còn hàng'
+        };
+    }
+}
+
+// Render pagination
+function renderPagination() {
+    const pagination = $('#pagination');
+    pagination.empty();
+    
+    if (totalPages <= 1) return;
+    
+    // Previous button
+    const prevDisabled = currentPage === 1 ? 'disabled' : '';
+    pagination.append(`
+        <li class="page-item ${prevDisabled}">
+            <a class="page-link" href="javascript:void(0);" onclick="changePage(${currentPage - 1})">
+                <i class="bx bx-chevron-left"></i>
+            </a>
+        </li>
+    `);
+    
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+        const active = i === currentPage ? 'active' : '';
+        pagination.append(`
+            <li class="page-item ${active}">
+                <a class="page-link" href="javascript:void(0);" onclick="changePage(${i})">${i}</a>
+            </li>
+        `);
+    }
+    
+    // Next button
+    const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+    pagination.append(`
+        <li class="page-item ${nextDisabled}">
+            <a class="page-link" href="javascript:void(0);" onclick="changePage(${currentPage + 1})">
+                <i class="bx bx-chevron-right"></i>
+            </a>
+        </li>
+    `);
+}
+
+// Change page
+function changePage(page) {
+    if (page < 1 || page > totalPages) return;
+    loadInventory(page);
+}
+
+// Update table info
+function updateTableInfo(response) {
+    const total = response.totalElements || 0;
+    const start = total === 0 ? 0 : ((currentPage - 1) * itemsPerPage + 1);
+    const end = Math.min(currentPage * itemsPerPage, total);
+    
+    $('#tableInfo').text(`Hiển thị ${start} đến ${end} của ${total} bản ghi`);
+}
+
+// Edit inventory
+function editInventory(id) {
+    console.log('✏️ Edit inventory:', id);
+    window.location.href = `/admin/inventory/edit/${id}`;
+}
+
+// Delete inventory
+function deleteInventory(id) {
+    if (!confirm('Bạn có chắc chắn muốn xóa bản ghi tồn kho này?')) {
+        return;
+    }
+    
+    console.log('🗑️ Delete inventory:', id);
+    
+    $.ajax({
+        url: `/api/inventory/${id}`,
+        type: 'DELETE',
+        success: function(response) {
+            console.log('✅ Delete successful:', response);
+            alert('Xóa thành công!');
+            loadInventory(currentPage);
+        },
+        error: function(xhr) {
+            console.error('❌ Delete failed:', xhr);
+            alert('Lỗi: ' + (xhr.responseText || 'Không thể xóa!'));
+        }
+    });
+}
+</script>
+
+</body>
+</html>

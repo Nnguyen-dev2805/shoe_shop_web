@@ -279,10 +279,10 @@ public class OrderServiceImpl implements OrderService {
         if (cart.getCartDetails() != null) {
             for (CartDetail detail : cart.getCartDetails()) {
                 CartDetailDTO detailDTO = new CartDetailDTO();
-                detailDTO.setId(Long.valueOf(detail.getId()));
+                detailDTO.setId(detail.getId());
                 detailDTO.setCartId(cart.getId());
                 detailDTO.setQuantity(Long.valueOf(detail.getQuantity()));
-                detailDTO.setPrice(detail.getPrice());
+                detailDTO.setPricePerUnit(detail.getPricePerUnit());
                 
                 // Convert ProductDetail to CartProductDTO
                 if (detail.getProduct() != null) {
@@ -422,12 +422,12 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setOrder(order);
                 orderDetail.setProduct(cartDetail.getProduct());
                 orderDetail.setQuantity(cartDetail.getQuantity());
-                orderDetail.setPrice(cartDetail.getPrice());
+                orderDetail.setPrice(cartDetail.getPricePerUnit());
                 
                 orderDetails.add(orderDetail);
                 System.out.println("Added order detail: product=" + cartDetail.getProduct().getId() + 
                                  ", quantity=" + cartDetail.getQuantity() + 
-                                 ", price=" + cartDetail.getPrice());
+                                 ", pricePerUnit=" + cartDetail.getPricePerUnit());
             }
         }
         
@@ -443,7 +443,7 @@ public class OrderServiceImpl implements OrderService {
         if (selectedItemIds == null || selectedItemIds.isEmpty()) {
             // Nếu không có selectedItemIds, xóa toàn bộ (backward compatibility)
             cart.getCartDetails().clear();
-            cart.setTotalPrice(0.0);
+            // totalPrice is now calculated automatically via getTotalPrice() method
         } else {
             // Tạo list items cần xóa (tránh ConcurrentModificationException)
             java.util.List<CartDetail> toRemove = new java.util.ArrayList<>();
@@ -539,7 +539,7 @@ public class OrderServiceImpl implements OrderService {
             
             Cart newCart = new Cart();
             newCart.setUser(user);
-            newCart.setTotalPrice(0.0);
+            // totalPrice is calculated automatically via getTotalPrice() method
             newCart.setCartDetails(new HashSet<>());
             
             Cart savedCart = cartRepository.save(newCart);
@@ -583,7 +583,7 @@ public class OrderServiceImpl implements OrderService {
                     Users user = userRepository.findById(userId)
                             .orElseThrow(() -> new RuntimeException("User not found"));
                     newCart.setUser(user);
-                    newCart.setTotalPrice(0.0);
+                    // totalPrice is calculated automatically via getTotalPrice() method
                     return cartRepository.save(newCart);
                 });
         
@@ -603,7 +603,7 @@ public class OrderServiceImpl implements OrderService {
             CartDetail cartDetail = existingCartDetail.get();
             int newQuantity = cartDetail.getQuantity() + quantity;
             cartDetail.setQuantity(newQuantity);
-            cartDetail.setPrice(pricePerUnit); // Update price in case it changed
+            cartDetail.setPricePerUnit(pricePerUnit); // Update price in case it changed
             cartDetailRepository.save(cartDetail);
             System.out.println("Updated existing cart detail, new quantity: " + newQuantity);
         } else {
@@ -612,7 +612,7 @@ public class OrderServiceImpl implements OrderService {
             cartDetail.setCart(cart);
             cartDetail.setProduct(productDetail);
             cartDetail.setQuantity(quantity);
-            cartDetail.setPrice(pricePerUnit);
+            cartDetail.setPricePerUnit(pricePerUnit);
             cartDetailRepository.save(cartDetail);
             System.out.println("Created new cart detail");
         }
@@ -622,21 +622,12 @@ public class OrderServiceImpl implements OrderService {
     }
     
     /**
-     * Update cart total price by summing all cart details
+     * Update cart - no longer needed since totalPrice is calculated automatically
+     * Kept for backward compatibility, but does nothing
      */
     @Transactional
     public void updateCartTotalPrice(Long cartId) {
-        Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
-        
-        Double totalPrice = cart.getCartDetails().stream()
-                .mapToDouble(cd -> cd.getPrice() * cd.getQuantity())
-                .sum();
-        
-        cart.setTotalPrice(totalPrice);
-        cartRepository.save(cart);
-        
-        System.out.println("Updated cart total price: " + totalPrice);
+        // No-op: totalPrice is calculated automatically via getTotalPrice() method
     }
     
     /**

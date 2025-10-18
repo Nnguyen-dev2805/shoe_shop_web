@@ -11,6 +11,8 @@ import java.util.List;
 
 public interface ProductService {
     void saveProduct(ProductRequest request, MultipartFile image);
+    void updateProduct(Long id, ProductRequest request, MultipartFile image);
+    void deleteProduct(Long id);
     Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId);
     List<ProductResponse> getAllProductsList();
     // thêm để hiển thị giao diện chi tiết sản phẩm

@@ -58,7 +58,7 @@ public class DiscountMapper {
         discount.setMinOrderValue(request.getMinOrderValue());
         discount.setStartDate(request.getStartDate());
         discount.setEndDate(request.getEndDate());
-        discount.setUpdatedDate(LocalDate.now());
+        // discount.setUpdatedDate(LocalDate.now()); // Commented out - field not used
         
         return discount;
     }
@@ -105,7 +105,7 @@ public class DiscountMapper {
         existingDiscount.setMinOrderValue(request.getMinOrderValue());
         existingDiscount.setStartDate(request.getStartDate());
         existingDiscount.setEndDate(request.getEndDate());
-        existingDiscount.setUpdatedDate(LocalDate.now());
+        // existingDiscount.setUpdatedDate(LocalDate.now()); // Commented out - field not used
     }
 
     /**
@@ -123,7 +123,7 @@ public class DiscountMapper {
         existingDiscount.setMinOrderValue(request.getMinOrderValue());
         existingDiscount.setStartDate(request.getStartDate());
         existingDiscount.setEndDate(request.getEndDate());
-        existingDiscount.setCreatedBy(createdBy);
+        // existingDiscount.setCreatedBy(createdBy); // Commented out - field not used
         existingDiscount.setCreatedDate(LocalDate.now());
         existingDiscount.setIsDelete(false);
     }
@@ -139,7 +139,7 @@ public class DiscountMapper {
         discount.setStatus(status);
         discount.setStartDate(startDate);
         discount.setEndDate(endDate);
-        discount.setCreatedBy(createdBy);
+        // discount.setCreatedBy(createdBy); // Commented out - field not used
         discount.setCreatedDate(LocalDate.now());
         discount.setIsDelete(false);
         discount.setQuantity(1000); // Default quantity

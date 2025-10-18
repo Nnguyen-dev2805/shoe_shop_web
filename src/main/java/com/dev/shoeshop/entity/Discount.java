@@ -1,6 +1,5 @@
 package com.dev.shoeshop.entity;
 
-import com.dev.shoeshop.enums.DiscountType;
 import com.dev.shoeshop.enums.VoucherType;
 import com.dev.shoeshop.enums.DiscountValueType;
 import jakarta.persistence.*;
@@ -68,14 +67,8 @@ public class Discount {
     @Column(name = "is_delete", nullable = false, columnDefinition = "boolean default false")
     private Boolean isDelete = false;
 
-    @Column(name = "created_by")
-    private Long createdBy;
-
-    @Column(name = "updated_by")
-    private Long updatedBy;
-
-    @Column(name = "updated_date")
-    private LocalDate updatedDate;
+    // @Column(name = "created_by")
+    // private Long createdBy;
     
     // ========== THÊM MỚI: Shipping Voucher Support ==========
     
@@ -99,23 +92,6 @@ public class Discount {
      */
     @Column(name = "max_discount_amount")
     private Double maxDiscountAmount;
-    
-    // ========== CŨ: Phân loại voucher theo scope ==========
-    
-    @Enumerated(EnumType.STRING)
-    @Column(name = "discount_scope", length = 20)
-    private DiscountType discountType = DiscountType.ORDER; // ORDER, PRODUCT, CATEGORY, SHIPPING
-    
-    @Column(name = "applies_to_sale_items", nullable = false)
-    private Boolean appliesToSaleItems = true; // Có áp dụng cho sản phẩm đang sale không
-    
-    // Nếu discountType = PRODUCT, lưu danh sách product IDs (JSON hoặc bảng riêng)
-    @Column(name = "applicable_product_ids", columnDefinition = "TEXT")
-    private String applicableProductIds; // Lưu dạng "1,2,3,5" hoặc JSON
-    
-    // Nếu discountType = CATEGORY, lưu danh sách category IDs
-    @Column(name = "applicable_category_ids", columnDefinition = "TEXT")
-    private String applicableCategoryIds; // Lưu dạng "1,2,3"
 
     // Quan hệ với DiscountUsed (Many-to-Many với Users thông qua bảng trung gian)
     @OneToMany(mappedBy = "discount", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -255,73 +231,6 @@ public class Discount {
     public boolean isOrderVoucher() {
         return type == VoucherType.ORDER_DISCOUNT;
     }
-    
-    /**
-     * Kiểm tra discount có áp dụng cho product này không
-     * @param productId ID của product cần kiểm tra
-     * @return true nếu discount áp dụng cho product
-     */
-    public boolean isApplicableToProduct(Long productId) {
-        if (discountType == null || !DiscountType.PRODUCT.equals(discountType)) {
-            return false;
-        }
-        
-        if (applicableProductIds == null || applicableProductIds.isEmpty()) {
-            return false;
-        }
-        
-        // Parse danh sách product IDs (dạng "1,2,3,5")
-        String[] productIds = applicableProductIds.split(",");
-        for (String id : productIds) {
-            if (id.trim().equals(productId.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Kiểm tra discount có áp dụng cho category này không
-     * @param categoryId ID của category cần kiểm tra
-     * @return true nếu discount áp dụng cho category
-     */
-    public boolean isApplicableToCategory(Long categoryId) {
-        if (discountType == null || !DiscountType.CATEGORY.equals(discountType)) {
-            return false;
-        }
-        
-        if (applicableCategoryIds == null || applicableCategoryIds.isEmpty()) {
-            return false;
-        }
-        
-        // Parse danh sách category IDs
-        String[] categoryIds = applicableCategoryIds.split(",");
-        for (String id : categoryIds) {
-            if (id.trim().equals(categoryId.toString())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Kiểm tra discount type
-     */
-    public boolean isOrderDiscount() {
-        return DiscountType.ORDER.equals(discountType);
-    }
-    
-    public boolean isProductDiscount() {
-        return DiscountType.PRODUCT.equals(discountType);
-    }
-    
-    public boolean isCategoryDiscount() {
-        return DiscountType.CATEGORY.equals(discountType);
-    }
-    
-    public boolean isShippingDiscount() {
-        return DiscountType.SHIPPING.equals(discountType);
-    }
 
     /**
      * Lấy phần trăm hiển thị (0.2 -> 20%)
@@ -377,18 +286,10 @@ public class Discount {
         if (this.status == null) {
             this.status = "INACTIVE";
         }
-        if (this.discountType == null) {
-            this.discountType = DiscountType.ORDER;
-        }
-        if (this.appliesToSaleItems == null) {
-            this.appliesToSaleItems = true;
-        }
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updatedDate = LocalDate.now();
-        
         // Auto-update status based on dates
         updateStatusByDate();
     }
@@ -435,7 +336,7 @@ public class Discount {
      */
     public static Discount createFull(String name, Integer quantity, Double percent, 
                                      String status, Double minOrderValue,
-                                     LocalDate startDate, LocalDate endDate, Long createdBy) {
+                                     LocalDate startDate, LocalDate endDate) {
         Discount discount = new Discount();
         discount.setName(name);
         discount.setQuantity(quantity);
@@ -444,7 +345,7 @@ public class Discount {
         discount.setMinOrderValue(minOrderValue);
         discount.setStartDate(startDate);
         discount.setEndDate(endDate);
-        discount.setCreatedBy(createdBy);
+        // discount.setCreatedBy(createdBy); // Commented out
         discount.setIsDelete(false);
         return discount;
     }

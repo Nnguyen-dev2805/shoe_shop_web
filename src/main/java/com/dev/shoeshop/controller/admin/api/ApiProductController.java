@@ -82,4 +82,62 @@ public class ApiProductController {
                     .body("Lỗi server: " + e.getMessage());
         }
     }
+
+    /**
+     * UPDATE PRODUCT - RESTful API
+     * 
+     * Method: PUT
+     * URL: /api/product/{id}
+     * Content-Type: multipart/form-data
+     * 
+     * @param id Product ID
+     * @param request ProductRequest JSON
+     * @param image Product image file (optional)
+     * @param result Validation result
+     * @return ResponseEntity
+     */
+    @PutMapping(value = "/{id}", consumes = "multipart/form-data")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id,
+                                           @Valid @RequestPart("request") ProductRequest request,
+                                           @RequestPart(name = "image", required = false) MultipartFile image,
+                                           BindingResult result) {
+        if (result.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder("Lỗi validation: ");
+            for (var error : result.getFieldErrors()) {
+                errorMsg.append(error.getField()).append(" - ").append(error.getDefaultMessage()).append("; ");
+            }
+            return ResponseEntity.badRequest().body(errorMsg.toString());
+        }
+        try {
+            productService.updateProduct(id, request, image);
+            return ResponseEntity.ok("Cập nhật sản phẩm thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi server: " + e.getMessage());
+        }
+    }
+
+    /**
+     * DELETE PRODUCT - RESTful API (Soft Delete)
+     * 
+     * Method: DELETE
+     * URL: /api/product/{id}
+     * 
+     * @param id Product ID
+     * @return ResponseEntity
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Long id) {
+        try {
+            productService.deleteProduct(id);
+            return ResponseEntity.ok("Xóa sản phẩm thành công!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Lỗi server: " + e.getMessage());
+        }
+    }
+    
+    // ❌ REMOVED: GET /{id} endpoint
+    // Lý do: Đã có endpoint GET /api/product/{id} trong ApiController.java
+    // → Tránh conflict mapping
 }

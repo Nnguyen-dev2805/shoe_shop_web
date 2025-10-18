@@ -89,7 +89,7 @@ function renderProducts(products) {
                 <td>${product.brandName || 'N/A'}</td>
                 <td>
                     <div class="d-flex gap-2">
-                        <a href="/admin/product/updateProduct/${product.id}" 
+                        <a href="/admin/product/edit/${product.id}" 
                            class="btn btn-soft-primary btn-sm">
                            <iconify-icon icon="solar:pen-2-broken" class="align-middle fs-18"></iconify-icon>
                         </a>
@@ -205,16 +205,21 @@ function deleteProduct(id) {
         $.ajax({
             url: `/api/product/${id}`,
             type: 'DELETE',
-            dataType: 'json',
-            success: function () {
-                alert('Xóa thành công!');
+            success: function (response) {
+                alert(response || 'Xóa thành công!');
                 loadProducts(currentPage, searchTerm);
             },
             error: function (xhr, status, error) {
                 let msg = 'Lỗi xóa sản phẩm: ';
-                if (xhr.status === 403) msg += 'Không có quyền.';
-                else if (xhr.status === 404) msg += 'Sản phẩm không tồn tại.';
-                else msg += xhr.responseJSON ? xhr.responseJSON.message : error;
+                if (xhr.status === 403) {
+                    msg += 'Không có quyền.';
+                } else if (xhr.status === 404) {
+                    msg += 'Sản phẩm không tồn tại.';
+                } else if (xhr.status === 500) {
+                    msg += xhr.responseText || 'Lỗi server.';
+                } else {
+                    msg += error;
+                }
                 alert(msg);
             }
         });
