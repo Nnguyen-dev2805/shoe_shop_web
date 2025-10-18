@@ -10,12 +10,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class AdminInventoryController {
     @GetMapping("")
     public String showInventory() {
-        return "admin/inventory/inventory-warehouse";
+        return "admin/inventory/inventory-list";
     }
 
     @GetMapping("/insert")
     public String insertInventoryPage() {
         return "admin/inventory/inventory-add";
+    }
+
+    @GetMapping("/add")
+    public String addInventoryPage() {
+        return "admin/inventory/inventory-add";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String inventoryEditPage(@PathVariable Long id) {
+        return "admin/inventory/inventory-edit";
     }
 
 }

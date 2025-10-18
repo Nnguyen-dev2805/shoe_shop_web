@@ -2,6 +2,7 @@ package com.dev.shoeshop.service;
 
 import com.dev.shoeshop.dto.flashsale.request.BulkAddItemsRequest;
 import com.dev.shoeshop.dto.flashsale.request.PurchaseFlashSaleRequest;
+import com.dev.shoeshop.dto.flashsale.response.CartItemFlashSaleInfo;
 import com.dev.shoeshop.dto.flashsale.response.FlashSaleItemResponse;
 import com.dev.shoeshop.dto.flashsale.response.FlashSaleResponse;
 import com.dev.shoeshop.dto.flashsale.response.StockResponse;
@@ -454,6 +455,48 @@ public class FlashSaleService {
     }
     
     /**
+     * XÓA SẢN PHẨM KHỎI FLASH SALE
+     * Dùng trong giao diện quản lý flash sale
+     * 
+     * @param flashSaleId ID của flash sale
+     * @param productDetailId ID của product detail cần xóa
+     * 
+     * Flow:
+     * 1. Validate flash sale tồn tại
+     * 2. Xóa flash_sale_item (WHERE flash_sale_id = ? AND product_detail_id = ?)
+     * 3. Trigger after_delete_flash_sale_item_update_total sẽ tự động giảm total_items
+     * 
+     * ⚠️ KHÔNG XÓA toàn bộ flash_sale_item của sản phẩm
+     * Chỉ xóa item thuộc flash sale cụ thể này
+     */
+    @Transactional
+    public void removeProductFromFlashSale(Long flashSaleId, Long productDetailId) {
+        log.info("Removing product detail {} from flash sale {}", productDetailId, flashSaleId);
+        
+        // Validate flash sale tồn tại
+        FlashSale flashSale = flashSaleRepo.findById(flashSaleId)
+            .orElseThrow(() -> new FlashSaleException("Flash sale không tồn tại!"));
+        
+        // Kiểm tra flash sale item có tồn tại không
+        boolean exists = flashSaleItemRepo.existsByFlashSaleIdAndProductDetailId(
+            flashSaleId, productDetailId
+        );
+        
+        if (!exists) {
+            log.warn("Flash sale item not found for flashSaleId={}, productDetailId={}", 
+                     flashSaleId, productDetailId);
+            throw new FlashSaleException("Sản phẩm không có trong flash sale này!");
+        }
+        
+        // Xóa flash_sale_item
+        // Trigger sẽ tự động giảm total_items trong flash_sale
+        flashSaleItemRepo.deleteByFlashSaleIdAndProductDetailId(flashSaleId, productDetailId);
+        
+        log.info("Successfully removed product detail {} from flash sale {}", 
+                 productDetailId, flashSaleId);
+    }
+    
+    /**
      * Lấy danh sách Products trong Flash Sale hiện tại
      * Trả về 1 Product duy nhất (không duplicate theo size)
      * Kèm thông tin flash sale (giá thấp nhất, stock tổng)
@@ -464,6 +507,84 @@ public class FlashSaleService {
     public List<ProductWithFlashSaleResponse> getProductsInFlashSale(Long flashSaleId) {
         // TODO: Implement sau khi có ProductRepository methods
         return new ArrayList<>();
+    }
+    
+    /**
+     * Get Flash Sale info for cart items
+     * Dùng để hiển thị giá flash sale trong payment page
+     * 
+     * @param productDetailIds List of product detail IDs from cart
+     * @return List of CartItemFlashSaleInfo
+     */
+    public List<CartItemFlashSaleInfo> getFlashSaleInfoForCartItems(List<Long> productDetailIds) {
+        log.info("Getting flash sale info for {} cart items", productDetailIds.size());
+        
+        List<CartItemFlashSaleInfo> result = new ArrayList<>();
+        
+        // Get active flash sale
+        FlashSale activeFlashSale = flashSaleRepo.findActiveFlashSale(
+            FlashSaleStatus.ACTIVE,
+            LocalDateTime.now()
+        ).orElse(null);
+        
+        if (activeFlashSale == null) {
+            log.info("No active flash sale - returning empty list");
+            // No active flash sale → return empty list (all items have no flash sale)
+            for (Long pdId : productDetailIds) {
+                result.add(CartItemFlashSaleInfo.builder()
+                    .productDetailId(pdId)
+                    .hasFlashSale(false)
+                    .build());
+            }
+            return result;
+        }
+        
+        // Check each product detail for flash sale
+        for (Long productDetailId : productDetailIds) {
+            ProductDetail productDetail = productDetailRepo.findById(productDetailId).orElse(null);
+            
+            if (productDetail == null) {
+                result.add(CartItemFlashSaleInfo.builder()
+                    .productDetailId(productDetailId)
+                    .hasFlashSale(false)
+                    .build());
+                continue;
+            }
+            
+            // Find flash sale item for this product detail
+            FlashSaleItem flashSaleItem = flashSaleItemRepo
+                .findByFlashSaleIdAndProductDetailId(activeFlashSale.getId(), productDetailId)
+                .orElse(null);
+            
+            if (flashSaleItem == null) {
+                // Product not in flash sale
+                result.add(CartItemFlashSaleInfo.builder()
+                    .productDetailId(productDetailId)
+                    .hasFlashSale(false)
+                    .originalPrice(productDetail.getFinalPrice())
+                    .build());
+            } else {
+                // Product has flash sale
+                int availableStock = inventoryRepo.getTotalQuantityByProductDetail(productDetail);
+                
+                result.add(CartItemFlashSaleInfo.builder()
+                    .productDetailId(productDetailId)
+                    .hasFlashSale(true)
+                    .originalPrice(flashSaleItem.getOriginalPrice())
+                    .flashSalePrice(flashSaleItem.getFlashSalePrice())
+                    .discountPercent(flashSaleItem.getDiscountPercent())
+                    .remainingStock(availableStock)
+                    .flashSaleName(activeFlashSale.getName())
+                    .endTime(activeFlashSale.getEndTime().toString())
+                    .build());
+            }
+        }
+        
+        log.info("Returning flash sale info for {} items ({} have flash sale)", 
+            result.size(), 
+            result.stream().filter(CartItemFlashSaleInfo::isHasFlashSale).count());
+        
+        return result;
     }
 }
 

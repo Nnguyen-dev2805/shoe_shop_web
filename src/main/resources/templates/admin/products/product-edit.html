@@ -535,9 +535,8 @@
         <div class="container-xxl">
 
             <div class="row">
-                <form th:object="${product}" method="post" th:action="@{/admin/product/update}"
-                      enctype="multipart/form-data">
-                    <input type="hidden" th:field="*{id}">
+                <form id="productEditForm" enctype="multipart/form-data">
+                    <input type="hidden" id="productId" th:value="${productId}" name="id">
 
                     <div class="col-xl-9 col-lg-8">
                         <div class="card">
@@ -550,18 +549,22 @@
                                     <div class="col-lg-6">
                                         <div class="mb-3">
                                             <label for="product-name" class="form-label">Tên sản phẩm</label>
-                                            <input type="text" id="product-name" class="form-control"
-                                                   placeholder="Tên sản phẩm" th:field="*{title}" required>
+                                            <input type="text" id="product-name" name="title" class="form-control"
+                                                   placeholder="Tên sản phẩm" required>
                                         </div>
                                     </div>
-                                    <div class="col-lg-6">
+                                    <div class="col-lg-3">
                                         <label for="product-categories" class="form-label">Loại sản phẩm</label>
-                                        <select class="form-control" id="product-categories" data-choices
-                                                data-choices-groups data-placeholder="Chọn loại sản phẩm"
-                                                name="choices-single-groups" th:field="*{categoryId}">
-                                            <option th:each="category : ${categories}" th:value="${category.id}"
-                                                    th:text="${category.type}"
-                                                    th:selected="${product.categoryName == category.type}"/>
+                                        <select class="form-control" id="product-categories" name="categoryId" required>
+                                            <option value="">Chọn loại sản phẩm</option>
+                                            <!-- Load via AJAX -->
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <label for="product-brand" class="form-label">Thương hiệu</label>
+                                        <select class="form-control" id="product-brand" name="brandId" required>
+                                            <option value="">Chọn thương hiệu</option>
+                                            <!-- Load via AJAX -->
                                         </select>
                                     </div>
                                 </div>
@@ -582,22 +585,13 @@
                                     <div class="col-lg-12">
                                         <div class="mb-3">
                                             <label for="description" class="form-label">Mô tả sản phẩm</label>
-                                            <textarea th:field="*{description}" class="form-control bg-light-subtle"
+                                            <textarea name="description" class="form-control bg-light-subtle"
                                                       id="description" rows="7" placeholder="Mô tả sản phẩm"></textarea>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- Product Voucher -->
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <div class="mb-3">
-                                            <label for="voucher" class="form-label">Voucher</label>
-                                            <input type="number" id="voucher" class="form-control"
-                                                   th:field="*{voucher}" placeholder="Voucher code">
-                                        </div>
-                                    </div>
-                                </div>
+                                <!-- Voucher field removed -->
                             </div>
                         </div>
 
@@ -612,8 +606,8 @@
                                         <label for="product-price" class="form-label">Giá sản phẩm</label>
                                         <div class="input-group mb-3">
                                             <span class="input-group-text fs-20"><i class='bx bx-dollar'></i></span>
-                                            <input type="number" id="product-price" class="form-control"
-                                                   th:field="*{price}" placeholder="Giá sản phẩm">
+                                            <input type="number" id="product-price" name="price" class="form-control"
+                                                   placeholder="Giá sản phẩm" required>
                                         </div>
                                     </div>
                                 </div>
@@ -632,23 +626,15 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-
-
-                                                <!-- Loop through sizes from 38 to 45 -->
-                                                <tr th:each="size : ${#numbers.sequence(38, 45)}">
-                                                    <td th:text="${size}">38</td>
-                                                    <td>
-                                                        <!-- Correct format to dynamically set the field name -->
-                                                        <input type="number" class="form-control"
-                                                               th:value="${sizePriceMap[__${size}__]}"
-                                                               th:name="'productDetails[' + ${size} + '].priceadd'"
-                                                               placeholder="Giá thêm cho size" min="0"/>
-                                                    </td>
-                                                </tr>
-
-
-
-
+                                                <!-- Sizes 38-45 -->
+                                                <tr><td>38</td><td><input type="number" name="productDetails[38].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>39</td><td><input type="number" name="productDetails[39].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>40</td><td><input type="number" name="productDetails[40].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>41</td><td><input type="number" name="productDetails[41].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>42</td><td><input type="number" name="productDetails[42].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>43</td><td><input type="number" name="productDetails[43].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>44</td><td><input type="number" name="productDetails[44].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
+                                                <tr><td>45</td><td><input type="number" name="productDetails[45].priceAdd" class="form-control" placeholder="Giá thêm" min="0" step="0.01"/></td></tr>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -666,7 +652,7 @@
                                     <button type="submit" class="btn btn-outline-secondary w-100">Lưu thông tin</button>
                                 </div>
                                 <div class="col-lg-2">
-                                    <a href="#!" class="btn btn-primary w-100">Huỷ</a>
+                                    <a href="/admin/product" class="btn btn-primary w-100">Huỷ</a>
                                 </div>
                             </div>
                         </div>
@@ -682,5 +668,167 @@
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+$(document).ready(function() {
+    const productId = $('#productId').val();
+    console.log('🔍 Product ID:', productId);
+    
+    let categoriesLoaded = false;
+    let brandsLoaded = false;
+    let productData = null;
+    
+    // Function to fill product data after all dropdowns are ready
+    function fillProductData() {
+        if (categoriesLoaded && brandsLoaded && productData) {
+            console.log('✅ Filling form with product data:', productData);
+            
+            $('#product-name').val(productData.title);
+            $('#description').val(productData.description);
+            $('#product-price').val(productData.price);
+            
+            // Find category by name
+            const categoryOption = $('#product-categories option').filter(function() {
+                return $(this).text() === productData.categoryName;
+            });
+            if (categoryOption.length > 0) {
+                $('#product-categories').val(categoryOption.val());
+                console.log('✅ Category set:', productData.categoryName, '- ID:', categoryOption.val());
+            } else {
+                console.warn('⚠️ Category not found:', productData.categoryName);
+            }
+            
+            // Find brand by name
+            const brandOption = $('#product-brand option').filter(function() {
+                return $(this).text() === productData.brandName;
+            });
+            if (brandOption.length > 0) {
+                $('#product-brand').val(brandOption.val());
+                console.log('✅ Brand set:', productData.brandName, '- ID:', brandOption.val());
+            } else {
+                console.warn('⚠️ Brand not found:', productData.brandName);
+            }
+            
+            // Fill size options (price add for each size) if available
+            if (productData.sizeOptions && productData.sizeOptions.length > 0) {
+                console.log('📦 Size options found:', productData.sizeOptions);
+                productData.sizeOptions.forEach(function(sizeOption) {
+                    const inputName = `productDetails[${sizeOption.size}].priceAdd`;
+                    const input = $(`input[name="${inputName}"]`);
+                    if (input.length > 0) {
+                        input.val(sizeOption.priceAdd);
+                        console.log(`  ✅ Size ${sizeOption.size} priceAdd set:`, sizeOption.priceAdd);
+                    } else {
+                        console.warn(`  ⚠️ Input not found for size ${sizeOption.size}`);
+                    }
+                });
+            } else {
+                console.warn('⚠️ No sizeOptions found in response');
+                console.log('📦 Full product data:', productData);
+            }
+        }
+    }
+    
+    // Load categories
+    $.ajax({
+        url: '/api/category/list',
+        type: 'GET',
+        success: function(categories) {
+            console.log('📦 Categories loaded:', categories);
+            categories.forEach(function(cat) {
+                $('#product-categories').append(
+                    `<option value="${cat.id}">${cat.name}</option>`
+                );
+            });
+            categoriesLoaded = true;
+            fillProductData();
+        },
+        error: function(xhr) {
+            console.error('❌ Failed to load categories:', xhr);
+        }
+    });
+    
+    // Load brands
+    $.ajax({
+        url: '/api/brand/list',
+        type: 'GET',
+        success: function(brands) {
+            console.log('📦 Brands loaded:', brands);
+            brands.forEach(function(brand) {
+                $('#product-brand').append(
+                    `<option value="${brand.id}">${brand.name}</option>`
+                );
+            });
+            brandsLoaded = true;
+            fillProductData();
+        },
+        error: function(xhr) {
+            console.error('❌ Failed to load brands:', xhr);
+        }
+    });
+    
+    // Load product data
+    $.ajax({
+        url: `/api/product/${productId}`,
+        type: 'GET',
+        success: function(product) {
+            console.log('📦 Product data loaded:', product);
+            productData = product;
+            fillProductData();
+        },
+        error: function(xhr) {
+            console.error('❌ Failed to load product:', xhr);
+            alert('Không thể tải dữ liệu sản phẩm!');
+            window.location.href = '/admin/product';
+        }
+    });
+    
+    // Handle form submit
+    $('#productEditForm').submit(function(e) {
+        e.preventDefault();
+        console.log('📤 Form submitted');
+        
+        const formData = new FormData(this);
+        
+        // Create request JSON
+        const request = {
+            title: $('#product-name').val(),
+            description: $('#description').val(),
+            price: parseFloat($('#product-price').val()),
+            categoryId: parseInt($('#product-categories').val()),
+            brandId: parseInt($('#product-brand').val())
+        };
+        
+        console.log('📦 Request data:', request);
+        console.log('📦 FormData entries:');
+        for (let pair of formData.entries()) {
+            console.log('  -', pair[0], ':', pair[1]);
+        }
+        
+        formData.append('request', new Blob([JSON.stringify(request)], {type: 'application/json'}));
+        
+        $.ajax({
+            url: `/api/product/${productId}`,
+            type: 'PUT',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log('✅ Update successful:', response);
+                alert(response || 'Cập nhật thành công!');
+                window.location.href = '/admin/product';
+            },
+            error: function(xhr) {
+                console.error('❌ Update failed:', xhr);
+                console.error('❌ Response:', xhr.responseText);
+                alert('Lỗi: ' + (xhr.responseText || 'Không thể cập nhật sản phẩm!'));
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

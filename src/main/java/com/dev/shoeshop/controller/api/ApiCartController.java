@@ -4,6 +4,7 @@ import com.dev.shoeshop.dto.AddressDTO;
 import com.dev.shoeshop.dto.CartDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.discount.DiscountResponse;
+import com.dev.shoeshop.dto.flashsale.response.CartItemFlashSaleInfo;
 import com.dev.shoeshop.dto.shippingcompany.ShippingCompanyResponse;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.*;
@@ -32,6 +33,7 @@ public class ApiCartController {
     private final DiscountService discountService;
     private final ShippingCompanyService shippingCompanyService;
     private final UserService userService;
+    private final FlashSaleService flashSaleService;
     
     /**
      * Get cart item count for current user
@@ -198,8 +200,9 @@ public class ApiCartController {
             
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(createErrorResponse("Error updating quantity: " + e.getMessage()));
+            // Return clean message without prefix
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(createErrorResponse(e.getMessage()));
         }
     }
     
@@ -411,6 +414,52 @@ public class ApiCartController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(createErrorResponse("Error adding to cart: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Check Flash Sale for cart items
+     * POST /api/cart/check-flash-sale
+     * Body: {"productDetailIds": [1, 2, 3]}
+     */
+    @PostMapping("/cart/check-flash-sale")
+    public ResponseEntity<?> checkFlashSaleForCartItems(@RequestBody Map<String, Object> request) {
+        try {
+            // Get productDetailIds from request
+            @SuppressWarnings("unchecked")
+            List<?> rawIds = (List<?>) request.get("productDetailIds");
+            
+            if (rawIds == null || rawIds.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Product detail IDs are required"));
+            }
+            
+            // Convert to List<Long> (JSON numbers are parsed as Integer)
+            List<Long> productDetailIds = new java.util.ArrayList<>();
+            for (Object id : rawIds) {
+                if (id instanceof Number) {
+                    productDetailIds.add(((Number) id).longValue());
+                }
+            }
+            
+            System.out.println("=== Check Flash Sale for Cart Items ===");
+            System.out.println("Product Detail IDs: " + productDetailIds);
+            
+            // Get flash sale info for each product detail
+            List<CartItemFlashSaleInfo> flashSaleInfoList = flashSaleService
+                    .getFlashSaleInfoForCartItems(productDetailIds);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("data", flashSaleInfoList);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("Error checking flash sale: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createErrorResponse("Error checking flash sale: " + e.getMessage()));
         }
     }
     

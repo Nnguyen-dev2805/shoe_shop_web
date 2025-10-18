@@ -78,14 +78,73 @@ function loadDataFromSession() {
         return;
     }
     
-    // Render selected products
-    renderSelectedProducts();
+    // Check flash sale for cart items (if from cart checkout)
+    if (checkoutSource === 'cart') {
+        checkFlashSaleForCartItems(function() {
+            // Render after getting flash sale info
+            renderSelectedProducts();
+            loadAddressInfo();
+            calculatePrices();
+        });
+    } else {
+        // Buy Now flow - render directly (flash sale already in product data)
+        renderSelectedProducts();
+        loadAddressInfo();
+        calculatePrices();
+    }
+}
+
+/**
+ * Check flash sale for cart items
+ * Call API to get flash sale info and merge into selectedItems
+ */
+function checkFlashSaleForCartItems(callback) {
+    console.log('=== Checking Flash Sale for Cart Items ===');
     
-    // Load and display address
-    loadAddressInfo();
+    // Extract product detail IDs
+    const productDetailIds = selectedItems.map(item => item.productDetailId);
+    console.log('Product Detail IDs:', productDetailIds);
     
-    // Calculate prices
-    calculatePrices();
+    $.ajax({
+        url: '/api/cart/check-flash-sale',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ productDetailIds: productDetailIds }),
+        success: function(response) {
+            if (response.success && response.data) {
+                console.log('✅ Flash Sale info received:', response.data);
+                
+                // Merge flash sale info into selectedItems
+                response.data.forEach(flashSaleInfo => {
+                    const item = selectedItems.find(i => i.productDetailId === flashSaleInfo.productDetailId);
+                    if (item && flashSaleInfo.hasFlashSale) {
+                        // Add flash sale info to product
+                        if (!item.product.product.flashSale) {
+                            item.product.product.flashSale = {};
+                        }
+                        item.product.product.flashSale.active = true;
+                        item.product.product.flashSale.flashSalePrice = flashSaleInfo.flashSalePrice;
+                        item.product.product.flashSale.originalPrice = flashSaleInfo.originalPrice;
+                        item.product.product.flashSale.discountPercent = flashSaleInfo.discountPercent;
+                        
+                        console.log('🔥 Applied flash sale to:', item.product.product.title, 
+                                    'Price:', flashSaleInfo.flashSalePrice);
+                    }
+                });
+                
+                // Call callback to continue rendering
+                if (callback) callback();
+            } else {
+                console.warn('No flash sale data returned');
+                if (callback) callback();
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error checking flash sale:', error);
+            // Continue rendering even if flash sale check fails
+            if (callback) callback();
+        }
+    });
 }
 
 /**

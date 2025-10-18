@@ -30,9 +30,6 @@ public class Product {
     @Column(name = "description", nullable = true, length = 255, columnDefinition = "nvarchar(255)")
     private String description;
 
-    // chưa đụng vào
-    private Long voucher;
-
     @Basic
     @Column(name = "price", nullable = false)
     private double price;

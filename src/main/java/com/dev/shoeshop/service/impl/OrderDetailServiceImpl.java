@@ -103,9 +103,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         cartDetail.setQuantity(quantity.intValue());
         cartDetailRepository.save(cartDetail);
         
-        System.out.println("Quantity updated successfully");
-        
-        // Note: Cart total price is automatically updated by database trigger
+        System.out.println("Quantity updated successfully. Total: " + cartDetail.getCart().getTotalPrice());
     }
     
     @Override
@@ -128,7 +126,7 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         cartDetail.setQuantity(quantity.intValue());
         cartDetailRepository.save(cartDetail);
         
-        // Note: Cart total price is automatically updated by database trigger
+        System.out.println("Edited cart item successfully. Total: " + cartDetail.getCart().getTotalPrice());
     }
     
     @Override
@@ -142,27 +140,25 @@ public class OrderDetailServiceImpl implements OrderDetailService {
         CartDetail cartDetail = cartDetailRepository.findByIdAndUserId(detailId, userId)
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
-        // Delete using entity (not @Modifying query to avoid trigger conflict)
+        // Get cart before deleting detail (for updating timestamp)
+        Cart cart = cartDetail.getCart();
+        
+        // ✅ IMPORTANT: Remove from cart's collection first to prevent cascade restore
+        cart.getCartDetails().remove(cartDetail);
+        
+        // Delete cart detail from database
         cartDetailRepository.delete(cartDetail);
         
-        System.out.println("Cart item deleted successfully");
+        // Flush to ensure delete is executed before saving cart
+        cartDetailRepository.flush();
         
-        // Note: Cart total price is automatically updated by database trigger
+        // Save cart to persist the collection change
+        cartRepository.save(cart);
+        
+        System.out.println("Cart item deleted successfully. Remaining total: " + cart.getTotalPrice());
     }
     
-    // DEPRECATED: Cart total price is now automatically updated by database trigger
-    // No longer needed since database handles this via trigger
-    /*
-    private void updateCartTotalPrice(Long detailId, Long userId) {
-        CartDetail cartDetail = cartDetailRepository.findById(detailId).orElse(null);
-        if (cartDetail != null) {
-            Cart cart = cartDetail.getCart();
-            double totalPrice = cart.getCartDetails().stream()
-                .mapToDouble(detail -> detail.getPrice() * detail.getQuantity())
-                .sum();
-            cart.setTotalPrice(totalPrice);
-            cartRepository.save(cart);
-        }
-    }
-    */
+    // REMOVED: updateCartTotalPrice() method is no longer needed
+    // Cart.getTotalPrice() now calculates the total automatically from cartDetails
+    // No need to manually update totalPrice field since it was removed from entity
 }

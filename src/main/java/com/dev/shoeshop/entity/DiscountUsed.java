@@ -42,13 +42,6 @@ public class DiscountUsed {
     @Column(name = "is_active", nullable = false, columnDefinition = "boolean default true")
     private Boolean isActive = true;
     
-    // ========== THÊM MỚI: Tracking thêm thông tin ==========
-    @Column(name = "discount_type", length = 20)
-    private String discountType; // Loại voucher đã dùng (ORDER, PRODUCT, CATEGORY, SHIPPING)
-    
-    @Column(name = "original_order_value")
-    private Double originalOrderValue; // Giá trị đơn gốc trước khi áp dụng discount
-    
     // Constructors
     public DiscountUsed(Users user, Discount discount, Long orderId, Double discountAmount) {
         this.user = user;

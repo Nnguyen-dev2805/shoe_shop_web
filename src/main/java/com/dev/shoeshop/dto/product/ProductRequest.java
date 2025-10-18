@@ -17,7 +17,6 @@ public class ProductRequest {
     protected Long brandId;
     private String title;
     private String description;
-    private Long voucher;
     private double price;
     private String categoryName;
     private String brandName;

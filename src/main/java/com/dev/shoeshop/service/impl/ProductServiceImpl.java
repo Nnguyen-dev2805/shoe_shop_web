@@ -8,6 +8,7 @@ import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Rating;
 import com.dev.shoeshop.repository.InventoryRepository;
+import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.service.*;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,9 @@ public class ProductServiceImpl implements ProductService {
     private final BrandService brandService;
 
     private final InventoryRepository inventoryRepository;
+    
+    private final ProductDetailRepository productDetailRepository;
+
 
     @Transactional
     @Override
@@ -44,7 +48,6 @@ public class ProductServiceImpl implements ProductService {
         product.setTitle(request.getTitle());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-        product.setVoucher(request.getVoucher());
         product.setCategory(categoryService.getCategoryById(request.getCategoryId()));
         product.setBrand(brandService.getBrandById(request.getBrandId()));
 
@@ -74,21 +77,23 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId) {
         Page<Product> productPage;
         
+        // ✅ SOFT DELETE: Chỉ lấy sản phẩm chưa xóa (isDelete = false)
+        
         // Filter by category and search
         if (categoryId != null && search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByCategoryIdAndTitleContainingIgnoreCase(categoryId, search, pageable);
+            productPage = productRepository.findByCategoryIdAndTitleContainingIgnoreCaseAndIsDeleteFalse(categoryId, search, pageable);
         } 
         // Filter by category only
         else if (categoryId != null) {
-            productPage = productRepository.findByCategoryId(categoryId, pageable);
+            productPage = productRepository.findByCategoryIdAndIsDeleteFalse(categoryId, pageable);
         } 
         // Search only
         else if (search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByTitleContainingIgnoreCase(search, pageable);
+            productPage = productRepository.findByTitleContainingIgnoreCaseAndIsDeleteFalse(search, pageable);
         } 
-        // Get all
+        // Get all (exclude deleted)
         else {
-            productPage = productRepository.findAll(pageable);
+            productPage = productRepository.findByIsDeleteFalse(pageable);
         }
         
         List<ProductResponse> responses = productPage.getContent().stream()
@@ -114,7 +119,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> getAllProductsList() {
-        List<Product> products = productRepository.findAll();
+        // ✅ SOFT DELETE: Chỉ lấy sản phẩm chưa xóa (isDelete = false)
+        List<Product> products = productRepository.findByIsDeleteFalse();
         return products.stream()
                 .map(product -> {
                     // Check flash sale
@@ -287,5 +293,84 @@ public class ProductServiceImpl implements ProductService {
         
         // Không có flash sale active
         return null;
+    }
+    
+    /**
+     * UPDATE PRODUCT - RESTful API
+     * 
+     * @param id Product ID
+     * @param request ProductRequest with updated data
+     * @param image New product image (optional)
+     */
+    @Override
+    @Transactional
+    public void updateProduct(Long id, ProductRequest request, MultipartFile image) {
+        // Find existing product
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+        
+        // Update basic fields
+        product.setTitle(request.getTitle());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setCategory(categoryService.getCategoryById(request.getCategoryId()));
+        product.setBrand(brandService.getBrandById(request.getBrandId()));
+        
+        // Update image if provided
+        if (image != null && !image.isEmpty()) {
+            String fileName = image.getOriginalFilename();
+            if (fileName != null && !fileName.isEmpty()) {
+                try {
+                    // Save new image
+                    String uploadDir = "uploads/products/";
+                    java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+                    if (!java.nio.file.Files.exists(uploadPath)) {
+                        java.nio.file.Files.createDirectories(uploadPath);
+                    }
+                    
+                    String newFileName = System.currentTimeMillis() + "_" + fileName;
+                    java.nio.file.Path filePath = uploadPath.resolve(newFileName);
+                    image.transferTo(filePath.toFile());
+                    
+                    product.setImage("/uploads/products/" + newFileName);
+                } catch (Exception e) {
+                    throw new RuntimeException("Lỗi upload ảnh: " + e.getMessage());
+                }
+            }
+        }
+        
+        productRepository.save(product);
+        
+        // Update ProductDetails if provided
+        if (request.getProductDetails() != null && !request.getProductDetails().isEmpty()) {
+            // Clear existing details
+            product.getDetails().clear();
+            productRepository.save(product); // Flush changes
+            
+            // Add new details
+            request.getProductDetails().forEach(detailReq -> {
+                ProductDetail detail = new ProductDetail();
+                detail.setProduct(product);
+                detail.setSize(detailReq.getSize());
+                detail.setPriceadd(detailReq.getPriceAdd());
+                productDetailService.save(detail);
+            });
+        }
+    }
+    
+    /**
+     * DELETE PRODUCT - RESTful API (Soft Delete)
+     * 
+     * @param id Product ID
+     */
+    @Override
+    @Transactional
+    public void deleteProduct(Long id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
+        
+        // Soft delete
+        product.setDelete(true);
+        productRepository.save(product);
     }
 }

@@ -102,13 +102,16 @@ function renderCartItems(cart) {
         return;
     }
     
-    cart.cartDetails.forEach(function(detail) {
+    // ✅ Sort cart details by ID DESC (newest first) before rendering
+    const sortedDetails = [...cart.cartDetails].sort((a, b) => b.id - a.id);
+    
+    sortedDetails.forEach(function(detail) {
         const row = `
             <tr data-detail-id="${detail.id}">
                 <td class="text-center">
                     <input type="checkbox" class="item-checkbox" 
                            data-id="${detail.id}" 
-                           data-price="${detail.price}" 
+                           data-price="${detail.pricePerUnit}" 
                            data-quantity="${detail.quantity}"
                            checked>
                 </td>
@@ -135,7 +138,7 @@ function renderCartItems(cart) {
                     </div>
                 </td>
                 <td class="subtotal">
-                    <span class="formatted-price">${formatPrice(detail.price * detail.quantity)}</span>
+                    <span class="formatted-price">${formatPrice(detail.pricePerUnit * detail.quantity)}</span>
                 </td>
                 <td class="remove-icon">
                     <button type="button" class="remove-btn" data-id="${detail.id}" style="border: none; background: none; padding: 0; margin: 0;">
@@ -340,17 +343,50 @@ function updateQuantity(detailId, newQuantity) {
         data: JSON.stringify({ quantity: newQuantity }),
         success: function(response) {
             if (response.success) {
-                // Update the input value
-                $(`.quantity-input[data-id="${detailId}"]`).val(newQuantity);
-                // Reload cart to update totals
-                loadCartData();
+                // ✅ Update UI directly without reloading entire cart
+                const $row = $(`tr[data-detail-id="${detailId}"]`);
+                const $input = $row.find('.quantity-input');
+                const $checkbox = $row.find('.item-checkbox');
+                const pricePerUnit = parseFloat($checkbox.data('price'));
+                
+                // Update input value
+                $input.val(newQuantity);
+                
+                // Update checkbox data-quantity for total calculation
+                $checkbox.data('quantity', newQuantity);
+                $checkbox.attr('data-quantity', newQuantity);
+                
+                // Update subtotal for this row
+                const newSubtotal = pricePerUnit * newQuantity;
+                $row.find('.subtotal .formatted-price').text(formatPrice(newSubtotal));
+                
+                // Update total price display
+                const newTotal = calculateSelectedTotal();
+                $('#totalPrice').text(formatPrice(newTotal));
+                window.originalTotalPrice = newTotal;
+                
+                console.log(`✅ Updated quantity for item ${detailId}: ${newQuantity}, subtotal: ${newSubtotal}`);
             } else {
                 showToast('⚠️ ' + (response.message || 'Không thể cập nhật số lượng'), 'error');
             }
         },
         error: function(xhr, status, error) {
             console.error('Error updating quantity:', error);
-            showToast('❌ Lỗi khi cập nhật số lượng. Vui lòng thử lại!', 'error');
+            // Extract error message from backend
+            let errorMessage = 'Lỗi khi cập nhật số lượng. Vui lòng thử lại!';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    errorMessage = response.message || errorMessage;
+                } catch (e) {
+                    // Keep default message
+                }
+            }
+            showToast('❌ ' + errorMessage, 'error');
+            // Reload cart để reset về số lượng cũ
+            loadCartData();
         }
     });
 }
@@ -444,7 +480,7 @@ function handleContinueToPayment() {
                 id: detailData.id,
                 productDetailId: detailData.product?.id || detailData.productDetailId,
                 quantity: detailData.quantity,
-                price: detailData.price,
+                pricePerUnit: detailData.pricePerUnit,
                 product: detailData.product
             });
         }

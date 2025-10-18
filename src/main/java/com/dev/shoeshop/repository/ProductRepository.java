@@ -12,12 +12,25 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
+    // ========== METHODS WITHOUT SOFT DELETE FILTER (CŨ) ==========
     // tìm kiếm theo tên
     Page<Product> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
     // tìm kiếm theo tên và category id
     Page<Product> findByCategoryIdAndTitleContainingIgnoreCase(Long categoryId, String keyword, Pageable pageable);
     // lọc theo sản phẩm theo category dùng cho hiển thị web
     Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+    
+    // ========== METHODS WITH SOFT DELETE FILTER (MỚI) ==========
+    // Get all products (exclude deleted) - with pagination
+    Page<Product> findByIsDeleteFalse(Pageable pageable);
+    // Get all products (exclude deleted) - without pagination
+    java.util.List<Product> findByIsDeleteFalse();
+    // Search by title (exclude deleted)
+    Page<Product> findByTitleContainingIgnoreCaseAndIsDeleteFalse(String keyword, Pageable pageable);
+    // Search by category and title (exclude deleted)
+    Page<Product> findByCategoryIdAndTitleContainingIgnoreCaseAndIsDeleteFalse(Long categoryId, String keyword, Pageable pageable);
+    // Filter by category (exclude deleted)
+    Page<Product> findByCategoryIdAndIsDeleteFalse(Long categoryId, Pageable pageable);
     
     /**
      * Find product by id with details eagerly loaded

@@ -8,5 +8,5 @@ public class CartDetailDTO {
     private Long cartId;
     private CartProductDTO product;
     private Long quantity;
-    private Double price;
+    private Double pricePerUnit; // Renamed from 'price' to match CartDetail entity
 }

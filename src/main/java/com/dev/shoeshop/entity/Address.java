@@ -27,9 +27,6 @@ public class Address {
     @Column(name = "city", nullable = false, length = 100)
     private String city; // Tỉnh/Thành phố (VD: "Phú Yên", "Hồ Chí Minh")
 
-//    @Column(name = "postal_code", length = 20)
-//    private String postal_code;
-
     @Column(name = "country", length = 100)
     private String country; // Mặc định "Việt Nam"
     

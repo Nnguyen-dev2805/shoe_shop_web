@@ -52,7 +52,7 @@ public class DiscountServiceImpl implements DiscountService {
         
         // Sử dụng mapper để chuyển đổi
         Discount discount = discountMapper.toEntity(request);
-        discount.setCreatedBy(createdBy);
+        // discount.setCreatedBy(createdBy); // Commented out - field not used
         
         // Tự động cập nhật status dựa trên ngày tháng
         discount.prePersist();
@@ -82,7 +82,7 @@ public class DiscountServiceImpl implements DiscountService {
         
         // Sử dụng mapper để cập nhật
         discountMapper.updateEntity(existingDiscount, request);
-        existingDiscount.setUpdatedBy(updatedBy);
+        // existingDiscount.setUpdatedBy(updatedBy); // Commented out - field not used
         
         // Tự động cập nhật status dựa trên ngày tháng
         existingDiscount.preUpdate();
