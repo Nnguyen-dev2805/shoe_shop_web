@@ -454,10 +454,19 @@
         .shopee-wishlist-icon {
             color: #ee4d2d;
             font-size: 16px;
+            transition: all 0.2s;
         }
         
-        .shopee-wishlist-icon.active {
+        /* Icon tim đỏ khi đã thích (filled heart) */
+        .shopee-wishlist-icon.fa-heart {
             color: #ee4d2d;
+            animation: heartbeat 0.3s;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            25% { transform: scale(1.2); }
+            50% { transform: scale(1.1); }
         }
         
         .shopee-wishlist-text {
@@ -468,6 +477,19 @@
         .shopee-wishlist-count {
             font-size: 14px;
             color: #757575;
+        }
+        
+        /* Breadcrumb styles */
+        .breadcrumb-area {
+            transition: box-shadow 0.2s;
+        }
+        
+        .breadcrumb-link {
+            transition: color 0.2s;
+        }
+        
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
         }
         
         .add-to-links {
@@ -733,6 +755,19 @@
             text-align: center;
         }
         
+        .shopee-size-btn.out-of-stock {
+            background: #fafafa;
+            color: #999;
+            border-color: #e0e0e0;
+            cursor: pointer;
+            opacity: 0.7;
+        }
+        
+        .shopee-size-btn.out-of-stock:hover {
+            border-color: #999;
+            color: #666;
+        }
+        
         .shopee-qty-selector {
             display: flex;
             align-items: center;
@@ -897,9 +932,29 @@
         }
         
         .shopee-voucher-badge:hover {
-            background: #fff5f5;
             transform: translateY(-2px);
+        }
+        
+        /* Order Voucher - Màu cam/đỏ */
+        .shopee-voucher-badge.order-voucher {
+            border-color: #ee4d2d;
+            color: #ee4d2d;
+        }
+        
+        .shopee-voucher-badge.order-voucher:hover {
+            background: #fff5f5;
             box-shadow: 0 4px 8px rgba(238, 77, 45, 0.2);
+        }
+        
+        /* Shipping Voucher - Màu xanh lá */
+        .shopee-voucher-badge.shipping-voucher {
+            border-color: #26aa99;
+            color: #26aa99;
+        }
+        
+        .shopee-voucher-badge.shipping-voucher:hover {
+            background: #f0fffe;
+            box-shadow: 0 4px 8px rgba(38, 170, 153, 0.2);
         }
         
         /* Voucher Tooltip */
@@ -1124,7 +1179,7 @@
         }
     </style>
 </head>
-<body>
+<body style="background: #f5f5f5;">
 <!--[if lt IE 8]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
     your browser</a> to improve your experience.</p>
@@ -1134,24 +1189,23 @@
 <header th:replace="~{fragments/user/header :: header}"></header>
 <!-- header area end -->
 
-<!-- single product area start -->
-<div class="Single-product-location home2">
+<!-- Breadcrumb Area -->
+<div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
     <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div class="location">
-                    <ul>
-                        <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a></li>
-                        <li><strong> Thông tin sản phẩm</strong></li>
-                    </ul>
-                </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="javascript:history.back()" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại">
+                <i class="fa fa-arrow-left"></i>
+            </a>
+            <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                <span style="color: #ccc;">/</span>
+                <span style="color: #333; font-weight: 500;">Thông tin sản phẩm</span>
             </div>
         </div>
     </div>
 </div>
-<!-- single product area end -->
 <!-- single product details start -->
-<div class="single-product-details">
+<div class="single-product-details" style="background: #f5f5f5; padding: 20px 0;">
     <div class="container">
         <div class="row">
             <div class="col-lg-6">
@@ -1162,7 +1216,8 @@
                 </div>
             </div>
             <div class="col-lg-6">
-                <form action="#" method="post">
+                <img src="../../static/img/logo-1.png" height="134" width="269"/>
+                <form action="#" method="post"><img src="../../static/img/logo-1.png" height="134" width="269"/>
                     <div class="single-product-details product-details-card">
                         <!-- Product Title (Shopee Style) -->
                         <h1 class="shopee-product-title" id="product-title">Loading...</h1>
@@ -1218,14 +1273,26 @@
                         <!-- Flash Sale Stock Info (Hidden - Shopee style without progress bar) -->
                         <div id="flash-sale-stock" style="display: none;"></div>
                         
-                        <!-- Voucher Section -->
-                        <div class="shopee-voucher-section" id="voucher-section" style="display: none;">
+                        <!-- Voucher Section: Mã giảm giá đơn hàng -->
+                        <div class="shopee-voucher-section" id="order-voucher-section" style="display: none;">
                             <div class="shopee-voucher-label">
                                 <i class="fa fa-ticket" style="color: #ee4d2d;"></i>
-                                <span>Voucher Của Shop</span>
+                                <span>Mã Giảm Giá Đơn Hàng</span>
                             </div>
-                            <div class="shopee-voucher-list" id="voucher-list">
-                                <!-- Vouchers will be loaded via JavaScript -->
+                            <div class="shopee-voucher-list" id="order-voucher-list">
+                                <!-- Order vouchers will be loaded via JavaScript -->
+                                <span style="font-size: 12px; color: #999;">Đang tải vouchers...</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Voucher Section: Mã giảm phí vận chuyển -->
+                        <div class="shopee-voucher-section" id="shipping-voucher-section" style="display: none;">
+                            <div class="shopee-voucher-label">
+                                <i class="fa fa-truck" style="color: #26aa99;"></i>
+                                <span>Mã Giảm Phí Vận Chuyển</span>
+                            </div>
+                            <div class="shopee-voucher-list" id="shipping-voucher-list">
+                                <!-- Shipping vouchers will be loaded via JavaScript -->
                                 <span style="font-size: 12px; color: #999;">Đang tải vouchers...</span>
                             </div>
                         </div>
@@ -1340,7 +1407,7 @@
 </div>
 <!-- single product details end -->
 <!-- single product tab start -->
-<div class="single-product-tab-area">
+<div class="single-product-tab-area" style="background: #f5f5f5; padding: 20px 0;">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -1894,11 +1961,29 @@
                 console.log('✅ Vouchers loaded:', vouchers);
                 
                 if (vouchers && vouchers.length > 0) {
-                    renderVouchers(vouchers);
-                    $('#voucher-section').show();
+                    // Phân loại vouchers theo type
+                    const orderVouchers = vouchers.filter(v => v.type === 'ORDER_DISCOUNT');
+                    const shippingVouchers = vouchers.filter(v => v.type === 'SHIPPING_DISCOUNT');
+                    
+                    // Render order vouchers
+                    if (orderVouchers.length > 0) {
+                        renderOrderVouchers(orderVouchers);
+                        $('#order-voucher-section').show();
+                    }
+                    
+                    // Render shipping vouchers
+                    if (shippingVouchers.length > 0) {
+                        renderShippingVouchers(shippingVouchers);
+                        $('#shipping-voucher-section').show();
+                    }
+                    
+                    if (orderVouchers.length === 0 && shippingVouchers.length === 0) {
+                        console.log('ℹ️ No active vouchers found');
+                    }
                 } else {
                     console.log('ℹ️ No active vouchers found');
-                    $('#voucher-section').hide();
+                    $('#order-voucher-section').hide();
+                    $('#shipping-voucher-section').hide();
                 }
             },
             error: function(xhr, status, error) {
@@ -1909,38 +1994,54 @@
     }
     
     /**
-     * Render vouchers to HTML
+     * Render order discount vouchers
      */
-    function renderVouchers(vouchers) {
-        const $voucherList = $('#voucher-list');
-        $voucherList.empty();
+    function renderOrderVouchers(vouchers) {
+        const $list = $('#order-voucher-list');
+        $list.empty();
         
         // Limit to 4 vouchers display
         const displayVouchers = vouchers.slice(0, 4);
         
         displayVouchers.forEach(voucher => {
-            const badge = createVoucherBadge(voucher);
-            $voucherList.append(badge);
+            const badge = createOrderVoucherBadge(voucher);
+            $list.append(badge);
         });
     }
     
     /**
-     * Create voucher badge with tooltip
+     * Render shipping discount vouchers
      */
-    function createVoucherBadge(voucher) {
-        const percentDisplay = Math.round(voucher.percent * 100);
+    function renderShippingVouchers(vouchers) {
+        const $list = $('#shipping-voucher-list');
+        $list.empty();
+        
+        // Limit to 4 vouchers display
+        const displayVouchers = vouchers.slice(0, 4);
+        
+        displayVouchers.forEach(voucher => {
+            const badge = createShippingVoucherBadge(voucher);
+            $list.append(badge);
+        });
+    }
+    
+    /**
+     * Create order voucher badge (màu cam)
+     */
+    function createOrderVoucherBadge(voucher) {
+        const discountDisplay = getDiscountDisplay(voucher);
         const minOrderDisplay = formatVND(voucher.minOrderValue || 0);
         const maxDiscountDisplay = voucher.maxDiscountAmount ? formatVND(voucher.maxDiscountAmount) : 'Không giới hạn';
         
         return `
-            <span class="shopee-voucher-badge">
-                Giảm ${percentDisplay}%
+            <span class="shopee-voucher-badge order-voucher">
+                ${discountDisplay}
                 <div class="voucher-tooltip">
                     <div class="voucher-tooltip-header">
                         ${voucher.name}
                     </div>
                     <div class="voucher-tooltip-body">
-                        Giảm ${percentDisplay}% cho đơn hàng
+                        ${getVoucherDescription(voucher)}
                     </div>
                     <div class="voucher-tooltip-condition">
                         <div>• Đơn tối thiểu: <strong>${minOrderDisplay}</strong></div>
@@ -1950,6 +2051,64 @@
                 </div>
             </span>
         `;
+    }
+    
+    /**
+     * Create shipping voucher badge (màu xanh lá)
+     */
+    function createShippingVoucherBadge(voucher) {
+        const discountDisplay = getDiscountDisplay(voucher);
+        const minOrderDisplay = formatVND(voucher.minOrderValue || 0);
+        
+        return `
+            <span class="shopee-voucher-badge shipping-voucher">
+                ${discountDisplay}
+                <div class="voucher-tooltip">
+                    <div class="voucher-tooltip-header">
+                        ${voucher.name}
+                    </div>
+                    <div class="voucher-tooltip-body">
+                        ${getVoucherDescription(voucher)}
+                    </div>
+                    <div class="voucher-tooltip-condition">
+                        <div>• Đơn tối thiểu: <strong>${minOrderDisplay}</strong></div>
+                        ${voucher.maxDiscountAmount ? `<div>• Giảm tối đa: <strong>${formatVND(voucher.maxDiscountAmount)}</strong></div>` : ''}
+                        <div>• HSD: ${formatDate(voucher.endDate)}</div>
+                    </div>
+                </div>
+            </span>
+        `;
+    }
+    
+    /**
+     * Get discount display text
+     */
+    function getDiscountDisplay(voucher) {
+        if (voucher.discountValueType === 'PERCENTAGE') {
+            return `Giảm ${Math.round(voucher.percent * 100)}%`;
+        } else if (voucher.discountValueType === 'FIXED_AMOUNT') {
+            return `Giảm ${formatVND(voucher.percent)}`;
+        }
+        return 'Giảm giá';
+    }
+    
+    /**
+     * Get voucher description
+     */
+    function getVoucherDescription(voucher) {
+        if (voucher.type === 'SHIPPING_DISCOUNT') {
+            if (voucher.discountValueType === 'PERCENTAGE') {
+                return `Miễn phí ship ${Math.round(voucher.percent * 100)}%`;
+            } else {
+                return `Miễn phí ship ${formatVND(voucher.percent)}`;
+            }
+        } else {
+            if (voucher.discountValueType === 'PERCENTAGE') {
+                return `Giảm ${Math.round(voucher.percent * 100)}% tổng đơn hàng`;
+            } else {
+                return `Giảm ${formatVND(voucher.percent)} cho đơn hàng`;
+            }
+        }
     }
     
     /**

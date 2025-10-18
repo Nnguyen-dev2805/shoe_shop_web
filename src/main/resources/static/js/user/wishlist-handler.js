@@ -22,12 +22,8 @@ $(document).ready(function() {
     // Load wishlist count khi page load
     loadWishlistCount();
     
-    // Kiểm tra trạng thái wishlist của product hiện tại (nếu có)
-    const productId = getProductIdFromPage();
-    if (productId) {
-        console.log('Product ID found on page:', productId);
-        checkProductInWishlist(productId);
-    }
+    // ℹ️ NOTE: checkProductInWishlist() will be called from product-details.js
+    // after product data is loaded and data-product-id is set
 });
 
 // ==================== MAIN FUNCTIONS ====================
@@ -54,8 +50,12 @@ function toggleWishlist(productId, buttonElement) {
     
     // Show loading state
     const $icon = $(buttonElement).find('i');
+    const $shopeeIcon = $('#wishlist-icon');
     const originalClass = $icon.attr('class');
+    const originalShopeeClass = $shopeeIcon.attr('class');
+    
     $icon.attr('class', 'fa fa-spinner fa-spin');
+    $shopeeIcon.attr('class', 'fa fa-spinner fa-spin');
     
     console.log('Sending AJAX request to toggle wishlist...');
     
@@ -72,27 +72,27 @@ function toggleWishlist(productId, buttonElement) {
                 // Update icon state
                 updateWishlistIcon(buttonElement, response.isInWishlist);
                 
-                // Update counter
-                if (response.count !== undefined) {
-                    updateWishlistCounter(response.count);
-                } else {
-                    loadWishlistCount(); // Fallback: reload count
+                // Update product likes counter
+                if (response.totalLikes !== undefined) {
+                    updateProductLikesCounter(response.totalLikes);
                 }
                 
-                // Show success message
-                const message = response.isInWishlist 
-                    ? '❤️ Đã thêm vào danh sách yêu thích!' 
-                    : '💔 Đã xóa khỏi danh sách yêu thích';
-                showToast(message, 'success');
+                // ❌ REMOVED: Toast notification
+                // const message = response.isInWishlist 
+                //     ? '❤️ Đã thêm vào danh sách yêu thích!' 
+                //     : '💔 Đã xóa khỏi danh sách yêu thích';
+                // showToast(message, 'success');
                 
                 console.log('Wishlist toggled successfully. Is in wishlist:', response.isInWishlist);
+                console.log('Total product likes:', response.totalLikes);
             } else {
                 // Show error message
                 showToast(response.message || 'Có lỗi xảy ra', 'error');
                 console.error('Toggle wishlist failed:', response.message);
                 
-                // Restore original icon
+                // Restore original icons
                 $icon.attr('class', originalClass);
+                $shopeeIcon.attr('class', originalShopeeClass);
             }
         },
         error: function(xhr, status, error) {
@@ -115,8 +115,9 @@ function toggleWishlist(productId, buttonElement) {
                 showToast('Có lỗi xảy ra khi cập nhật wishlist', 'error');
             }
             
-            // Restore original icon
+            // Restore original icons
             $icon.attr('class', originalClass);
+            $shopeeIcon.attr('class', originalShopeeClass);
         },
         complete: function() {
             // Re-enable button
@@ -140,12 +141,22 @@ function checkProductInWishlist(productId) {
         success: function(response) {
             console.log('Check wishlist response:', response);
             
-            if (response.success && response.isInWishlist) {
-                // Update icon to filled state
-                const $wishlistButton = $('.add-to-wishlist[data-product-id="' + productId + '"]');
-                if ($wishlistButton.length > 0) {
-                    updateWishlistIcon($wishlistButton[0], true);
+            if (response.success) {
+                // Update total likes counter first (always show)
+                if (response.totalLikes !== undefined) {
+                    updateProductLikesCounter(response.totalLikes);
+                }
+                
+                // Update icon based on wishlist status
+                const $shopeeIcon = $('#wishlist-icon');
+                if (response.isInWishlist) {
+                    // User đã thích -> fill icon
+                    $shopeeIcon.removeClass('fa-heart-o').addClass('fa-heart');
                     console.log('Product is in wishlist - icon updated to filled');
+                } else {
+                    // User chưa thích -> outline icon
+                    $shopeeIcon.removeClass('fa-heart').addClass('fa-heart-o');
+                    console.log('Product not in wishlist - icon updated to outline');
                 }
             }
         },
@@ -193,6 +204,10 @@ function updateWishlistIcon(buttonElement, isInWishlist) {
     // Update Shopee-style wishlist section icon (if exists)
     const $shopeeIcon = $('#wishlist-icon');
     
+    // ✅ Remove spinner classes first
+    $icon.removeClass('fa-spinner fa-spin');
+    $shopeeIcon.removeClass('fa-spinner fa-spin');
+    
     if (isInWishlist) {
         // Filled heart (trong wishlist)
         $icon.removeClass('fa-heart-o').addClass('fa-heart');
@@ -236,12 +251,19 @@ function updateWishlistCounter(count) {
         
         console.log('Counter badge updated');
     }
+}
+
+/**
+ * Update product total likes counter (số người thích sản phẩm)
+ * @param {number} totalLikes - Tổng số người thích
+ */
+function updateProductLikesCounter(totalLikes) {
+    console.log('Updating product likes counter:', totalLikes);
     
-    // Update Shopee-style wishlist count (if exists)
     const $shopeeCount = $('#wishlist-count');
     if ($shopeeCount.length > 0) {
-        $shopeeCount.text(`(${wishlistCount})`);
-        console.log('Shopee wishlist count updated:', wishlistCount);
+        $shopeeCount.text(`(${totalLikes || 0})`);
+        console.log('Product likes count updated:', totalLikes);
     }
 }
 

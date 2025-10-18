@@ -74,6 +74,7 @@ public class DiscountMapper {
         DiscountResponse response = new DiscountResponse();
         response.setId(discount.getId());
         response.setName(discount.getName());
+        response.setQuantity(discount.getQuantity());
         response.setPercent(discount.getPercent());
         response.setStatus(discount.getStatus());
         response.setMinOrderValue(discount.getMinOrderValue());

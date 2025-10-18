@@ -45,6 +45,14 @@ public interface WishlistRepository extends JpaRepository<WishList, Long> {
      * @return số lượng items
      */
     Long countByUser_IdAndIsActive(Long userId, Boolean isActive);
+    
+    /**
+     * Đếm tổng số người thích product này (total likes)
+     * @param productId ID của product
+     * @param isActive trạng thái active
+     * @return số người thích
+     */
+    Long countByProduct_IdAndIsActive(Long productId, Boolean isActive);
 
     /**
      * Kiểm tra product có trong wishlist của user không

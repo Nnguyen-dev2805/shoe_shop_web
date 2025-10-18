@@ -138,11 +138,6 @@ function renderCartItems(cart) {
                     <span class="formatted-price">${formatPrice(detail.price * detail.quantity)}</span>
                 </td>
                 <td class="remove-icon">
-                    <button type="button" class="edit-btn" data-id="${detail.id}" style="border: none; background: none; padding: 0; margin: 0;">
-                        <img src="/img/cart/btn_edit.gif" alt="Edit" style="display: block;">
-                    </button>
-                </td>
-                <td class="remove-icon">
                     <button type="button" class="remove-btn" data-id="${detail.id}" style="border: none; background: none; padding: 0; margin: 0;">
                         <img src="/img/cart/btn_remove.png" alt="Remove" style="display: block;">
                     </button>
@@ -281,8 +276,7 @@ function bindEventHandlers() {
     $(document).on('click', '.quantity-btn.decrease', handleQuantityDecrease);
     $(document).on('click', '.quantity-btn.increase', handleQuantityIncrease);
     
-    // Edit and remove handlers
-    $(document).on('click', '.edit-btn', handleEditItem);
+    // Remove handler
     $(document).on('click', '.remove-btn', handleRemoveItem);
     
     // Continue to payment button
@@ -363,30 +357,31 @@ function updateQuantity(detailId, newQuantity) {
 
 /**
  * Handle edit item
+ * COMMENTED OUT - Edit column removed from cart UI
  */
-function handleEditItem() {
-    const detailId = $(this).data('id');
-    const quantity = $(this).closest('tr').find('.quantity-input').val();
-    
-    $.ajax({
-        url: `/api/cart/edit/${detailId}`,
-        method: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify({ quantity: parseInt(quantity) }),
-        success: function(response) {
-            if (response.success) {
-                showAlert('Item updated successfully', 'success');
-                loadCartData();
-            } else {
-                showAlert(response.message || 'Error updating item', 'error');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error editing item:', error);
-            showAlert('Failed to update item', 'error');
-        }
-    });
-}
+// function handleEditItem() {
+//     const detailId = $(this).data('id');
+//     const quantity = $(this).closest('tr').find('.quantity-input').val();
+//     
+//     $.ajax({
+//         url: `/api/cart/edit/${detailId}`,
+//         method: 'PUT',
+//         contentType: 'application/json',
+//         data: JSON.stringify({ quantity: parseInt(quantity) }),
+//         success: function(response) {
+//             if (response.success) {
+//                 showAlert('Item updated successfully', 'success');
+//                 loadCartData();
+//             } else {
+//                 showAlert(response.message || 'Error updating item', 'error');
+//             }
+//         },
+//         error: function(xhr, status, error) {
+//             console.error('Error editing item:', error);
+//             showAlert('Failed to update item', 'error');
+//         }
+//     });
+// }
 
 /**
  * Handle remove item

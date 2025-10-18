@@ -152,22 +152,21 @@
             vertical-align: middle !important;
         }
         
-        /* ⭐ Canh giữa các icon/button trong cột Edit và Remove */
-        .remove-icon, .edit-icon {
+        /* ⭐ Canh giữa các icon/button trong cột Remove */
+        .remove-icon {
             text-align: center !important;
             vertical-align: middle !important;
         }
         
         tbody td:nth-child(1), /* Checkbox column */
-        tbody td:nth-child(8), /* Edit column */
-        tbody td:nth-child(9)  /* Remove column */
+        tbody td:nth-child(8)  /* Remove column */
         {
             text-align: center !important;
             vertical-align: middle !important;
         }
         
-        /* ⭐ Canh giữa button edit và remove */
-        .edit-btn, .remove-btn {
+        /* ⭐ Canh giữa button remove */
+        .remove-btn {
             display: inline-block !important;
             padding: 0 !important;
             margin: 0 !important;
@@ -176,7 +175,7 @@
             line-height: 0 !important;
         }
         
-        .edit-btn img, .remove-btn img {
+        .remove-btn img {
             display: block !important;
             margin: 0 auto !important;
         }
@@ -185,7 +184,6 @@
         .item-checkbox, #select-all-items {
             margin: 0 auto !important;
             display: block !important;
-            vertical-align: middle !important;
         }
         
         /* ⭐ Hover cho button Thêm Địa Chỉ */
@@ -194,10 +192,168 @@
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(224, 53, 80, 0.4);
         }
+        
+        /* ==================== SHOPEE MODERN STYLES ==================== */
+        .breadcrumb-link {
+            transition: color 0.2s;
+        }
+        
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
+        }
+        
+        #btn-continue-payment:hover {
+            background: #d73211 !important;
+            box-shadow: 0 2px 8px rgba(238, 77, 45, 0.3);
+            transform: translateY(-1px);
+        }
+        
+        tbody tr {
+            transition: all 0.2s ease;
+        }
+        
+        tbody tr:hover {
+            background-color: #fafafa !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        /* Custom checkbox styling */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #ee4d2d;
+        }
+        
+        /* Product image styling */
+        .cart-item-img img {
+            border-radius: 4px;
+            transition: transform 0.2s;
+        }
+        
+        .cart-item-img img:hover {
+            transform: scale(1.05);
+        }
+        
+        /* Table header */
+        thead th {
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #555;
+            padding: 15px 10px !important;
+        }
+        
+        /* Table cell padding */
+        tbody td {
+            padding: 15px 10px !important;
+        }
+        
+        /* Price styling */
+        .unit-price, .subtotal {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        /* Empty cart state */
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-cart i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .empty-cart h3 {
+            color: #666;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        
+        .empty-cart p {
+            color: #999;
+            margin-bottom: 25px;
+        }
+        
+        /* Continue shopping button hover */
+        a[href="/user/shop"]:hover {
+            color: #d73211 !important;
+            transform: translateX(-3px);
+            transition: all 0.2s;
+        }
+        
+        /* Loading spinner animation */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .fa-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Fade in animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .shopping-cart {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Quantity button styling */
+        .quantity-controller button {
+            transition: all 0.2s;
+        }
+        
+        .quantity-controller button:hover {
+            background: #ee4d2d !important;
+            color: white !important;
+            transform: scale(1.1);
+        }
+        
+        /* Remove button hover */
+        .remove-btn:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s;
+        }
+        
+        /* Alert styling */
+        #alert-container .alert {
+            border-radius: 4px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Card shadow on hover */
+        .shopping-cart .col-md-12 > div {
+            transition: box-shadow 0.3s ease;
+        }
+        
+        .shopping-cart .col-md-12 > div:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+        }
 
     </style>
     </head>
-    <body>
+    <body style="background: #f5f5f5;">
         <!--[if lt IE 8]>
             <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
@@ -206,95 +362,120 @@
         <!-- header area start -->
         <header th:replace="~{fragments/user/header :: header}"></header>
         <!-- header area end -->
+        
+        <!-- Breadcrumb Area -->
+        <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div class="container">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="javascript:history.back()" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                        <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                        <span style="color: #ccc;">/</span>
+                        <span style="color: #333; font-weight: 500;">Giỏ hàng</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- cart item area start -->
-        <div class="shopping-cart">
+        <div class="shopping-cart" style="padding-bottom: 50px;">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
-                        <div class="location">
-                            <ul>
-                                <li><a href="/" title="Trang chủ">Trang chủ<span>/</span></a>  </li>
-                                <li><strong> Giỏ hàng</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="table-responsive">
-                            <table class="table-bordered table table-hover">
-                                <!-- Alert placeholder for dynamic messages -->
-                                <div id="alert-container"></div>
-                                <thead style="background: rgb(229, 229, 229); color: rgb(35, 34, 34);">
+                        <!-- Cart Card -->
+                        <div style="background: white; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); margin-bottom: 15px; overflow: hidden;">
+                            <!-- Alert placeholder for dynamic messages -->
+                            <div id="alert-container"></div>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover" style="margin-bottom: 0;">
+                                    <thead style="background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%); color: #333; border-bottom: 2px solid #ee4d2d;">
                                     <tr style="text-align: center; vertical-align: middle;">
                                         <th style="width: 50px; vertical-align: middle;">
                                             <input type="checkbox" id="select-all-items" checked>
                                         </th>
-                                        <th class="cart-item-img">Hình ảnh</th>
-                                        <th class="cart-product-name">Tên sản phẩm</th>
-                                        <th class="unit-price">Size</th>
-                                        <th class="unit-price">Đơn giá</th>
-                                        <th class="quantity">Số lượng</th>
-                                        <th class="subtotal">Thành tiền</th>
-                                        <th class="remove-icon">Sửa</th>
-                                        <th class="remove-icon">Xóa</th>
+                                        <th class="cart-item-img"><i class="fa fa-image" style="margin-right: 5px; color: #ee4d2d;"></i>Hình ảnh</th>
+                                        <th class="cart-product-name"><i class="fa fa-tag" style="margin-right: 5px; color: #ee4d2d;"></i>Sản phẩm</th>
+                                        <th class="unit-price"><i class="fa fa-arrows-h" style="margin-right: 5px; color: #ee4d2d;"></i>Size</th>
+                                        <th class="unit-price"><i class="fa fa-money" style="margin-right: 5px; color: #ee4d2d;"></i>Đơn giá</th>
+                                        <th class="quantity"><i class="fa fa-sort-numeric-asc" style="margin-right: 5px; color: #ee4d2d;"></i>Số lượng</th>
+                                        <th class="subtotal"><i class="fa fa-calculator" style="margin-right: 5px; color: #ee4d2d;"></i>Tổng</th>
+                                        <th class="remove-icon"><i class="fa fa-trash" style="color: #ee4d2d;"></i></th>
                                     </tr>
                                 </thead>
                                 <tbody class="text-center">
                                     <!-- Cart items will be loaded dynamically via AJAX -->
                                     <tr>
-                                        <td colspan="9" class="text-center">
-                                            <div class="loading-spinner" style="padding: 30px;">
-                                                <i class="fa fa-spinner fa-spin" style="font-size: 24px; color: rgb(224, 53, 80);"></i>
-                                                <p style="margin-top: 10px; color: rgb(35, 34, 34);">Đang tải giỏ hàng...</p>
+                                        <td colspan="8" class="text-center" style="border: none;">
+                                            <div class="loading-spinner" style="padding: 50px 30px;">
+                                                <i class="fa fa-spinner fa-spin" style="font-size: 36px; color: #ee4d2d;"></i>
+                                                <p style="margin-top: 15px; color: #666; font-size: 14px;">Đang tải giỏ hàng của bạn...</p>
                                             </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <div class="shopping-button">
-                                <div class="continue-shopping">
-                                    <a href="/user/shop" style="text-transform: none;">
-                                        <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
-                                    </a>
-                                </div>
+                            </div>
+                            <!-- Button inside card -->
+                            <div style="padding: 15px; border-top: 1px solid #f0f0f0;">
+                                <a href="/user/shop" style="color: #ee4d2d; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 5px;">
+                                    <i class="fa fa-arrow-left"></i> Tiếp tục mua sắm
+                                </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="row" style="margin-top: 30px;">
-                    <!-- ⭐ TỔNG TIỀN -->
-                    <div class="col-md-12">
-                        <div class="totals" style="background: rgb(229, 229, 229); border-radius: 10px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: none; min-height: 380px; display: flex; flex-direction: column;">
-                            <h3 style="margin-bottom: 20px; color: rgb(224, 53, 80); border-bottom: none; padding-bottom: 10px; font-weight: bold;">
-                                <i class="fa fa-calculator"></i> THÔNG TIN THANH TOÁN
-                            </h3>
-                            
-                            <div style="padding: 10px 0; margin-bottom: 10px; border-bottom: 1px solid #ddd;">
-                                <p style="margin: 0; font-size: 14px; color: rgb(35, 34, 34);">
-                                    <i class="fa fa-calendar"></i> Ngày tạo giỏ hàng: 
-                                    <span id="createdDate" style="font-weight: bold;">Đang tải...</span>
-                                </p>
+                <div class="row" style="margin-top: 15px;">
+                    <!-- Summary Card -->
+                    <div class="col-md-12" style="display: flex; justify-content: center;">
+                        <div style="background: white; border-radius: 4px; padding: 0; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; max-width: 450px; width: 100%;">
+                            <!-- Header -->
+                            <div style="background: linear-gradient(135deg, #ee4d2d 0%, #f05d40 100%); padding: 12px 18px;">
+                                <h3 style="margin: 0; color: white; font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa fa-shopping-cart"></i> Thông tin đơn hàng
+                                </h3>
                             </div>
                             
-                            <div style="padding: 15px 0; margin-bottom: 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: center;">
-                                <p style="margin: 0; font-size: 16px; color: rgb(35, 34, 34);">Tổng tiền tạm tính</p>
-                                <h2 id="totalPrice" style="color: rgb(224, 53, 80); margin: 10px 0; font-size: 32px; font-weight: bold;">
-                                    0 đ
-                                </h2>
-                                <p style="font-size: 13px; color: #666; margin: 0;">
-                                    <i class="fa fa-info-circle"></i> Chưa bao gồm phí vận chuyển và giảm giá
-                                </p>
-                            </div>
-                            
-                            <input type="hidden" name="cartId" id="cartIdInput" value=""/>
-                            
-                            <div class="shopping-button" style="margin-top: auto;">
+                            <!-- Body -->
+                            <div style="padding: 16px;">
+                                <!-- Created Date -->
+                                <div style="padding: 10px; background: #f9f9f9; border-radius: 4px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="fa fa-calendar" style="color: #ee4d2d; font-size: 14px;"></i>
+                                    <div style="flex: 1;">
+                                        <span style="font-size: 11px; color: #999; display: block;">Ngày tạo</span>
+                                        <span id="createdDate" style="font-size: 13px; color: #333; font-weight: 500;">Đang tải...</span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Price Summary -->
+                                <div style="padding: 14px 0;">
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px;">
+                                        <span style="font-size: 14px; color: #666;">Tạm tính</span>
+                                        <span id="totalPrice" style="font-size: 20px; color: #ee4d2d; font-weight: 600;">0₫</span>
+                                    </div>
+                                    <div style="text-align: right; margin-top: 6px;">
+                                        <span style="font-size: 10px; color: #999; background: #fff9e6; padding: 3px 6px; border-radius: 3px; display: inline-block;">
+                                            <i class="fa fa-info-circle"></i> Chưa bao gồm phí vận chuyển
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <input type="hidden" name="cartId" id="cartIdInput" value=""/>
+                                
+                                <!-- Checkout Button -->
                                 <button type="button" id="btn-continue-payment" 
-                                        class="btn" 
-                                        style="width: 100%; background: rgb(224, 53, 80); color: white; font-weight: bold; padding: 12px; border-radius: 8px; border: none; font-size: 16px; transition: all 0.3s;">
-                                    <i class="fa fa-credit-card"></i> Tiến Hành Thanh Toán
+                                        style="width: 100%; background: #ee4d2d; color: white; font-weight: 600; padding: 12px; border-radius: 4px; border: none; font-size: 15px; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fa fa-credit-card"></i>
+                                    <span>Mua Hàng</span>
                                 </button>
+                                
+                                <!-- Security Note -->
+                                <div style="margin-top: 12px; text-align: center; padding: 8px; background: #f0f8ff; border-radius: 4px;">
+                                    <i class="fa fa-shield" style="color: #1890ff; font-size: 12px;"></i>
+                                    <span style="font-size: 10px; color: #666; margin-left: 5px;">Thanh toán an toàn & bảo mật</span>
+                                </div>
                             </div>
                         </div>
                     </div>
