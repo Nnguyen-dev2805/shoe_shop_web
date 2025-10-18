@@ -260,3 +260,49 @@
 .cart-info > ul::-webkit-scrollbar-thumb:hover {
     background: #999;
 }
+
+/* ========== Flying Cart Animation ========== */
+@keyframes cartShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px) rotate(-3deg); }
+    75% { transform: translateX(5px) rotate(3deg); }
+}
+
+.cart-menu.cart-shake {
+    animation: cartShake 0.5s ease-in-out;
+}
+
+.cart-menu img.cart-shake {
+    animation: cartShake 0.5s ease-in-out, cartGlow 0.5s ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(238, 77, 45, 0.8));
+}
+
+@keyframes cartGlow {
+    0%, 100% { 
+        filter: drop-shadow(0 0 0px rgba(238, 77, 45, 0));
+    }
+    50% { 
+        filter: drop-shadow(0 0 15px rgba(238, 77, 45, 1));
+    }
+}
+
+/* Add pulse effect when item added */
+@keyframes cartPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.cart-menu.cart-pulse {
+    animation: cartPulse 0.3s ease-in-out;
+}
+
+/* Cart icon transition */
+.cart-menu img {
+    transition: all 0.3s ease;
+}
+
+.cart-menu:hover img {
+    transform: scale(1.1);
+    filter: brightness(1.2);
+}

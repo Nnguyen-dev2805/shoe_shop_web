@@ -127,7 +127,7 @@ function createWishlistCard(item) {
         <div class="wishlist-product-card ${disabledClass}" style="${disabledStyle}">
             <!-- Product Image -->
             <div class="wishlist-product-image">
-                <a href="/user/single-product?id=${item.productId}">
+                <a href="/product/details/${item.productId}">
                     <img src="${imageUrl}" alt="${title}" loading="lazy">
                 </a>
                 
@@ -148,7 +148,7 @@ function createWishlistCard(item) {
                 </div>
                 
                 <!-- Title -->
-                <a href="/user/single-product?id=${item.productId}" 
+                <a href="/product/details/${item.productId}" 
                    class="wishlist-product-title" 
                    style="text-decoration: none;">
                     ${title}
@@ -171,7 +171,7 @@ function createWishlistCard(item) {
                 
                 <!-- Action Buttons -->
                 <div class="wishlist-product-actions">
-                    <a href="/user/single-product?id=${item.productId}" 
+                    <a href="/product/details/${item.productId}" 
                        class="wishlist-btn-view">
                         <i class="fa fa-eye"></i> Xem
                     </a>
@@ -248,16 +248,20 @@ function removeFromWishlist(productId, buttonElement) {
 }
 
 /**
- * Thêm sản phẩm vào giỏ hàng (placeholder - cần implement)
+ * Thêm sản phẩm vào giỏ hàng
+ * Redirect to product detail page để chọn size
  * @param {number} productId - ID của product
  */
 function addToCartFromWishlist(productId) {
-    console.log('Add to cart from wishlist - productId:', productId);
-    // TODO: Implement add to cart logic
-    showToast('Chức năng đang được phát triển', 'info');
+    console.log('🛒 Redirecting to product page - productId:', productId);
     
-    // Redirect to product detail page để chọn size
-    window.location.href = '/user/single-product?id=' + productId;
+    // Show loading toast
+    // showToast('⏳ Đang chuyển đến trang sản phẩm...', 'info');
+    
+    // Redirect to product detail page để user chọn size
+    setTimeout(() => {
+        window.location.href = '/product/details/' + productId;
+    }, 300);
 }
 
 // ==================== UI STATE FUNCTIONS ====================
@@ -359,62 +363,62 @@ function showLoginRequired() {
 function updateWishlistCount(count) {
     console.log('Updating wishlist count:', count);
     
-    // Update counter badge
-    $('#wishlist-header-count').text(count);
+    // Update counter badge in breadcrumb
+    $('#wishlist-header-count').text(`(${count})`);
+    
+    // Update total count in page header
+    $('#wishlist-total-count').text(count);
     
     // Update global wishlist count
     $('.wishlist-count, .wishlist-counter, [data-wishlist-count]').text(count);
 }
 
 /**
- * Show toast notification - Shopee Style
+ * Show toast notification - Modern Shopee Style
  * @param {string} message - Message
  * @param {string} type - Type: success, error, warning, info
  */
 function showToast(message, type = 'success') {
-    console.log('Toast:', type, '-', message);
+    console.log('🔔 Toast:', type, '-', message);
     
     // Remove existing toasts
     $('.wishlist-toast').remove();
     
     let icon = '';
-    let title = '';
     
     switch(type) {
         case 'success':
             icon = '<i class="fa fa-check-circle"></i>';
-            title = 'Thành Công';
             break;
         case 'error':
             icon = '<i class="fa fa-times-circle"></i>';
-            title = 'Lỗi';
             break;
         case 'warning':
-            icon = '<i class="fa fa-exclamation-triangle"></i>';
-            title = 'Cảnh Báo';
+            icon = '<i class="fa fa-exclamation-circle"></i>';
             break;
         default:
             icon = '<i class="fa fa-info-circle"></i>';
-            title = 'Thông Báo';
     }
     
-    const toastHtml = `
+    const $toast = $(`
         <div class="wishlist-toast ${type}">
             ${icon}
-            <div class="wishlist-toast-content">
-                <div class="wishlist-toast-title">${title}</div>
-                <div class="wishlist-toast-message">${message}</div>
-            </div>
+            <span>${message}</span>
         </div>
-    `;
+    `);
     
-    $('body').append(toastHtml);
+    $('body').append($toast);
+    
+    // Trigger show animation
+    setTimeout(function() {
+        $toast.addClass('show');
+    }, 100);
     
     // Auto hide after 3 seconds
     setTimeout(function() {
-        $('.wishlist-toast').css('animation', 'slideOutRight 0.4s ease');
+        $toast.removeClass('show');
         setTimeout(function() {
-            $('.wishlist-toast').remove();
+            $toast.remove();
         }, 400);
     }, 3000);
 }

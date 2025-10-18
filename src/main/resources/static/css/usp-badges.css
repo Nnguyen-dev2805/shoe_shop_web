@@ -1,0 +1,151 @@
+/* ========================================
+   USP BADGES (TRUST FACTORS) - SHOPEE STYLE
+   ======================================== */
+
+.usp-badges-section {
+    background: white;
+    padding: 40px 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 30px 0;
+}
+
+.usp-badges-wrapper {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+    align-items: center;
+}
+
+/* Individual USP Badge */
+.usp-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 10px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.usp-badge:hover {
+    background: #fafafa;
+    transform: translateY(-2px);
+}
+
+/* Badge Icon */
+.badge-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #ee4d2d 0%, #ff6a3d 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(238, 77, 45, 0.2);
+}
+
+.badge-icon i {
+    font-size: 20px;
+    color: white;
+}
+
+/* Badge Content */
+.badge-content {
+    flex: 1;
+}
+
+.badge-content h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 3px 0;
+    line-height: 1.3;
+}
+
+.badge-content p {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+    line-height: 1.2;
+}
+
+/* Responsive Layout */
+@media (max-width: 1200px) {
+    .usp-badges-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .usp-badges-section {
+        padding: 15px 0;
+    }
+    
+    .usp-badges-wrapper {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .usp-badge {
+        padding: 12px 8px;
+    }
+    
+    .badge-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .badge-icon i {
+        font-size: 18px;
+    }
+    
+    .badge-content h4 {
+        font-size: 12px;
+    }
+    
+    .badge-content p {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .usp-badges-wrapper {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .usp-badge {
+        justify-content: flex-start;
+    }
+    
+    .badge-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .badge-icon i {
+        font-size: 22px;
+    }
+    
+    .badge-content h4 {
+        font-size: 14px;
+    }
+    
+    .badge-content p {
+        font-size: 12px;
+    }
+}
+
+/* Alternative: Centered Style (Optional) */
+.usp-badges-wrapper.centered .usp-badge {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+}
+
+.usp-badges-wrapper.centered .badge-content h4,
+.usp-badges-wrapper.centered .badge-content p {
+    text-align: center;
+}

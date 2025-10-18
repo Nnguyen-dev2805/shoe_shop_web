@@ -253,7 +253,7 @@ function renderProducts(products) {
                         ${hasFlashSale ? `
                             <!-- Flash Sale Badges -->
                             <div class="flash-sale-badges">
-                                <div class="voucher-badge">VOUCHER XTRA</div>
+                                <div class="voucher-badge">FLASH SALE</div>
                                 <div class="discount-badge">-${Math.round(discountPercent)}%</div>
                             </div>
                         ` : `
@@ -301,9 +301,8 @@ function renderProducts(products) {
                             <!-- Stock Progress Bar -->
                             <div class="flash-sale-stock">
                                 <div class="stock-progress-bar">
-                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%">
-                                        <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
-                                    </div>
+                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%"></div>
+                                    <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
                                 </div>
                                 <div class="stock-remaining">Còn lại: ${product.flashSale.remaining || 0} sản phẩm</div>
                             </div>

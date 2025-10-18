@@ -75,21 +75,23 @@
         <!-- header area start -->
         <header th:replace="~{fragments/user/header :: header}"></header>
         <!-- header area end -->
-        <!-- cart item area start -->
-        <div class="shopping-cart">
+        
+        <!-- Breadcrumb Area -->
+        <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="location">
-                            <ul>
-                                <li><a href="/" title="go to homepage">Trang Chủ<span>/</span></a>  </li>
-                                <li><strong>Đăng Ký</strong></li>
-                            </ul>
-                        </div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="javascript:history.back()" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                        <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                        <span style="color: #ccc;">/</span>
+                        <span style="color: #333; font-weight: 500;">Đăng Ký</span>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div id="alertMessage" style="display: none; text-align: center; font-size: larger; padding: 15px; margin: 20px auto; max-width: 600px; border-radius: 5px;">
             <p id="alertText"></p>
         </div>

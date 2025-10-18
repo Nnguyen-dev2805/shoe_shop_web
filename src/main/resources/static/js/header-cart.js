@@ -260,5 +260,9 @@ function formatPrice(price) {
  * Gọi sau khi add/remove item khỏi giỏ hàng
  */
 window.refreshCartCount = function() {
+    console.log('🔄 Manually refreshing cart count...');
     loadCartCount();
 };
+
+// Alias for compatibility
+window.updateHeaderCartBadge = window.refreshCartCount;
