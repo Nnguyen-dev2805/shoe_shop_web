@@ -100,6 +100,16 @@
     scroll-behavior: smooth;
 }
 
+/* Flash Product Grid - When has empty state */
+.flash-product-grid:has(.flash-sale-empty),
+.flash-product-grid.flash-grid-empty {
+    justify-content: center;
+    align-items: center;
+    overflow-x: visible;
+    width: 100%;
+    padding: 0;
+}
+
 .flash-product-grid::-webkit-scrollbar {
     height: 8px;
 }
@@ -241,7 +251,7 @@
     height: 16px;
     background: #f0f0f0;
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 }
 
@@ -249,18 +259,25 @@
     height: 100%;
     background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
     transition: width 0.5s ease;
-    position: relative;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 8px;
 }
 
 .stock-progress-text {
     position: absolute;
     width: 100%;
+    left: 0;
+    top: 0;
     text-align: center;
     font-size: 11px;
     font-weight: 600;
     color: white;
     line-height: 16px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .stock-remaining {
@@ -334,28 +351,37 @@
     box-shadow: 0 5px 15px rgba(255, 75, 43, 0.4);
 }
 
-/* Empty State */
+/* Empty State - No Products - Centered */
 .flash-sale-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    padding: 60px 20px;
-    background: white;
+    padding: 80px 20px;
+    min-height: 300px;
+    width: 100%;
+    flex: 1;
 }
 
 .flash-sale-empty i {
-    font-size: 80px;
+    font-size: 100px;
     color: #ddd;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    display: block;
 }
 
 .flash-sale-empty h3 {
-    color: #999;
-    font-size: 20px;
-    margin-bottom: 10px;
+    font-size: 22px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 12px;
 }
 
 .flash-sale-empty p {
-    color: #ccc;
-    font-size: 14px;
+    font-size: 15px;
+    color: #999;
+    margin: 0;
 }
 
 /* Upcoming Flash Sale */
@@ -533,7 +559,7 @@
     height: 14px;
     background: #f0f0f0;
     border-radius: 7px;
-    overflow: hidden;
+    overflow: visible;
     position: relative;
     margin-bottom: 5px;
 }
@@ -542,18 +568,25 @@
     height: 100%;
     background: linear-gradient(90deg, #27ae60 0%, #f39c12 50%, #e74c3c 100%);
     transition: width 0.5s ease;
-    position: relative;
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 7px;
 }
 
 .flash-sale-stock .stock-progress-text {
     position: absolute;
     width: 100%;
+    left: 0;
+    top: 0;
     text-align: center;
     font-size: 10px;
     font-weight: 600;
     color: white;
     line-height: 14px;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    z-index: 2;
+    pointer-events: none;
 }
 
 .flash-sale-stock .stock-remaining {
@@ -581,10 +614,411 @@
 
 @media (max-width: 576px) {
     .flash-sale-title h2 {
-        font-size: 20px;
+        font-size: 18px;
     }
     
     .flash-product-card {
         width: 160px;
+    }
+    
+    .upcoming-bell-icon i {
+        font-size: 60px;
+    }
+    
+    .upcoming-features-shopee {
+        padding: 15px;
+    }
+    
+    .feature-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .feature-icon i {
+        font-size: 16px;
+    }
+    
+    .feature-text {
+        font-size: 12px;
+    }
+    
+    /* Empty State Mobile */
+    .empty-icon-new i {
+        font-size: 40px;
+    }
+    
+    .empty-message h3 {
+        font-size: 16px;
+    }
+    
+    .empty-message p {
+        font-size: 12px;
+    }
+    
+    .subscribe-compact {
+        padding: 15px;
+    }
+    
+    .subscribe-header {
+        font-size: 12px;
+    }
+    
+    .quick-links-label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+}
+
+/* ========================================
+   UPCOMING FLASH SALE STATE - SHOPEE STYLE V2
+   ======================================== */
+
+.flash-sale-upcoming {
+    background: linear-gradient(135deg, #ff9800 0%, #ff6f00 100%);
+}
+
+.upcoming-header {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.upcoming-countdown .countdown-time {
+    background: white;
+    color: #ff6f00;
+    font-weight: 700;
+}
+
+.upcoming-content {
+    background: white;
+    padding: 40px 20px;
+}
+
+.upcoming-hero {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+/* Bell Icon - Shopee Style */
+.upcoming-bell-icon {
+    margin-bottom: 20px;
+}
+
+.upcoming-bell-icon i {
+    font-size: 80px;
+    color: #ff9800;
+    animation: bellRingShopee 2s ease-in-out infinite;
+}
+
+@keyframes bellRingShopee {
+    0%, 50%, 100% { transform: rotate(0deg); }
+    5%, 15% { transform: rotate(-15deg); }
+    10%, 20% { transform: rotate(15deg); }
+    25% { transform: rotate(-10deg); }
+    30% { transform: rotate(10deg); }
+    35% { transform: rotate(-5deg); }
+    40% { transform: rotate(5deg); }
+}
+
+.upcoming-hero h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ff6f00;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.upcoming-time {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.upcoming-time strong {
+    color: #ff6f00;
+    font-weight: 600;
+}
+
+/* Features - Compact Horizontal */
+.upcoming-features-shopee {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #fffaf0;
+    border-radius: 8px;
+    flex-wrap: wrap;
+}
+
+.upcoming-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feature-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #ff9800, #ff6f00);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.feature-icon i {
+    font-size: 20px;
+    color: white;
+}
+
+.feature-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Action Buttons - Shopee Style */
+.upcoming-actions-shopee {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.remind-button-shopee, .browse-button-shopee {
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+}
+
+.remind-button-shopee {
+    background: #ff6f00;
+    color: white;
+}
+
+.remind-button-shopee:hover {
+    background: #f57c00;
+    box-shadow: 0 2px 8px rgba(255, 111, 0, 0.3);
+}
+
+.browse-button-shopee {
+    background: white;
+    color: #ff6f00;
+    border: 1px solid #ff6f00;
+}
+
+.browse-button-shopee:hover {
+    background: #fffaf0;
+}
+
+/* ========================================
+   EMPTY FLASH SALE STATE - NEW ELEGANT DESIGN
+   ======================================== */
+
+.flash-sale-empty-new {
+    background: linear-gradient(135deg, #fff9f0 0%, #fff5e8 100%);
+}
+
+.empty-header-new {
+    background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
+    padding: 12px 0;
+}
+
+.empty-content-new {
+    background: white;
+    padding: 35px 20px;
+}
+
+.empty-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* Icon and Message - Compact */
+.empty-message {
+    margin-bottom: 25px;
+}
+
+.empty-icon-new {
+    margin-bottom: 15px;
+}
+
+.empty-icon-new i {
+    font-size: 50px;
+    color: #ffb74d;
+}
+
+.empty-message h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+}
+
+.empty-message p {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Subscribe Compact - Inline Style */
+.subscribe-compact {
+    background: #fffaf0;
+    border: 1px solid #ffe0b2;
+    border-radius: 6px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+}
+
+.subscribe-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: #ff9800;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.subscribe-header i {
+    font-size: 16px;
+}
+
+.subscribe-form-inline {
+    display: flex;
+    gap: 8px;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.email-input-compact {
+    flex: 1;
+    padding: 8px 14px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 13px;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.email-input-compact:focus {
+    border-color: #ff9800;
+    box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.1);
+}
+
+.email-input-compact::placeholder {
+    color: #bbb;
+}
+
+.btn-subscribe-compact {
+    padding: 8px 20px;
+    background: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+}
+
+.btn-subscribe-compact:hover {
+    background: #f57c00;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
+}
+
+/* Quick Links - Horizontal Compact */
+.quick-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.quick-links-label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 500;
+}
+
+.quick-link-btn {
+    padding: 6px 14px;
+    background: white;
+    color: #666;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.quick-link-btn:hover {
+    border-color: #ff9800;
+    color: #ff9800;
+    background: #fffaf0;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.quick-link-btn i {
+    font-size: 12px;
+}
+
+/* Responsive - Shopee Style */
+@media (max-width: 768px) {
+    .upcoming-features-shopee {
+        gap: 15px;
+    }
+    
+    .upcoming-feature-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .upcoming-hero h3 {
+        font-size: 24px;
+    }
+    
+    /* Empty State Responsive */
+    .subscribe-form-inline {
+        flex-direction: column;
+    }
+    
+    .email-input-compact,
+    .btn-subscribe-compact {
+        width: 100%;
+    }
+    
+    .quick-links {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .quick-link-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .empty-message h3 {
+        font-size: 18px;
     }
 }

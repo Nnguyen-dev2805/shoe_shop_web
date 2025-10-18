@@ -252,7 +252,7 @@ function renderProducts(products) {
                         ${hasFlashSale ? `
                             <!-- Flash Sale Badges -->
                             <div class="flash-sale-badges">
-                                <div class="voucher-badge">VOUCHER XTRA</div>
+                                <div class="voucher-badge">FLASH SALE</div>
                                 <div class="discount-badge">-${Math.round(discountPercent)}%</div>
                             </div>
                         ` : `
@@ -290,9 +290,9 @@ function renderProducts(products) {
                             <!-- Rating và Đã bán (theo style Shopee) -->
                             <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                                 <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
-                                    <i class="fa fa-star" style="font-size: 11px;"></i> 5.0
+                                    <i class="fa fa-star" style="font-size: 11px;"></i> ${product.averageRating || 5.0}
                                 </span>
-                                <span style="color: #757575; font-weight: 400;">Đã bán 0</span>
+                                <span style="color: #757575; font-weight: 400;">Đã bán ${hasFlashSale ? (product.flashSale.sold || 0) : (product.sold || product.soldQuantity || 0)}</span>
                             </div>
                         </div>
                         

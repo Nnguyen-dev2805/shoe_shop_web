@@ -42,7 +42,14 @@ $(document).ready(function() {
             success: function(data) {
                 if (data) {
                     displayUpcomingFlashSale(data);
+                } else {
+                    // Không có active và không có upcoming → Empty state
+                    displayEmptyFlashSale();
                 }
+            },
+            error: function() {
+                // Lỗi API → Show empty state
+                displayEmptyFlashSale();
             }
         });
     }
@@ -90,6 +97,11 @@ $(document).ready(function() {
     
     function renderFlashProducts(items) {
         if (!items || items.length === 0) {
+            // Add 'empty-state' class to grid for styling
+            setTimeout(() => {
+                $('#flashProductGrid').addClass('flash-grid-empty');
+            }, 100);
+            
             return `
                 <div class="flash-sale-empty">
                     <i class="fa fa-shopping-bag"></i>
@@ -136,7 +148,7 @@ $(document).ready(function() {
             return `
                 <div class="flash-product-card" data-item-id="${product.firstItemId}" onclick="openFlashSaleModal(${product.firstItemId})">
                     <div class="flash-badge-container">
-                        <div class="voucher-badge">VOUCHER XTRA</div>
+                        <div class="voucher-badge">FLASH SALE</div>
                         <div class="discount-badge">-${Math.round(product.discountPercent)}%</div>
                     </div>
                     
@@ -158,9 +170,8 @@ $(document).ready(function() {
                         
                         <div class="stock-progress">
                             <div class="stock-progress-bar">
-                                <div class="stock-progress-fill" style="width: ${soldPercentage}%">
-                                    <span class="stock-progress-text">Đã bán ${product.sold || 0}</span>
-                                </div>
+                                <div class="stock-progress-fill" style="width: ${soldPercentage}%"></div>
+                                <span class="stock-progress-text">Đã bán ${product.sold || 0}</span>
                             </div>
                             <div class="stock-remaining">Còn lại: <strong>${product.remaining || 0}</strong> sản phẩm</div>
                         </div>
@@ -178,17 +189,62 @@ $(document).ready(function() {
     }
     
     function displayUpcomingFlashSale(flashSale) {
+        const startDateTime = formatDateTime(flashSale.startTime);
+        const itemCount = flashSale.items ? flashSale.items.length : 0;
+        
         const html = `
-            <div class="upcoming-flash-sale" id="upcomingFlashSale">
-                <h3><i class="fa fa-clock-o"></i> Flash Sale sắp bắt đầu lúc ${formatDateTime(flashSale.startTime)}</h3>
-                <div class="flash-sale-countdown">
-                    <span class="countdown-label">BẮT ĐẦU SAU</span>
-                    <div class="countdown-timer" id="upcomingCountdownTimer">
-                        <span class="countdown-time" id="upcomingHours">00</span>
-                        <span class="countdown-separator">:</span>
-                        <span class="countdown-time" id="upcomingMinutes">00</span>
-                        <span class="countdown-separator">:</span>
-                        <span class="countdown-time" id="upcomingSeconds">00</span>
+            <div class="flash-sale-section flash-sale-upcoming" id="flashSaleSection">
+                <div class="flash-sale-header upcoming-header">
+                    <div class="flash-sale-title">
+                        <i class="fa fa-bolt flash-icon"></i>
+                        <h2>FLASH SALE SẮP BẮT ĐẦU</h2>
+                        <i class="fa fa-bolt flash-icon"></i>
+                    </div>
+                    <div class="flash-sale-countdown upcoming-countdown">
+                        <span class="countdown-label">BẮT ĐẦU SAU</span>
+                        <div class="countdown-timer" id="countdownTimer">
+                            <span class="countdown-time" id="hours">00</span>
+                            <span class="countdown-separator">:</span>
+                            <span class="countdown-time" id="minutes">00</span>
+                            <span class="countdown-separator">:</span>
+                            <span class="countdown-time" id="seconds">00</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="upcoming-content">
+                    <div class="container">
+                        <div class="upcoming-hero">
+                            <div class="upcoming-bell-icon">
+                                <i class="fa fa-bell"></i>
+                            </div>
+                            <h3>CHUẨN BỊ SẴN SÀNG!</h3>
+                            <p class="upcoming-time">Flash Sale sẽ bắt đầu lúc <strong>${startDateTime}</strong></p>
+                            
+                            <div class="upcoming-features-shopee">
+                                <div class="upcoming-feature-item">
+                                    <div class="feature-icon"><i class="fa fa-gift"></i></div>
+                                    <div class="feature-text">Giảm đến 70%</div>
+                                </div>
+                                <div class="upcoming-feature-item">
+                                    <div class="feature-icon"><i class="fa fa-fire"></i></div>
+                                    <div class="feature-text">${itemCount}+ sản phẩm</div>
+                                </div>
+                                <div class="upcoming-feature-item">
+                                    <div class="feature-icon"><i class="fa fa-bolt"></i></div>
+                                    <div class="feature-text">Số lượng có hạn</div>
+                                </div>
+                            </div>
+                            
+                            <div class="upcoming-actions-shopee">
+                                <button class="remind-button-shopee" onclick="setReminder()">
+                                    <i class="fa fa-bell-o"></i> Nhắc Tôi Khi Bắt Đầu
+                                </button>
+                                <a href="/user/shop" class="browse-button-shopee">
+                                    <i class="fa fa-shopping-bag"></i> Xem Sản Phẩm Khác
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -196,6 +252,65 @@ $(document).ready(function() {
         
         $('.products-area').before(html);
         startUpcomingCountdown(flashSale.startTime);
+    }
+    
+    function displayEmptyFlashSale() {
+        const html = `
+            <div class="flash-sale-section flash-sale-empty-new" id="flashSaleSection">
+                <div class="flash-sale-header empty-header-new">
+                    <div class="flash-sale-title">
+                        <i class="fa fa-bolt flash-icon" style="color: #ffb74d;"></i>
+                        <h2>FLASH SALE</h2>
+                        <i class="fa fa-bolt flash-icon" style="color: #ffb74d;"></i>
+                    </div>
+                </div>
+                
+                <div class="empty-content-new">
+                    <div class="container">
+                        <div class="empty-wrapper">
+                            <!-- Icon và Message -->
+                            <div class="empty-message">
+                                <div class="empty-icon-new">
+                                    <i class="fa fa-calendar-times-o"></i>
+                                </div>
+                                <h3>Chưa Có Flash Sale</h3>
+                                <p>Hiện tại không có chương trình Flash Sale nào đang diễn ra</p>
+                            </div>
+                            
+                            <!-- Subscribe Compact -->
+                            <div class="subscribe-compact">
+                                <div class="subscribe-header">
+                                    <i class="fa fa-bell"></i>
+                                    <span>Nhận thông báo khi có Flash Sale mới</span>
+                                </div>
+                                <div class="subscribe-form-inline">
+                                    <input type="email" id="subscribeEmail" placeholder="Email của bạn" class="email-input-compact">
+                                    <button onclick="subscribeFlashSale()" class="btn-subscribe-compact">
+                                        Đăng Ký
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Links -->
+                            <div class="quick-links">
+                                <span class="quick-links-label">Khám phá ngay:</span>
+                                <a href="/user/shop?filter=new" class="quick-link-btn">
+                                    <i class="fa fa-star"></i> Sản Phẩm Mới
+                                </a>
+                                <a href="/user/shop?filter=bestseller" class="quick-link-btn">
+                                    <i class="fa fa-fire"></i> Bán Chạy
+                                </a>
+                                <a href="/user/shop?filter=sale" class="quick-link-btn">
+                                    <i class="fa fa-tag"></i> Giảm Giá
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('.products-area').before(html);
     }
     
     // Countdown Timer
@@ -238,9 +353,10 @@ $(document).ready(function() {
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
-            $('#upcomingHours').text(pad(hours));
-            $('#upcomingMinutes').text(pad(minutes));
-            $('#upcomingSeconds').text(pad(seconds));
+            // Fix: Dùng đúng IDs từ HTML (không có prefix 'upcoming')
+            $('#hours').text(pad(hours));
+            $('#minutes').text(pad(minutes));
+            $('#seconds').text(pad(seconds));
         }, 1000);
     }
     
@@ -317,4 +433,50 @@ $(document).ready(function() {
 function openFlashSaleModal(itemId) {
     alert('Flash Sale Modal - Item ID: ' + itemId + '\n\nTính năng đang phát triển!');
     // TODO: Implement modal mua hàng
+}
+
+// Set Reminder for upcoming flash sale
+function setReminder() {
+    // Check if browser supports notifications
+    if (!("Notification" in window)) {
+        alert("Trình duyệt không hỗ trợ thông báo!");
+        return;
+    }
+    
+    // Request permission
+    Notification.requestPermission().then(function(permission) {
+        if (permission === "granted") {
+            alert("✅ Đã bật nhắc nhở! Bạn sẽ nhận thông báo khi Flash Sale bắt đầu.");
+            
+            // TODO: Lưu reminder vào localStorage hoặc backend
+            localStorage.setItem('flashSaleReminder', 'enabled');
+        } else {
+            alert("❌ Vui lòng cho phép thông báo trong cài đặt trình duyệt!");
+        }
+    });
+}
+
+// Subscribe Flash Sale alerts
+function subscribeFlashSale() {
+    const email = $('#subscribeEmail').val().trim();
+    
+    if (!email) {
+        alert('Vui lòng nhập email!');
+        return;
+    }
+    
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert('Email không hợp lệ!');
+        return;
+    }
+    
+    // TODO: Call API to subscribe
+    // For now, just show success message
+    alert('✅ Đăng ký thành công! Bạn sẽ nhận email thông báo khi có Flash Sale mới.');
+    $('#subscribeEmail').val('');
+    
+    // TODO: Implement backend API
+    // $.post('/api/flash-sale/subscribe', { email: email });
 }

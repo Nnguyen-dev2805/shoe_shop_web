@@ -1377,14 +1377,20 @@
     <!-- Debug Script -->
     <script>
         console.log('=== DEBUG PAYMENT PAGE ===');
-        console.log('Selected Items:', sessionStorage.getItem('selectedItems'));
+        console.log('Checkout Source:', sessionStorage.getItem('checkoutSource'));
+        console.log('Selected Cart Items:', sessionStorage.getItem('selectedCartItems'));
+        console.log('Selected Items (Buy Now):', sessionStorage.getItem('selectedItems'));
         console.log('Address ID:', sessionStorage.getItem('selectedAddressId'));
         console.log('Cart ID:', sessionStorage.getItem('cartId'));
         
-        if (!sessionStorage.getItem('selectedItems')) {
+        const hasCartItems = sessionStorage.getItem('selectedCartItems');
+        const hasBuyNowItems = sessionStorage.getItem('selectedItems');
+        
+        if (!hasCartItems && !hasBuyNowItems) {
             console.error('❌ NO DATA IN SESSION STORAGE!');
         } else {
             console.log('✅ Data found in sessionStorage');
+            console.log('   Source:', hasCartItems ? 'Cart Checkout' : 'Buy Now');
         }
     </script>
     

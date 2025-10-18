@@ -38,13 +38,24 @@ $(document).ready(function() {
 
 /**
  * Load data from sessionStorage
+ * Supports both Buy Now and Cart checkout
  */
 function loadDataFromSession() {
-    const itemsData = sessionStorage.getItem('selectedItems');
+    // Try to get items from either cart or buy now source
+    let itemsData = sessionStorage.getItem('selectedCartItems'); // New: from cart page
+    let checkoutSource = sessionStorage.getItem('checkoutSource');
+    
+    // Fallback to old key for backward compatibility (Buy Now)
+    if (!itemsData) {
+        itemsData = sessionStorage.getItem('selectedItems');
+        checkoutSource = 'buynow';
+    }
+    
     addressId = sessionStorage.getItem('selectedAddressId');
     cartId = sessionStorage.getItem('cartId');
     
     console.log('=== PAYMENT PAGE DEBUG ===');
+    console.log('Checkout Source:', checkoutSource);
     console.log('Items data:', itemsData);
     console.log('Address ID:', addressId);
     console.log('Cart ID:', cartId);
@@ -52,7 +63,7 @@ function loadDataFromSession() {
     // Validate: Only check if items data exists
     // Address ID can be empty (user will select it in payment page)
     if (!itemsData) {
-        alert('Dữ liệu không hợp lệ. Vui lòng quay lại trang chọn sản phẩm.');
+        alert('⚠️ Dữ liệu không hợp lệ. Vui lòng quay lại trang chọn sản phẩm.');
         window.location.href = '/cart/view';
         return;
     }

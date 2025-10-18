@@ -4,7 +4,7 @@
 <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>My Account || DeeG Shop </title>
+        <title>Tài Khoản || DeeG Shop </title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -76,47 +76,54 @@
         <!-- header area start -->
         <div th:include="~{fragments/user/header.html}"></div>
         <!-- header area end -->
+        
+        <!-- Breadcrumb Area -->
+        <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+            <div class="container">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="javascript:history.back()" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                        <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                        <span style="color: #ccc;">/</span>
+                        <span style="color: #333; font-weight: 500;">Tài Khoản</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- my account area start -->
         <div class="account-area">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="location">
-                            <ul>
-                                <li><a href="/user/shop" title="go to homepage">Trang Chủ<span>/</span></a>  </li>
-                                <li><strong>Tài Khoản</strong></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
                 <div class="row" style="display: flex; justify-content: center; align-items: center;" >
                     <div class="col-lg-9">
                         <div class="my-account-accordion">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading" role="tab" id="headingOne">
-                                        <h4 class="panel-title">
-                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                <i class="fa fa-list-ol"></i>
-                                                Lịch sử và chi tiết đơn hàng
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne" data-bs-parent="#accordion">
-                                        <div class="panel-body">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class="account-title">
-                                                        <h4>Đây là các đơn hàng bạn đã đặt kể từ khi tạo tài khoản.</h4>
-                                                    </div>
-                                                    <div class="order-history">
-                                                        <p>Bạn chưa đặt bất kỳ đơn hàng nào.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<!--                                <div class="panel panel-default">-->
+<!--                                    <div class="panel-heading" role="tab" id="headingOne">-->
+<!--                                        <h4 class="panel-title">-->
+<!--                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">-->
+<!--                                                <i class="fa fa-list-ol"></i>-->
+<!--                                                Lịch sử và chi tiết đơn hàng-->
+<!--                                            </a>-->
+<!--                                        </h4>-->
+<!--                                    </div>-->
+<!--                                    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne" data-bs-parent="#accordion">-->
+<!--                                        <div class="panel-body">-->
+<!--                                            <div class="row">-->
+<!--                                                <div class="col-sm-12">-->
+<!--                                                    <div class="account-title">-->
+<!--                                                        <h4>Đây là các đơn hàng bạn đã đặt kể từ khi tạo tài khoản.</h4>-->
+<!--                                                    </div>-->
+<!--                                                    <div class="order-history">-->
+<!--                                                        <p>Bạn chưa đặt bất kỳ đơn hàng nào.</p>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
                                 <div class="panel panel-default">
                                     <div class="panel-heading" role="tab" id="headingTwo">
                                         <h4 class="panel-title">
@@ -316,16 +323,40 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <!-- ========== KẾT THÚC PANEL ĐỊA CHỈ CỦA TÔI ========== -->
+
+<!--                                <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">-->
+<!--                                    <div class="panel-heading" role="tab" id="headingFive" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">-->
+<!--                                        <h4 class="panel-title">-->
+<!--                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">-->
+<!--                                                <i class="bi bi-cart"></i>-->
+<!--                                                Viewed Products-->
+<!--                                            </a>-->
+<!--                                        </h4>-->
+<!--                                    </div>-->
+<!--                                    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" data-bs-parent="#accordion">-->
+<!--                                        <div class="panel-body">-->
+<!--                                            <div class="col-sm-12">-->
+<!--                                                <div class="wishlist-container">-->
+<!--                                                    <h3>Viewed Products</h3>-->
+<!--                                                    <div id="viewed-products-list">-->
+<!--                                                        &lt;!&ndash; Viewed products will be loaded via AJAX &ndash;&gt;-->
+<!--                                                        <p>Loading...</p>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
                             </div>
-                            <!-- ========== KẾT THÚC PANEL ĐỊA CHỈ CỦA TÔI ========== -->
-                            
-                            <!-- ========== PANEL MY PERSONAL INFORMATION ========== -->
-                            <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
-                                <div class="panel-heading" role="tab" id="headingFour" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
+                                <!-- ========== PANEL MY PERSONAL INFORMATION ========== -->
+                                <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
+                                    <div class="panel-heading" role="tab" id="headingFour" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
                                         <h4 class="panel-title">
                                             <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                                 <i class="fa fa-user"></i>
@@ -342,12 +373,12 @@
                                                             <div class="account-title">
                                                                 <h4>Vui Lòng Cập Nhật Thông Tin Cá Nhân Nếu Có Thay Đổi</h4>
                                                             </div>
-                                                            
+
                                                             <!-- Error Message -->
                                                             <div id="profile-error" class="alert alert-danger" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="profile-error-text"></span>
                                                             </div>
-                                                            
+
                                                             <!-- Success Message -->
                                                             <div id="profile-success" class="alert alert-success" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="profile-success-text"></span>
@@ -380,6 +411,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- ========== KẾT THÚC PANEL THÔNG TIN CÁ NHÂN ========== -->
                                 <!-- ========== PANEL ĐỔI MẬT KHẨU ========== -->
                                 <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
                                     <div class="panel-heading" role="tab" id="headingResetPassword" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
@@ -399,12 +431,12 @@
                                                             <div class="account-title">
                                                                 <h4>Vui Lòng Nhập Mật Khẩu Hiện Tại Và Mật Khẩu Mới Để Thay Đổi</h4>
                                                             </div>
-                                                            
+
                                                             <!-- Error Message -->
                                                             <div id="password-error" class="alert alert-danger" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="password-error-text"></span>
                                                             </div>
-                                                            
+
                                                             <!-- Success Message -->
                                                             <div id="password-success" class="alert alert-success" style="display: none; font-size: 13px; padding: 10px 15px;">
                                                                 <span id="password-success-text"></span>
@@ -414,17 +446,17 @@
                                                                 <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Mật Khẩu Hiện Tại <em>*</em></label>
                                                                 <input type="password" name="currentPassword" placeholder="Nhập mật khẩu hiện tại" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            
+
                                                             <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                                 <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Mật Khẩu Mới <em>*</em></label>
                                                                 <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới (tối thiểu 6 ký tự)" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            
+
                                                             <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                                 <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Xác Nhận Mật Khẩu Mới <em>*</em></label>
                                                                 <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required minlength="6" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
-                                                            
+
                                                             <div class="save-button">
                                                                 <button type="submit">
                                                                     <i class="fa fa-save"></i> Lưu Thay Đổi
@@ -438,30 +470,6 @@
                                     </div>
                                 </div>
                                 <!-- ========== KẾT THÚC PANEL ĐỔI MẬT KHẨU ========== -->
-                                <div class="panel panel-default" style="margin-top: 15px; background: white; border: 1px solid #ddd; border-radius: 4px;">
-                                    <div class="panel-heading" role="tab" id="headingFive" style="background: #f5f5f5; border-bottom: 1px solid #ddd;">
-                                        <h4 class="panel-title">
-                                            <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                                <i class="bi bi-cart"></i>
-                                                Viewed Products
-                                            </a>
-                                        </h4>
-                                    </div>
-                                    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive" data-bs-parent="#accordion">
-                                        <div class="panel-body">
-                                            <div class="col-sm-12">
-                                                <div class="wishlist-container">
-                                                    <h3>Viewed Products</h3>
-                                                    <div id="viewed-products-list">
-                                                        <!-- Viewed products will be loaded via AJAX -->
-                                                        <p>Loading...</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="account-button" style="margin-top: 30px; margin-bottom: 40px;">
                                 <div class="back-btn"> <a href="/user/my_account">Quay Lại Tài Khoản</a> </div>
                                 <div class="home"> <a href="/user/shop">Trang Chủ</a> </div>

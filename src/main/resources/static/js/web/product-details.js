@@ -380,17 +380,25 @@ function setupAddToCartButton() {
             success: function(response) {
                 console.log('Add to cart success:', response);
                 if (response.success) {
-                    // Show success message
-                    alert(' ' + response.message);
+                    // Trigger flying cart animation
+                    flyToCart();
+                    
+                    // Show success toast
+                    showSuccessToast(response.message || 'Đã thêm vào giỏ hàng!');
                     
                     // Reset button
                     $btn.prop('disabled', false);
                     $btn.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
                     
-                    // Optional: Redirect to cart page
-                    // window.location.href = '/user/cart';
+                    // Update cart badge count
+                    if (typeof window.refreshCartCount === 'function') {
+                        console.log('🔄 Refreshing cart badge...');
+                        window.refreshCartCount();
+                    } else {
+                        console.warn('⚠️ window.refreshCartCount not found');
+                    }
                 } else {
-                    alert(' ' + response.message);
+                    alert('⚠️ ' + response.message);
                     $btn.prop('disabled', false);
                     $btn.html('<i class="fa fa-shopping-cart"></i><span>Thêm vào giỏ hàng</span>');
                 }
@@ -528,4 +536,168 @@ function startCountdown(endTime) {
     updateCountdown();
     const interval = setInterval(updateCountdown, 1000);
     console.log('  ✅ Countdown interval started');
+}
+
+/**
+ * Flying cart animation - Product image flies to cart icon
+ */
+function flyToCart() {
+    // Get product image
+    const $productImg = $('#product-image');
+    if (!$productImg.length) return;
+    
+    // Get cart icon in header - target the specific cart-menu icon
+    const $cartIcon = $('.cart-menu img[src*="icon-cart"]');
+    if (!$cartIcon.length) {
+        console.warn('Cart icon not found in header');
+        return;
+    }
+    
+    console.log('🎯 Cart icon found:', $cartIcon);
+    
+    // Get positions
+    const imgOffset = $productImg.offset();
+    const cartOffset = $cartIcon.offset();
+    
+    // Create flying image clone
+    const $flyingImg = $productImg.clone()
+        .addClass('flying-image')
+        .css({
+            position: 'fixed',
+            top: imgOffset.top,
+            left: imgOffset.left,
+            width: $productImg.width(),
+            height: $productImg.height(),
+            opacity: 1,
+            zIndex: 9999
+        })
+        .appendTo('body');
+    
+    // Animate to cart
+    setTimeout(() => {
+        $flyingImg.css({
+            top: cartOffset.top,
+            left: cartOffset.left,
+            width: 40,
+            height: 40,
+            opacity: 0
+        });
+    }, 50);
+    
+    // Create particles when image reaches cart
+    setTimeout(() => {
+        createParticles(cartOffset.left, cartOffset.top);
+    }, 700);
+    
+    // Create ripple effect at cart
+    setTimeout(() => {
+        createRipple($cartIcon);
+    }, 750);
+    
+    // Shake cart icon and its container
+    const $cartContainer = $('.cart-menu');
+    $cartIcon.addClass('cart-shake');
+    $cartContainer.addClass('cart-shake');
+    setTimeout(() => {
+        $cartIcon.removeClass('cart-shake');
+        $cartContainer.removeClass('cart-shake');
+    }, 500);
+    
+    // Remove flying image after animation
+    setTimeout(() => {
+        $flyingImg.remove();
+    }, 1000);
+}
+
+/**
+ * Create particle explosion effect
+ */
+function createParticles(x, y) {
+    const colors = ['#ee4d2d', '#ff6b45', '#ff8c69', '#10b981', '#fbbf24'];
+    const particleCount = 12;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const angle = (Math.PI * 2 * i) / particleCount;
+        const velocity = 50 + Math.random() * 50;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity;
+        
+        const $particle = $('<div class="particle"></div>')
+            .css({
+                left: x,
+                top: y,
+                background: colors[Math.floor(Math.random() * colors.length)],
+                '--tx': tx + 'px',
+                '--ty': ty + 'px'
+            })
+            .appendTo('body');
+        
+        setTimeout(() => {
+            $particle.remove();
+        }, 800);
+    }
+}
+
+/**
+ * Create ripple effect at target
+ */
+function createRipple($target) {
+    const offset = $target.offset();
+    const $ripple = $('<div class="cart-ripple"></div>')
+        .css({
+            left: offset.left - 20,
+            top: offset.top - 20
+        })
+        .appendTo('body');
+    
+    setTimeout(() => {
+        $ripple.remove();
+    }, 600);
+}
+
+/**
+ * Show success toast notification
+ */
+function showSuccessToast(message) {
+    // Remove existing toast if any
+    $('.cart-success-toast').remove();
+    
+    // Create enhanced toast with quantity badge
+    const $toast = $(`
+        <div class="cart-success-toast">
+            <i class="fa fa-check-circle"></i>
+            <div style="flex: 1;">
+                <div style="font-size: 15px; font-weight: 600;">${message}</div>
+                <div style="font-size: 12px; opacity: 0.9; margin-top: 2px;">
+                    Số lượng: <strong>${currentQuantity}</strong>
+                </div>
+            </div>
+            <div style="background: rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 6px; font-size: 13px; font-weight: 700;">
+                +${currentQuantity}
+            </div>
+        </div>
+    `).appendTo('body');
+    
+    // Show with animation
+    setTimeout(() => {
+        $toast.addClass('show');
+    }, 100);
+    
+    // Add progress bar
+    const $progress = $('<div style="position: absolute; bottom: 0; left: 0; height: 3px; background: rgba(255,255,255,0.5); width: 100%; transform-origin: left; animation: progressBar 3s linear;"></div>')
+        .appendTo($toast);
+    
+    // Hide and remove after 3 seconds
+    setTimeout(() => {
+        $toast.removeClass('show');
+        setTimeout(() => {
+            $toast.remove();
+        }, 400);
+    }, 3000);
+}
+
+// CSS for progress bar animation (add to inline style)
+if (!$('#toast-progress-style').length) {
+    $('<style id="toast-progress-style">@keyframes progressBar { from { transform: scaleX(1); } to { transform: scaleX(0); } }</style>')
+        .appendTo('head');
 }

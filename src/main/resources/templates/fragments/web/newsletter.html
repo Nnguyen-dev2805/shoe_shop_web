@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- NEWSLETTER SIGNUP FRAGMENT - SHOPEE STYLE -->
+<div th:fragment="newsletter" class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-wrapper">
+            <!-- Newsletter Icon/Image -->
+            <div class="newsletter-icon">
+                <i class="fa fa-envelope-o"></i>
+            </div>
+            
+            <!-- Newsletter Content -->
+            <div class="newsletter-content" style="color: white !important;">
+                <h3 style="color: white !important;">ĐĂNG KÝ NHẬN BẢN TIN</h3>
+                <p style="color: white !important;">Nhận thông tin về sản phẩm mới, ưu đãi đặc biệt và Flash Sale</p>
+            </div>
+            
+            <!-- Newsletter Form -->
+            <div class="newsletter-form">
+                <form id="newsletterForm" onsubmit="return subscribeNewsletter(event)">
+                    <div class="newsletter-input-group">
+                        <i class="fa fa-envelope input-icon"></i>
+                        <input 
+                            type="email" 
+                            id="newsletterEmail" 
+                            class="newsletter-input" 
+                            placeholder="Nhập email của bạn" 
+                            required>
+                        <button type="submit" class="newsletter-button">
+                            <span class="btn-text">Đăng Ký</span>
+                            <i class="fa fa-arrow-right btn-icon"></i>
+                        </button>
+                    </div>
+                    <div class="newsletter-message" id="newsletterMessage"></div>
+                </form>
+                <div class="newsletter-benefits">
+                    <div class="benefit-item">
+                        <i class="fa fa-check-circle"></i>
+                        <span>Giảm giá độc quyền</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fa fa-check-circle"></i>
+                        <span>Tin tức mới nhất</span>
+                    </div>
+                    <div class="benefit-item">
+                        <i class="fa fa-check-circle"></i>
+                        <span>Ưu đãi đặc biệt</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

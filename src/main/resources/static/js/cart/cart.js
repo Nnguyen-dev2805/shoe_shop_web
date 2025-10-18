@@ -32,12 +32,12 @@ function loadCartData() {
                 renderCartItems(response.data);
                 updateCartTotals(response.data);
             } else {
-                showAlert(response.message || 'Error loading cart data', 'error');
+                showToast('⚠️ ' + (response.message || 'Không thể tải giỏ hàng'), 'error');
             }
         },
         error: function(xhr, status, error) {
             console.error('Error loading cart:', error);
-            showAlert('Failed to load cart data', 'error');
+            showToast('❌ Lỗi khi tải giỏ hàng. Vui lòng thử lại!', 'error');
         }
     });
 }
@@ -96,7 +96,7 @@ function renderCartItems(cart) {
     if (!cart.cartDetails || cart.cartDetails.length === 0) {
         tbody.append(`
             <tr>
-                <td colspan="9" class="text-center">Your cart is empty</td>
+                <td colspan="9" class="text-center">Giỏ hàng của bạn chưa có sản phẩm nào!</td>
             </tr>
         `);
         return;
@@ -345,12 +345,12 @@ function updateQuantity(detailId, newQuantity) {
                 // Reload cart to update totals
                 loadCartData();
             } else {
-                showAlert(response.message || 'Error updating quantity', 'error');
+                showToast('⚠️ ' + (response.message || 'Không thể cập nhật số lượng'), 'error');
             }
         },
         error: function(xhr, status, error) {
             console.error('Error updating quantity:', error);
-            showAlert('Failed to update quantity', 'error');
+            showToast('❌ Lỗi khi cập nhật số lượng. Vui lòng thử lại!', 'error');
         }
     });
 }
@@ -389,13 +389,16 @@ function updateQuantity(detailId, newQuantity) {
 function handleRemoveItem() {
     const detailId = $(this).data('id');
     
-    if (confirm('Are you sure you want to remove this item from cart?')) {
+    if (confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng không?')) {
         $.ajax({
             url: `/api/cart/delete/${detailId}`,
             method: 'DELETE',
             success: function(response) {
                 if (response.success) {
-                    showAlert('Item removed successfully', 'success');
+                    // Show beautiful toast instead of ugly Bootstrap alert
+                    showToast('✓ Đã xóa sản phẩm khỏi giỏ hàng!', 'success');
+                    
+                    // Reload cart data
                     loadCartData();
                     
                     // Refresh cart count in header
@@ -403,12 +406,12 @@ function handleRemoveItem() {
                         window.refreshCartCount();
                     }
                 } else {
-                    showAlert(response.message || 'Error removing item', 'error');
+                    showToast('⚠️ ' + (response.message || 'Không thể xóa sản phẩm'), 'error');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('Error removing item:', error);
-                showAlert('Failed to remove item', 'error');
+                showToast('❌ Lỗi khi xóa sản phẩm. Vui lòng thử lại!', 'error');
             }
         });
     }
@@ -416,25 +419,17 @@ function handleRemoveItem() {
 
 /**
  * Handle continue to payment button
+ * Similar to Buy Now - no address selection required at cart page
  */
 function handleContinueToPayment() {
-    console.log('Button clicked!'); // Debug log
+    console.log('🛒 Checkout button clicked!');
     
     // Validate: At least one item must be selected
     const selectedItems = $('.item-checkbox:checked');
-    console.log('Selected items:', selectedItems.length); // Debug log
+    console.log('📦 Selected items:', selectedItems.length);
     
     if (selectedItems.length === 0) {
-        showAlert('Vui lòng chọn ít nhất một sản phẩm!', 'error');
-        return;
-    }
-    
-    // Validate address
-    const addressId = $('#addressSelect').val();
-    console.log('Address ID:', addressId); // Debug log
-    
-    if (!addressId) {
-        showAlert('Vui lòng chọn địa chỉ giao hàng!', 'error');
+        showToast('⚠️ Vui lòng chọn ít nhất một sản phẩm để thanh toán!', 'error');
         return;
     }
     
@@ -445,20 +440,26 @@ function handleContinueToPayment() {
         const detailData = checkbox.data('product-detail');
         
         if (detailData) {
-            selectedData.push(detailData);
+            selectedData.push({
+                id: detailData.id,
+                productDetailId: detailData.product?.id || detailData.productDetailId,
+                quantity: detailData.quantity,
+                price: detailData.price,
+                product: detailData.product
+            });
         }
     });
     
-    console.log('Selected data:', selectedData); // Debug log
+    console.log('✅ Selected data prepared:', selectedData);
     
-    // Store in sessionStorage
-    sessionStorage.setItem('selectedItems', JSON.stringify(selectedData));
-    sessionStorage.setItem('selectedAddressId', addressId);
+    // Store in sessionStorage for payment page
+    sessionStorage.setItem('selectedCartItems', JSON.stringify(selectedData));
+    sessionStorage.setItem('checkoutSource', 'cart'); // Indicate checkout from cart
     sessionStorage.setItem('cartId', $('#cartIdInput').val());
     
-    console.log('Redirecting to payment...'); // Debug log
+    console.log('🚀 Redirecting to payment page...');
     
-    // Redirect to payment page
+    // Redirect to payment page (address will be selected there)
     window.location.href = '/user/payment';
 }
 
@@ -473,28 +474,42 @@ function formatPrice(price) {
 }
 
 /**
- * Show alert message
+ * Show toast notification (Shopee style)
+ */
+function showToast(message, type = 'success') {
+    // Remove existing toasts
+    $('.cart-success-toast, .cart-error-toast').remove();
+    
+    const toastClass = type === 'error' ? 'cart-error-toast' : 'cart-success-toast';
+    const icon = type === 'error' ? 'fa-times-circle' : 'fa-check-circle';
+    
+    const $toast = $(`
+        <div class="${toastClass}">
+            <i class="fa ${icon}"></i>
+            <span>${message}</span>
+        </div>
+    `).appendTo('body');
+    
+    // Show with animation
+    setTimeout(() => {
+        $toast.addClass('show');
+    }, 100);
+    
+    // Hide and remove after 3 seconds
+    setTimeout(() => {
+        $toast.removeClass('show');
+        setTimeout(() => {
+            $toast.remove();
+        }, 400);
+    }, 3000);
+}
+
+/**
+ * Show alert message (Legacy - kept for compatibility)
+ * Now redirects to showToast
  */
 function showAlert(message, type = 'info') {
-    // Remove existing alerts
-    $('.alert').remove();
-    
-    const alertClass = type === 'error' ? 'alert-danger' : 
-                      type === 'success' ? 'alert-success' : 'alert-info';
-    
-    const alertHtml = `
-        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    `;
-    
-    $('.container').prepend(alertHtml);
-    
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        $('.alert').fadeOut();
-    }, 5000);
+    showToast(message, type);
 }
 
 /**
