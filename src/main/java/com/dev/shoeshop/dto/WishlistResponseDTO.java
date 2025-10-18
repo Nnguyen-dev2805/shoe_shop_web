@@ -30,9 +30,14 @@ public class WishlistResponseDTO {
     private Boolean isInWishlist;
     
     /**
-     * Số lượng items trong wishlist
+     * Số lượng items trong wishlist của user
      */
     private Long count;
+    
+    /**
+     * Tổng số người thích product này (total likes)
+     */
+    private Long totalLikes;
     
     /**
      * Data object (có thể là wishlist item, product, etc.)

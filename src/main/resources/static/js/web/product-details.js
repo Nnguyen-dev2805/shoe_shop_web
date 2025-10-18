@@ -143,6 +143,12 @@ function renderProductDetails(product) {
     $('#viewAllReview').attr('data-product-id', product.id);
     $('input[name="productId"]').val(product.id);
     $('#product-review-title').text(`You are reviewing: ${product.title}`);
+    
+    // ✅ Trigger wishlist check after setting product ID
+    if (typeof checkProductInWishlist === 'function') {
+        checkProductInWishlist(product.id);
+        console.log('🔄 Triggered wishlist check for product:', product.id);
+    }
 }
 
 /**
@@ -159,22 +165,19 @@ function renderSizeButtons(sizeOptions, basePrice) {
             const sizeLabel = size.size; // Just show size number
             
             const button = $(`
-                <button type="button" class="shopee-size-btn ${stock === 0 ? 'disabled' : ''}" 
+                <button type="button" class="shopee-size-btn ${stock === 0 ? 'out-of-stock' : ''}" 
                         data-size-id="${size.id}" 
                         data-size="${size.size}"
                         data-price-add="${priceAdd}"
-                        data-stock="${stock}"
-                        ${stock === 0 ? 'disabled' : ''}>
-                    ${sizeLabel}
+                        data-stock="${stock}">
+                    ${sizeLabel}${stock === 0 ? '<span style="display:block;font-size:9px;color:#999;margin-top:2px;">Hết hàng</span>' : ''}
                 </button>
             `);
             
-            // Click handler cho size button (only if in stock)
-            if (stock > 0) {
-                button.on('click', function() {
-                    selectSize($(this), basePrice);
-                });
-            }
+            // Click handler cho size button (always attach, handle out-of-stock in selectSize)
+            button.on('click', function() {
+                selectSize($(this), basePrice);
+            });
             
             $container.append(button);
         });
@@ -236,22 +239,37 @@ function selectSize($button, basePrice) {
     // Update price display
     updatePriceDisplay(basePrice, priceAdd);
     
-    // Enable add to cart button
+    // Enable/disable buttons based on stock
     const $addButton = $('#add-to-cart-btn');
     const $buyNowButton = $('#buy-now-btn');
+    const $qtyMinus = $('#qty-minus');
+    const $qtyPlus = $('#qty-plus');
+    const $qtyInput = $('#qty-input');
     
     if (maxStock > 0) {
+        // Enable all controls
         $addButton.prop('disabled', false);
         $addButton.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
         
         $buyNowButton.prop('disabled', false);
         $buyNowButton.html('<span>Mua Ngay</span>');
+        
+        $qtyMinus.prop('disabled', false);
+        $qtyPlus.prop('disabled', false);
+        $qtyInput.prop('disabled', false);
     } else {
+        // Disable all controls for out-of-stock
         $addButton.prop('disabled', true);
         $addButton.html('<i class="fa fa-ban"></i><span>Hết Hàng</span>');
+        $addButton.css('background', '#ccc');
         
         $buyNowButton.prop('disabled', true);
         $buyNowButton.html('<span>Hết Hàng</span>');
+        $buyNowButton.css('background', '#ccc');
+        
+        $qtyMinus.prop('disabled', true);
+        $qtyPlus.prop('disabled', true);
+        $qtyInput.prop('disabled', true);
     }
 }
 

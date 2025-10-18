@@ -3,6 +3,7 @@ package com.dev.shoeshop.controller.user.api;
 import com.dev.shoeshop.dto.WishlistResponseDTO;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.WishlistService;
+import com.dev.shoeshop.service.impl.WishlistServiceImpl;
 import com.dev.shoeshop.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -256,10 +257,14 @@ public class WishlistApiController {
         Map<String, Object> response = new HashMap<>();
         
         try {
+            // Get total likes for this product (always available)
+            Long totalLikes = ((WishlistServiceImpl) wishlistService).countProductLikes(productId);
+            
             Users user = (Users) session.getAttribute(Constant.SESSION_USER);
             if (user == null) {
                 response.put("success", true);
                 response.put("isInWishlist", false);
+                response.put("totalLikes", totalLikes);
                 return ResponseEntity.ok(response);
             }
             
@@ -267,6 +272,7 @@ public class WishlistApiController {
             
             response.put("success", true);
             response.put("isInWishlist", isInWishlist);
+            response.put("totalLikes", totalLikes);
             
             return ResponseEntity.ok(response);
             
@@ -274,6 +280,7 @@ public class WishlistApiController {
             log.error("Error in checkWishlist API: ", e);
             response.put("success", false);
             response.put("isInWishlist", false);
+            response.put("totalLikes", 0L);
             return ResponseEntity.ok(response);
         }
     }

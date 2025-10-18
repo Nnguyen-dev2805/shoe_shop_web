@@ -101,13 +101,15 @@ public class WishlistServiceImpl implements WishlistService {
             }
             
             Long count = countWishlistItems(userId);
-            log.info("Product {} added to wishlist successfully. Total items: {}", productId, count);
+            Long totalLikes = countProductLikes(productId);
+            log.info("Product {} added to wishlist successfully. Total items: {}, Total likes: {}", productId, count, totalLikes);
             
             return WishlistResponseDTO.builder()
                     .success(true)
                     .message("Đã thêm sản phẩm vào danh sách yêu thích")
                     .isInWishlist(true)
                     .count(count)
+                    .totalLikes(totalLikes)
                     .build();
                     
         } catch (Exception e) {
@@ -140,13 +142,15 @@ public class WishlistServiceImpl implements WishlistService {
             wishlistRepository.softDeleteByUser_IdAndProduct_Id(userId, productId);
             
             Long count = countWishlistItems(userId);
-            log.info("Product {} removed from wishlist successfully. Remaining items: {}", productId, count);
+            Long totalLikes = countProductLikes(productId);
+            log.info("Product {} removed from wishlist successfully. Remaining items: {}, Total likes: {}", productId, count, totalLikes);
             
             return WishlistResponseDTO.builder()
                     .success(true)
                     .message("Đã xóa sản phẩm khỏi danh sách yêu thích")
                     .isInWishlist(false)
                     .count(count)
+                    .totalLikes(totalLikes)
                     .build();
                     
         } catch (Exception e) {
@@ -218,6 +222,17 @@ public class WishlistServiceImpl implements WishlistService {
     public Long countWishlistItems(Long userId) {
         log.debug("Counting wishlist items for user {}", userId);
         return wishlistRepository.countByUser_IdAndIsActive(userId, true);
+    }
+    
+    /**
+     * Đếm tổng số người thích product này (total likes)
+     * @param productId ID của product
+     * @return Số người thích
+     */
+    @Transactional(readOnly = true)
+    public Long countProductLikes(Long productId) {
+        log.debug("Counting total likes for product {}", productId);
+        return wishlistRepository.countByProduct_IdAndIsActive(productId, true);
     }
 
     @Override
