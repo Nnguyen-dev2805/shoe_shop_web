@@ -321,20 +321,28 @@
     
     <!-- Revenue Detail Modal -->
     <div class="modal fade" id="revenueModal" tabindex="-1" aria-labelledby="revenueModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-success text-white">
                     <h5 class="modal-title" id="revenueModalLabel">
                         <i class="bx bx-dollar-circle me-2"></i>Sản Phẩm Theo Doanh Thu
                     </h5>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-light btn-sm" id="exportRevenueExcel" title="Xuất báo cáo Excel">
-                            <i class="bx bx-download me-1"></i>Xuất Excel
-                        </button>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-success me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="revenueModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="exportRevenueExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-responsive modal-table">
                         <table class="table table-hover table-striped">
                             <thead class="table-light">
@@ -364,20 +372,28 @@
     
     <!-- Products Sold Detail Modal -->
     <div class="modal fade" id="productsSoldModal" tabindex="-1" aria-labelledby="productsSoldModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-dark">
                     <h5 class="modal-title" id="productsSoldModalLabel">
                         <i class="bx bx-package me-2"></i>Sản Phẩm Theo Số Lượng Bán
                     </h5>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-dark btn-sm" id="exportProductsSoldExcel" title="Xuất báo cáo Excel">
-                            <i class="bx bx-download me-1"></i>Xuất Excel
-                        </button>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-warning me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="productsSoldModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-warning btn-sm" id="exportProductsSoldExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-responsive modal-table">
                         <table class="table table-hover table-striped">
                             <thead class="table-light">
@@ -407,20 +423,28 @@
     
     <!-- Top Customers Modal -->
     <div class="modal fade" id="customersModal" tabindex="-1" aria-labelledby="customersModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header bg-info text-white">
                     <h5 class="modal-title" id="customersModalLabel">
                         <i class="bx bx-user-circle me-2"></i>Top Khách Hàng Mua Nhiều Nhất
                     </h5>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-light btn-sm" id="exportCustomersExcel" title="Xuất báo cáo Excel">
-                            <i class="bx bx-download me-1"></i>Xuất Excel
-                        </button>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-info me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="customersModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-info btn-sm text-white" id="exportCustomersExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover table-striped">
                             <thead class="table-light">

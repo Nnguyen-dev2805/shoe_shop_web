@@ -38,6 +38,9 @@ $(document).ready(function() {
             const modal = new bootstrap.Modal(document.getElementById(modalId));
             modal.show();
             
+            // Update date range display
+            updateModalDateRanges();
+            
             // Load data based on modal type
             if (modalId === 'revenueModal') {
                 loadProductsByRevenue();
@@ -101,6 +104,9 @@ function loadDashboardData() {
             
             // Update top products table
             updateTopProductsTable(data.topProducts);
+            
+            // Update date range display in modals
+            updateModalDateRanges();
         },
         error: function(xhr, status, error) {
             console.error('Error loading dashboard data:', error);
@@ -385,7 +391,42 @@ function renderRevenueTimeSeriesChart(timeSeries) {
 }
 
 /**
- * Update top products table
+ * Update date range display in modals
+ */
+function updateModalDateRanges() {
+    const startDate = $('#startDate').val();
+    const endDate = $('#endDate').val();
+    
+    let dateRangeText = 'Tất cả';
+    
+    if (startDate && endDate) {
+        dateRangeText = `Từ ${formatDate(startDate)} đến ${formatDate(endDate)}`;
+    } else if (startDate) {
+        dateRangeText = `Từ ${formatDate(startDate)}`;
+    } else if (endDate) {
+        dateRangeText = `Đến ${formatDate(endDate)}`;
+    }
+    
+    // Update all modal date range displays
+    $('#revenueModalDateRange').text(dateRangeText);
+    $('#productsSoldModalDateRange').text(dateRangeText);
+    $('#customersModalDateRange').text(dateRangeText);
+}
+
+/**
+ * Format date to Vietnamese format
+ */
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
+
+/**
+ * Update top products table (Hiển thị trên dashboard, KHÔNG có trong Excel tổng quát)
  */
 function updateTopProductsTable(products) {
     const tbody = $('#topProductsTableBody');

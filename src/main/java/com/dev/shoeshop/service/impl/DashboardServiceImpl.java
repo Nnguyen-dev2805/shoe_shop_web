@@ -39,7 +39,7 @@ public class DashboardServiceImpl implements DashboardService {
         List<OrderTimeSeriesDTO> orderTimeSeries = getOrderTimeSeries(startDate, endDate);
         List<RevenueTimeSeriesDTO> revenueTimeSeries = getRevenueTimeSeries(startDate, endDate);
         
-        // Lấy top 10 sản phẩm bán chạy
+        // Lấy top 10 sản phẩm bán chạy (hiển thị trên dashboard, KHÔNG xuất trong Excel tổng quát)
         List<TopProductDTO> topProducts = getTopProducts(10, startDate, endDate);
         
         return DashboardStatsDTO.builder()
@@ -50,7 +50,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .ordersByStatus(ordersByStatus)
                 .orderTimeSeries(orderTimeSeries)
                 .revenueTimeSeries(revenueTimeSeries)
-                .topProducts(topProducts)
+                .topProducts(topProducts) // Hiển thị trên giao diện, nhưng không có trong Excel "all"
                 .build();
     }
     
@@ -278,32 +278,11 @@ public class DashboardServiceImpl implements DashboardService {
         
         rowNum++; // Empty row
         
-        // Top Products section
-        Row productsHeaderRow = sheet.createRow(rowNum++);
-        productsHeaderRow.createCell(0).setCellValue("TOP 10 SẢN PHẨM BÁN CHẠY");
-        
-        Row productsTitleRow = sheet.createRow(rowNum++);
-        productsTitleRow.createCell(0).setCellValue("#");
-        productsTitleRow.createCell(1).setCellValue("Tên Sản Phẩm");
-        productsTitleRow.createCell(2).setCellValue("Số Lượng");
-        productsTitleRow.createCell(3).setCellValue("Doanh Thu");
-        for (int i = 0; i < 4; i++) {
-            productsTitleRow.getCell(i).setCellStyle(headerStyle);
-        }
-        
-        List<TopProductDTO> topProducts = stats.getTopProducts();
-        for (int i = 0; i < topProducts.size(); i++) {
-            TopProductDTO product = topProducts.get(i);
-            Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(i + 1);
-            row.createCell(1).setCellValue(product.getProductName());
-            row.createCell(2).setCellValue(product.getQuantitySold());
-            Cell revCell = row.createCell(3);
-            revCell.setCellValue(product.getTotalRevenue());
-            revCell.setCellStyle(currencyStyle);
-        }
-        
-        rowNum++; // Empty row
+        // KHÔNG XUẤT Top Products trong báo cáo tổng quát
+        // Top products chỉ hiển thị trên giao diện dashboard
+        // Nếu muốn xuất top products, sử dụng báo cáo riêng:
+        // - "Sản Phẩm Theo Doanh Thu" (type=revenue)
+        // - "Sản Phẩm Theo Số Lượng" (type=products-sold)
         
         // Daily Statistics section
         Row dailyHeaderRow = sheet.createRow(rowNum++);
