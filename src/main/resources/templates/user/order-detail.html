@@ -242,11 +242,11 @@
                                 </div>
                                 <div style="text-align: right;">
                                     <span th:class="'status-badge status-' + ${order.status.name().toLowerCase()}" 
-                                          th:text="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED ? 'Đã giao' : 
-                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED ? 'Đang giao' :
-                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).IN_STOCK ? 'Chờ xử lý' :
-                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).CANCEL ? 'Đã hủy' :
-                                                    order.status == T(com.dev.shoeshop.enums.ShipmentStatus).RETURN ? 'Trả hàng' : 'Không xác định'}"
+                                          th:text="${order.status.name() == 'DELIVERED' ? 'Đã giao' : 
+                                                    order.status.name() == 'SHIPPED' ? 'Đang giao' :
+                                                    order.status.name() == 'IN_STOCK' ? 'Chờ xử lý' :
+                                                    order.status.name() == 'CANCEL' ? 'Đã hủy' :
+                                                    order.status.name() == 'RETURN' ? 'Trả hàng' : 'Không xác định'}"
                                           style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 10px;">
                                     </span>
                                     <p style="margin: 0; font-size: 18px; font-weight: 600; color: #ee4d2d;">
@@ -317,7 +317,7 @@
                                     </div>
                                     
         <!-- Rating Form for DELIVERED orders -->
-        <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED && !orderDetail.hasRating}"
+        <div th:if="${order.status.name() == 'DELIVERED' && !orderDetail.hasRating}"
              class="rating-form" 
              th:data-order-detail-id="${orderDetail.id}"
              style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
@@ -414,7 +414,7 @@
                                     </div>
                                     
                                     <!-- Rating Status for DELIVERED orders that have been rated -->
-                                    <div th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).DELIVERED && orderDetail.hasRating}"
+                                    <div th:if="${order.status.name() == 'DELIVERED' && orderDetail.hasRating}"
                                          class="rating-status" 
                                          th:data-order-detail-id="${orderDetail.id}"
                                          style="margin-top: 20px; padding: 20px; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb; display: none;">

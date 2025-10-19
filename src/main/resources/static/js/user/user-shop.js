@@ -292,19 +292,17 @@ function renderProducts(products) {
                                 <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
                                     <i class="fa fa-star" style="font-size: 11px;"></i> ${product.averageRating || 5.0}
                                 </span>
-                                <span style="color: #757575; font-weight: 400;">Đã bán ${hasFlashSale ? (product.flashSale.sold || 0) : (product.sold || product.soldQuantity || 0)}</span>
+                                <!-- ✅ Luôn dùng Product.soldQuantity -->
+                                <span style="color: #757575; font-weight: 400;">Đã bán ${product.soldQuantity || 0}</span>
                             </div>
                         </div>
                         
                         ${hasFlashSale && product.flashSale.stock ? `
-                            <!-- Stock Progress Bar -->
+                            <!-- ✅ Comment progress bar, chỉ hiển thị tổng stock -->
                             <div class="flash-sale-stock">
-                                <div class="stock-progress-bar">
-                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%">
-                                        <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
-                                    </div>
+                                <div class="stock-remaining" style="margin: 8px 0; color: #666; font-size: 13px;">
+                                    Còn lại: <strong>${product.flashSale.totalStock || product.flashSale.remaining || 0}</strong> sản phẩm
                                 </div>
-                                <div class="stock-remaining">Còn lại: ${product.flashSale.remaining || 0} sản phẩm</div>
                             </div>
                         ` : ''}
                     </div>
