@@ -16,6 +16,8 @@ public class FlashSaleItemResponse {
     private Long id;
 
     private Long productDetailId;
+    
+    private Long productId; // ✅ Thêm Product ID để redirect
 
     private String productName;
 
@@ -34,6 +36,11 @@ public class FlashSaleItemResponse {
     private Integer sold;
 
     private Integer remaining;
+    
+    // ✅ Thêm field cho Product-level data
+    private Long productSoldQuantity; // Tổng số đã bán của Product (tất cả size)
+    
+    private Integer totalStock; // Tổng inventory của Product (tất cả size)
     
     // ========== HELPER METHODS ==========
     

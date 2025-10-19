@@ -298,13 +298,11 @@ function renderProducts(products) {
                         </div>
                         
                         ${hasFlashSale && product.flashSale.stock ? `
-                            <!-- Stock Progress Bar -->
+                            <!-- ✅ Comment progress bar, chỉ hiển thị tổng stock -->
                             <div class="flash-sale-stock">
-                                <div class="stock-progress-bar">
-                                    <div class="stock-progress-fill" style="width: ${product.flashSale.soldPercentage || 0}%"></div>
-                                    <span class="stock-progress-text">Đã bán ${product.flashSale.sold || 0}</span>
+                                <div class="stock-remaining" style="margin: 8px 0; color: #666; font-size: 13px;">
+                                    Còn lại: <strong>${product.flashSale.totalStock || product.flashSale.remaining || 0}</strong> sản phẩm
                                 </div>
-                                <div class="stock-remaining">Còn lại: ${product.flashSale.remaining || 0} sản phẩm</div>
                             </div>
                         ` : ''}
                     </div>
@@ -322,40 +320,128 @@ function renderPagination(data) {
     let paginationHtml = '';
 
     if (data.totalPages > 1) {
-        let currentPageNum = data.currentPage - 1;
-
-        paginationHtml += `
-            <div class="col-12">
-                <ul class="pagination justify-content-center" style="margin-top: 30px">
+        const currentPageNum = data.currentPage; // Backend already returns 0-based page number
+        const totalPages = data.totalPages;
+        
+        // Style cho pagination container
+        const containerStyle = `
+            margin-top: 40px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            gap: 8px;
+        `;
+        
+        // Base style cho tất cả các nút
+        const baseButtonStyle = `
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 36px;
+            height: 36px;
+            padding: 0 12px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            color: #333;
+            font-size: 14px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            user-select: none;
+        `;
+        
+        // Style cho nút active
+        const activeButtonStyle = `
+            background: #ee4d2d;
+            border-color: #ee4d2d;
+            color: #fff;
+            font-weight: 600;
+        `;
+        
+        // Style cho nút disabled
+        const disabledButtonStyle = `
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+        `;
+        
+        // Style cho hover
+        const hoverStyle = `
+            onmouseover="if(!this.classList.contains('active') && !this.classList.contains('disabled')) { this.style.borderColor='#ee4d2d'; this.style.color='#ee4d2d'; }"
+            onmouseout="if(!this.classList.contains('active') && !this.classList.contains('disabled')) { this.style.borderColor='#e8e8e8'; this.style.color='#333'; }"
         `;
 
-        // Nút "Trang trước"
+        paginationHtml += `<div class="col-12"><div style="${containerStyle}">`;
+
+        // Nút "Previous" (Trang trước)
+        const isPrevDisabled = currentPageNum === 0;
         paginationHtml += `
-            <li class="page-item ${currentPageNum === 0 ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${currentPageNum - 1}">Trang trước</a>
-            </li>
+            <a class="page-link ${isPrevDisabled ? 'disabled' : ''}" 
+               href="#" 
+               data-page="${currentPageNum - 1}"
+               style="${baseButtonStyle} ${isPrevDisabled ? disabledButtonStyle : ''}"
+               ${!isPrevDisabled ? hoverStyle : ''}>
+                <i class="fa fa-chevron-left" style="font-size: 12px;"></i>
+            </a>
         `;
 
-        // Các số trang
-        for (let i = 0; i < data.totalPages; i++) {
-            paginationHtml += `
-                <li class="page-item ${i === currentPageNum ? 'active' : ''}">
-                    <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
-                </li>
-            `;
+        // Logic hiển thị số trang (Shopee style: max 5 pages visible)
+        let pages = [];
+        
+        if (totalPages <= 7) {
+            // Nếu <= 7 trang, hiển thị tất cả
+            for (let i = 0; i < totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            // Logic phức tạp hơn khi có nhiều trang
+            if (currentPageNum <= 3) {
+                // Đầu: 1 2 3 4 5 ... 10
+                pages = [0, 1, 2, 3, 4, -1, totalPages - 1];
+            } else if (currentPageNum >= totalPages - 4) {
+                // Cuối: 1 ... 6 7 8 9 10
+                pages = [0, -1, totalPages - 5, totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1];
+            } else {
+                // Giữa: 1 ... 4 5 6 ... 10
+                pages = [0, -1, currentPageNum - 1, currentPageNum, currentPageNum + 1, -1, totalPages - 1];
+            }
         }
 
-        // Nút "Trang sau"
+        // Render các số trang
+        pages.forEach((pageNum, index) => {
+            if (pageNum === -1) {
+                // Dấu "..."
+                paginationHtml += `
+                    <span style="${baseButtonStyle} cursor: default; pointer-events: none;">...</span>
+                `;
+            } else {
+                const isActive = pageNum === currentPageNum;
+                paginationHtml += `
+                    <a class="page-link ${isActive ? 'active' : ''}" 
+                       href="#" 
+                       data-page="${pageNum}"
+                       style="${baseButtonStyle} ${isActive ? activeButtonStyle : ''}"
+                       ${!isActive ? hoverStyle : ''}>
+                        ${pageNum + 1}
+                    </a>
+                `;
+            }
+        });
+
+        // Nút "Next" (Trang sau)
+        const isNextDisabled = currentPageNum === totalPages - 1;
         paginationHtml += `
-            <li class="page-item ${currentPageNum === data.totalPages - 1 ? 'disabled' : ''}">
-                <a class="page-link" href="#" data-page="${currentPageNum + 1}">Trang sau</a>
-            </li>
+            <a class="page-link ${isNextDisabled ? 'disabled' : ''}" 
+               href="#" 
+               data-page="${currentPageNum + 1}"
+               style="${baseButtonStyle} ${isNextDisabled ? disabledButtonStyle : ''}"
+               ${!isNextDisabled ? hoverStyle : ''}>
+                <i class="fa fa-chevron-right" style="font-size: 12px;"></i>
+            </a>
         `;
 
-        paginationHtml += `
-                </ul>
-            </div>
-        `;
+        paginationHtml += `</div></div>`;
     }
 
     // Xóa pagination cũ rồi thêm mới

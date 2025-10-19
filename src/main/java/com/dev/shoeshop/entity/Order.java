@@ -77,9 +77,6 @@ public class Order {
     @JoinColumn(name = "flash_sale_id")
     private FlashSale appliedFlashSale; // Nếu mua từ flash sale
     
-    @Column(name = "discount_code")
-    private String discountCode; // Mã voucher (nếu có)
-    
     // Business logic methods
     
     /**

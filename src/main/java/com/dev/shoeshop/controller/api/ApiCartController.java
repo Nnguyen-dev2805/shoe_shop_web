@@ -300,6 +300,16 @@ public class ApiCartController {
             Long shippingDiscountId = request.get("shippingDiscountId") != null && !request.get("shippingDiscountId").toString().isEmpty() ? 
                 Long.valueOf(request.get("shippingDiscountId").toString()) : null;
             
+            // 🔥 Get flash sale ID
+            Long flashSaleId = request.get("flashSaleId") != null && !request.get("flashSaleId").toString().isEmpty() ? 
+                Long.valueOf(request.get("flashSaleId").toString()) : null;
+            
+            // ✅ Get pricing details from frontend
+            Double subtotal = request.get("subtotal") != null ? Double.valueOf(request.get("subtotal").toString()) : null;
+            Double shippingFee = request.get("shippingFee") != null ? Double.valueOf(request.get("shippingFee").toString()) : null;
+            Double orderDiscountAmount = request.get("orderDiscountAmount") != null ? Double.valueOf(request.get("orderDiscountAmount").toString()) : 0.0;
+            Double shippingDiscountAmount = request.get("shippingDiscountAmount") != null ? Double.valueOf(request.get("shippingDiscountAmount").toString()) : 0.0;
+            
             // Get selected item IDs (only items user selected to purchase)
             @SuppressWarnings("unchecked")
             java.util.List<Integer> selectedItemIds = request.get("selectedItemIds") != null ? 
@@ -327,6 +337,11 @@ public class ApiCartController {
             System.out.println("Shipping Company ID: " + shippingCompanyId);
             System.out.println("✅ Order Discount ID: " + orderDiscountId);
             System.out.println("✅ Shipping Discount ID: " + shippingDiscountId);
+            System.out.println("🔥 Flash Sale ID: " + flashSaleId);
+            System.out.println("💰 Subtotal: " + subtotal);
+            System.out.println("💰 Shipping Fee: " + shippingFee);
+            System.out.println("💰 Order Discount Amount: " + orderDiscountAmount);
+            System.out.println("💰 Shipping Discount Amount: " + shippingDiscountAmount);
             System.out.println("Selected Item IDs: " + selectedItemIds);
             System.out.println("Item Quantities: " + itemQuantities);
             System.out.println("Final Total Price: " + finalTotalPrice);
@@ -337,11 +352,12 @@ public class ApiCartController {
                     .body(createErrorResponse("Missing required fields"));
             }
             
-            // Process the order with both voucher IDs
+            // Process the order with all pricing information
             OrderResultDTO orderResult = orderService.processCheckout(
                 cartId, user.getId(), addressId, finalTotalPrice, 
                 payOption, shippingCompanyId, orderDiscountId, shippingDiscountId, 
-                selectedItemIds, itemQuantities
+                flashSaleId, selectedItemIds, itemQuantities,
+                subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount
             );
             
             Map<String, Object> response = new HashMap<>();

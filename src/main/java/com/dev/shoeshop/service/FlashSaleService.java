@@ -206,16 +206,29 @@ public class FlashSaleService {
         FlashSaleItem item = flashSaleItemRepo.findById(itemId)
             .orElseThrow(() -> new FlashSaleException("Flash sale item không tồn tại"));
         
-        // Lấy stock từ inventory
+        // Lấy stock của ProductDetail này (1 size)
         ProductDetail pd = item.getProductDetail();
-        int totalStock = inventoryRepo.getTotalQuantityByProductDetail(pd);
+        int stockThisSize = inventoryRepo.getTotalQuantityByProductDetail(pd);
         
-        return new StockResponse(
-            totalStock,
-            0, // Sold không track nữa
-            totalStock,
-            0.0 // Sold percentage không track
-        );
+        // ✅ Tính tổng inventory của TẤT CẢ size của Product
+        Product product = pd.getProduct();
+        int totalStockAllSizes = 0;
+        if (product.getDetails() != null) {
+            for (ProductDetail detail : product.getDetails()) {
+                totalStockAllSizes += inventoryRepo.getTotalQuantityByProductDetail(detail);
+            }
+        }
+        
+        // ✅ Tạo response với builder hoặc setter
+        StockResponse response = new StockResponse();
+        response.setStock(stockThisSize);
+        response.setSold(0);
+        response.setRemaining(stockThisSize);
+        response.setSoldPercentage(0.0);
+        response.setProductSoldQuantity(product.getSoldQuantity());
+        response.setTotalStock(totalStockAllSizes);
+        
+        return response;
     }
     
     /**
@@ -337,21 +350,32 @@ public class FlashSaleService {
         ProductDetail pd = item.getProductDetail();
         Product product = pd.getProduct();
         
-        // Lấy stock từ inventory
+        // Lấy stock của ProductDetail này (1 size)
         int totalStock = inventoryRepo.getTotalQuantityByProductDetail(pd);
+        
+        // ✅ Tính tổng inventory của TẤT CẢ size của Product
+        int totalStockAllSizes = 0;
+        if (product.getDetails() != null) {
+            for (ProductDetail detail : product.getDetails()) {
+                totalStockAllSizes += inventoryRepo.getTotalQuantityByProductDetail(detail);
+            }
+        }
         
         return FlashSaleItemResponse.builder()
             .id(item.getId())
             .productDetailId(pd.getId())
+            .productId(product.getId()) // ✅ Product ID
             .productName(product.getTitle())
             .productImage(product.getImage())
             .size(pd.getSize())
             .originalPrice(item.getOriginalPrice())
             .flashSalePrice(item.getFlashSalePrice())
             .discountPercent(item.getDiscountPercent())
-            .stock(totalStock) // Từ inventory
+            .stock(totalStock) // Inventory của 1 size này
             .sold(0) // Không track sold nữa
-            .remaining(totalStock) // Từ inventory
+            .remaining(totalStock) // Inventory của 1 size này
+            .productSoldQuantity(product.getSoldQuantity()) // ✅ Tổng đã bán của Product
+            .totalStock(totalStockAllSizes) // ✅ Tổng inventory tất cả size
             .build();
     }
     

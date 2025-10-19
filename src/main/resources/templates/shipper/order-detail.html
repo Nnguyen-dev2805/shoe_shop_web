@@ -129,7 +129,7 @@
                               </div>
                               
                               <!-- Action Buttons - Chỉ hiện khi status = SHIPPED -->
-                              <div class="card-body border-top" th:if="${order.status == T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">
+                              <div class="card-body border-top" th:if="${order.status.name() == 'SHIPPED'}">
                                    <div class="alert alert-info mb-3">
                                         <i class='bx bx-info-circle'></i> 
                                         Đơn hàng đang được giao. Vui lòng xác nhận kết quả giao hàng:

@@ -21,8 +21,6 @@ if (typeof window.cartBadgeInitialized === 'undefined') {
             
             // jQuery is available, initialize
             $(document).ready(function() {
-                console.log('Cart badge initializing (once)...');
-                
                 // Load cart count khi trang load
                 loadCartCount();
                 
@@ -44,15 +42,12 @@ if (typeof window.cartBadgeInitialized === 'undefined') {
  * Load cart item count và details từ server
  */
 function loadCartCount() {
-    console.log('Loading cart data from API...');
-    
     // Load full cart data (not just count)
     $.ajax({
         url: '/api/cart/current',
         method: 'GET',
         dataType: 'json',
         success: function(response) {
-            console.log('API Response:', response);
             if (response.success && response.data) {
                 const cart = response.data;
                 const itemCount = cart.cartDetails ? cart.cartDetails.length : 0;
@@ -65,14 +60,15 @@ function loadCartCount() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading cart:', error);
-            console.error('Status:', status);
-            
-            // Nếu unauthorized, user chưa đăng nhập
+            // Nếu unauthorized (401), user chưa đăng nhập - đây là trường hợp bình thường
             if (xhr.status === 401) {
+                console.log('User not authenticated, cart badge hidden');
                 updateCartBadge(0, false);
                 // renderCartPreview(null); // DISABLED
             } else {
+                // Chỉ log error cho các trường hợp khác
+                console.error('Error loading cart:', error);
+                console.error('Status:', status);
                 // Fallback to count API
                 loadCartCountOnly();
             }
@@ -94,7 +90,12 @@ function loadCartCountOnly() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading cart count:', error);
+            // 401 là trường hợp bình thường khi chưa đăng nhập
+            if (xhr.status === 401) {
+                console.log('User not authenticated, cart count set to 0');
+            } else {
+                console.error('Error loading cart count:', error);
+            }
             updateCartBadge(0, false);
         }
     });
@@ -106,11 +107,8 @@ function loadCartCountOnly() {
  * @param {boolean} isAuthenticated - User đã đăng nhập chưa
  */
 function updateCartBadge(count, isAuthenticated) {
-    console.log('Updating badge with count:', count);
-    
     // Tìm cart icon - support cả href="#" và href chứa "/cart"
     const cartIcon = $('.cart-menu a');
-    console.log('Cart icon found:', cartIcon.length);
     
     // Xóa badge cũ nếu có
     cartIcon.find('.cart-badge').remove();
@@ -123,12 +121,8 @@ function updateCartBadge(count, isAuthenticated) {
             text: count > 99 ? '99+' : count
         });
         
-        console.log('Adding badge to cart icon');
         // Thêm badge vào cart icon
         cartIcon.append(badge);
-        console.log('Badge added successfully');
-    } else {
-        console.log('No items in cart, badge not shown');
     }
 }
 
@@ -260,7 +254,6 @@ function formatPrice(price) {
  * Gọi sau khi add/remove item khỏi giỏ hàng
  */
 window.refreshCartCount = function() {
-    console.log('🔄 Manually refreshing cart count...');
     loadCartCount();
 };
 

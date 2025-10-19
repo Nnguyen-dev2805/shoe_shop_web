@@ -119,6 +119,7 @@ $(document).ready(function() {
             
             if (!productMap[key]) {
                 productMap[key] = {
+                    productId: item.productId, // ✅ Product ID
                     productName: item.productName,
                     productImage: item.productImage,
                     flashSalePrice: item.flashSalePrice,
@@ -127,6 +128,8 @@ $(document).ready(function() {
                     sizes: [],
                     remaining: 0,
                     sold: 0,
+                    totalStock: item.totalStock || 0, // ✅ Tổng inventory tất cả size
+                    productSoldQuantity: item.productSoldQuantity || 0, // ✅ Product.soldQuantity
                     firstItemId: item.id  // Dùng item đầu tiên để click
                 };
             }
@@ -146,7 +149,7 @@ $(document).ready(function() {
                 : 100;
             
             return `
-                <div class="flash-product-card" data-item-id="${product.firstItemId}" onclick="openFlashSaleModal(${product.firstItemId})">
+                <div class="flash-product-card" data-item-id="${product.firstItemId}" onclick="window.location.href='/product/${product.productId}'">
                     <div class="flash-badge-container">
                         <div class="voucher-badge">FLASH SALE</div>
                         <div class="discount-badge">-${Math.round(product.discountPercent)}%</div>
@@ -168,20 +171,27 @@ $(document).ready(function() {
                             <div class="savings">Tiết kiệm ${formatPrice(product.originalPrice - product.flashSalePrice)}</div>
                         </div>
                         
-                        <div class="stock-progress">
+                        <!-- ✅ COMMENT: Progress bar (không cần thiết cho marketing) -->
+                        <!-- <div class="stock-progress">
                             <div class="stock-progress-bar">
                                 <div class="stock-progress-fill" style="width: ${soldPercentage}%"></div>
                                 <span class="stock-progress-text">Đã bán ${product.sold || 0}</span>
                             </div>
                             <div class="stock-remaining">Còn lại: <strong>${product.remaining || 0}</strong> sản phẩm</div>
+                        </div> -->
+                        
+                        <!-- ✅ Hiển thị tổng inventory tất cả size -->
+                        <div class="stock-remaining" style="margin: 8px 0; color: #666; font-size: 13px;">
+                            Còn lại: <strong>${product.totalStock || product.remaining || 0}</strong> sản phẩm
                         </div>
                         
                         <button class="flash-buy-button ${product.remaining === 0 ? 'sold-out' : ''}" 
-                                onclick="event.stopPropagation(); openFlashSaleModal(${product.firstItemId})">
+                                onclick="event.stopPropagation(); window.location.href='/product/${product.productId}'">
                             ${product.remaining === 0 ? 'HẾT HÀNG' : 'MUA NGAY'}
                         </button>
                         
-                        <div class="sold-count">Đã bán ${formatSoldCount(product.sold || 0)}</div>
+                        <!-- ✅ Dùng Product.soldQuantity thay vì FlashSale.sold -->
+                        <div class="sold-count">Đã bán ${formatSoldCount(product.productSoldQuantity || product.sold || 0)}</div>
                     </div>
                 </div>
             `;
@@ -378,19 +388,19 @@ $(document).ready(function() {
                 
                 if (card.length === 0) return;
                 
-                // Update progress bar
-                card.find('.stock-progress-fill').css('width', (data.soldPercentage || 0) + '%');
-                card.find('.stock-progress-text').text('Đã bán ' + (data.sold || 0));
+                // Update progress bar (đã comment trong HTML)
+                // card.find('.stock-progress-fill').css('width', (data.soldPercentage || 0) + '%');
+                // card.find('.stock-progress-text').text('Đã bán ' + (data.sold || 0));
                 
-                // Update stock remaining
-                card.find('.stock-remaining').html('Còn lại: <strong>' + data.remaining + '</strong> sản phẩm');
+                // ✅ Update stock remaining - Dùng TỔNG TẤT CẢ SIZE
+                card.find('.stock-remaining').html('Còn lại: <strong>' + (data.totalStock || data.remaining || 0) + '</strong> sản phẩm');
                 
-                // Update sold count
-                card.find('.sold-count').text('Đã bán ' + formatSoldCount(data.sold || 0));
+                // ✅ Update sold count - Dùng Product.soldQuantity
+                card.find('.sold-count').text('Đã bán ' + formatSoldCount(data.productSoldQuantity || data.sold || 0));
                 
-                // Update button
+                // Update button - Kiểm tra totalStock thay vì remaining
                 const button = card.find('.flash-buy-button');
-                if (data.remaining === 0) {
+                if ((data.totalStock || data.remaining || 0) === 0) {
                     button.addClass('sold-out').text('HẾT HÀNG').prop('disabled', true);
                 } else {
                     button.removeClass('sold-out').text('MUA NGAY').prop('disabled', false);
@@ -429,11 +439,7 @@ $(document).ready(function() {
     }
 });
 
-// Modal mua hàng (sẽ implement sau)
-function openFlashSaleModal(itemId) {
-    alert('Flash Sale Modal - Item ID: ' + itemId + '\n\nTính năng đang phát triển!');
-    // TODO: Implement modal mua hàng
-}
+// ✅ REMOVED: openFlashSaleModal() - Đã đổi sang redirect trực tiếp
 
 // Set Reminder for upcoming flash sale
 function setReminder() {

@@ -25,6 +25,13 @@ public class StockResponse {
     /** Phần trăm đã bán (0-100) */
     private Double soldPercentage;
     
+    // ✅ Thêm field cho Product-level data
+    /** Tổng số đã bán của Product (tất cả size) */
+    private Long productSoldQuantity;
+    
+    /** Tổng inventory của Product (tất cả size) */
+    private Integer totalStock;
+    
     /**
      * Kiểm tra còn hàng không
      * 

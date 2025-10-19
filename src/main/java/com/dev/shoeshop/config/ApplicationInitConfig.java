@@ -2,12 +2,16 @@ package com.dev.shoeshop.config;
 
 import com.dev.shoeshop.entity.Brand;
 import com.dev.shoeshop.entity.Category;
+import com.dev.shoeshop.entity.Discount;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Role;
 import com.dev.shoeshop.entity.ShippingCompany;
+import com.dev.shoeshop.entity.ShippingRate;
 import com.dev.shoeshop.entity.ShopWarehouse;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.DiscountValueType;
+import com.dev.shoeshop.enums.VoucherType;
 import com.dev.shoeshop.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
@@ -16,8 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 /**
  * Tự động init data khi app khởi động lần đầu
@@ -35,6 +41,8 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final UserRepository userRepository;
     private final ShippingCompanyRepository shippingCompanyRepository;
     private final ShopWarehouseRepository shopWarehouseRepository;
+    private final ShippingRateRepository shippingRateRepository;
+    private final DiscountRepository discountRepository;
     private final PasswordEncoder passwordEncoder;
     private final DataSource dataSource;
 
@@ -69,7 +77,13 @@ public class ApplicationInitConfig implements ApplicationRunner {
         // 7. Tạo Shop Warehouse
         initWarehouse();
 
-        // 8. Tạo Triggers
+        // 8. Tạo Shipping Rates
+        initShippingRates();
+
+        // 9. Tạo Discounts/Vouchers
+        initDiscounts();
+
+        // 10. Tạo Triggers
         initTriggers();
 
         System.out.println("✅ Khởi tạo data thành công!");
@@ -362,6 +376,154 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shopWarehouseRepository.save(mainWarehouse);
 
         System.out.println("  → Đã tạo 1 shop warehouse (kho mặc định)");
+    }
+
+    private void initShippingRates() {
+        // Tạo bảng giá ship theo khoảng cách (theo km)
+        
+        ShippingRate rate1 = new ShippingRate();
+        rate1.setMinDistanceKm(new BigDecimal("0.00"));
+        rate1.setMaxDistanceKm(new BigDecimal("3.00"));
+        rate1.setFee(15000);
+        rate1.setDescription("Nội thành - dưới 3km");
+        rate1.setIsActive(true);
+        shippingRateRepository.save(rate1);
+
+        ShippingRate rate2 = new ShippingRate();
+        rate2.setMinDistanceKm(new BigDecimal("3.01"));
+        rate2.setMaxDistanceKm(new BigDecimal("5.00"));
+        rate2.setFee(20000);
+        rate2.setDescription("Nội thành - 3-5km");
+        rate2.setIsActive(true);
+        shippingRateRepository.save(rate2);
+
+        ShippingRate rate3 = new ShippingRate();
+        rate3.setMinDistanceKm(new BigDecimal("5.01"));
+        rate3.setMaxDistanceKm(new BigDecimal("10.00"));
+        rate3.setFee(30000);
+        rate3.setDescription("Ngoại thành - 5-10km");
+        rate3.setIsActive(true);
+        shippingRateRepository.save(rate3);
+
+        ShippingRate rate4 = new ShippingRate();
+        rate4.setMinDistanceKm(new BigDecimal("10.01"));
+        rate4.setMaxDistanceKm(new BigDecimal("20.00"));
+        rate4.setFee(45000);
+        rate4.setDescription("Ngoại thành xa - 10-20km");
+        rate4.setIsActive(true);
+        shippingRateRepository.save(rate4);
+
+        ShippingRate rate5 = new ShippingRate();
+        rate5.setMinDistanceKm(new BigDecimal("20.01"));
+        rate5.setMaxDistanceKm(new BigDecimal("50.00"));
+        rate5.setFee(60000);
+        rate5.setDescription("Vùng xa - 20-50km");
+        rate5.setIsActive(true);
+        shippingRateRepository.save(rate5);
+
+        ShippingRate rate6 = new ShippingRate();
+        rate6.setMinDistanceKm(new BigDecimal("50.01"));
+        rate6.setMaxDistanceKm(new BigDecimal("999999.00"));
+        rate6.setFee(80000);
+        rate6.setDescription("Vùng rất xa - trên 50km");
+        rate6.setIsActive(true);
+        shippingRateRepository.save(rate6);
+
+        System.out.println("  → Đã tạo 6 shipping rates");
+    }
+
+    private void initDiscounts() {
+        LocalDate today = LocalDate.now();
+        
+        // 1. VOUCHER GIẢM GIÁ ĐƠN HÀNG - Giảm %
+        Discount orderPercent = new Discount();
+        orderPercent.setName("Giảm 20% đơn hàng đầu tiên");
+        orderPercent.setQuantity(500);
+        orderPercent.setPercent(0.20);  // 20%
+        orderPercent.setStatus("ACTIVE");
+        orderPercent.setMinOrderValue(500000.0);  // Đơn tối thiểu 500k
+        orderPercent.setStartDate(today);
+        orderPercent.setEndDate(today.plusMonths(1));
+        orderPercent.setType(VoucherType.ORDER_DISCOUNT);
+        orderPercent.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        orderPercent.setMaxDiscountAmount(100000.0);  // Giảm tối đa 100k
+        orderPercent.setIsDelete(false);
+        discountRepository.save(orderPercent);
+
+        // 2. VOUCHER GIẢM GIÁ ĐƠN HÀNG - Giảm cố định
+        Discount orderFixed = new Discount();
+        orderFixed.setName("Giảm 50.000đ cho đơn từ 300k");
+        orderFixed.setQuantity(1000);
+        orderFixed.setPercent(50000.0);  // Số tiền giảm (field percent dùng chung)
+        orderFixed.setStatus("ACTIVE");
+        orderFixed.setMinOrderValue(300000.0);
+        orderFixed.setStartDate(today);
+        orderFixed.setEndDate(today.plusMonths(3));
+        orderFixed.setType(VoucherType.ORDER_DISCOUNT);
+        orderFixed.setDiscountValueType(DiscountValueType.FIXED_AMOUNT);
+        orderFixed.setIsDelete(false);
+        discountRepository.save(orderFixed);
+
+        // 3. VOUCHER MIỄN PHÍ SHIP - 100%
+        Discount freeShip = new Discount();
+        freeShip.setName("Freeship 100% đơn từ 500k");
+        freeShip.setQuantity(300);
+        freeShip.setPercent(1.0);  // 100%
+        freeShip.setStatus("ACTIVE");
+        freeShip.setMinOrderValue(500000.0);
+        freeShip.setStartDate(today);
+        freeShip.setEndDate(today.plusDays(15));
+        freeShip.setType(VoucherType.SHIPPING_DISCOUNT);
+        freeShip.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        freeShip.setMaxDiscountAmount(50000.0);  // Giảm tối đa 50k
+        freeShip.setIsDelete(false);
+        discountRepository.save(freeShip);
+
+        // 4. VOUCHER GIẢM PHÍ SHIP - Giảm %
+        Discount shipPercent = new Discount();
+        shipPercent.setName("Giảm 50% phí ship (tối đa 20k)");
+        shipPercent.setQuantity(800);
+        shipPercent.setPercent(0.50);  // 50%
+        shipPercent.setStatus("ACTIVE");
+        shipPercent.setMinOrderValue(200000.0);
+        shipPercent.setStartDate(today);
+        shipPercent.setEndDate(today.plusMonths(2));
+        shipPercent.setType(VoucherType.SHIPPING_DISCOUNT);
+        shipPercent.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        shipPercent.setMaxDiscountAmount(20000.0);
+        shipPercent.setIsDelete(false);
+        discountRepository.save(shipPercent);
+
+        // 5. VOUCHER GIẢM PHÍ SHIP - Giảm cố định
+        Discount shipFixed = new Discount();
+        shipFixed.setName("Giảm 30.000đ phí ship");
+        shipFixed.setQuantity(600);
+        shipFixed.setPercent(30000.0);  // Giảm cố định 30k
+        shipFixed.setStatus("ACTIVE");
+        shipFixed.setMinOrderValue(0.0);  // Không yêu cầu tối thiểu
+        shipFixed.setStartDate(today);
+        shipFixed.setEndDate(today.plusMonths(1));
+        shipFixed.setType(VoucherType.SHIPPING_DISCOUNT);
+        shipFixed.setDiscountValueType(DiscountValueType.FIXED_AMOUNT);
+        shipFixed.setIsDelete(false);
+        discountRepository.save(shipFixed);
+
+        // 6. VOUCHER SẮP DIỄN RA - Flash Sale
+        Discount comingSoon = new Discount();
+        comingSoon.setName("Flash Sale - Giảm 30% đơn từ 1 triệu");
+        comingSoon.setQuantity(100);
+        comingSoon.setPercent(0.30);  // 30%
+        comingSoon.setStatus("COMING");
+        comingSoon.setMinOrderValue(1000000.0);
+        comingSoon.setStartDate(today.plusDays(3));
+        comingSoon.setEndDate(today.plusDays(10));
+        comingSoon.setType(VoucherType.ORDER_DISCOUNT);
+        comingSoon.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        comingSoon.setMaxDiscountAmount(200000.0);
+        comingSoon.setIsDelete(false);
+        discountRepository.save(comingSoon);
+
+        System.out.println("  → Đã tạo 6 vouchers (3 order discount, 3 shipping discount)");
     }
 
     private void initTriggers() {

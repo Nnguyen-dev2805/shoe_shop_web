@@ -28,6 +28,7 @@ public class ProductResponse {
     @Setter
     @Builder
     public static class FlashSaleInfo {
+        private Long id;                     // 🔥 Flash Sale ID
         private boolean active;              // Flash sale có đang active không
         private Double flashSalePrice;       // Giá flash sale
         private Double originalPrice;        // Giá gốc
