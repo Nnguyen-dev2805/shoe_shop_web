@@ -1,9 +1,17 @@
 package com.dev.shoeshop.controller.manager;
 
+import com.dev.shoeshop.converter.OrderDTOConverter;
+import com.dev.shoeshop.dto.OrderDTO;
+import com.dev.shoeshop.dto.OrderDetailDTO;
+import com.dev.shoeshop.dto.OrderPaymentDTO;
+import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
+import com.dev.shoeshop.service.ShipmentService;
 import com.dev.shoeshop.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -25,6 +34,9 @@ public class ManagerHomeController {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrderService orderService;
+    private final OrderDetailService orderDetailService;
+    private final ShipmentService shipmentService;
+    private final OrderDTOConverter orderDTOConverter;
 
     @GetMapping
     public String managerHome(HttpSession session, Model model) {
@@ -182,7 +194,63 @@ public class ManagerHomeController {
             return "redirect:/manager/orders";
         }
         
-        return "manager/order/order-detail";
+        return "manager/order/manager-order-detail-full";
+    }
+    
+    @GetMapping("/order/detail/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getManagerOrderDetail(@PathVariable("id") Long id) {
+        List<OrderDetailDTO> list = orderDetailService.findAllOrderDetailById(id);
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("listOrderDetail", list);
+
+        OrderPaymentDTO orderPaymentDto = orderDetailService.getOrderPayment(id);
+        response.put("orderPayment", orderPaymentDto);
+
+        Order order = orderService.findById(id);
+
+        // Map sang DTO thay vì trả entity
+        OrderDTO orderDTO = orderDTOConverter.toOrderDTO(order);
+        response.put("order", orderDTO);
+
+        ShipmentDTO shipment = shipmentService.findShipmentByOrderId(id);
+        response.put("shipment", shipment);
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/order/shipping")
+    public String managerAddShipping(@RequestParam("orderid") Long orderid,
+                                     @RequestParam("userid") Long userid) {
+        shipmentService.insertShipment(orderid, userid);
+        return "redirect:/manager/orders/" + orderid;
+    }
+    
+    @PostMapping("/order/cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> managerCancelOrder(@RequestParam("orderId") Long orderId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Order order = orderService.findById(orderId);
+
+            if (order == null || order.getStatus() != ShipmentStatus.IN_STOCK) {
+                response.put("success", false);
+                response.put("message", "Chỉ những đơn hàng đang ở trạng thái IN_STOCK mới được hủy.");
+                return ResponseEntity.badRequest().body(response);
+            }
+
+            // Hủy đơn hàng
+            orderService.cancelOrder(orderId);
+            response.put("success", true);
+            response.put("message", "Đơn hàng " + orderId + " đã được hủy thành công");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Lỗi: " + e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
     }
 
     @GetMapping("/products")

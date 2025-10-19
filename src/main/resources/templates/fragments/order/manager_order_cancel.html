@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Popup xác nhận hủy đơn - Manager Version -->
+<div th:fragment="manager_order_cancel">
+    <div id="confirmModal" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="me-2"></iconify-icon>
+                        Xác nhận hủy đơn hàng
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <iconify-icon icon="solar:danger-triangle-bold-duotone" class="text-warning" style="font-size: 48px;"></iconify-icon>
+                    </div>
+                    <p class="text-center mb-0">Bạn có chắc chắn muốn hủy đơn hàng này không?</p>
+                    <p class="text-center text-muted small">Hành động này không thể hoàn tác.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="closeModalBtn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <iconify-icon icon="solar:close-circle-broken" class="me-1"></iconify-icon>
+                        Không
+                    </button>
+                    <button id="confirmCancelBtn" type="button" class="btn btn-danger">
+                        <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="me-1"></iconify-icon>
+                        Xác nhận hủy
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedOrderId = null;
+        
+        function popUpClick(orderId){
+            $("#confirmModal").modal("show");
+            selectedOrderId = orderId;
+            console.log("Selected order ID:", selectedOrderId);
+        }
+        
+        $("#confirmCancelBtn").off("click").on("click", function() {
+            if (selectedOrderId) {
+                console.log("Hủy đơn hàng ID:", selectedOrderId);
+
+                // Gửi yêu cầu hủy đơn hàng qua AJAX - MANAGER API
+                $.ajax({
+                    url: "/manager/order/cancel", // Manager API endpoint
+                    type: "POST",
+                    data: { orderId: selectedOrderId },
+                    success: function (response) {
+                        $("#confirmModal").modal("hide");
+                        
+                        // Hiển thị thông báo thành công
+                        if (response.success) {
+                            alert("✓ " + response.message);
+                            // Reload lại trang để cập nhật trạng thái
+                            location.reload();
+                        } else {
+                            alert("✗ " + response.message);
+                        }
+                    },
+                    error: function (xhr) {
+                        $("#confirmModal").modal("hide");
+                        
+                        // Trường hợp backend trả lỗi
+                        let errMsg = "Có lỗi xảy ra khi hủy đơn hàng";
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errMsg = xhr.responseJSON.message;
+                        }
+                        alert("✗ " + errMsg);
+                    }
+                });
+            } else {
+                alert("Không tìm thấy ID đơn hàng");
+            }
+        });
+
+        // Đóng modal khi nhấn nút "Không"
+        $("#closeModalBtn").off("click").on("click", function() {
+            $("#confirmModal").modal("hide");
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</div>
+</html>
