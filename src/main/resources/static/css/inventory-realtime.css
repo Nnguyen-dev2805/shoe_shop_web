@@ -1,0 +1,121 @@
+/**
+ * CSS cho Realtime Inventory & Sold Quantity Updates
+ * Flash animations và status indicators
+ */
+
+/* ========== Flash Animations ========== */
+
+@keyframes flashSuccess {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #28a745;
+        color: #fff;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes flashWarning {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #ffc107;
+        color: #000;
+        transform: scale(1.05);
+    }
+}
+
+@keyframes flashInfo {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: #17a2b8;
+        color: #fff;
+        transform: scale(1.05);
+    }
+}
+
+/* Flash classes */
+.flash-success {
+    animation: flashSuccess 1s ease-in-out;
+    font-weight: bold;
+}
+
+.flash-warning {
+    animation: flashWarning 1s ease-in-out;
+    font-weight: bold;
+}
+
+.flash-info {
+    animation: flashInfo 1s ease-in-out;
+    font-weight: bold;
+}
+
+/* ========== Stock Level Indicators ========== */
+
+.stock-low {
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.stock-medium {
+    color: #ffc107 !important;
+    font-weight: bold;
+}
+
+.stock-good {
+    color: #28a745 !important;
+}
+
+/* ========== Connection Status Indicator ========== */
+
+.websocket-status {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+}
+
+.websocket-status .badge {
+    padding: 8px 12px;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Pulse animation for connected status */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.badge-success {
+    animation: pulse 2s infinite;
+}
+
+/* ========== Realtime Update Badge ========== */
+
+.realtime-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #17a2b8;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+/* ========== Hover effects ========== */
+
+.inventory-quantity:hover,
+.sold-quantity:hover {
+    transform: scale(1.1);
+    transition: transform 0.2s;
+}

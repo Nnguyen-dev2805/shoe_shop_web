@@ -4,11 +4,13 @@ import com.dev.shoeshop.converter.OrderDTOConverter;
 import com.dev.shoeshop.dto.CartDTO;
 import com.dev.shoeshop.dto.CartDetailDTO;
 import com.dev.shoeshop.dto.CartProductDTO;
+import com.dev.shoeshop.dto.InventoryUpdateDTO;
 import com.dev.shoeshop.dto.OrderDTO;
 import com.dev.shoeshop.dto.OrderNotificationDTO;
 import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
+import com.dev.shoeshop.dto.SoldQuantityUpdateDTO;
 import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
@@ -16,6 +18,7 @@ import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
 import com.dev.shoeshop.repository.DiscountRepository;
+import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
@@ -25,6 +28,8 @@ import com.dev.shoeshop.service.NotificationService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,6 +77,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private RatingService ratingService;
+    
+    @Autowired
+    private InventoryRepository inventoryRepository;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -101,6 +109,19 @@ public class OrderServiceImpl implements OrderService {
                 .stream()
                 .map(orderDTOConverter::toOrderDTO)
                 .toList();
+    }
+    
+    // ✅ Pagination methods implementation
+    @Override
+    public Page<OrderDTO> getAllOrdersWithPagination(Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findAll(pageable);
+        return orderPage.map(orderDTOConverter::toOrderDTO);
+    }
+    
+    @Override
+    public Page<OrderDTO> getOrderByStatusWithPagination(ShipmentStatus status, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.findByStatus(status, pageable);
+        return orderPage.map(orderDTOConverter::toOrderDTO);
     }
     
     @Override
@@ -213,6 +234,12 @@ public class OrderServiceImpl implements OrderService {
                 
                 System.out.println("Buy Now order created with ID: " + savedOrder.getId());
                 
+                // ✅ REFRESH order để lấy orderDetailSet từ DB (sau khi cascade insert)
+                savedOrder = orderRepository.findById(savedOrder.getId())
+                        .orElse(savedOrder);
+                System.out.println("Order details count after refresh: " + 
+                                 (savedOrder.getOrderDetailSet() != null ? savedOrder.getOrderDetailSet().size() : 0));
+                
             } else {
                 // CART MODE: Process from cart
                 System.out.println("Processing CART order");
@@ -241,6 +268,16 @@ public class OrderServiceImpl implements OrderService {
                 
                 System.out.println("Cart order created with ID: " + savedOrder.getId());
             }
+            
+            // ✅ REFRESH order để lấy orderDetailSet từ DB (sau khi cascade insert)
+            savedOrder = orderRepository.findById(savedOrder.getId())
+                    .orElse(savedOrder);
+            System.out.println("Order details count after refresh: " + 
+                             (savedOrder.getOrderDetailSet() != null ? savedOrder.getOrderDetailSet().size() : 0));
+            
+            // ✅ BROADCAST INVENTORY UPDATE (sau khi trigger trừ kho)
+            System.out.println("Broadcasting inventory update after order creation...");
+            broadcastInventoryAfterOrderCreation(savedOrder);
             
             // GỬI THÔNG BÁO WEBSOCKET ĐẾN ADMIN
             System.out.println("Sending WebSocket notification to admin...");
@@ -415,9 +452,20 @@ public class OrderServiceImpl implements OrderService {
         // Create order details
         Set<OrderDetail> orderDetails = new HashSet<>();
         
+        // Convert selectedItemIds từ List<Integer> sang List<Long> để so sánh
+        java.util.List<Long> selectedItemIdsLong = null;
+        if (selectedItemIds != null) {
+            selectedItemIdsLong = selectedItemIds.stream()
+                .map(Integer::longValue)
+                .collect(java.util.stream.Collectors.toList());
+            System.out.println("Selected cart item IDs (converted to Long): " + selectedItemIdsLong);
+        }
+        
         for (CartDetail cartDetail : cart.getCartDetails()) {
+            System.out.println("Checking cart detail ID: " + cartDetail.getId() + " (type: Long)");
+            
             // Chỉ thêm vào order nếu item được chọn
-            if (selectedItemIds == null || selectedItemIds.contains(cartDetail.getId())) {
+            if (selectedItemIdsLong == null || selectedItemIdsLong.contains(cartDetail.getId())) {
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrder(order);
                 orderDetail.setProduct(cartDetail.getProduct());
@@ -425,9 +473,12 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setPrice(cartDetail.getPricePerUnit());
                 
                 orderDetails.add(orderDetail);
-                System.out.println("Added order detail: product=" + cartDetail.getProduct().getId() + 
+                System.out.println("✅ Added order detail: cartDetailId=" + cartDetail.getId() + 
+                                 ", productDetailId=" + cartDetail.getProduct().getId() + 
                                  ", quantity=" + cartDetail.getQuantity() + 
                                  ", pricePerUnit=" + cartDetail.getPricePerUnit());
+            } else {
+                System.out.println("⏭️  Skipped cart detail ID: " + cartDetail.getId() + " (not selected)");
             }
         }
         
@@ -445,18 +496,26 @@ public class OrderServiceImpl implements OrderService {
             cart.getCartDetails().clear();
             // totalPrice is now calculated automatically via getTotalPrice() method
         } else {
+            // ✅ Convert Integer -> Long để so sánh
+            java.util.List<Long> selectedItemIdsLong = selectedItemIds.stream()
+                .map(Integer::longValue)
+                .collect(java.util.stream.Collectors.toList());
+            
+            System.out.println("Removing cart item IDs: " + selectedItemIdsLong);
+            
             // Tạo list items cần xóa (tránh ConcurrentModificationException)
             java.util.List<CartDetail> toRemove = new java.util.ArrayList<>();
             for (CartDetail detail : cart.getCartDetails()) {
-                if (selectedItemIds.contains(detail.getId())) {
+                if (selectedItemIdsLong.contains(detail.getId())) {
                     toRemove.add(detail);
+                    System.out.println("  - Marked for removal: cart_detail_id=" + detail.getId());
                 }
             }
             
             // Xóa các items
             cart.getCartDetails().removeAll(toRemove);
             
-            System.out.println("Removed " + toRemove.size() + " items from cart");
+            System.out.println("✅ Removed " + toRemove.size() + " items from cart");
         }
         
         cartRepository.save(cart);
@@ -711,15 +770,26 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(newStatus);
         orderRepository.save(order);
         
-        // ✅ Update sold_quantity when order status changes to DELIVERED
+        // ✅ Trigger đã chạy tự động sau save()
+        // → Broadcast updates qua WebSocket theo LOGIC MỚI
+        
+        // CASE 1: DELIVERED → Tăng sold_quantity (trigger đã chạy)
         if (newStatus == ShipmentStatus.DELIVERED && oldStatus != ShipmentStatus.DELIVERED) {
-            updateProductSoldQuantity(order, true);
-            System.out.println("✅ Updated sold_quantity for order ID: " + orderId);
+            // Chỉ broadcast sold_quantity (inventory không đổi)
+            broadcastSoldQuantityOnly(order, "INCREASE");
         }
-        // ✅ Decrease sold_quantity if order was DELIVERED but now changed to other status
-        else if (oldStatus == ShipmentStatus.DELIVERED && newStatus != ShipmentStatus.DELIVERED) {
-            updateProductSoldQuantity(order, false);
-            System.out.println("⚠️ Decreased sold_quantity for order ID: " + orderId);
+        
+        // CASE 2: CANCEL → Hoàn kho (trigger đã chạy)
+        else if (newStatus == ShipmentStatus.CANCEL && oldStatus != ShipmentStatus.CANCEL) {
+            // Chỉ broadcast inventory (sold_quantity chưa tăng nên không giảm)
+            broadcastInventoryOnly(order, "INCREASE");
+        }
+        
+        // CASE 3: RETURN (from DELIVERED) → Hoàn kho + Giảm sold
+        else if (newStatus == ShipmentStatus.RETURN && oldStatus == ShipmentStatus.DELIVERED) {
+            // Broadcast cả inventory và sold_quantity
+            broadcastInventoryOnly(order, "INCREASE");
+            broadcastSoldQuantityOnly(order, "DECREASE");
         }
     }
     
@@ -808,5 +878,122 @@ public class OrderServiceImpl implements OrderService {
         }
         
         System.out.println("=== Sold Quantity Update Complete ===");
+    }
+    
+    /**
+     * Broadcast CHỈ inventory updates qua WebSocket
+     * Được gọi khi CANCEL hoặc RETURN (hoàn kho)
+     * 
+     * @param order Order đã được update status
+     * @param updateType "INCREASE" (hoàn kho)
+     */
+    private void broadcastInventoryOnly(Order order, String updateType) {
+        System.out.println("=== Broadcasting INVENTORY Updates via WebSocket ===");
+        System.out.println("Order ID: " + order.getId());
+        System.out.println("Update Type: " + updateType);
+        
+        for (OrderDetail detail : order.getOrderDetailSet()) {
+            ProductDetail productDetail = detail.getProduct();
+            Product product = productDetail.getProduct();
+            
+            // Fetch inventory mới từ DB (sau khi trigger đã chạy)
+            int newInventory = inventoryRepository.getTotalQuantityByProductDetail(productDetail);
+            
+            // Broadcast inventory update
+            InventoryUpdateDTO inventoryUpdate = InventoryUpdateDTO.builder()
+                    .productDetailId(productDetail.getId())
+                    .productId(product.getId())
+                    .productTitle(product.getTitle())
+                    .size(productDetail.getSize())
+                    .newQuantity(newInventory)
+                    .updateType(updateType)
+                    .orderId(order.getId())
+                    .timestamp(System.currentTimeMillis())
+                    .build();
+            
+            notificationService.sendInventoryUpdate(inventoryUpdate);
+        }
+        
+        System.out.println("✅ Inventory broadcast complete");
+    }
+    
+    /**
+     * Broadcast CHỈ sold_quantity updates qua WebSocket
+     * Được gọi khi DELIVERED (tăng sold) hoặc RETURN (giảm sold)
+     * 
+     * @param order Order đã được update status
+     * @param updateType "INCREASE" (DELIVERED) hoặc "DECREASE" (RETURN)
+     */
+    private void broadcastSoldQuantityOnly(Order order, String updateType) {
+        System.out.println("=== Broadcasting SOLD QUANTITY Updates via WebSocket ===");
+        System.out.println("Order ID: " + order.getId());
+        System.out.println("Update Type: " + updateType);
+        
+        for (OrderDetail detail : order.getOrderDetailSet()) {
+            ProductDetail productDetail = detail.getProduct();
+            Product product = productDetail.getProduct();
+            
+            // Fetch sold_quantity mới từ DB (sau khi trigger đã chạy)
+            Product updatedProduct = productRepository.findById(product.getId())
+                    .orElse(product);
+            
+            // Broadcast sold_quantity update
+            SoldQuantityUpdateDTO soldQuantityUpdate = SoldQuantityUpdateDTO.builder()
+                    .productId(updatedProduct.getId())
+                    .productTitle(updatedProduct.getTitle())
+                    .soldQuantity(updatedProduct.getSoldQuantity())
+                    .updateType(updateType)
+                    .orderId(order.getId())
+                    .timestamp(System.currentTimeMillis())
+                    .build();
+            
+            notificationService.sendSoldQuantityUpdate(soldQuantityUpdate);
+        }
+        
+        System.out.println("✅ Sold quantity broadcast complete");
+    }
+    
+    /**
+     * Broadcast inventory update SAU KHI ĐẶT HÀNG MỚI
+     * Được gọi sau khi trigger after_order_detail_insert đã trừ kho
+     * 
+     * @param order Order vừa được tạo
+     */
+    private void broadcastInventoryAfterOrderCreation(Order order) {
+        System.out.println("\n=== Broadcasting INVENTORY After Order Creation ===");
+        System.out.println("Order ID: " + order.getId());
+        
+        if (order.getOrderDetailSet() == null || order.getOrderDetailSet().isEmpty()) {
+            System.err.println("❌ ERROR: Order has NO order details! Cannot broadcast.");
+            return;
+        }
+        
+        System.out.println("Processing " + order.getOrderDetailSet().size() + " order details...");
+        
+        for (OrderDetail detail : order.getOrderDetailSet()) {
+            ProductDetail productDetail = detail.getProduct();
+            Product product = productDetail.getProduct();
+            
+            // Fetch inventory mới từ DB (sau khi trigger đã trừ)
+            int newInventory = inventoryRepository.getTotalQuantityByProductDetail(productDetail);
+            
+            // Broadcast inventory update với updateType = "DECREASE" (đã trừ kho)
+            InventoryUpdateDTO inventoryUpdate = InventoryUpdateDTO.builder()
+                    .productDetailId(productDetail.getId())
+                    .productId(product.getId())
+                    .productTitle(product.getTitle())
+                    .size(productDetail.getSize())
+                    .newQuantity(newInventory)
+                    .updateType("DECREASE") // Đặt hàng → trừ kho
+                    .orderId(order.getId())
+                    .timestamp(System.currentTimeMillis())
+                    .build();
+            
+            notificationService.sendInventoryUpdate(inventoryUpdate);
+            
+            System.out.println("  Broadcasted: " + product.getTitle() + " (Size " + productDetail.getSize() + ") → " + newInventory);
+        }
+        
+        System.out.println("✅ Inventory broadcast after order creation complete");
     }
 }

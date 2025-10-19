@@ -118,7 +118,7 @@
                                    </span>
                         <span class="nav-text"> Đơn Hàng </span>
                         <!-- WebSocket Notification Badge -->
-                        <span id="order-notification-badge" class="badge badge-danger rounded-pill ms-2" style="display:none; font-size: 0.65rem;">0</span>
+                        <span id="order-notification-badge" class="badge bg-danger rounded-pill ms-2" style="display:none; font-size: 0.65rem; animation: pulse 1s ease-in-out infinite;">0</span>
                     </a>
                     <div class="collapse" id="sidebarOrders">
                         <ul class="nav sub-navbar-nav">
@@ -233,3 +233,6 @@
         </div>
     </div>
 </div>
+
+<!-- ========== WebSocket Notifications (Loaded on ALL Admin Pages) ========== -->
+<div th:replace="~{fragments/admin/websocket-notifications :: websocket}"></div>

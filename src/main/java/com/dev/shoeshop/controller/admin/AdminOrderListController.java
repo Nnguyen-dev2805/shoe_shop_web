@@ -13,6 +13,10 @@ import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -80,23 +84,39 @@ public class AdminOrderListController {
 
 
     @GetMapping("/list-data")
-    public ResponseEntity<?> GetAllOrders(@RequestParam(name = "status", defaultValue = "") String status) {
+    public ResponseEntity<?> GetAllOrders(
+            @RequestParam(name = "status", defaultValue = "") String status,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "sort", defaultValue = "createdDate") String sortField,
+            @RequestParam(name = "direction", defaultValue = "DESC") String sortDirection) {
 
-//        List<Order>
+        // Create Pageable with sorting
+        Sort.Direction direction = sortDirection.equalsIgnoreCase("ASC") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortField));
 
-        List<OrderDTO> orders = new ArrayList<>();
+        Page<OrderDTO> orderPage;
+        
         if (status.isEmpty()) {
-            orders = orderService.getAllOrders();
-        }
-        else{
-            orders = orderService.getOrderByStatus(ShipmentStatus.valueOf(status));
+            // Get all orders with pagination
+            orderPage = orderService.getAllOrdersWithPagination(pageable);
+        } else {
+            // Get orders by status with pagination
+            orderPage = orderService.getOrderByStatusWithPagination(ShipmentStatus.valueOf(status), pageable);
         }
 
+        // Build response with pagination metadata
         Map<String, Object> response = new HashMap<>();
         response.put("orderStatic", orderService.getStatic());
-        response.put("orders", orders);
-        System.out.println("hoangha");
-        return ResponseEntity.ok(response);// sẽ map tới templates/manager/order/test.html
+        response.put("orders", orderPage.getContent()); // List of orders
+        response.put("currentPage", orderPage.getNumber());
+        response.put("totalItems", orderPage.getTotalElements());
+        response.put("totalPages", orderPage.getTotalPages());
+        response.put("pageSize", orderPage.getSize());
+        response.put("hasNext", orderPage.hasNext());
+        response.put("hasPrevious", orderPage.hasPrevious());
+        
+        return ResponseEntity.ok(response);
     }
     @PostMapping("/cancel")
     @ResponseBody

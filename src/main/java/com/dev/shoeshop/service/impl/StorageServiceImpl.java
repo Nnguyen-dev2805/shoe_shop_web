@@ -49,7 +49,7 @@ public class StorageServiceImpl implements StorageService {
                 }
             }
 
-            String filename = baseName + "_" + System.currentTimeMillis() + extension;
+            String filename = originalFilename;
 
             Path uploadPath = Paths.get(uploadDir);
             if (!Files.exists(uploadPath)) {

@@ -328,7 +328,7 @@ public class ProductServiceImpl implements ProductService {
                         java.nio.file.Files.createDirectories(uploadPath);
                     }
                     
-                    String newFileName = System.currentTimeMillis() + "_" + fileName;
+                    String newFileName = fileName;
                     java.nio.file.Path filePath = uploadPath.resolve(newFileName);
                     image.transferTo(filePath.toFile());
                     

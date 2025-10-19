@@ -785,20 +785,7 @@
      <!-- Dashboard Js -->
      <script src="/assets/js/pages/dashboard.js"></script>
 
-     <!-- WebSocket Libraries for Real-time Order Notifications -->
-     <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
-
-     <!-- Order Notifications WebSocket Handler -->
-     <script th:src="@{/js/admin/order-notifications.js}"></script>
-
-     <!-- Debug: Verify Scripts Loaded -->
-     <script>
-          console.log('%c=== SCRIPT LOADING CHECK ===', 'color: orange; font-weight: bold; font-size: 14px');
-          console.log('SockJS loaded:', typeof SockJS !== 'undefined' ? '✅' : '❌');
-          console.log('Stomp loaded:', typeof Stomp !== 'undefined' ? '✅' : '❌');
-          console.log('Badge element:', document.getElementById('order-notification-badge') ? '✅' : '❌');
-     </script>
+     <!-- WebSocket notifications loaded from panel_menu fragment -->
 
 </body>
 

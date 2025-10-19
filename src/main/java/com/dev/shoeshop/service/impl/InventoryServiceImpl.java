@@ -67,6 +67,8 @@ public class InventoryServiceImpl implements InventoryService {
                     
                     return InventoryResponse.builder()
                             .id(inv.getId())
+                            .productDetailId(pd.getId())  // ✅ THÊM
+                            .productId(pd.getProduct().getId())  // ✅ THÊM
                             .productName(pd.getProduct().getTitle())
                             .productImage(pd.getProduct().getImage())
                             .size(pd.getSize())

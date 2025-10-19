@@ -24,10 +24,20 @@
 
     <!-- Theme Config JS (Require in all Page) -->
     <script th:src="@{/assets/js/config.js}"></script>
+    
+    <!-- WebSocket for Realtime Updates -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <link th:href="@{/css/inventory-realtime.css}" rel="stylesheet" type="text/css"/>
 
 </head>
 
 <body>
+
+<!-- WebSocket Connection Status -->
+<div class="websocket-status">
+    <span class="badge badge-secondary" id="ws-status">● Connecting...</span>
+</div>
 
 <!-- START Wrapper -->
 <div class="wrapper">
@@ -284,7 +294,7 @@ function renderInventoryTable(inventories) {
         const stockStatus = getStockStatus(inv.quantity);
         
         rows += `
-            <tr>
+            <tr data-product-detail-id="${inv.productDetailId}" data-product-id="${inv.productId}">
                 <td>${inv.id}</td>
                 <td>
                     <div class="d-flex align-items-center">
@@ -301,7 +311,7 @@ function renderInventoryTable(inventories) {
                 </td>
                 <td><span class="badge bg-secondary">Size ${inv.size}</span></td>
                 <td class="text-center">
-                    <h5 class="mb-0 ${stockStatus.class}">${inv.quantity}</h5>
+                    <h5 class="mb-0 ${stockStatus.class} inventory-quantity" data-field="quantity">${inv.quantity}</h5>
                 </td>
                 <td class="text-center">
                     <span class="badge ${stockStatus.badgeClass}">${stockStatus.text}</span>
@@ -430,6 +440,9 @@ function deleteInventory(id) {
     });
 }
 </script>
+
+<!-- Realtime WebSocket Client -->
+<script th:src="@{/js/inventory-realtime.js}"></script>
 
 </body>
 </html>
