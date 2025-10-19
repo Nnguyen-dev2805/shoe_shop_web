@@ -17,4 +17,11 @@ public interface InventoryRepository extends JpaRepository<Inventory,Long> {
      */
     @Query("SELECT COALESCE(SUM(i.quantity), 0) FROM Inventory i WHERE i.productDetail = :productDetail")
     int getTotalQuantityByProductDetail(@Param("productDetail") ProductDetail productDetail);
+    
+    /**
+     * Tìm Inventory theo ProductDetail
+     * @param productDetail ProductDetail entity
+     * @return Inventory nếu tìm thấy
+     */
+    Inventory findByProductDetail(ProductDetail productDetail);
 }

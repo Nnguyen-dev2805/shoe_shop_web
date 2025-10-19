@@ -3,8 +3,6 @@ package com.dev.shoeshop.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 @Entity
 @Table(name="inventory")
@@ -19,7 +17,4 @@ public class Inventory {
 
     @Column(name = "quantity")
     private int quantity;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 }

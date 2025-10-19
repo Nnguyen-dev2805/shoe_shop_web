@@ -5,6 +5,8 @@ import com.dev.shoeshop.entity.Category;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Role;
+import com.dev.shoeshop.entity.ShippingCompany;
+import com.dev.shoeshop.entity.ShopWarehouse;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,8 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final ProductRepository productRepository;
     private final ProductDetailRepository productDetailRepository;
     private final UserRepository userRepository;
+    private final ShippingCompanyRepository shippingCompanyRepository;
+    private final ShopWarehouseRepository shopWarehouseRepository;
     private final PasswordEncoder passwordEncoder;
     private final DataSource dataSource;
 
@@ -59,7 +63,13 @@ public class ApplicationInitConfig implements ApplicationRunner {
         // 5. Tạo Users
         initUsers();
 
-        // 6. Tạo Triggers
+        // 6. Tạo Shipping Companies
+        initShippingCompanies();
+
+        // 7. Tạo Shop Warehouse
+        initWarehouse();
+
+        // 8. Tạo Triggers
         initTriggers();
 
         System.out.println("✅ Khởi tạo data thành công!");
@@ -267,6 +277,91 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(shipper);
 
         System.out.println("  → Đã tạo 4 users (password: 123456)");
+    }
+
+    private void initShippingCompanies() {
+        // Các công ty vận chuyển phổ biến tại Việt Nam
+        
+        ShippingCompany ghn = new ShippingCompany();
+        ghn.setName("Giao Hàng Nhanh (GHN)");
+        ghn.setHotline("1900 636677");
+        ghn.setEmail("hotro@ghn.vn");
+        ghn.setAddress("Tầng 6, Toà nhà Ladeco, 266 Đội Cấn, Ba Đình, Hà Nội");
+        ghn.setWebsite("https://ghn.vn");
+        ghn.setIsActive(true);
+        shippingCompanyRepository.save(ghn);
+
+        ShippingCompany ghtk = new ShippingCompany();
+        ghtk.setName("Giao Hàng Tiết Kiệm (GHTK)");
+        ghtk.setHotline("1900 636677");
+        ghtk.setEmail("hotro@giaohangtietkiem.vn");
+        ghtk.setAddress("Tầng 6, Số 1 Trần Hữu Dực, Mỹ Đình, Nam Từ Liêm, Hà Nội");
+        ghtk.setWebsite("https://giaohangtietkiem.vn");
+        ghtk.setIsActive(true);
+        shippingCompanyRepository.save(ghtk);
+
+        ShippingCompany jnt = new ShippingCompany();
+        jnt.setName("J&T Express");
+        jnt.setHotline("1900 1088");
+        jnt.setEmail("cskh@jtexpress.vn");
+        jnt.setAddress("Tầng 6, Mapletree Business Centre, 1060 Nguyễn Văn Linh, Quận 7, TP.HCM");
+        jnt.setWebsite("https://jtexpress.vn");
+        jnt.setIsActive(true);
+        shippingCompanyRepository.save(jnt);
+
+        ShippingCompany viettelPost = new ShippingCompany();
+        viettelPost.setName("Viettel Post");
+        viettelPost.setHotline("1900 8095");
+        viettelPost.setEmail("cskh@viettelpost.vn");
+        viettelPost.setAddress("Tầng 6, Toà Hà Nội Paragon, 86 Duy Tân, Cầu Giấy, Hà Nội");
+        viettelPost.setWebsite("https://viettelpost.vn");
+        viettelPost.setIsActive(true);
+        shippingCompanyRepository.save(viettelPost);
+
+        ShippingCompany vnpost = new ShippingCompany();
+        vnpost.setName("Bưu Điện Việt Nam (VNPost)");
+        vnpost.setHotline("1900 54 54 81");
+        vnpost.setEmail("cskh@vnpost.vn");
+        vnpost.setAddress("6B Phạm Hùng, Nam Từ Liêm, Hà Nội");
+        vnpost.setWebsite("https://vnpost.vn");
+        vnpost.setIsActive(true);
+        shippingCompanyRepository.save(vnpost);
+
+        ShippingCompany ninjavan = new ShippingCompany();
+        ninjavan.setName("Ninja Van");
+        ninjavan.setHotline("1900 886");
+        ninjavan.setEmail("support.vn@ninjavan.co");
+        ninjavan.setAddress("Tầng 5, Toà nhà Waseco, 10 Phổ Quang, Tân Bình, TP.HCM");
+        ninjavan.setWebsite("https://ninjavan.co/vi-vn");
+        ninjavan.setIsActive(true);
+        shippingCompanyRepository.save(ninjavan);
+
+        ShippingCompany bestExpress = new ShippingCompany();
+        bestExpress.setName("Best Express");
+        bestExpress.setHotline("1900 888 870");
+        bestExpress.setEmail("cskh@best-inc.vn");
+        bestExpress.setAddress("Tầng 3, Toà nhà The Sun Avenue, 28 Mai Chí Thọ, Quận 2, TP.HCM");
+        bestExpress.setWebsite("https://www.best-inc.vn");
+        bestExpress.setIsActive(true);
+        shippingCompanyRepository.save(bestExpress);
+
+        System.out.println("  → Đã tạo 7 shipping companies");
+    }
+
+    private void initWarehouse() {
+        // Tạo kho mặc định tại TP.HCM
+        ShopWarehouse mainWarehouse = new ShopWarehouse();
+        mainWarehouse.setName("Kho Trung Tâm DeeG Shop");
+        mainWarehouse.setAddress("ĐH Sư Phạm Kỹ Thuật TP, HCM, 1 Võ Văn Ngân, P, Linh Chiểu, Q, Thủ Đức");
+        mainWarehouse.setLatitude(10.850231800892672);  // Tọa độ thực tế khu vực Nguyễn Huệ
+        mainWarehouse.setLongitude(106.77203051676167);
+        mainWarehouse.setCity("Hồ Chí Minh");
+        mainWarehouse.setPhone("028 3822 5678");
+        mainWarehouse.setIsActive(true);
+        mainWarehouse.setIsDefault(true);  // Kho mặc định
+        shopWarehouseRepository.save(mainWarehouse);
+
+        System.out.println("  → Đã tạo 1 shop warehouse (kho mặc định)");
     }
 
     private void initTriggers() {
