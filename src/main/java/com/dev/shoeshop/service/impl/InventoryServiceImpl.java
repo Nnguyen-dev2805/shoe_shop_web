@@ -14,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,6 +28,7 @@ public class InventoryServiceImpl implements InventoryService {
     private final ProductDetailRepository productDetailRepository;
 
     @Override
+    @Transactional
     public void addInventory(InventoryRequest request) {
         List<ProductDetail> details = productDetailRepository.findByProductId(request.getProductId());
 
@@ -42,10 +42,18 @@ public class InventoryServiceImpl implements InventoryService {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy product_detail cho size " + size));
 
-                Inventory inventory = new Inventory();
-                inventory.setProductDetail(detail);
-                inventory.setQuantity(quantity);
-                inventory.setCreatedAt(request.getCreatedAt() != null ? request.getCreatedAt() : LocalDateTime.now());
+                // Tìm inventory record hiện có
+                Inventory inventory = inventoryRepository.findByProductDetail(detail);
+                
+                if (inventory != null) {
+                    // Nếu đã tồn tại, cộng thêm số lượng
+                    inventory.setQuantity(inventory.getQuantity() + quantity);
+                } else {
+                    // Nếu chưa tồn tại, tạo mới
+                    inventory = new Inventory();
+                    inventory.setProductDetail(detail);
+                    inventory.setQuantity(quantity);
+                }
 
                 inventoryRepository.save(inventory);
             }
