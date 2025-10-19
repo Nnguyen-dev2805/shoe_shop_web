@@ -188,22 +188,22 @@
                                                 <a href="#" class="btn btn-soft-danger btn-sm"><iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon></a>
                                             </div>
                                         </td>
-                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
                         <div class="card-footer border-top">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination justify-content-end mb-0">
-                                    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                                </ul>
-                            </nav>
+                            <div class="row align-items-center">
+                                <div class="col-sm-6">
+                                    <div id="paginationInfo" class="text-muted"></div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <nav aria-label="Page navigation">
+                                        <ul id="paginationContainer" class="pagination justify-content-end mb-0"></ul>
+                                    </nav>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -230,78 +230,200 @@
 
 <script>
     $(document).ready(function () {
-        // Gọi API khi trang load
-        function loadOrders (status){
+        // Global pagination state
+        let currentPage = 0;
+        let currentStatus = "";
+        const pageSize = 10;
+        
+        // Load orders with pagination
+        function loadOrders(status, page = 0) {
+            currentStatus = status;
+            currentPage = page;
+            
             $.ajax({
-                url: "list-data", // endpoint backend trả về JSON
+                url: "list-data",
                 type: "GET",
-                data: { status: status }, // GỬI status xuống backend
+                data: { 
+                    status: status,
+                    page: page,
+                    size: pageSize,
+                    sort: "createdDate",
+                    direction: "DESC"
+                },
                 dataType: "json",
                 success: function (response) {
                     console.log("API response:", response);
 
-                    // response có dạng: { orderStatic: { inStock: 123, shipping: 456, ... } }
+                    // Update statistics
                     const data = response.orderStatic;
-
-                    // Fill dữ liệu vào các thẻ HTML bằng id
                     $("#cancel").text(data.cancel);
                     $("#shipping").text(data.shipping);
                     $("#in_stock").text(data.inStock);
                     $("#delivered").text(data.delivered);
                     $("#preturn").text(data.preturn);
 
-
-                    // hien thi danh sach order
-                    // Fill bảng orders
-                    let tbody = $("#orderTable tbody"); // chọn đúng tbody của bảng có id orderTable
-                    tbody.empty();
-                    response.orders.forEach(order => {
-                        let row = `
-        <tr>
-            <td>${order.id}</td>
-            <td>${order.createdDate || "-"}</td>
-            <td>${order.userName || "-"}</td>
-            <td>$${order.totalPrice}</td>
-            <td><span class="badge bg-light text-dark px-2 py-1 fs-13">${order.payOption}</span></td>
-            <td><span class="badge border border-secondary text-secondary px-2 py-1 fs-13">${order.status}</span></td>
-            <td>
-                <div class="d-flex gap-2">
-                    <a href="/admin/order/detail-page/${order.id}"  class="btn btn-light btn-sm">
-                        <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
-                    </a>
-<!--                    <a href="#" class="btn btn-soft-danger btn-sm">-->
-<!--                        <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="align-middle fs-18"></iconify-icon>-->
-<!--                    </a>-->
-                </div>
-            </td>
-        </tr>
-    `;
-                        tbody.append(row);
-                    });
-
+                    // Render orders table
+                    renderOrdersTable(response.orders);
+                    
+                    // Render pagination
+                    renderPagination(response);
                 },
                 error: function (xhr, status, error) {
-                    console.error("Lỗi khi gọi API:", error);
+                    console.error("Error loading orders:", error);
+                    alert("Lỗi khi tải danh sách đơn hàng!");
                 }
             });
         }
-
-        // lần đầu load tất cả
-        loadOrders("");
-
-        // khi chọn filter
-        $(document).on("change", "#orderStatus", function () {
-            console.log("Dropdown changed, value:", $(this).val());
-            loadOrders($(this).val());
+        
+        // Render orders table
+        function renderOrdersTable(orders) {
+            let tbody = $("#orderTable tbody");
+            tbody.empty();
+            
+            if (orders.length === 0) {
+                tbody.append(`
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <iconify-icon icon="solar:inbox-line-bold-duotone" class="fs-48 text-muted"></iconify-icon>
+                            <p class="text-muted mt-2">Không có đơn hàng nào</p>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+            
+            orders.forEach(order => {
+                let row = `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>${order.createdDate || "-"}</td>
+                        <td>${order.userName || "-"}</td>
+                        <td>${formatPrice(order.totalPrice)}</td>
+                        <td><span class="badge bg-light text-dark px-2 py-1 fs-13">${order.payOption}</span></td>
+                        <td><span class="badge border border-secondary text-secondary px-2 py-1 fs-13">${order.status}</span></td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a href="/admin/order/detail-page/${order.id}" class="btn btn-light btn-sm" title="Xem chi tiết">
+                                    <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+        
+        // Render pagination
+        function renderPagination(response) {
+            const { currentPage, totalPages, totalItems, pageSize, hasNext, hasPrevious } = response;
+            
+            // Update pagination info
+            const startItem = (currentPage * pageSize) + 1;
+            const endItem = Math.min((currentPage + 1) * pageSize, totalItems);
+            $("#paginationInfo").html(
+                `Hiển thị <b>${startItem}</b> - <b>${endItem}</b> trong tổng số <b>${totalItems}</b> đơn hàng`
+            );
+            
+            // Render pagination buttons
+            let pagination = $("#paginationContainer");
+            pagination.empty();
+            
+            if (totalPages <= 1) return; // No pagination needed
+            
+            // Previous button
+            pagination.append(`
+                <li class="page-item ${!hasPrevious ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0)" data-page="${currentPage - 1}">
+                        <i class="bx bx-chevron-left"></i> Trước
+                    </a>
+                </li>
+            `);
+            
+            // Page numbers
+            const maxVisiblePages = 5;
+            let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+            
+            // Adjust if near the end
+            if (endPage - startPage < maxVisiblePages - 1) {
+                startPage = Math.max(0, endPage - maxVisiblePages + 1);
+            }
+            
+            // First page
+            if (startPage > 0) {
+                pagination.append(`
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)" data-page="0">1</a>
+                    </li>
+                `);
+                if (startPage > 1) {
+                    pagination.append(`<li class="page-item disabled"><span class="page-link">...</span></li>`);
+                }
+            }
+            
+            // Page numbers
+            for (let i = startPage; i <= endPage; i++) {
+                pagination.append(`
+                    <li class="page-item ${i === currentPage ? 'active' : ''}">
+                        <a class="page-link" href="javascript:void(0)" data-page="${i}">${i + 1}</a>
+                    </li>
+                `);
+            }
+            
+            // Last page
+            if (endPage < totalPages - 1) {
+                if (endPage < totalPages - 2) {
+                    pagination.append(`<li class="page-item disabled"><span class="page-link">...</span></li>`);
+                }
+                pagination.append(`
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:void(0)" data-page="${totalPages - 1}">${totalPages}</a>
+                    </li>
+                `);
+            }
+            
+            // Next button
+            pagination.append(`
+                <li class="page-item ${!hasNext ? 'disabled' : ''}">
+                    <a class="page-link" href="javascript:void(0)" data-page="${currentPage + 1}">
+                        Sau <i class="bx bx-chevron-right"></i>
+                    </a>
+                </li>
+            `);
+        }
+        
+        // Format price
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND' 
+            }).format(price || 0);
+        }
+        
+        // Handle pagination click
+        $(document).on("click", "#paginationContainer a", function(e) {
+            e.preventDefault();
+            const page = $(this).data("page");
+            if (page !== undefined && page >= 0) {
+                loadOrders(currentStatus, page);
+                // Scroll to top
+                $("html, body").animate({ scrollTop: $("#orderTable").offset().top - 100 }, 300);
+            }
         });
 
+        // Handle status filter change
+        $(document).on("change", "#orderStatus", function () {
+            console.log("Filter changed:", $(this).val());
+            loadOrders($(this).val(), 0); // Reset to page 0 when filter changes
+        });
+        
+        // Initial load
+        loadOrders("", 0);
     });
-
 </script>
-
 
 <!-- App Javascript -->
 <script src="/assets/js/app.js"></script>
-
 </body>
 </html>

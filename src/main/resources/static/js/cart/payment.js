@@ -63,14 +63,37 @@ function loadDataFromSession() {
     // Validate: Only check if items data exists
     // Address ID can be empty (user will select it in payment page)
     if (!itemsData) {
-        alert('⚠️ Dữ liệu không hợp lệ. Vui lòng quay lại trang chọn sản phẩm.');
-        window.location.href = '/cart/view';
+        console.warn('⚠️ No checkout data found in sessionStorage');
+        alert('⚠️ Không có dữ liệu thanh toán. Vui lòng chọn sản phẩm trước.');
+        window.location.href = '/';
+        return;
+    }
+    
+    // ✅ Validate: checkoutSource must be set
+    if (!checkoutSource || (checkoutSource !== 'cart' && checkoutSource !== 'buynow')) {
+        console.error('❌ Invalid checkoutSource:', checkoutSource);
+        console.log('🧹 Clearing invalid sessionStorage data...');
+        sessionStorage.clear();
+        alert('⚠️ Dữ liệu thanh toán không hợp lệ. Vui lòng thử lại.');
+        window.location.href = '/';
         return;
     }
     
     try {
         selectedItems = JSON.parse(itemsData);
         console.log('Parsed items:', selectedItems);
+        
+        // ✅ Validate: Check if cart items have valid IDs
+        if (checkoutSource === 'cart' && selectedItems.length > 0) {
+            const hasInvalidIds = selectedItems.some(item => !item.id || item.id <= 0);
+            if (hasInvalidIds) {
+                console.error('❌ Invalid cart item IDs detected! Clearing sessionStorage...');
+                sessionStorage.clear();
+                alert('⚠️ Dữ liệu giỏ hàng không hợp lệ. Vui lòng thêm sản phẩm vào giỏ lại.');
+                window.location.href = '/cart/view';
+                return;
+            }
+        }
     } catch (e) {
         console.error('Error parsing items:', e);
         alert('Lỗi dữ liệu. Vui lòng thử lại.');
@@ -1031,10 +1054,15 @@ function handlePayment() {
             if (response.success) {
                 console.log('🎉 Order placed successfully!');
                 
-                // Clear session storage
-                sessionStorage.removeItem('selectedItems');
+                // ✅ Clear ALL session storage related to checkout
+                sessionStorage.removeItem('selectedItems');        // Buy Now data
+                sessionStorage.removeItem('selectedCartItems');    // Cart data
                 sessionStorage.removeItem('selectedAddressId');
                 sessionStorage.removeItem('cartId');
+                sessionStorage.removeItem('checkoutSource');       // ✅ THÊM
+                sessionStorage.removeItem('buyNowMode');           // ✅ THÊM
+                
+                console.log('✅ SessionStorage cleared after successful payment');
                 
                 // Clear applied vouchers
                 window.appliedShippingDiscount = 0;

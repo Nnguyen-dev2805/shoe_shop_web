@@ -6,6 +6,8 @@ import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -15,6 +17,11 @@ public interface OrderService {
     public List<OrderDTO> getOrderByStatus(ShipmentStatus status);
 
     public List<OrderDTO> getAllOrders();
+    
+    // ✅ Pagination methods
+    Page<OrderDTO> getAllOrdersWithPagination(Pageable pageable);
+    
+    Page<OrderDTO> getOrderByStatusWithPagination(ShipmentStatus status, Pageable pageable);
     
     // Lấy danh sách orders của user
     public List<OrderDTO> getOrdersByUserId(Long userId);

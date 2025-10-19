@@ -219,6 +219,12 @@ function selectSize($button, basePrice) {
         quantity: stock
     };
     
+    // ✅ Set current product detail for WebSocket realtime updates
+    if (window.productWS) {
+        window.productWS.setCurrentProductDetail(sizeId);
+        console.log('✅ WebSocket tracking product detail:', sizeId);
+    }
+    
     maxStock = stock;
     
     // Update hidden inputs

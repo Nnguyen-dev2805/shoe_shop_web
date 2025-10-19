@@ -261,7 +261,9 @@ function updateCartTotals(cart) {
     $('#createdDate').text(formattedDate);
     
     // Update cart ID
+    console.log('🛒 Setting cart ID:', cart.id);
     $('#cartIdInput').val(cart.id);
+    console.log('✅ Cart ID input value:', $('#cartIdInput').val());
     
     // Store for later use
     window.originalTotalPrice = selectedTotal;
@@ -488,11 +490,24 @@ function handleContinueToPayment() {
     
     console.log('✅ Selected data prepared:', selectedData);
     
+    // Get cart ID from input
+    const cartId = $('#cartIdInput').val();
+    console.log('🛒 Cart ID from input:', cartId);
+    
+    if (!cartId) {
+        console.error('❌ ERROR: Cart ID is empty!');
+        alert('Lỗi: Không tìm thấy Cart ID. Vui lòng refresh trang và thử lại.');
+        return;
+    }
+    
     // Store in sessionStorage for payment page
     sessionStorage.setItem('selectedCartItems', JSON.stringify(selectedData));
     sessionStorage.setItem('checkoutSource', 'cart'); // Indicate checkout from cart
-    sessionStorage.setItem('cartId', $('#cartIdInput').val());
+    sessionStorage.setItem('cartId', cartId);
     
+    console.log('✅ Saved to sessionStorage:');
+    console.log('  - cartId:', cartId);
+    console.log('  - selectedCartItems:', selectedData.length, 'items');
     console.log('🚀 Redirecting to payment page...');
     
     // Redirect to payment page (address will be selected there)

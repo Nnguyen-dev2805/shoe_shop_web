@@ -1,6 +1,8 @@
 package com.dev.shoeshop.service.impl;
 
+import com.dev.shoeshop.dto.InventoryUpdateDTO;
 import com.dev.shoeshop.dto.OrderNotificationDTO;
+import com.dev.shoeshop.dto.SoldQuantityUpdateDTO;
 import com.dev.shoeshop.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -68,5 +70,60 @@ public class NotificationServiceImpl implements NotificationService {
         messagingTemplate.convertAndSend("/topic/admin/orders", notification);
         
         System.out.println("✅ Update notification sent");
+    }
+    
+    /**
+     * Gửi cập nhật inventory realtime
+     * Được gọi SAU KHI trigger đã chạy và database đã cập nhật
+     */
+    @Override
+    public void sendInventoryUpdate(InventoryUpdateDTO inventoryUpdate) {
+        System.out.println("\n========================================");
+        System.out.println("🔥 BROADCASTING INVENTORY UPDATE via WebSocket");
+        System.out.println("========================================");
+        System.out.println("📦 Product Detail ID: " + inventoryUpdate.getProductDetailId());
+        System.out.println("📦 Product ID: " + inventoryUpdate.getProductId());
+        System.out.println("📦 Product Title: " + inventoryUpdate.getProductTitle());
+        System.out.println("📦 Size: " + inventoryUpdate.getSize());
+        System.out.println("📦 New Quantity: " + inventoryUpdate.getNewQuantity());
+        System.out.println("📦 Update Type: " + inventoryUpdate.getUpdateType());
+        System.out.println("📦 Order ID: " + inventoryUpdate.getOrderId());
+        
+        // Set timestamp if not set
+        if (inventoryUpdate.getTimestamp() == null) {
+            inventoryUpdate.setTimestamp(System.currentTimeMillis());
+        }
+        
+        System.out.println("📡 Sending to topic: /topic/inventory");
+        
+        // Broadcast to /topic/inventory
+        // All admin pages (inventory-list, dashboard) subscribe to this
+        messagingTemplate.convertAndSend("/topic/inventory", inventoryUpdate);
+        
+        System.out.println("✅ INVENTORY UPDATE SENT SUCCESSFULLY!");
+        System.out.println("========================================\n");
+    }
+    
+    /**
+     * Gửi cập nhật sold_quantity realtime
+     * Được gọi SAU KHI trigger đã chạy và database đã cập nhật
+     */
+    @Override
+    public void sendSoldQuantityUpdate(SoldQuantityUpdateDTO soldQuantityUpdate) {
+        System.out.println("=== Broadcasting SOLD QUANTITY UPDATE via WebSocket ===");
+        System.out.println("Product ID: " + soldQuantityUpdate.getProductId());
+        System.out.println("Sold Quantity: " + soldQuantityUpdate.getSoldQuantity());
+        System.out.println("Update Type: " + soldQuantityUpdate.getUpdateType());
+        
+        // Set timestamp if not set
+        if (soldQuantityUpdate.getTimestamp() == null) {
+            soldQuantityUpdate.setTimestamp(System.currentTimeMillis());
+        }
+        
+        // Broadcast to /topic/sold-quantity
+        // Product list page, dashboard subscribe to this
+        messagingTemplate.convertAndSend("/topic/sold-quantity", soldQuantityUpdate);
+        
+        System.out.println("✅ Sold quantity update broadcasted to /topic/sold-quantity");
     }
 }

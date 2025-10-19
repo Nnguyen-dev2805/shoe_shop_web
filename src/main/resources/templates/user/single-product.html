@@ -2462,14 +2462,19 @@ $(document).ready(function() {
                     price: unitPrice
                 };
                 
+                // ✅ Clear any old sessionStorage data first
+                sessionStorage.removeItem('selectedCartItems');
+                sessionStorage.removeItem('checkoutSource');
+                
                 // Store in sessionStorage
                 sessionStorage.setItem('selectedItems', JSON.stringify([orderItem]));
+                sessionStorage.setItem('checkoutSource', 'buynow'); // ✅ SET CHECKOUT SOURCE!
                 sessionStorage.setItem('selectedAddressId', ''); // User will select address in payment page
                 sessionStorage.setItem('cartId', ''); // No cart ID for buy now
-                sessionStorage.setItem('buyNowMode', 'true'); // Flag to indicate buy now mode
                 
                 console.log('📦 Order data saved to sessionStorage:', {
                     orderItem,
+                    checkoutSource: 'buynow',
                     buyNowMode: true
                 });
                 
@@ -2827,6 +2832,252 @@ $(document).ready(function() {
         return stars;
     }
 });
+</script>
+
+<!-- ========== WebSocket for Realtime Inventory Updates ========== -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.5.1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+
+<script>
+// WebSocket Client for Product Detail Page
+class ProductDetailWebSocket {
+    constructor() {
+        this.stompClient = null;
+        this.connected = false;
+        this.currentProductDetailId = null;
+    }
+    
+    connect() {
+        console.log('🔌 [Product Detail] Connecting to WebSocket...');
+        
+        const socket = new SockJS('/ws');
+        this.stompClient = Stomp.over(socket);
+        
+        // Disable debug logs in production
+        this.stompClient.debug = null;
+        
+        this.stompClient.connect({}, (frame) => {
+            console.log('✅ [Product Detail] WebSocket connected!');
+            this.connected = true;
+            
+            // Subscribe to inventory updates
+            this.stompClient.subscribe('/topic/inventory', (message) => {
+                const data = JSON.parse(message.body);
+                console.log('📦 [Product Detail] Inventory update received:', data);
+                this.handleInventoryUpdate(data);
+            });
+            
+        }, (error) => {
+            console.error('❌ [Product Detail] WebSocket error:', error);
+            this.connected = false;
+        });
+    }
+    
+    handleInventoryUpdate(data) {
+        console.log('🔄 Checking if update is relevant...');
+        console.log('  - Received productDetailId:', data.productDetailId);
+        console.log('  - Current productDetailId:', this.currentProductDetailId);
+        
+        // Only update if this is the current product detail being viewed
+        if (this.currentProductDetailId && data.productDetailId == this.currentProductDetailId) {
+            console.log('✅ Update matches current product! Updating UI...');
+            
+            const newQuantity = data.newQuantity;
+            const isOutOfStock = newQuantity <= 0;
+            
+            // 1️⃣ Update stock quantity display
+            const stockElement = document.getElementById('stock-quantity');
+            if (stockElement) {
+                const oldValue = stockElement.textContent;
+                stockElement.textContent = newQuantity;
+                
+                console.log(`📊 Stock updated: ${oldValue} → ${newQuantity}`);
+                
+                // Flash animation
+                stockElement.style.transition = 'all 0.3s';
+                stockElement.style.color = isOutOfStock ? '#dc3545' : '#ff4b2b';
+                stockElement.style.fontWeight = 'bold';
+                
+                setTimeout(() => {
+                    stockElement.style.color = '';
+                    stockElement.style.fontWeight = '';
+                }, 1000);
+            }
+            
+            // 2️⃣ Update size button UI (currently selected)
+            const sizeButton = document.querySelector(`.shopee-size-btn[data-size-id="${data.productDetailId}"]`);
+            if (sizeButton) {
+                if (isOutOfStock) {
+                    // Add out-of-stock class
+                    sizeButton.classList.add('out-of-stock');
+                    sizeButton.disabled = true;
+                    
+                    // Update button text to show "Hết hàng"
+                    const sizeText = sizeButton.getAttribute('data-size');
+                    sizeButton.innerHTML = `${sizeText}<br><small style="color: #999;">Hết hàng</small>`;
+                    
+                    console.log(`🚫 Size ${sizeText} marked as out-of-stock`);
+                } else {
+                    // Remove out-of-stock class if stock available again
+                    sizeButton.classList.remove('out-of-stock');
+                    sizeButton.disabled = false;
+                    
+                    const sizeText = sizeButton.getAttribute('data-size');
+                    sizeButton.textContent = sizeText;
+                }
+            }
+            
+            // 3️⃣ Update quantity controls
+            const qtyInput = document.getElementById('qty-input');
+            const qtyPlus = document.getElementById('qty-plus');
+            const qtyMinus = document.getElementById('qty-minus');
+            
+            if (isOutOfStock) {
+                // Disable quantity controls
+                if (qtyInput) qtyInput.value = 0;
+                if (qtyPlus) qtyPlus.disabled = true;
+                if (qtyMinus) qtyMinus.disabled = true;
+            } else {
+                // Enable and adjust quantity
+                if (qtyPlus) qtyPlus.disabled = false;
+                if (qtyMinus) qtyMinus.disabled = false;
+                
+                if (qtyInput) {
+                    const currentQty = parseInt(qtyInput.value) || 1;
+                    if (currentQty > newQuantity) {
+                        qtyInput.value = newQuantity;
+                    } else if (currentQty === 0) {
+                        qtyInput.value = 1; // Reset to 1 if was 0
+                    }
+                }
+            }
+            
+            // 4️⃣ Update action buttons
+            const addToCartBtn = document.getElementById('add-to-cart-btn');
+            const buyNowBtn = document.getElementById('buy-now-btn');
+            
+            if (isOutOfStock) {
+                // Disable and change to "Hết Hàng"
+                if (addToCartBtn) {
+                    addToCartBtn.disabled = true;
+                    addToCartBtn.style.opacity = '0.5';
+                    addToCartBtn.style.cursor = 'not-allowed';
+                }
+                
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = true;
+                    buyNowBtn.innerHTML = '<span>Hết Hàng</span>';
+                    buyNowBtn.style.backgroundColor = '#ccc';
+                    buyNowBtn.style.cursor = 'not-allowed';
+                }
+                
+                console.log('🚫 All action buttons disabled - OUT OF STOCK');
+            } else {
+                // Enable buttons
+                if (addToCartBtn) {
+                    addToCartBtn.disabled = false;
+                    addToCartBtn.style.opacity = '1';
+                    addToCartBtn.style.cursor = 'pointer';
+                }
+                
+                if (buyNowBtn) {
+                    buyNowBtn.disabled = false;
+                    buyNowBtn.innerHTML = '<span>Mua Ngay</span>';
+                    buyNowBtn.style.backgroundColor = '';
+                    buyNowBtn.style.cursor = 'pointer';
+                }
+                
+                console.log('✅ Action buttons enabled - Stock available:', newQuantity);
+            }
+            
+            // 5️⃣ Show toast notification
+            this.showStockUpdateNotification(data.productTitle, data.size, newQuantity, isOutOfStock);
+            
+        } else {
+            console.log('⏭️ Update for different product, ignoring...');
+        }
+    }
+    
+    showStockUpdateNotification(productTitle, size, newQuantity, isOutOfStock) {
+        // Create toast notification
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: ${isOutOfStock ? '#dc3545' : '#ffc107'};
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease;
+        `;
+        
+        toast.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 20px;">${isOutOfStock ? '🚫' : '📦'}</span>
+                <div>
+                    <strong>${productTitle} (Size ${size})</strong><br>
+                    <small>${isOutOfStock ? 'Đã hết hàng!' : `Còn ${newQuantity} sản phẩm`}</small>
+                </div>
+            </div>
+        `;
+        
+        // Add animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(toast);
+        
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+    
+    setCurrentProductDetail(productDetailId) {
+        console.log('📌 Setting current product detail ID:', productDetailId);
+        this.currentProductDetailId = productDetailId;
+    }
+    
+    disconnect() {
+        if (this.stompClient !== null) {
+            this.stompClient.disconnect();
+        }
+        this.connected = false;
+        console.log('🔌 [Product Detail] WebSocket disconnected');
+    }
+}
+
+// Initialize WebSocket
+const productWS = new ProductDetailWebSocket();
+
+// Connect when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    productWS.connect();
+});
+
+// Disconnect when page unloads
+window.addEventListener('beforeunload', () => {
+    productWS.disconnect();
+});
+
+// Expose to global for debugging
+window.productWS = productWS;
 </script>
 
 <!-- Chat Widget -->
