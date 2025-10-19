@@ -26,6 +26,7 @@ import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.EmailService;
 import com.dev.shoeshop.service.NotificationService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
@@ -88,6 +89,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private DiscountUsedRepository discountUsedRepository;
+    
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -864,6 +868,22 @@ public class OrderServiceImpl implements OrderService {
         
         // ✅ Trigger đã chạy tự động sau save()
         // → Broadcast updates qua WebSocket theo LOGIC MỚI
+        
+        // 📧 GỬI EMAIL KHI CHUYỂN SANG SHIPPED
+        if (newStatus == ShipmentStatus.SHIPPED && oldStatus != ShipmentStatus.SHIPPED) {
+            try {
+                // Force load OrderDetails và User để tránh LazyInitializationException
+                if (order.getOrderDetailSet() != null) {
+                    order.getOrderDetailSet().size(); // Trigger lazy loading
+                }
+                // Gửi email async (không block request)
+                emailService.sendOrderShippedEmail(order);
+                System.out.println("📧 Order shipped email triggered for order #" + orderId);
+            } catch (Exception e) {
+                System.err.println("⚠️ Failed to send order shipped email: " + e.getMessage());
+                // Don't throw - email failure shouldn't break order status update
+            }
+        }
         
         // CASE 1: DELIVERED → Tăng sold_quantity (trigger đã chạy)
         if (newStatus == ShipmentStatus.DELIVERED && oldStatus != ShipmentStatus.DELIVERED) {
