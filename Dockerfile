@@ -1,5 +1,5 @@
 # Stage 1: Build stage - Maven build
-FROM maven:3.9-eclipse-temurin-22 AS build
+FROM maven:3.9-eclipse-temurin-21 AS build
 
 # Set working directory
 WORKDIR /app
@@ -24,7 +24,7 @@ RUN ls -la /app/target/ && \
     ls -lh /app/target/*.jar
 
 # Stage 2: Runtime stage - Run application
-FROM eclipse-temurin:22-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 
 # Set working directory
 WORKDIR /app
@@ -52,7 +52,7 @@ USER spring:spring
 EXPOSE 8080
 
 # Set active profile to production
-ENV SPRING_PROFILES_ACTIVE=uat
+ENV SPRING_PROFILES_ACTIVE=pro
 
 # Health check endpoint
 HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
@@ -60,4 +60,10 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
 
 # Run application with dynamic PORT from environment
 # Render will inject PORT environment variable (usually 10000)
-ENTRYPOINT ["sh", "-c", "java -Xmx512m -jar -Dserver.port=${PORT:-8080} app.jar"]
+# Optimized JVM settings for Render Free Tier (512MB RAM):
+# -Xmx400m: Max heap 400MB (leave 112MB for native memory)
+# -Xms200m: Initial heap 200MB (reduce startup memory)
+# -XX:+UseG1GC: G1 Garbage Collector (better for low pause time)
+# -XX:MaxGCPauseMillis=200: Target max GC pause 200ms
+# -XX:MaxMetaspaceSize=128m: Limit metaspace to 128MB
+ENTRYPOINT ["sh", "-c", "java -Xmx400m -Xms200m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=128m -jar -Dserver.port=${PORT:-8080} app.jar"]
