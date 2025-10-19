@@ -14,23 +14,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class AdminHomeController {
 
     @GetMapping
-//    @GetMapping("/admin")
     public String adminHome(RedirectAttributes redirectAttributes, HttpSession session, Model model) {
         Users u = (Users) session.getAttribute(Constant.SESSION_USER);
         if(u == null) {
             return "redirect:/login";
         }
-//        redirectAttributes.addFlashAttribute("user", u);
-//        Pageable pageable = PageRequest.of(0, 5, Sort.by("createdDate").descending());
-//        Page<Order> orderPage = orderService.findAll(pageable);
-//        model.addAttribute("listOrder", orderPage);
-//
-//        long totalOrder = orderService.countOrder();
-//        model.addAttribute("totalOrder", totalOrder);
-//
-//        double totalPrice = orderService.totalPrice().orElse(0.0);
-//        model.addAttribute("totalPrice", totalPrice);
-
-        return "admin/index";
+        
+        // Render dashboard view - data will be loaded via AJAX
+        return "admin/dashboard";
     }
 }
