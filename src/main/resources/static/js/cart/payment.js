@@ -997,6 +997,78 @@ function handlePayment() {
         return;
     }
     
+        // Special handling for PayOS
+        if (paymentMethod === 'PAYOS') {
+            // Prevent duplicate requests
+            if (window.payosProcessing) {
+                return;
+            }
+            window.payosProcessing = true;
+
+            // Disable button
+            $('#btn-payment').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang xử lý...');
+        
+            // Calculate total
+            const shippingDiscount = window.appliedShippingDiscount || 0;
+            const finalShippingFee = shippingFee - shippingDiscount;
+            const finalTotal = subtotal + finalShippingFee - discountAmount;
+            
+            // Create product name and description
+            let productName = 'Đơn hàng từ DeeG Shop';
+            let description = `Đơn hàng ${selectedItems.length} sản phẩm`;
+            
+            if (selectedItems && selectedItems.length > 0) {
+                const itemNames = selectedItems.slice(0, 3).map(item => {
+                    return item.productName || item.name || item.product?.name || item.product?.productName || 'Sản phẩm';
+                }).filter(name => name && name.trim() !== '').join(', ');
+                
+                if (itemNames && itemNames.trim() !== '') {
+                    productName = selectedItems.length > 3 ? 
+                        itemNames + ' và ' + (selectedItems.length - 3) + ' sản phẩm khác' : 
+                        itemNames;
+                } else {
+                    productName = `Đơn hàng gồm ${selectedItems.length} sản phẩm`;
+                }
+            }
+            
+            // Create form data for PayOS
+            const params = new URLSearchParams();
+            params.append('productName', productName);
+            params.append('description', description);
+            params.append('price', finalTotal);
+            params.append('returnUrl', window.location.origin + '/success');
+            params.append('cancelUrl', window.location.origin + '/cancel');
+            
+            // Call PayOS API
+            fetch('/create-payment-link', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: params,
+                redirect: 'manual'
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('PayOS API Error: ' + response.status);
+                }
+            })
+            .then(htmlResponse => {
+                document.open();
+                document.write(htmlResponse);
+                document.close();
+            })
+            .catch(error => {
+                alert('❌ Lỗi tạo link thanh toán PayOS: ' + error.message);
+                $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Đặt hàng');
+                window.payosProcessing = false;
+            });
+            
+            return;
+        }
+    
     // Calculate final total correctly with shipping discount
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;

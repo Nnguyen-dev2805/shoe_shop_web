@@ -14,6 +14,12 @@ import com.dev.shoeshop.dto.SoldQuantityUpdateDTO;
 import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import vn.payos.PayOS;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
+import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
@@ -290,10 +296,26 @@ public class OrderServiceImpl implements OrderService {
                 .message("Order created successfully")
                 .build();
             
-            // If VNPay, generate payment URL
-            if ("VNPAY".equals(payOption)) {
-                String paymentUrl = generateVNPayUrl(savedOrder);
-                orderResult.setPaymentUrl(paymentUrl);
+            // If PayOS, generate payment QR code
+            if ("PAYOS".equals(payOption)) {
+                System.out.println("=== PAYOS PAYMENT DEBUG ===");
+                System.out.println("Order ID: " + savedOrder.getId());
+                System.out.println("Order Amount: " + savedOrder.getTotalPrice());
+                
+                String qrCode = generatePayOSUrl(savedOrder);
+                System.out.println("Generated QR Code: " + (qrCode != null ? "SUCCESS" : "NULL"));
+                
+                if (qrCode != null) {
+                    // Redirect to QR code page
+                    String qrPageUrl = String.format("/user/payment/qr?orderId=%d&amount=%d&qrCode=%s", 
+                        savedOrder.getId(), 
+                        savedOrder.getTotalPrice().longValue(),
+                        URLEncoder.encode(qrCode, StandardCharsets.UTF_8));
+                    System.out.println("QR Page URL: " + qrPageUrl);
+                    orderResult.setPaymentUrl(qrPageUrl);
+                } else {
+                    System.out.println("Failed to generate PayOS QR code");
+                }
             }
             
             return orderResult;
@@ -521,10 +543,48 @@ public class OrderServiceImpl implements OrderService {
         cartRepository.save(cart);
     }
     
-    private String generateVNPayUrl(Order order) {
-        // Implement VNPay URL generation based on your VNPay integration
-        // This is a placeholder
-        return "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?...";
+    @Autowired
+    private PayOS payOS;
+    
+    private String generatePayOSUrl(Order order) {
+        // Use PayOS directly to create payment link
+        try {
+                String productName = "Đơn hàng #" + order.getId();
+                String description = "Thanh toán đơn hàng từ DeeG Shop";
+                String returnUrl = "http://localhost:8081/user/order/view";
+                String cancelUrl = "http://localhost:8081/cart/view";
+                long price = order.getTotalPrice().longValue();
+                long orderCode = System.currentTimeMillis() / 1000;
+            
+            PaymentLinkItem item = PaymentLinkItem.builder()
+                .name(productName)
+                .quantity(1)
+                .price(price)
+                .build();
+
+            CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
+                .orderCode(orderCode)
+                .description(description)
+                .amount(price)
+                .item(item)
+                .returnUrl(returnUrl)
+                .cancelUrl(cancelUrl)
+                .build();
+
+                CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
+
+                // Return checkout URL or QR code
+                if (response.getCheckoutUrl() != null) {
+                    return response.getCheckoutUrl();
+                } else if (response.getQrCode() != null) {
+                    return response.getQrCode();
+                }
+
+                return null;
+        } catch (Exception e) {
+            System.out.println("PayOS Error: " + e.getMessage());
+            return null;
+        }
     }
     
     /**
