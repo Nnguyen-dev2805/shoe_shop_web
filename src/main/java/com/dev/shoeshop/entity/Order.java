@@ -77,16 +77,6 @@ public class Order {
     @JoinColumn(name = "flash_sale_id")
     private FlashSale appliedFlashSale; // Nếu mua từ flash sale
     
-    @Column(name = "payos_order_code")
-    private Long payosOrderCode; // PayOS order code để tracking thanh toán
-    
-    @Column(name = "payment_status")
-    private String paymentStatus; // PENDING, PAID, FAILED, CANCELLED
-    
-    @Column(name = "paid_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date paidAt; // Thời điểm thanh toán thành công
-    
     // Business logic methods
     
     /**

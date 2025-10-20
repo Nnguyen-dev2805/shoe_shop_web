@@ -14,12 +14,6 @@ import com.dev.shoeshop.dto.SoldQuantityUpdateDTO;
 import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import vn.payos.PayOS;
-import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
-import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
-import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
@@ -326,9 +320,6 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("Sending WebSocket notification to admin...");
             sendOrderNotificationToAdmin(savedOrder);
             
-            // Return order result
-            // Note: PayOS payment link is now created separately in ApiCartController
-            // This method is only called for COD or after PayOS payment confirmation
             // ✅ TRACK DISCOUNT USAGE - Tạo DiscountUsed records
             trackDiscountUsage(savedOrder, orderDiscountId, shippingDiscountId);
             
@@ -338,6 +329,12 @@ public class OrderServiceImpl implements OrderService {
                 .status("SUCCESS")
                 .message("Order created successfully")
                 .build();
+            
+            // If VNPay, generate payment URL
+            if ("VNPAY".equals(payOption)) {
+                String paymentUrl = generateVNPayUrl(savedOrder);
+                orderResult.setPaymentUrl(paymentUrl);
+            }
             
             return orderResult;
             
@@ -620,48 +617,10 @@ public class OrderServiceImpl implements OrderService {
         cartRepository.save(cart);
     }
     
-    @Autowired
-    private PayOS payOS;
-    
-    private String generatePayOSUrl(Order order) {
-        // Use PayOS directly to create payment link
-        try {
-                String productName = "Đơn hàng #" + order.getId();
-                String description = "Thanh toán đơn hàng từ DeeG Shop";
-                String returnUrl = "http://localhost:8081/user/order/view";
-                String cancelUrl = "http://localhost:8081/cart/view";
-                long price = order.getTotalPrice().longValue();
-                long orderCode = System.currentTimeMillis() / 1000;
-            
-            PaymentLinkItem item = PaymentLinkItem.builder()
-                .name(productName)
-                .quantity(1)
-                .price(price)
-                .build();
-
-            CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
-                .orderCode(orderCode)
-                .description(description)
-                .amount(price)
-                .item(item)
-                .returnUrl(returnUrl)
-                .cancelUrl(cancelUrl)
-                .build();
-
-                CreatePaymentLinkResponse response = payOS.paymentRequests().create(paymentData);
-
-                // Return checkout URL or QR code
-                if (response.getCheckoutUrl() != null) {
-                    return response.getCheckoutUrl();
-                } else if (response.getQrCode() != null) {
-                    return response.getQrCode();
-                }
-
-                return null;
-        } catch (Exception e) {
-            System.out.println("PayOS Error: " + e.getMessage());
-            return null;
-        }
+    private String generateVNPayUrl(Order order) {
+        // Implement VNPay URL generation based on your VNPay integration
+        // This is a placeholder
+        return "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html?...";
     }
     
     /**
@@ -1156,24 +1115,6 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("✅ Inventory broadcast after order creation complete");
     }
     
-    @Override
-    @Transactional
-    public void updatePayOSPaymentInfo(Long orderId, Long payosOrderCode, String paymentStatus, Date paidAt) {
-        System.out.println("=== Updating PayOS payment info for order: " + orderId + " ===");
-        
-        Order order = orderRepository.findById(orderId)
-            .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
-        
-        order.setPayosOrderCode(payosOrderCode);
-        order.setPaymentStatus(paymentStatus);
-        order.setPaidAt(paidAt);
-        
-        orderRepository.save(order);
-        
-        System.out.println("✅ PayOS payment info updated:");
-        System.out.println("  - PayOS Order Code: " + payosOrderCode);
-        System.out.println("  - Payment Status: " + paymentStatus);
-        System.out.println("  - Paid At: " + paidAt);
     /**
      * Calculate and set order pricing (discounts, original price)
      * Use values from frontend for accuracy

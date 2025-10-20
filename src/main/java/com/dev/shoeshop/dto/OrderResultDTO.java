@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class OrderResultDTO {
     private Long orderId;
     private String paymentUrl; // For VNPay redirection
-    private Long payosOrderCode; // For PayOS payment verification
     private String status;
     private String message;
 }
