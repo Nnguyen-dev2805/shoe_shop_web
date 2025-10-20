@@ -144,69 +144,69 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private void initProducts() {
         // Product 1: Giày Thể Thao Nam
         Product p1 = createProduct("Giày Thể Thao Nam",
-            "Giày thể thao thiết kế hiện đại, phù hợp cho chạy bộ và tập gym", 1L, 1L, 1890000, "/images/the-thao-1.jpg");
+            "Giày thể thao thiết kế hiện đại, phù hợp cho chạy bộ và tập gym", 1L, 1L, 1890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/the-thao-1_ofpkf9.jpg");
         createProductDetails(p1);
 
         // Product 2: Running Pro
         Product p2 = createProduct("Giày Thể Thao Running Pro", 
-            "Giày chạy bộ chuyên nghiệp, đệm khí êm ái", 1L, 2L, 2350000, "/images/the-thao-2.jpg");
+            "Giày chạy bộ chuyên nghiệp, đệm khí êm ái", 1L, 2L, 2350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/the-thao-2_wnj5lk.jpg");
         createProductDetails(p2);
 
         // Product 3: Training All Day
         Product p3 = createProduct("Giày Training All Day", 
-            "Giày tập luyện đa năng, bám sân tốt", 1L, 3L, 1750000, "/images/the-thao-3.jpg");
+            "Giày tập luyện đa năng, bám sân tốt", 1L, 3L, 1750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893901/the-thao-3_rcptay.jpg");
         createProductDetails(p3);
 
         // Product 4-6: Sneakers
         Product p4 = createProduct("Sneaker Street Style Đỏ", 
-            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "/images/sneaker-1.jpg");
+            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sneaker-1_ibssp8.jpg");
         createProductDetails(p4);
 
         Product p5 = createProduct("Sneaker Low-Top Trắng", 
-            "Sneaker trắng basic, dễ phối đồ", 2L, 5L, 1450000, "/images/sneaker-2.jpg");
+            "Sneaker trắng basic, dễ phối đồ", 2L, 5L, 1450000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893900/sneaker-2_uoid45.jpg");
         createProductDetails(p5);
 
         Product p6 = createProduct("Sneaker High-Top Canvas", 
-            "Sneaker cổ cao vải canvas, style vintage", 2L, 4L, 1690000, "/images/sneaker-3.jpg");
+            "Sneaker cổ cao vải canvas, style vintage", 2L, 4L, 1690000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/sneaker-3_pwjfu2.jpg");
         createProductDetails(p6);
 
         // Product 7-9: Bóng Đá
         Product p7 = createProduct("Giày Bóng Đá Sân Cỏ TF", 
-            "Giày bóng đá sân cỏ nhân tạo, đế TF bám sân cực tốt", 3L, 1L, 2890000, "/images/bong-da-1.jpg");
+            "Giày bóng đá sân cỏ nhân tạo, đế TF bám sân cực tốt", 3L, 1L, 2890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-da-1_jhx4pr.jpg");
         createProductDetails(p7);
 
         Product p8 = createProduct("Giày Bóng Đá Mercurial", 
-            "Giày bóng đá tốc độ, thiết kế khí động học", 3L, 1L, 3250000, "/images/bong-da-2.jpg");
+            "Giày bóng đá tốc độ, thiết kế khí động học", 3L, 1L, 3250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-da-2_edzip1.jpg");
         createProductDetails(p8);
 
         Product p9 = createProduct("Giày Đá Banh Predator", 
-            "Giày sút bóng chuẩn xác, công nghệ Control Frame", 3L, 2L, 3150000, "/images/bong-da-3.jpg");
+            "Giày sút bóng chuẩn xác, công nghệ Control Frame", 3L, 2L, 3150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/bong-da-3_dw2ngl.jpg");
         createProductDetails(p9);
 
         // Product 10-12: Bóng Rổ
         Product p10 = createProduct("Giày Bóng Rổ Air Jordan",
-            "Giày bóng rổ cổ cao, bảo vệ cổ chân tối ưu", 4L, 1L, 4590000, "/images/bong-ro-1.jpg");
+            "Giày bóng rổ cổ cao, bảo vệ cổ chân tối ưu", 4L, 1L, 4590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893899/bong-ro-1_tpxjas.jpg");
         createProductDetails(p10);
 
         Product p11 = createProduct("Basketball Shoes Pro", 
-            "Giày bóng rổ chuyên nghiệp, đế cao su chống trơn", 4L, 2L, 4150000, "/images/bong-ro-2.jpg");
+            "Giày bóng rổ chuyên nghiệp, đế cao su chống trơn", 4L, 2L, 4150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/bong-ro-2_bpgxk1.jpg");
         createProductDetails(p11);
 
         Product p12 = createProduct("Giày Bóng Rổ Harden Style", 
-            "Thiết kế năng động, hỗ trợ bật nhảy", 4L, 2L, 3790000, "/images/bong-ro-3.jpg");
+            "Thiết kế năng động, hỗ trợ bật nhảy", 4L, 2L, 3790000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-ro-3_wnzw5d.jpg");
         createProductDetails(p12);
 
         // Product 13-15: Sandals & Dép
         Product p13 = createProduct("Dép Quai Ngang Thời Trang", 
-            "Dép quai ngang êm ái, phù hợp mùa hè", 5L, 1L, 590000, "/images/dep-1.jpg");
+            "Dép quai ngang êm ái, phù hợp mùa hè", 5L, 1L, 590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/dep-1_irwrep.jpg");
         createProductDetails(p13);
 
         Product p14 = createProduct("Dép Adilette Classic", 
-            "Dép thể thao iconic, thoáng mát", 5L, 2L, 750000, "/images/dep-2.jpg");
+            "Dép thể thao iconic, thoáng mát", 5L, 2L, 750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893895/dep-2_na32oy.jpg");
         createProductDetails(p14);
 
         Product p15 = createProduct("Sandal Outdoor Adventure", 
-            "Sandal dã ngoại, đi phượt, leo núi", 5L, 9L, 1150000, "/images/sandal-2.jpg");
+            "Sandal dã ngoại, đi phượt, leo núi", 5L, 9L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
         createProductDetails(p15);
 
         System.out.println("  → Đã tạo 15 products với 120 product details");
