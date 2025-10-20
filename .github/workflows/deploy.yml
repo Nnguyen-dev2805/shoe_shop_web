@@ -2,9 +2,9 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, production ]  # Trigger on both main and production
   pull_request:
-    branches: [ main ]
+    branches: [ main, production ]
 
 env:
   DOCKER_IMAGE: nnguyen2805/shoe-shop-web

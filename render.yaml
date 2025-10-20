@@ -47,3 +47,19 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+
+      # PayOS Payment Gateway (Production)
+      - key: PAYOS_CLIENT_ID
+        sync: false
+      - key: PAYOS_API_KEY
+        sync: false
+      - key: PAYOS_CHECKSUM_KEY
+        sync: false
+      - key: PAYOS_LOG_LEVEL
+        value: NONE
+      - key: PAYOS_PAYOUT_CLIENT_ID
+        sync: false
+      - key: PAYOS_PAYOUT_API_KEY
+        sync: false
+      - key: PAYOS_PAYOUT_CHECKSUM_KEY
+        sync: false
