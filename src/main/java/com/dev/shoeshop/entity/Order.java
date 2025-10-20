@@ -45,7 +45,7 @@ public class Order {
     private Set<OrderDetail> orderDetailSet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "pay_option", columnDefinition = "ENUM('COD', 'VNPAY')", nullable = false)
+    @Column(name = "pay_option", columnDefinition = "ENUM('COD', 'VNPAY', 'PAYOS')", nullable = false)
     private PayOption payOption;
 
 
@@ -76,10 +76,20 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flash_sale_id")
     private FlashSale appliedFlashSale; // Nếu mua từ flash sale
-    
-    @Column(name = "discount_code")
-    private String discountCode; // Mã voucher (nếu có)
-    
+
+
+    // ========== PAYOS PAYMENT TRACKING ==========
+
+    @Column(name = "payos_order_code")
+    private Long payosOrderCode; // PayOS order code để tracking thanh toán
+
+    @Column(name = "payment_status")
+    private String paymentStatus; // PENDING, PAID, FAILED, CANCELLED
+
+    @Column(name = "paid_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date paidAt; // Thời điểm thanh toán thành công
+
     // Business logic methods
     
     /**

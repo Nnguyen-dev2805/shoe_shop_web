@@ -2,12 +2,17 @@ package com.dev.shoeshop.config;
 
 import com.dev.shoeshop.entity.Brand;
 import com.dev.shoeshop.entity.Category;
+import com.dev.shoeshop.entity.Discount;
+import com.dev.shoeshop.entity.Inventory;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Role;
 import com.dev.shoeshop.entity.ShippingCompany;
+import com.dev.shoeshop.entity.ShippingRate;
 import com.dev.shoeshop.entity.ShopWarehouse;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.DiscountValueType;
+import com.dev.shoeshop.enums.VoucherType;
 import com.dev.shoeshop.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
@@ -16,8 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.Statement;
+import java.time.LocalDate;
 
 /**
  * Tự động init data khi app khởi động lần đầu
@@ -32,9 +39,12 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
     private final ProductDetailRepository productDetailRepository;
+    private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
     private final ShippingCompanyRepository shippingCompanyRepository;
     private final ShopWarehouseRepository shopWarehouseRepository;
+    private final ShippingRateRepository shippingRateRepository;
+    private final DiscountRepository discountRepository;
     private final PasswordEncoder passwordEncoder;
     private final DataSource dataSource;
 
@@ -60,16 +70,25 @@ public class ApplicationInitConfig implements ApplicationRunner {
         // 4. Tạo Products & ProductDetails
         initProducts();
 
-        // 5. Tạo Users
+        // 5. Tạo Inventory (tồn kho)
+        initInventory();
+
+        // 6. Tạo Users
         initUsers();
 
-        // 6. Tạo Shipping Companies
+        // 7. Tạo Shipping Companies
         initShippingCompanies();
 
-        // 7. Tạo Shop Warehouse
+        // 8. Tạo Shop Warehouse
         initWarehouse();
 
-        // 8. Tạo Triggers
+        // 9. Tạo Shipping Rates
+        initShippingRates();
+
+        // 10. Tạo Discounts/Vouchers
+        initDiscounts();
+
+        // 11. Tạo Triggers
         initTriggers();
 
         System.out.println("✅ Khởi tạo data thành công!");
@@ -130,69 +149,69 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private void initProducts() {
         // Product 1: Giày Thể Thao Nam
         Product p1 = createProduct("Giày Thể Thao Nam",
-            "Giày thể thao thiết kế hiện đại, phù hợp cho chạy bộ và tập gym", 1L, 1L, 1890000, "/images/the-thao-1.jpg");
+            "Giày thể thao thiết kế hiện đại, phù hợp cho chạy bộ và tập gym", 1L, 1L, 1890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/the-thao-1_ofpkf9.jpg");
         createProductDetails(p1);
 
         // Product 2: Running Pro
         Product p2 = createProduct("Giày Thể Thao Running Pro", 
-            "Giày chạy bộ chuyên nghiệp, đệm khí êm ái", 1L, 2L, 2350000, "/images/the-thao-2.jpg");
+            "Giày chạy bộ chuyên nghiệp, đệm khí êm ái", 1L, 2L, 2350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/the-thao-2_wnj5lk.jpg");
         createProductDetails(p2);
 
         // Product 3: Training All Day
         Product p3 = createProduct("Giày Training All Day", 
-            "Giày tập luyện đa năng, bám sân tốt", 1L, 3L, 1750000, "/images/the-thao-3.jpg");
+            "Giày tập luyện đa năng, bám sân tốt", 1L, 3L, 1750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893901/the-thao-3_rcptay.jpg");
         createProductDetails(p3);
 
         // Product 4-6: Sneakers
         Product p4 = createProduct("Sneaker Street Style Đỏ", 
-            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "/images/sneaker-1.jpg");
+            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sneaker-1_ibssp8.jpg");
         createProductDetails(p4);
 
         Product p5 = createProduct("Sneaker Low-Top Trắng", 
-            "Sneaker trắng basic, dễ phối đồ", 2L, 5L, 1450000, "/images/sneaker-2.jpg");
+            "Sneaker trắng basic, dễ phối đồ", 2L, 5L, 1450000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893900/sneaker-2_uoid45.jpg");
         createProductDetails(p5);
 
         Product p6 = createProduct("Sneaker High-Top Canvas", 
-            "Sneaker cổ cao vải canvas, style vintage", 2L, 4L, 1690000, "/images/sneaker-3.jpg");
+            "Sneaker cổ cao vải canvas, style vintage", 2L, 4L, 1690000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/sneaker-3_pwjfu2.jpg");
         createProductDetails(p6);
 
         // Product 7-9: Bóng Đá
         Product p7 = createProduct("Giày Bóng Đá Sân Cỏ TF", 
-            "Giày bóng đá sân cỏ nhân tạo, đế TF bám sân cực tốt", 3L, 1L, 2890000, "/images/bong-da-1.jpg");
+            "Giày bóng đá sân cỏ nhân tạo, đế TF bám sân cực tốt", 3L, 1L, 2890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-da-1_jhx4pr.jpg");
         createProductDetails(p7);
 
         Product p8 = createProduct("Giày Bóng Đá Mercurial", 
-            "Giày bóng đá tốc độ, thiết kế khí động học", 3L, 1L, 3250000, "/images/bong-da-2.jpg");
+            "Giày bóng đá tốc độ, thiết kế khí động học", 3L, 1L, 3250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-da-2_edzip1.jpg");
         createProductDetails(p8);
 
         Product p9 = createProduct("Giày Đá Banh Predator", 
-            "Giày sút bóng chuẩn xác, công nghệ Control Frame", 3L, 2L, 3150000, "/images/bong-da-3.jpg");
+            "Giày sút bóng chuẩn xác, công nghệ Control Frame", 3L, 2L, 3150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893898/bong-da-3_dw2ngl.jpg");
         createProductDetails(p9);
 
         // Product 10-12: Bóng Rổ
         Product p10 = createProduct("Giày Bóng Rổ Air Jordan",
-            "Giày bóng rổ cổ cao, bảo vệ cổ chân tối ưu", 4L, 1L, 4590000, "/images/bong-ro-1.jpg");
+            "Giày bóng rổ cổ cao, bảo vệ cổ chân tối ưu", 4L, 1L, 4590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893899/bong-ro-1_tpxjas.jpg");
         createProductDetails(p10);
 
         Product p11 = createProduct("Basketball Shoes Pro", 
-            "Giày bóng rổ chuyên nghiệp, đế cao su chống trơn", 4L, 2L, 4150000, "/images/bong-ro-2.jpg");
+            "Giày bóng rổ chuyên nghiệp, đế cao su chống trơn", 4L, 2L, 4150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/bong-ro-2_bpgxk1.jpg");
         createProductDetails(p11);
 
         Product p12 = createProduct("Giày Bóng Rổ Harden Style", 
-            "Thiết kế năng động, hỗ trợ bật nhảy", 4L, 2L, 3790000, "/images/bong-ro-3.jpg");
+            "Thiết kế năng động, hỗ trợ bật nhảy", 4L, 2L, 3790000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/bong-ro-3_wnzw5d.jpg");
         createProductDetails(p12);
 
         // Product 13-15: Sandals & Dép
         Product p13 = createProduct("Dép Quai Ngang Thời Trang", 
-            "Dép quai ngang êm ái, phù hợp mùa hè", 5L, 1L, 590000, "/images/dep-1.jpg");
+            "Dép quai ngang êm ái, phù hợp mùa hè", 5L, 1L, 590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893894/dep-1_irwrep.jpg");
         createProductDetails(p13);
 
         Product p14 = createProduct("Dép Adilette Classic", 
-            "Dép thể thao iconic, thoáng mát", 5L, 2L, 750000, "/images/dep-2.jpg");
+            "Dép thể thao iconic, thoáng mát", 5L, 2L, 750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893895/dep-2_na32oy.jpg");
         createProductDetails(p14);
 
         Product p15 = createProduct("Sandal Outdoor Adventure", 
-            "Sandal dã ngoại, đi phượt, leo núi", 5L, 9L, 1150000, "/images/sandal-2.jpg");
+            "Sandal dã ngoại, đi phượt, leo núi", 5L, 9L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
         createProductDetails(p15);
 
         System.out.println("  → Đã tạo 15 products với 120 product details");
@@ -226,6 +245,24 @@ public class ApplicationInitConfig implements ApplicationRunner {
             detail.setPriceadd(priceAdds[i]);
             productDetailRepository.save(detail);
         }
+    }
+
+    private void initInventory() {
+        // Lấy tất cả ProductDetails đã tạo (15 products × 8 sizes = 120 product details)
+        var allProductDetails = productDetailRepository.findAll();
+        
+        int inventoryCount = 0;
+        
+        // Tạo inventory cho mỗi ProductDetail với quantity = 10
+        for (ProductDetail productDetail : allProductDetails) {
+            Inventory inventory = new Inventory();
+            inventory.setProductDetail(productDetail);
+            inventory.setQuantity(30);  // Mỗi size có 10 sản phẩm tồn kho
+            inventoryRepository.save(inventory);
+            inventoryCount++;
+        }
+        
+        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items)");
     }
 
     private void initUsers() {
@@ -362,6 +399,154 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shopWarehouseRepository.save(mainWarehouse);
 
         System.out.println("  → Đã tạo 1 shop warehouse (kho mặc định)");
+    }
+
+    private void initShippingRates() {
+        // Tạo bảng giá ship theo khoảng cách (theo km)
+        
+        ShippingRate rate1 = new ShippingRate();
+        rate1.setMinDistanceKm(new BigDecimal("0.00"));
+        rate1.setMaxDistanceKm(new BigDecimal("3.00"));
+        rate1.setFee(15000);
+        rate1.setDescription("Nội thành - dưới 3km");
+        rate1.setIsActive(true);
+        shippingRateRepository.save(rate1);
+
+        ShippingRate rate2 = new ShippingRate();
+        rate2.setMinDistanceKm(new BigDecimal("3.01"));
+        rate2.setMaxDistanceKm(new BigDecimal("5.00"));
+        rate2.setFee(20000);
+        rate2.setDescription("Nội thành - 3-5km");
+        rate2.setIsActive(true);
+        shippingRateRepository.save(rate2);
+
+        ShippingRate rate3 = new ShippingRate();
+        rate3.setMinDistanceKm(new BigDecimal("5.01"));
+        rate3.setMaxDistanceKm(new BigDecimal("10.00"));
+        rate3.setFee(30000);
+        rate3.setDescription("Ngoại thành - 5-10km");
+        rate3.setIsActive(true);
+        shippingRateRepository.save(rate3);
+
+        ShippingRate rate4 = new ShippingRate();
+        rate4.setMinDistanceKm(new BigDecimal("10.01"));
+        rate4.setMaxDistanceKm(new BigDecimal("20.00"));
+        rate4.setFee(45000);
+        rate4.setDescription("Ngoại thành xa - 10-20km");
+        rate4.setIsActive(true);
+        shippingRateRepository.save(rate4);
+
+        ShippingRate rate5 = new ShippingRate();
+        rate5.setMinDistanceKm(new BigDecimal("20.01"));
+        rate5.setMaxDistanceKm(new BigDecimal("50.00"));
+        rate5.setFee(60000);
+        rate5.setDescription("Vùng xa - 20-50km");
+        rate5.setIsActive(true);
+        shippingRateRepository.save(rate5);
+
+        ShippingRate rate6 = new ShippingRate();
+        rate6.setMinDistanceKm(new BigDecimal("50.01"));
+        rate6.setMaxDistanceKm(new BigDecimal("999999.00"));
+        rate6.setFee(80000);
+        rate6.setDescription("Vùng rất xa - trên 50km");
+        rate6.setIsActive(true);
+        shippingRateRepository.save(rate6);
+
+        System.out.println("  → Đã tạo 6 shipping rates");
+    }
+
+    private void initDiscounts() {
+        LocalDate today = LocalDate.now();
+        
+        // 1. VOUCHER GIẢM GIÁ ĐƠN HÀNG - Giảm %
+        Discount orderPercent = new Discount();
+        orderPercent.setName("Giảm 20% đơn hàng đầu tiên");
+        orderPercent.setQuantity(500);
+        orderPercent.setPercent(0.20);  // 20%
+        orderPercent.setStatus("ACTIVE");
+        orderPercent.setMinOrderValue(500000.0);  // Đơn tối thiểu 500k
+        orderPercent.setStartDate(today);
+        orderPercent.setEndDate(today.plusMonths(1));
+        orderPercent.setType(VoucherType.ORDER_DISCOUNT);
+        orderPercent.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        orderPercent.setMaxDiscountAmount(100000.0);  // Giảm tối đa 100k
+        orderPercent.setIsDelete(false);
+        discountRepository.save(orderPercent);
+
+        // 2. VOUCHER GIẢM GIÁ ĐƠN HÀNG - Giảm cố định
+        Discount orderFixed = new Discount();
+        orderFixed.setName("Giảm 50.000đ cho đơn từ 300k");
+        orderFixed.setQuantity(1000);
+        orderFixed.setPercent(50000.0);  // Số tiền giảm (field percent dùng chung)
+        orderFixed.setStatus("ACTIVE");
+        orderFixed.setMinOrderValue(300000.0);
+        orderFixed.setStartDate(today);
+        orderFixed.setEndDate(today.plusMonths(3));
+        orderFixed.setType(VoucherType.ORDER_DISCOUNT);
+        orderFixed.setDiscountValueType(DiscountValueType.FIXED_AMOUNT);
+        orderFixed.setIsDelete(false);
+        discountRepository.save(orderFixed);
+
+        // 3. VOUCHER MIỄN PHÍ SHIP - 100%
+        Discount freeShip = new Discount();
+        freeShip.setName("Freeship 100% đơn từ 500k");
+        freeShip.setQuantity(300);
+        freeShip.setPercent(1.0);  // 100%
+        freeShip.setStatus("ACTIVE");
+        freeShip.setMinOrderValue(500000.0);
+        freeShip.setStartDate(today);
+        freeShip.setEndDate(today.plusDays(15));
+        freeShip.setType(VoucherType.SHIPPING_DISCOUNT);
+        freeShip.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        freeShip.setMaxDiscountAmount(50000.0);  // Giảm tối đa 50k
+        freeShip.setIsDelete(false);
+        discountRepository.save(freeShip);
+
+        // 4. VOUCHER GIẢM PHÍ SHIP - Giảm %
+        Discount shipPercent = new Discount();
+        shipPercent.setName("Giảm 50% phí ship (tối đa 20k)");
+        shipPercent.setQuantity(800);
+        shipPercent.setPercent(0.50);  // 50%
+        shipPercent.setStatus("ACTIVE");
+        shipPercent.setMinOrderValue(200000.0);
+        shipPercent.setStartDate(today);
+        shipPercent.setEndDate(today.plusMonths(2));
+        shipPercent.setType(VoucherType.SHIPPING_DISCOUNT);
+        shipPercent.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        shipPercent.setMaxDiscountAmount(20000.0);
+        shipPercent.setIsDelete(false);
+        discountRepository.save(shipPercent);
+
+        // 5. VOUCHER GIẢM PHÍ SHIP - Giảm cố định
+        Discount shipFixed = new Discount();
+        shipFixed.setName("Giảm 30.000đ phí ship");
+        shipFixed.setQuantity(600);
+        shipFixed.setPercent(30000.0);  // Giảm cố định 30k
+        shipFixed.setStatus("ACTIVE");
+        shipFixed.setMinOrderValue(0.0);  // Không yêu cầu tối thiểu
+        shipFixed.setStartDate(today);
+        shipFixed.setEndDate(today.plusMonths(1));
+        shipFixed.setType(VoucherType.SHIPPING_DISCOUNT);
+        shipFixed.setDiscountValueType(DiscountValueType.FIXED_AMOUNT);
+        shipFixed.setIsDelete(false);
+        discountRepository.save(shipFixed);
+
+        // 6. VOUCHER SẮP DIỄN RA - Flash Sale
+        Discount comingSoon = new Discount();
+        comingSoon.setName("Flash Sale - Giảm 30% đơn từ 1 triệu");
+        comingSoon.setQuantity(100);
+        comingSoon.setPercent(0.30);  // 30%
+        comingSoon.setStatus("COMING");
+        comingSoon.setMinOrderValue(1000000.0);
+        comingSoon.setStartDate(today.plusDays(3));
+        comingSoon.setEndDate(today.plusDays(10));
+        comingSoon.setType(VoucherType.ORDER_DISCOUNT);
+        comingSoon.setDiscountValueType(DiscountValueType.PERCENTAGE);
+        comingSoon.setMaxDiscountAmount(200000.0);
+        comingSoon.setIsDelete(false);
+        discountRepository.save(comingSoon);
+
+        System.out.println("  → Đã tạo 6 vouchers (3 order discount, 3 shipping discount)");
     }
 
     private void initTriggers() {

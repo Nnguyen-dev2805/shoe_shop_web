@@ -229,6 +229,7 @@ public class ProductServiceImpl implements ProductService {
                     
                     // Return Flash Sale Info for ProductDetailResponse
                     return ProductDetailResponse.FlashSaleInfo.builder()
+                            .id(flashSale.getId()) // 🔥 THÊM Flash Sale ID
                             .active(true)
                             .flashSalePrice(flashSalePrice)
                             .discountPercent(discountPercent)
@@ -280,6 +281,7 @@ public class ProductServiceImpl implements ProductService {
                     
                     // Return Flash Sale Info
                     return ProductResponse.FlashSaleInfo.builder()
+                            .id(flashSale.getId()) // 🔥 THÊM Flash Sale ID
                             .active(true)
                             .flashSalePrice(flashSalePrice)
                             .originalPrice(originalPrice)

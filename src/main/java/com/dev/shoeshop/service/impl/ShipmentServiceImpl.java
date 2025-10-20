@@ -9,8 +9,10 @@ import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ShipmentRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.ShipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,9 @@ public class ShipmentServiceImpl implements ShipmentService {
     private OrderRepository orderRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    @Lazy
+    private OrderService orderService;
 
 
     @Override
@@ -56,9 +61,9 @@ public class ShipmentServiceImpl implements ShipmentService {
         shipment.setStatus(ShipmentStatus.SHIPPED.toString());
         shipmentRepository.save(shipment);
 
-        order.setStatus(ShipmentStatus.SHIPPED);
-
-        orderRepository.save(order);
+        // ✅ Gọi OrderService.updateOrderStatus() để trigger email notification
+        orderService.updateOrderStatus(orderid, ShipmentStatus.SHIPPED);
+        System.out.println("📧 Called orderService.updateOrderStatus() to trigger email");
     }
     
     @Override

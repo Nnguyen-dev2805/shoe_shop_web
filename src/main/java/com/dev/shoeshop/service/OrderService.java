@@ -50,8 +50,10 @@ public interface OrderService {
     OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                  Double finalTotalPrice, String payOption, 
                                  Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
+                                 Long flashSaleId,
                                  java.util.List<Integer> selectedItemIds,
-                                 java.util.Map<Integer, Integer> itemQuantities);
+                                 java.util.Map<Integer, Integer> itemQuantities,
+                                 Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount);
     
     /**
      * Đánh dấu đơn hàng đã giao thành công
@@ -62,4 +64,9 @@ public interface OrderService {
      * Đánh dấu đơn hàng bị hoàn trả
      */
     void markOrderAsReturn(Long orderId);
+    
+    /**
+     * Update PayOS payment information after webhook confirmation
+     */
+    void updatePayOSPaymentInfo(Long orderId, Long payosOrderCode, String paymentStatus, java.util.Date paidAt);
 }

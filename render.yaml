@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: deeg-shoe-shop
+    env: docker
+    region: singapore
+    plan: free
+    # Use pre-built image from Docker Hub (faster deployment)
+    # image:
+    #   url: docker.io/nnguyen2805/shoe-shop-web:latest
+    # OR build from Dockerfile (current method)
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /actuator/health
+    # Disable auto-deploy, use GitHub Actions to trigger
+    autoDeploy: false
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: pro
+
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: JPA_DDL_AUTO
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOONG_API_KEY
+        sync: false
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: APP_URL
+        sync: false
+      - key: UPLOAD_DIR
+        sync: false
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false

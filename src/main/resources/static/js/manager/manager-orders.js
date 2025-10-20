@@ -254,6 +254,8 @@ function getPaymentBadge(payOption) {
         'COD': { class: 'badge badge-payment-cod', text: 'Tiền mặt' },
         'BANKING': { class: 'badge badge-payment-banking', text: 'Banking' },
         'VNPAY': { class: 'badge badge-payment-vnpay', text: 'VNPay' }
+        'COD': { class: 'bg-warning text-dark', text: 'Tiền mặt', icon: 'solar:wallet-money-bold-duotone' },
+        'PAYOS': { class: 'bg-info text-white', text: 'PayOS', icon: 'solar:card-bold-duotone' }
     };
     
     const config = paymentConfig[payOption] || { class: 'badge bg-secondary', text: payOption };

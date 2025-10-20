@@ -183,7 +183,7 @@ function getStatusText(status) {
 function getPayOptionText(payOption) {
     switch(payOption) {
         case 'COD': return 'Thanh toán khi nhận hàng';
-        case 'VNPAY': return 'Thanh toán VNPay';
+        case 'PAYOS': return 'Thanh toán PayOS';
         default: return 'Không xác định';
     }
 }
