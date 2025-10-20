@@ -289,34 +289,14 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("Sending WebSocket notification to admin...");
             sendOrderNotificationToAdmin(savedOrder);
             
-            // Handle payment processing
+            // Return order result
+            // Note: PayOS payment link is now created separately in ApiCartController
+            // This method is only called for COD or after PayOS payment confirmation
             OrderResultDTO orderResult = OrderResultDTO.builder()
                 .orderId(savedOrder.getId())
                 .status("SUCCESS")
                 .message("Order created successfully")
                 .build();
-            
-            // If PayOS, generate payment QR code
-            if ("PAYOS".equals(payOption)) {
-                System.out.println("=== PAYOS PAYMENT DEBUG ===");
-                System.out.println("Order ID: " + savedOrder.getId());
-                System.out.println("Order Amount: " + savedOrder.getTotalPrice());
-                
-                String qrCode = generatePayOSUrl(savedOrder);
-                System.out.println("Generated QR Code: " + (qrCode != null ? "SUCCESS" : "NULL"));
-                
-                if (qrCode != null) {
-                    // Redirect to QR code page
-                    String qrPageUrl = String.format("/user/payment/qr?orderId=%d&amount=%d&qrCode=%s", 
-                        savedOrder.getId(), 
-                        savedOrder.getTotalPrice().longValue(),
-                        URLEncoder.encode(qrCode, StandardCharsets.UTF_8));
-                    System.out.println("QR Page URL: " + qrPageUrl);
-                    orderResult.setPaymentUrl(qrPageUrl);
-                } else {
-                    System.out.println("Failed to generate PayOS QR code");
-                }
-            }
             
             return orderResult;
             
@@ -1055,5 +1035,25 @@ public class OrderServiceImpl implements OrderService {
         }
         
         System.out.println("✅ Inventory broadcast after order creation complete");
+    }
+    
+    @Override
+    @Transactional
+    public void updatePayOSPaymentInfo(Long orderId, Long payosOrderCode, String paymentStatus, Date paidAt) {
+        System.out.println("=== Updating PayOS payment info for order: " + orderId + " ===");
+        
+        Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
+        
+        order.setPayosOrderCode(payosOrderCode);
+        order.setPaymentStatus(paymentStatus);
+        order.setPaidAt(paidAt);
+        
+        orderRepository.save(order);
+        
+        System.out.println("✅ PayOS payment info updated:");
+        System.out.println("  - PayOS Order Code: " + payosOrderCode);
+        System.out.println("  - Payment Status: " + paymentStatus);
+        System.out.println("  - Paid At: " + paidAt);
     }
 }

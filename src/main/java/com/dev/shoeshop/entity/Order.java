@@ -80,6 +80,18 @@ public class Order {
     @Column(name = "discount_code")
     private String discountCode; // Mã voucher (nếu có)
     
+    // ========== PAYOS PAYMENT TRACKING ==========
+    
+    @Column(name = "payos_order_code")
+    private Long payosOrderCode; // PayOS order code để tracking thanh toán
+    
+    @Column(name = "payment_status")
+    private String paymentStatus; // PENDING, PAID, FAILED, CANCELLED
+    
+    @Column(name = "paid_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date paidAt; // Thời điểm thanh toán thành công
+    
     // Business logic methods
     
     /**

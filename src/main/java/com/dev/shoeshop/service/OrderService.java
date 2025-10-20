@@ -62,4 +62,9 @@ public interface OrderService {
      * Đánh dấu đơn hàng bị hoàn trả
      */
     void markOrderAsReturn(Long orderId);
+    
+    /**
+     * Update PayOS payment information after webhook confirmation
+     */
+    void updatePayOSPaymentInfo(Long orderId, Long payosOrderCode, String paymentStatus, java.util.Date paidAt);
 }
