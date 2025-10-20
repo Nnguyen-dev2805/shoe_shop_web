@@ -11,11 +11,12 @@ COPY pom.xml .
 COPY src ./src
 
 # RUN mvn dependency:go-offline -B
+RUN mvn dependency:go-offline -B -T 1C
 
 # Build application (skip tests for faster build)
 # Maven will automatically download dependencies during build
 # Remove -T flag to avoid parallel build issues
-RUN mvn clean package -DskipTests -B
+RUN mvn clean package -DskipTests -T 1C
 
 # Verify JAR file was created
 # dùng để debug có thể xóa
