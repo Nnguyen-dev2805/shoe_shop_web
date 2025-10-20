@@ -3,6 +3,7 @@ package com.dev.shoeshop.config;
 import com.dev.shoeshop.entity.Brand;
 import com.dev.shoeshop.entity.Category;
 import com.dev.shoeshop.entity.Discount;
+import com.dev.shoeshop.entity.Inventory;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.entity.Role;
@@ -38,6 +39,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final BrandRepository brandRepository;
     private final ProductRepository productRepository;
     private final ProductDetailRepository productDetailRepository;
+    private final InventoryRepository inventoryRepository;
     private final UserRepository userRepository;
     private final ShippingCompanyRepository shippingCompanyRepository;
     private final ShopWarehouseRepository shopWarehouseRepository;
@@ -68,22 +70,25 @@ public class ApplicationInitConfig implements ApplicationRunner {
         // 4. Tạo Products & ProductDetails
         initProducts();
 
-        // 5. Tạo Users
+        // 5. Tạo Inventory (tồn kho)
+        initInventory();
+
+        // 6. Tạo Users
         initUsers();
 
-        // 6. Tạo Shipping Companies
+        // 7. Tạo Shipping Companies
         initShippingCompanies();
 
-        // 7. Tạo Shop Warehouse
+        // 8. Tạo Shop Warehouse
         initWarehouse();
 
-        // 8. Tạo Shipping Rates
+        // 9. Tạo Shipping Rates
         initShippingRates();
 
-        // 9. Tạo Discounts/Vouchers
+        // 10. Tạo Discounts/Vouchers
         initDiscounts();
 
-        // 10. Tạo Triggers
+        // 11. Tạo Triggers
         initTriggers();
 
         System.out.println("✅ Khởi tạo data thành công!");
@@ -240,6 +245,24 @@ public class ApplicationInitConfig implements ApplicationRunner {
             detail.setPriceadd(priceAdds[i]);
             productDetailRepository.save(detail);
         }
+    }
+
+    private void initInventory() {
+        // Lấy tất cả ProductDetails đã tạo (15 products × 8 sizes = 120 product details)
+        var allProductDetails = productDetailRepository.findAll();
+        
+        int inventoryCount = 0;
+        
+        // Tạo inventory cho mỗi ProductDetail với quantity = 10
+        for (ProductDetail productDetail : allProductDetails) {
+            Inventory inventory = new Inventory();
+            inventory.setProductDetail(productDetail);
+            inventory.setQuantity(30);  // Mỗi size có 10 sản phẩm tồn kho
+            inventoryRepository.save(inventory);
+            inventoryCount++;
+        }
+        
+        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items)");
     }
 
     private void initUsers() {
