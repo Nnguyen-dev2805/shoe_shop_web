@@ -496,8 +496,19 @@ function renderOrderVouchers(vouchers) {
         // Format date
         const endDate = voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'Không giới hạn';
         
-        // Calculate discount percentage
-        const discountPercent = Math.round(voucher.percent * 100);
+        // ✅ Check discount type and format accordingly
+        let badgeText, description, badgeClass;
+        if (voucher.discountValueType === 'PERCENTAGE') {
+            const discountPercent = Math.round(voucher.percent * 100); // Backend lưu 0-1, nhân 100 để ra %
+            badgeText = `-${discountPercent}%`;
+            description = `Giảm ${discountPercent}% tổng đơn hàng`;
+            badgeClass = '';
+        } else {
+            // FIXED_AMOUNT
+            badgeText = formatCurrency(voucher.percent);
+            description = `Giảm ${formatCurrency(voucher.percent)} tổng đơn hàng`;
+            badgeClass = 'fixed-amount';
+        }
         
         // Check if best choice (first available voucher)
         const isBestChoice = index === 0;
@@ -506,7 +517,7 @@ function renderOrderVouchers(vouchers) {
             <div class="shopee-voucher-card" data-voucher-id="${voucher.id}" data-type="order">
                 <div class="voucher-left">
                     <div class="voucher-badge">
-                        <div class="badge-percent">-${discountPercent}%</div>
+                        <div class="badge-percent ${badgeClass}">${badgeText}</div>
                         <div class="badge-label">GIẢM GIÁ</div>
                     </div>
                 </div>
@@ -515,7 +526,7 @@ function renderOrderVouchers(vouchers) {
                         ${voucher.name}
                         ${isBestChoice ? '<span class="best-choice-badge">Lựa chọn tốt nhất</span>' : ''}
                     </div>
-                    <div class="voucher-description">Giảm ${discountPercent}% tổng đơn hàng</div>
+                    <div class="voucher-description">${description}</div>
                     <div class="voucher-expiry">
                         <i class="fa fa-clock-o"></i> HSD: ${endDate}
                     </div>
@@ -558,12 +569,13 @@ function renderShippingVouchers(vouchers) {
         // Format date
         const endDate = voucher.endDate ? new Date(voucher.endDate).toLocaleDateString('vi-VN') : 'Không giới hạn';
         
-        // Calculate discount text
+        // ✅ Calculate discount text
         let badgeText = '';
         let descriptionText = '';
+        let badgeClass = '';
         
         if (voucher.discountValueType === 'PERCENTAGE') {
-            const percent = Math.round(voucher.percent * 100);
+            const percent = Math.round(voucher.percent * 100); // Backend lưu 0-1, nhân 100 để ra %
             badgeText = `-${percent}%`;
             descriptionText = `Giảm ${percent}% phí ship`;
             if (voucher.maxDiscountAmount) {
@@ -571,8 +583,9 @@ function renderShippingVouchers(vouchers) {
             }
         } else {
             // FIXED_AMOUNT
-            badgeText = 'FREE';
-            descriptionText = `Miễn phí ship ${formatCurrency(voucher.percent)}`;
+            badgeText = formatCurrency(voucher.percent);
+            descriptionText = `Giảm ${formatCurrency(voucher.percent)} phí ship`;
+            badgeClass = 'fixed-amount';
         }
         
         const isBestChoice = index === 0;
@@ -581,7 +594,7 @@ function renderShippingVouchers(vouchers) {
             <div class="shopee-voucher-card shipping-voucher-card" data-voucher-id="${voucher.id}" data-type="shipping">
                 <div class="voucher-left shipping">
                     <div class="voucher-badge shipping">
-                        <div class="badge-percent">${badgeText}</div>
+                        <div class="badge-percent ${badgeClass}">${badgeText}</div>
                         <div class="badge-label">SHIP</div>
                     </div>
                 </div>
@@ -673,8 +686,11 @@ function calculatePrices() {
     console.log('Shipping fee:', shippingFee);
     console.log('Discount percent:', discountPercent);
     
-    // Calculate order discount
-    discountAmount = subtotal * (discountPercent / 100);
+    // Calculate order discount (only if using percentage)
+    if (discountPercent > 0) {
+        discountAmount = subtotal * (discountPercent / 100);
+    }
+    // If discountAmount already set (FIXED_AMOUNT voucher), keep it
     
     // Get shipping discount (if applied)
     const shippingDiscount = window.appliedShippingDiscount || 0;
@@ -777,19 +793,27 @@ function bindEventHandlers() {
             return;
         }
         
-        // Calculate order discount (voucher.percent is already in decimal 0-1)
-        const orderDiscountPercent = selectedVoucher.percent * 100; // Convert to percentage for display
+        // ✅ Calculate order discount based on type
+        if (selectedVoucher.discountValueType === 'PERCENTAGE') {
+            // Percentage discount (backend stores as 0-1, multiply by 100 for display)
+            const orderDiscountPercent = selectedVoucher.percent * 100;
+            discountPercent = orderDiscountPercent;
+            
+            console.log('💰 Order discount:', orderDiscountPercent + '%');
+            alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + orderDiscountPercent + '%');
+        } else {
+            // FIXED_AMOUNT discount
+            discountPercent = 0; // Reset percentage
+            discountAmount = selectedVoucher.percent; // Use fixed amount directly
+            
+            console.log('💰 Order discount:', formatCurrency(selectedVoucher.percent));
+            alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + formatCurrency(selectedVoucher.percent));
+        }
         
-        console.log('💰 Order discount:', orderDiscountPercent + '%');
-        
-        // Store applied order discount
-        discountPercent = orderDiscountPercent;
         window.appliedOrderVoucherId = selectedId;
         
         // Recalculate total
         calculatePrices();
-        
-        alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + orderDiscountPercent + '%');
     });
     
     // Confirm shipping voucher button
@@ -1021,9 +1045,13 @@ function handlePayment() {
     const orderVoucherId = window.appliedOrderVoucherId || null;
     const shippingVoucherId = window.appliedShippingVoucherId || null;
     
+    // 🔥 Get flash sale ID from sessionStorage (for Buy Now mode)
+    const flashSaleId = sessionStorage.getItem('flashSaleId');
+    
     console.log('🎫 Applied Vouchers:');
     console.log('  Order voucher ID:', orderVoucherId);
     console.log('  Shipping voucher ID:', shippingVoucherId);
+    console.log('🔥 Flash Sale ID:', flashSaleId);
     
     const paymentData = {
         cartId: cartId ? parseInt(cartId) : null,
@@ -1031,8 +1059,13 @@ function handlePayment() {
         shippingCompanyId: parseInt(shippingCompanyId),
         orderDiscountId: orderVoucherId ? parseInt(orderVoucherId) : null,
         shippingDiscountId: shippingVoucherId ? parseInt(shippingVoucherId) : null,
+        flashSaleId: flashSaleId ? parseInt(flashSaleId) : null, // 🔥 THÊM FLASH SALE ID
         payOption: paymentMethod,
         finalTotalPrice: finalTotal,
+        subtotal: subtotal, // ✅ THÊM subtotal
+        shippingFee: shippingFee, // ✅ THÊM shipping fee gốc
+        orderDiscountAmount: discountAmount, // ✅ THÊM discount amount
+        shippingDiscountAmount: shippingDiscount, // ✅ THÊM shipping discount
         selectedItemIds: selectedItemIds,
         selectedItemsData: selectedItemsData
     };
@@ -1053,6 +1086,23 @@ function handlePayment() {
             
             if (response.success) {
                 console.log('🎉 Payment request successful!');
+                console.log('🎉 Order placed successfully!');
+                
+                // ✅ Clear ALL session storage related to checkout
+                sessionStorage.removeItem('selectedItems');        // Buy Now data
+                sessionStorage.removeItem('selectedCartItems');    // Cart data
+                sessionStorage.removeItem('selectedAddressId');
+                sessionStorage.removeItem('cartId');
+                sessionStorage.removeItem('checkoutSource');       // ✅ THÊM
+                sessionStorage.removeItem('buyNowMode');           // ✅ THÊM
+                sessionStorage.removeItem('flashSaleId');          // 🔥 Clear flash sale
+                
+                console.log('✅ SessionStorage cleared after successful payment');
+                
+                // Clear applied vouchers
+                window.appliedShippingDiscount = 0;
+                window.appliedShippingVoucherId = null;
+                window.appliedOrderVoucherId = null;
                 
                 if (response.data && response.data.paymentUrl) {
                     // PayOS payment: Save data to sessionStorage before opening payment

@@ -135,6 +135,16 @@ public class FlashSale {
     }
     
     /**
+     * Giảm số lượng đã bán (khi order bị CANCEL hoặc RETURN)
+     */
+    public void decrementSold(int quantity) {
+        if (this.totalSold == null) {
+            this.totalSold = 0;
+        }
+        this.totalSold = Math.max(0, this.totalSold - quantity);
+    }
+    
+    /**
      * Tự động update status dựa trên thời gian hiện tại
      */
     public void updateStatusByTime() {

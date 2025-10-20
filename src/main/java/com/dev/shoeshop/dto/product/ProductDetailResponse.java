@@ -42,6 +42,7 @@ public class ProductDetailResponse {
     @Setter
     @Builder
     public static class FlashSaleInfo {
+        private Long id; // 🔥 THÊM Flash Sale ID
         private Boolean active;
         private Double flashSalePrice;
         private Double discountPercent;

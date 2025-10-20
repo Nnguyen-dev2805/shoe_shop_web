@@ -77,11 +77,6 @@ public class Order {
     @JoinColumn(name = "flash_sale_id")
     private FlashSale appliedFlashSale; // Nếu mua từ flash sale
     
-    @Column(name = "discount_code")
-    private String discountCode; // Mã voucher (nếu có)
-    
-    // ========== PAYOS PAYMENT TRACKING ==========
-    
     @Column(name = "payos_order_code")
     private Long payosOrderCode; // PayOS order code để tracking thanh toán
     

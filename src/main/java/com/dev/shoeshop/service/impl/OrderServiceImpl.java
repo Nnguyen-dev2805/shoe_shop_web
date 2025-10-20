@@ -24,12 +24,15 @@ import com.dev.shoeshop.repository.AddressRepository;
 import com.dev.shoeshop.repository.CartDetailRepository;
 import com.dev.shoeshop.repository.CartRepository;
 import com.dev.shoeshop.repository.DiscountRepository;
+import com.dev.shoeshop.repository.DiscountUsedRepository;
+import com.dev.shoeshop.repository.FlashSaleRepository;
 import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.EmailService;
 import com.dev.shoeshop.service.NotificationService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
@@ -86,6 +89,15 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private InventoryRepository inventoryRepository;
+    
+    @Autowired
+    private FlashSaleRepository flashSaleRepository;
+    
+    @Autowired
+    private DiscountUsedRepository discountUsedRepository;
+    
+    @Autowired
+    private EmailService emailService;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -176,8 +188,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public void cancelOrder(Long orderId) {
         Order order = findById(orderId);
+        
+        // ✅ Nếu order có flash sale, giảm totalSold
+        if (order.getAppliedFlashSale() != null) {
+            FlashSale flashSale = order.getAppliedFlashSale();
+            int totalQuantity = order.getOrderDetailSet().stream()
+                .mapToInt(detail -> detail.getQuantity())
+                .sum();
+            
+            flashSale.decrementSold(totalQuantity);
+            flashSaleRepository.save(flashSale);
+            System.out.println("🔥 Decreased Flash Sale totalSold by " + totalQuantity + " (Order CANCEL)");
+        }
+        
         order.setStatus(ShipmentStatus.CANCEL);
         orderRepository.save(order);
         System.out.println("Service save");
@@ -207,14 +233,17 @@ public class OrderServiceImpl implements OrderService {
     public OrderResultDTO processCheckout(Long cartId, Long userId, Long addressId, 
                                         Double finalTotalPrice, String payOption, 
                                         Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
+                                        Long flashSaleId,
                                         java.util.List<Integer> selectedItemIds,
-                                        java.util.Map<Integer, Integer> itemQuantities) {
+                                        java.util.Map<Integer, Integer> itemQuantities,
+                                        Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount) {
         try {
             System.out.println("=== Processing checkout in service ===");
             System.out.println("Cart ID: " + cartId);
             System.out.println("User ID: " + userId);
             System.out.println("✅ Order Discount ID: " + orderDiscountId);
             System.out.println("✅ Shipping Discount ID: " + shippingDiscountId);
+            System.out.println("🔥 Flash Sale ID: " + flashSaleId);
             System.out.println("Selected Item IDs: " + selectedItemIds);
             
             // Get address
@@ -235,7 +264,8 @@ public class OrderServiceImpl implements OrderService {
                 // Create order directly from product details
                 Order order = createOrderFromProductDetails(user, address, finalTotalPrice, payOption, 
                                                           shippingCompanyId, orderDiscountId, shippingDiscountId,
-                                                          selectedItemIds, itemQuantities);
+                                                          flashSaleId, selectedItemIds, itemQuantities,
+                                                          subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount);
                 savedOrder = orderRepository.save(order);
                 
                 System.out.println("Buy Now order created with ID: " + savedOrder.getId());
@@ -245,6 +275,9 @@ public class OrderServiceImpl implements OrderService {
                         .orElse(savedOrder);
                 System.out.println("Order details count after refresh: " + 
                                  (savedOrder.getOrderDetailSet() != null ? savedOrder.getOrderDetailSet().size() : 0));
+                
+                // 🔥 Tăng Flash Sale totalSold khi tạo order (Buy Now mode)
+                incrementFlashSaleTotalSold(savedOrder);
                 
             } else {
                 // CART MODE: Process from cart
@@ -262,7 +295,8 @@ public class OrderServiceImpl implements OrderService {
                 
                 // Create order from selected cart items
                 Order order = createOrderFromCart(cart, address, finalTotalPrice, payOption, 
-                                                orderDiscountId, shippingDiscountId, selectedItemIds);
+                                                orderDiscountId, shippingDiscountId, flashSaleId, selectedItemIds,
+                                                subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount);
                 
                 // Save order (sẽ cascade insert order_detail)
                 // Lúc này cart items đã bị xóa rồi
@@ -273,6 +307,9 @@ public class OrderServiceImpl implements OrderService {
                 removeSelectedItemsFromCart(cart, selectedItemIds);
                 
                 System.out.println("Cart order created with ID: " + savedOrder.getId());
+                
+                // 🔥 Tăng Flash Sale totalSold khi tạo order (Cart mode)
+                incrementFlashSaleTotalSold(savedOrder);
             }
             
             // ✅ REFRESH order để lấy orderDetailSet từ DB (sau khi cascade insert)
@@ -292,6 +329,10 @@ public class OrderServiceImpl implements OrderService {
             // Return order result
             // Note: PayOS payment link is now created separately in ApiCartController
             // This method is only called for COD or after PayOS payment confirmation
+            // ✅ TRACK DISCOUNT USAGE - Tạo DiscountUsed records
+            trackDiscountUsage(savedOrder, orderDiscountId, shippingDiscountId);
+            
+            // Handle payment processing
             OrderResultDTO orderResult = OrderResultDTO.builder()
                 .orderId(savedOrder.getId())
                 .status("SUCCESS")
@@ -342,8 +383,10 @@ public class OrderServiceImpl implements OrderService {
      */
     private Order createOrderFromProductDetails(Users user, Address address, Double finalTotalPrice, 
                                                String payOption, Long shippingCompanyId, Long orderDiscountId, Long shippingDiscountId,
+                                               Long flashSaleId,
                                                java.util.List<Integer> selectedItemIds,
-                                               java.util.Map<Integer, Integer> itemQuantities) {
+                                               java.util.Map<Integer, Integer> itemQuantities,
+                                               Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount) {
         System.out.println("Creating order from product details (Buy Now)...");
         
         // Create order
@@ -361,9 +404,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
             if (orderDiscount != null) {
                 order.setAppliedDiscount(orderDiscount);
-                // Calculate discount amount (assuming percent is already decimal 0-1)
-                // discountAmount will be calculated by frontend and reflected in finalTotalPrice
-                order.setDiscountAmount(0.0); // Will be set properly if needed
                 System.out.println("✅ Applied order discount: " + orderDiscount.getName());
             }
         }
@@ -374,9 +414,29 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
             if (shippingDiscount != null) {
                 order.setShippingDiscount(shippingDiscount);
-                order.setShippingDiscountAmount(0.0); // Will be set properly if needed
                 System.out.println("✅ Applied shipping discount: " + shippingDiscount.getName());
             }
+        }
+        
+        // 🔥 Set flash sale if applied
+        System.out.println("🔍 DEBUG (Buy Now): flashSaleId = " + flashSaleId);
+        if (flashSaleId != null) {
+            System.out.println("🔍 DEBUG: Querying flash sale with ID: " + flashSaleId);
+            FlashSale flashSale = flashSaleRepository.findById(flashSaleId)
+                .orElse(null);
+            System.out.println("🔍 DEBUG: FlashSale found = " + (flashSale != null));
+            if (flashSale != null) {
+                System.out.println("🔍 DEBUG: FlashSale.isActive() = " + flashSale.isActive());
+            }
+            
+            if (flashSale != null && flashSale.isActive()) {
+                order.setAppliedFlashSale(flashSale);
+                System.out.println("🔥 Applied Flash Sale: " + flashSale.getName() + " (ID: " + flashSale.getId() + ")");
+            } else {
+                System.out.println("⚠️ Flash Sale ID " + flashSaleId + " not found or not active");
+            }
+        } else {
+            System.out.println("⚠️ No flash sale ID provided (Buy Now mode)");
         }
         
         // Create order details from product detail IDs
@@ -407,6 +467,10 @@ public class OrderServiceImpl implements OrderService {
         }
         
         order.setOrderDetailSet(orderDetails);
+        
+        // ✅ Calculate and set discount amounts, original price
+        calculateAndSetOrderPricing(order, subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount);
+        
         System.out.println("Buy Now order created with " + orderDetails.size() + " items");
         
         return order;
@@ -417,7 +481,9 @@ public class OrderServiceImpl implements OrderService {
      */
     private Order createOrderFromCart(Cart cart, Address address, Double finalTotalPrice, 
                                     String payOption, Long orderDiscountId, Long shippingDiscountId,
-                                    java.util.List<Integer> selectedItemIds) {
+                                    Long flashSaleId,
+                                    java.util.List<Integer> selectedItemIds,
+                                    Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount) {
         System.out.println("Creating order from cart...");
         
         // Create order
@@ -435,7 +501,6 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
             if (orderDiscount != null) {
                 order.setAppliedDiscount(orderDiscount);
-                order.setDiscountAmount(0.0); // Frontend already calculated in finalTotalPrice
                 System.out.println("✅ Applied order discount: " + orderDiscount.getName());
             }
         }
@@ -446,12 +511,11 @@ public class OrderServiceImpl implements OrderService {
                 .orElse(null);
             if (shippingDiscount != null) {
                 order.setShippingDiscount(shippingDiscount);
-                order.setShippingDiscountAmount(0.0); // Frontend already calculated in finalTotalPrice
                 System.out.println("✅ Applied shipping discount: " + shippingDiscount.getName());
             }
         }
         
-        // Create order details
+        // Create order details first, then detect flash sale
         Set<OrderDetail> orderDetails = new HashSet<>();
         
         // Convert selectedItemIds từ List<Integer> sang List<Long> để so sánh
@@ -463,11 +527,32 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("Selected cart item IDs (converted to Long): " + selectedItemIdsLong);
         }
         
+        // 🔥 Auto-detect flash sale from selected cart items
+        FlashSale detectedFlashSale = null;
+        System.out.println("🔍 DEBUG (Cart): flashSaleId parameter = " + flashSaleId);
+        
         for (CartDetail cartDetail : cart.getCartDetails()) {
             System.out.println("Checking cart detail ID: " + cartDetail.getId() + " (type: Long)");
             
             // Chỉ thêm vào order nếu item được chọn
             if (selectedItemIdsLong == null || selectedItemIdsLong.contains(cartDetail.getId())) {
+                
+                // 🔥 Check for flash sale in this cart item
+                if (detectedFlashSale == null) {
+                    ProductDetail productDetail = cartDetail.getProduct();
+                    if (productDetail != null) {
+                        try {
+                            // Use getActiveFlashSaleItem() method from ProductDetail
+                            FlashSaleItem activeItem = productDetail.getActiveFlashSaleItem();
+                            if (activeItem != null && activeItem.getFlashSale() != null && activeItem.getFlashSale().isActive()) {
+                                detectedFlashSale = activeItem.getFlashSale();
+                                System.out.println("🔥 Detected Flash Sale from cart item: " + detectedFlashSale.getName() + " (ID: " + detectedFlashSale.getId() + ")");
+                            }
+                        } catch (Exception e) {
+                            System.out.println("⚠️ Could not load flash sale for product detail: " + e.getMessage());
+                        }
+                    }
+                }
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrder(order);
                 orderDetail.setProduct(cartDetail.getProduct());
@@ -485,6 +570,18 @@ public class OrderServiceImpl implements OrderService {
         }
         
         order.setOrderDetailSet(orderDetails);
+        
+        // 🔥 Set flash sale if detected
+        if (detectedFlashSale != null) {
+            order.setAppliedFlashSale(detectedFlashSale);
+            System.out.println("🔥 Applied Flash Sale to order: " + detectedFlashSale.getName() + " (ID: " + detectedFlashSale.getId() + ")");
+        } else {
+            System.out.println("⚠️ No flash sale detected in cart items");
+        }
+        
+        // ✅ Calculate and set discount amounts, original price
+        calculateAndSetOrderPricing(order, subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount);
+        
         System.out.println("Order created with " + orderDetails.size() + " items");
         
         return order;
@@ -813,6 +910,22 @@ public class OrderServiceImpl implements OrderService {
         // ✅ Trigger đã chạy tự động sau save()
         // → Broadcast updates qua WebSocket theo LOGIC MỚI
         
+        // 📧 GỬI EMAIL KHI CHUYỂN SANG SHIPPED
+        if (newStatus == ShipmentStatus.SHIPPED && oldStatus != ShipmentStatus.SHIPPED) {
+            try {
+                // Force load OrderDetails và User để tránh LazyInitializationException
+                if (order.getOrderDetailSet() != null) {
+                    order.getOrderDetailSet().size(); // Trigger lazy loading
+                }
+                // Gửi email async (không block request)
+                emailService.sendOrderShippedEmail(order);
+                System.out.println("📧 Order shipped email triggered for order #" + orderId);
+            } catch (Exception e) {
+                System.err.println("⚠️ Failed to send order shipped email: " + e.getMessage());
+                // Don't throw - email failure shouldn't break order status update
+            }
+        }
+        
         // CASE 1: DELIVERED → Tăng sold_quantity (trigger đã chạy)
         if (newStatus == ShipmentStatus.DELIVERED && oldStatus != ShipmentStatus.DELIVERED) {
             // Chỉ broadcast sold_quantity (inventory không đổi)
@@ -823,6 +936,9 @@ public class OrderServiceImpl implements OrderService {
         else if (newStatus == ShipmentStatus.CANCEL && oldStatus != ShipmentStatus.CANCEL) {
             // Chỉ broadcast inventory (sold_quantity chưa tăng nên không giảm)
             broadcastInventoryOnly(order, "INCREASE");
+            
+            // ✅ Giảm Flash Sale totalSold khi CANCEL
+            decrementFlashSaleTotalSold(order);
         }
         
         // CASE 3: RETURN (from DELIVERED) → Hoàn kho + Giảm sold
@@ -830,6 +946,9 @@ public class OrderServiceImpl implements OrderService {
             // Broadcast cả inventory và sold_quantity
             broadcastInventoryOnly(order, "INCREASE");
             broadcastSoldQuantityOnly(order, "DECREASE");
+            
+            // ✅ Giảm Flash Sale totalSold khi RETURN
+            decrementFlashSaleTotalSold(order);
         }
     }
     
@@ -1055,5 +1174,130 @@ public class OrderServiceImpl implements OrderService {
         System.out.println("  - PayOS Order Code: " + payosOrderCode);
         System.out.println("  - Payment Status: " + paymentStatus);
         System.out.println("  - Paid At: " + paidAt);
+    /**
+     * Calculate and set order pricing (discounts, original price)
+     * Use values from frontend for accuracy
+     */
+    private void calculateAndSetOrderPricing(Order order, Double subtotal, Double shippingFee, 
+                                             Double orderDiscountAmount, Double shippingDiscountAmount) {
+        System.out.println("=== Setting Order Pricing from Frontend ===");
+        
+        // Use values from frontend (already calculated accurately)
+        if (subtotal != null && shippingFee != null) {
+            // Calculate original total (before any discounts)
+            double originalTotalPrice = subtotal + shippingFee;
+            order.setOriginalTotalPrice(originalTotalPrice);
+            System.out.println("Original total price: " + originalTotalPrice);
+            System.out.println("  = Subtotal: " + subtotal + " + Shipping: " + shippingFee);
+        }
+        
+        // Set order discount amount
+        if (orderDiscountAmount != null && orderDiscountAmount > 0) {
+            order.setDiscountAmount(orderDiscountAmount);
+            System.out.println("Order discount amount: " + orderDiscountAmount);
+        }
+        
+        // Set shipping discount amount
+        if (shippingDiscountAmount != null && shippingDiscountAmount > 0) {
+            order.setShippingDiscountAmount(shippingDiscountAmount);
+            System.out.println("Shipping discount amount: " + shippingDiscountAmount);
+        }
+        
+        // Verify final total
+        System.out.println("Final total (from frontend): " + order.getTotalPrice());
+        
+        System.out.println("=== Order Pricing Set Complete ===");
+    }
+    
+    /**
+     * Track discount usage - Tạo DiscountUsed records khi user apply voucher
+     */
+    private void trackDiscountUsage(Order order, Long orderDiscountId, Long shippingDiscountId) {
+        System.out.println("=== Tracking Discount Usage ===");
+        
+        Users user = order.getUser();
+        Long orderId = order.getId();
+        
+        // Track order discount usage
+        if (orderDiscountId != null && order.getAppliedDiscount() != null) {
+            try {
+                Discount orderDiscount = order.getAppliedDiscount();
+                Double discountAmount = order.getDiscountAmount() != null ? order.getDiscountAmount() : 0.0;
+                
+                DiscountUsed discountUsed = new DiscountUsed(user, orderDiscount, orderId, discountAmount);
+                discountUsedRepository.save(discountUsed);
+                
+                System.out.println("✅ Tracked order discount usage: " + orderDiscount.getName() + 
+                                 " by user " + user.getId() + " for order " + orderId);
+            } catch (Exception e) {
+                System.err.println("❌ Error tracking order discount usage: " + e.getMessage());
+            }
+        }
+        
+        // Track shipping discount usage
+        if (shippingDiscountId != null && order.getShippingDiscount() != null) {
+            try {
+                Discount shippingDiscount = order.getShippingDiscount();
+                Double discountAmount = order.getShippingDiscountAmount() != null ? order.getShippingDiscountAmount() : 0.0;
+                
+                DiscountUsed discountUsed = new DiscountUsed(user, shippingDiscount, orderId, discountAmount);
+                discountUsedRepository.save(discountUsed);
+                
+                System.out.println("✅ Tracked shipping discount usage: " + shippingDiscount.getName() + 
+                                 " by user " + user.getId() + " for order " + orderId);
+            } catch (Exception e) {
+                System.err.println("❌ Error tracking shipping discount usage: " + e.getMessage());
+            }
+        }
+        
+        System.out.println("=== Discount Usage Tracking Complete ===");
+    }
+    
+    /**
+     * Tăng Flash Sale totalSold khi tạo order mới
+     */
+    private void incrementFlashSaleTotalSold(Order order) {
+        if (order.getAppliedFlashSale() != null) {
+            FlashSale flashSale = order.getAppliedFlashSale();
+            
+            // Tính tổng số lượng sản phẩm trong order
+            int totalQuantity = 0;
+            if (order.getOrderDetailSet() != null) {
+                totalQuantity = order.getOrderDetailSet().stream()
+                    .mapToInt(detail -> detail.getQuantity())
+                    .sum();
+            }
+            
+            if (totalQuantity > 0) {
+                flashSale.incrementSold(totalQuantity);
+                flashSaleRepository.save(flashSale);
+                System.out.println("🔥 Increased Flash Sale '" + flashSale.getName() + "' totalSold by " + totalQuantity + 
+                                 " (New Order #" + order.getId() + ")");
+            }
+        }
+    }
+    
+    /**
+     * Giảm Flash Sale totalSold khi order bị CANCEL hoặc RETURN
+     */
+    private void decrementFlashSaleTotalSold(Order order) {
+        if (order.getAppliedFlashSale() != null) {
+            FlashSale flashSale = order.getAppliedFlashSale();
+            
+            // Tính tổng số lượng sản phẩm trong order
+            int totalQuantity = 0;
+            if (order.getOrderDetailSet() != null) {
+                totalQuantity = order.getOrderDetailSet().stream()
+                    .mapToInt(detail -> detail.getQuantity())
+                    .sum();
+            }
+            
+            if (totalQuantity > 0) {
+                flashSale.decrementSold(totalQuantity);
+                flashSaleRepository.save(flashSale);
+                System.out.println("🔥 Decreased Flash Sale '" + flashSale.getName() + "' totalSold by " + totalQuantity + 
+                                 " (Order #" + order.getId() + " CANCELLED/RETURNED)");
+            }
+        }
     }
 }

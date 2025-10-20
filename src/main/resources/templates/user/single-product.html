@@ -2443,10 +2443,23 @@ $(document).ready(function() {
                 console.log('✅ User is authenticated, proceeding to payment...');
                 console.log('API /api/cart/count response:', response);
                 
-                // Calculate price
+                // Calculate price (check for flash sale)
                 const basePrice = window.currentProduct.price || 0;
                 const sizePrice = productDetail.priceadd || 0;
-                const unitPrice = basePrice + sizePrice;
+                
+                // 🔥 Use flash sale price if available
+                let effectivePrice = basePrice;
+                let flashSaleId = null;
+                let flashSaleData = null;
+                
+                if (window.currentFlashSale && window.currentFlashSale.active) {
+                    effectivePrice = window.currentFlashSale.flashSalePrice;
+                    flashSaleId = window.currentFlashSale.id;
+                    flashSaleData = window.currentFlashSale;
+                    console.log('🔥 Using Flash Sale Price:', effectivePrice, 'Flash Sale ID:', flashSaleId);
+                }
+                
+                const unitPrice = effectivePrice + sizePrice;
                 
                 // Create order item data (same format as cart items)
                 const orderItem = {
@@ -2459,18 +2472,27 @@ $(document).ready(function() {
                         quantity: productDetail.quantity
                     },
                     quantity: quantity,
-                    price: unitPrice
+                    price: unitPrice,
+                    flashSaleId: flashSaleId, // 🔥 THÊM FLASH SALE ID
+                    flashSale: flashSaleData  // 🔥 THÊM FLASH SALE DATA
                 };
                 
                 // ✅ Clear any old sessionStorage data first
                 sessionStorage.removeItem('selectedCartItems');
                 sessionStorage.removeItem('checkoutSource');
+                sessionStorage.removeItem('flashSaleId'); // Clear old flash sale
                 
                 // Store in sessionStorage
                 sessionStorage.setItem('selectedItems', JSON.stringify([orderItem]));
                 sessionStorage.setItem('checkoutSource', 'buynow'); // ✅ SET CHECKOUT SOURCE!
                 sessionStorage.setItem('selectedAddressId', ''); // User will select address in payment page
                 sessionStorage.setItem('cartId', ''); // No cart ID for buy now
+                
+                // 🔥 Store flash sale ID separately if exists
+                if (flashSaleId) {
+                    sessionStorage.setItem('flashSaleId', flashSaleId);
+                    console.log('🔥 Stored Flash Sale ID in sessionStorage:', flashSaleId);
+                }
                 
                 console.log('📦 Order data saved to sessionStorage:', {
                     orderItem,
