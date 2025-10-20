@@ -10,13 +10,9 @@ COPY pom.xml .
 # Copy source code
 COPY src ./src
 
-# RUN mvn dependency:go-offline -B
-RUN mvn dependency:go-offline -B -T 1C
-
 # Build application (skip tests for faster build)
 # Maven will automatically download dependencies during build
-# Remove -T flag to avoid parallel build issues
-RUN mvn clean package -DskipTests -T 1C
+RUN mvn clean package -DskipTests -B
 
 # Verify JAR file was created
 # dùng để debug có thể xóa
@@ -62,9 +58,12 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
 # Run application with dynamic PORT from environment
 # Render will inject PORT environment variable (usually 10000)
 # Optimized JVM settings for Render Free Tier (512MB RAM):
-# -Xmx400m: Max heap 400MB (leave 112MB for native memory)
-# -Xms200m: Initial heap 200MB (reduce startup memory)
-# -XX:+UseG1GC: G1 Garbage Collector (better for low pause time)
-# -XX:MaxGCPauseMillis=200: Target max GC pause 200ms
-# -XX:MaxMetaspaceSize=128m: Limit metaspace to 128MB
-ENTRYPOINT ["sh", "-c", "java -Xmx400m -Xms200m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=128m -jar -Dserver.port=${PORT:-8080} app.jar"]
+# -Xmx350m: Max heap 350MB (tighter limit for 512MB container)
+# -Xms128m: Initial heap 128MB (reduce startup memory)
+# -XX:+UseSerialGC: Serial GC (lowest memory overhead)
+# -XX:MaxMetaspaceSize=100m: Limit metaspace to 100MB
+# -XX:CompressedClassSpaceSize=32m: Reduce class metadata space
+# -XX:ReservedCodeCacheSize=64m: Reduce code cache
+# -Xss256k: Reduce thread stack size
+# -XX:+TieredCompilation -XX:TieredStopAtLevel=1: Faster startup, less memory
+ENTRYPOINT ["sh", "-c", "java -Xmx350m -Xms128m -XX:+UseSerialGC -XX:MaxMetaspaceSize=100m -XX:CompressedClassSpaceSize=32m -XX:ReservedCodeCacheSize=64m -Xss256k -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -jar -Dserver.port=${PORT:-8080} app.jar"]
