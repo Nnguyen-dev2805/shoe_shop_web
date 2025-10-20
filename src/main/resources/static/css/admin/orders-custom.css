@@ -1,4 +1,15 @@
-/* Orders List Custom CSS */
+/* Orders List Custom CSS for Admin */
+
+/* Statistics Cards */
+.stat-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1) !important;
+}
 
 /* Card header - responsive và hiển thị đầy đủ */
 .card-header {
@@ -18,9 +29,15 @@
     flex-shrink: 0;
     padding: 0.35rem 0.75rem;
     font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
-#status-filter {
+#refresh-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#orderStatus {
     flex-shrink: 0;
     font-size: 0.875rem;
     width: 140px !important;
@@ -54,15 +71,8 @@
     100% { transform: rotate(360deg); }
 }
 
-#refresh-button:active #refresh-icon {
+.spinning {
     animation: spin 0.5s ease-in-out;
-}
-
-/* Hover effects */
-#refresh-button:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
 }
 
 /* ========== Tùy chỉnh Scrollbar ========== */
@@ -99,30 +109,22 @@
     scrollbar-color: rgba(0,0,0,0.1) transparent;
 }
 
-/* Ẩn scrollbar cho body/page */
-body::-webkit-scrollbar {
-    width: 6px;
-}
-
-body::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-body::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.1);
-    border-radius: 10px;
-}
-
-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(0,0,0,0.2);
-}
-
-/* ========== Đảm bảo table vừa khung ========== */
+/* ========== Table Styling ========== */
 
 /* Table orders - tối ưu layout */
 .orders-table {
     width: 100%;
     table-layout: auto;
+}
+
+/* Row hover effect */
+.orders-table tbody tr {
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.orders-table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05) !important;
+    cursor: pointer;
 }
 
 /* Giới hạn chiều rộng các cột */
@@ -132,30 +134,37 @@ body::-webkit-scrollbar-thumb:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    vertical-align: middle;
 }
 
 /* Cột Mã ĐH */
 .orders-table th:nth-child(1),
 .orders-table td:nth-child(1) {
     max-width: 100px;
+    font-weight: 600;
+    color: #007bff;
 }
 
 /* Cột Ngày Tạo */
 .orders-table th:nth-child(2),
 .orders-table td:nth-child(2) {
     max-width: 120px;
+    font-size: 0.875rem;
 }
 
 /* Cột Khách Hàng */
 .orders-table th:nth-child(3),
 .orders-table td:nth-child(3) {
     max-width: 150px;
+    font-weight: 500;
 }
 
 /* Cột Tổng Tiền */
 .orders-table th:nth-child(4),
 .orders-table td:nth-child(4) {
     max-width: 120px;
+    font-weight: 600;
+    color: #28a745;
 }
 
 /* Cột Thanh Toán */
@@ -175,6 +184,16 @@ body::-webkit-scrollbar-thumb:hover {
 .orders-table td:nth-child(7) {
     max-width: 100px;
     text-align: center;
+}
+
+/* Button actions */
+.orders-table .btn-sm {
+    transition: all 0.2s ease;
+}
+
+.orders-table .btn-sm:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
 /* Badge styling */
@@ -233,6 +252,11 @@ body::-webkit-scrollbar-thumb:hover {
     border: 1px solid #ffcdd2 !important;
 }
 
+/* Empty state styling */
+.empty-state iconify-icon {
+    opacity: 0.5;
+}
+
 /* Responsive cho màn hình nhỏ */
 @media (max-width: 1200px) {
     .orders-table th,
@@ -240,4 +264,25 @@ body::-webkit-scrollbar-thumb:hover {
         font-size: 0.875rem;
         padding: 0.5rem 0.4rem;
     }
+}
+
+/* Loading state */
+.loading-spinner {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+/* Pagination styling */
+.pagination .page-link {
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff;
+    border-color: #007bff;
 }

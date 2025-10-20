@@ -279,7 +279,8 @@
                                         </div>
 
                                         <div>
-                                             <p class="mb-1" th:text="${user.address}"></p>
+                                             <p class="mb-1" th:if="${user?.userAddresses != null and !user.userAddresses.empty}" th:text="${user.userAddresses[0].address.addressLine + ', ' + user.userAddresses[0].address.district + ', ' + user.userAddresses[0].address.city}"></p>
+                                             <p class="mb-1 text-muted" th:unless="${user?.userAddresses != null and !user.userAddresses.empty}">Chưa cập nhật</p>
                                         </div>
                                    </div>
                               </div>

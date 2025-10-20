@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8" />
-    <title>Orders List | Larkon - Responsive Admin Dashboard Template</title>
+    <title>Danh Sách Đơn Hàng | Deeg Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A fully responsive premium admin dashboard template" />
-    <meta name="author" content="Techzaa" />
+    <meta name="description" content="Hệ thống quản lý đơn hàng Deeg" />
+    <meta name="author" content="Deeg" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- App favicon -->
@@ -19,33 +19,78 @@
 
     <!-- App css -->
     <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Admin Orders Custom CSS -->
+    <link href="/css/admin/orders-custom.css" rel="stylesheet" type="text/css" />
 
     <!-- Theme Config js -->
     <script src="/assets/js/config.js"></script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
 </head>
 
 <body>
 <div class="wrapper">
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <!-- Menu Toggle Button -->
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Page Title -->
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Danh Sách Đơn Hàng</h4>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                    <!-- Theme Color (Light/Dark) -->
+                    <div class="topbar-item">
+                        <button type="button" class="topbar-button" id="light-dark-mode">
+                            <iconify-icon icon="solar:moon-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="dropdown topbar-item">
+                        <button type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="d-flex align-items-center">
+                                <iconify-icon icon="solar:user-circle-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+    
     <div th:include="~{fragments/admin/panel_menu.html}"></div>
     <div class="page-content">
         <div class="container-xxl">
 
-            <div class="row">
+            <!-- Statistics Cards -->
+            <div class="row g-3 mb-4">
                 <div class="col-md-6 col-xl-3">
-                    <div class="card">
+                    <div class="card stat-card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 class="card-title mb-2">Order Cancel</h4>
-                                    <p class="text-muted fw-medium fs-22 mb-0" id = "cancel">-</p>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-danger bg-opacity-10 rounded p-3 me-3">
+                                    <iconify-icon icon="solar:cart-cross-bold-duotone" class="text-danger" width="24" height="24"></iconify-icon>
                                 </div>
-                                <div>
-                                    <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                        <iconify-icon icon="solar:cart-cross-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0" id="cancel">0</h4>
+                                    <p class="text-muted mb-0">Đã Hủy</p>
                                 </div>
                             </div>
                         </div>
@@ -53,17 +98,15 @@
                 </div>
 
                 <div class="col-md-6 col-xl-3">
-                    <div class="card">
+                    <div class="card stat-card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 class="card-title mb-2">Order Shipping</h4>
-                                    <p class="text-muted fw-medium fs-22 mb-0" id="shipping">-</p>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-primary bg-opacity-10 rounded p-3 me-3">
+                                    <iconify-icon icon="solar:delivery-bold-duotone" class="text-primary" width="24" height="24"></iconify-icon>
                                 </div>
-                                <div>
-                                    <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                        <iconify-icon icon="solar:box-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0" id="shipping">0</h4>
+                                    <p class="text-muted mb-0">Đang Giao</p>
                                 </div>
                             </div>
                         </div>
@@ -71,19 +114,15 @@
                 </div>
 
                 <div class="col-md-6 col-xl-3">
-                    <div class="card">
+                    <div class="card stat-card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 class="card-title mb-2">In Stock</h4>
-                                    <!-- data-key = tên field trong JSON; data-format = gợi ý cách format -->
-<!--                                    <p class="text-muted fw-medium fs-22 mb-0" id="in-stock" data-key="in_stock" data-format="number">—</p>-->
-                                    <p class="text-muted fw-medium fs-22 mb-0" id="in_stock">-</p>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-warning bg-opacity-10 rounded p-3 me-3">
+                                    <iconify-icon icon="solar:box-bold-duotone" class="text-warning" width="24" height="24"></iconify-icon>
                                 </div>
-                                <div>
-                                    <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                        <iconify-icon icon="solar:clock-circle-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0" id="in_stock">0</h4>
+                                    <p class="text-muted mb-0">Trong Kho</p>
                                 </div>
                             </div>
                         </div>
@@ -91,17 +130,15 @@
                 </div>
 
                 <div class="col-md-6 col-xl-3">
-                    <div class="card">
+                    <div class="card stat-card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 class="card-title mb-2">Delivered</h4>
-                                    <p class="text-muted fw-medium fs-22 mb-0"  id="delivered">-</p>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-success bg-opacity-10 rounded p-3 me-3">
+                                    <iconify-icon icon="solar:check-circle-bold-duotone" class="text-success" width="24" height="24"></iconify-icon>
                                 </div>
-                                <div>
-                                    <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                        <iconify-icon icon="solar:clipboard-check-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0" id="delivered">0</h4>
+                                    <p class="text-muted mb-0">Đã Giao</p>
                                 </div>
                             </div>
                         </div>
@@ -109,17 +146,15 @@
                 </div>
 
                 <div class="col-md-6 col-xl-3">
-                    <div class="card">
+                    <div class="card stat-card h-100 shadow-sm">
                         <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 class="card-title mb-2">Return</h4>
-                                    <p class="text-muted fw-medium fs-22 mb-0" id="preturn">-</p>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-sm bg-info bg-opacity-10 rounded p-3 me-3">
+                                    <iconify-icon icon="solar:restart-bold-duotone" class="text-info" width="24" height="24"></iconify-icon>
                                 </div>
-                                <div>
-                                    <div class="avatar-md bg-primary bg-opacity-10 rounded">
-                                        <iconify-icon icon="solar:inbox-line-broken" class="fs-32 text-primary avatar-title"></iconify-icon>
-                                    </div>
+                                <div class="flex-grow-1">
+                                    <h4 class="mb-0" id="preturn">0</h4>
+                                    <p class="text-muted mb-0">Hoàn Trả</p>
                                 </div>
                             </div>
                         </div>
@@ -129,35 +164,40 @@
 
             <div class="row">
                 <div class="col-xl-12">
-                    <div class="card">
-                        <div class="d-flex card-header justify-content-between align-items-center">
-                            <div>
-                                <h4 class="card-title">All Order List</h4>
+                    <div class="card shadow-sm">
+                        <div class="d-flex card-header justify-content-between align-items-center bg-light">
+                            <div class="d-flex align-items-center">
+                                <iconify-icon icon="solar:bag-smile-bold-duotone" class="text-primary me-2 fs-20"></iconify-icon>
+                                <h4 class="card-title mb-0">Danh Sách Đơn Hàng</h4>
                             </div>
-                            <div>
-                                <select class="form-select form-select-sm" id="orderStatus" style="margin-left: 10px">
-                                    <option value="">All</option>
-                                    <option value="SHIPPED">Shipped</option>
-                                    <option value="CANCEL">Cancel</option>
-                                    <option value="IN_STOCK">In stock</option>
-                                    <option value="DELIVERED">Delivered</option>
-                                    <option value="RETURN">Return</option>
+                            <div class="d-flex align-items-center gap-2">
+                                <select class="form-select form-select-sm" id="orderStatus">
+                                    <option value="">Tất Cả</option>
+                                    <option value="SHIPPED">Đang Giao</option>
+                                    <option value="CANCEL">Đã Hủy</option>
+                                    <option value="IN_STOCK">Trong Kho</option>
+                                    <option value="DELIVERED">Đã Giao</option>
+                                    <option value="RETURN">Hoàn Trả</option>
                                 </select>
+                                <button id="refresh-button" class="btn btn-sm btn-primary" onclick="refreshOrders()">
+                                    <iconify-icon id="refresh-icon" icon="solar:refresh-bold-duotone" class="me-1"></iconify-icon>
+                                    <span>Làm mới</span>
+                                </button>
                             </div>
                         </div>
 
                         <div class="card-body p-0">
                             <div class="table-responsive">
-                                <table class="table align-middle mb-0 table-hover table-centered" id = "orderTable">
+                                <table class="table orders-table align-middle mb-0 table-hover" id="orderTable">
                                     <thead class="bg-light-subtle">
                                     <tr>
-                                        <th>Order ID</th>
-                                        <th>Created at</th>
-                                        <th>Full name</th>
-                                        <th>Price</th>
-                                        <th>Pay option</th>
-                                        <th>Order Status</th>
-                                        <th>Action</th>
+                                        <th>Mã ĐH</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Khách Hàng</th>
+                                        <th>Tổng Tiền</th>
+                                        <th>Thanh Toán</th>
+                                        <th>Trạng Thái</th>
+                                        <th>Thao Tác</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -275,6 +315,50 @@
             });
         }
         
+        // Get status badge class
+        function getStatusBadgeClass(status) {
+            const statusMap = {
+                'DELIVERED': 'badge-status-delivered',
+                'SHIPPED': 'badge-status-shipped',
+                'IN_STOCK': 'badge-status-in-stock',
+                'CANCEL': 'badge-status-cancel',
+                'RETURN': 'badge-status-return'
+            };
+            return statusMap[status] || 'bg-light text-dark';
+        }
+        
+        // Get payment badge class
+        function getPaymentBadgeClass(payOption) {
+            const paymentMap = {
+                'COD': 'badge-payment-cod',
+                'BANKING': 'badge-payment-banking',
+                'VNPAY': 'badge-payment-vnpay'
+            };
+            return paymentMap[payOption] || 'bg-light text-dark';
+        }
+        
+        // Get status display text
+        function getStatusText(status) {
+            const textMap = {
+                'DELIVERED': 'Đã Giao',
+                'SHIPPED': 'Đang Giao',
+                'IN_STOCK': 'Trong Kho',
+                'CANCEL': 'Đã Hủy',
+                'RETURN': 'Hoàn Trả'
+            };
+            return textMap[status] || status;
+        }
+        
+        // Get payment display text
+        function getPaymentText(payOption) {
+            const textMap = {
+                'COD': 'Tiền mặt',
+                'BANKING': 'Banking',
+                'VNPAY': 'VNPay'
+            };
+            return textMap[payOption] || payOption;
+        }
+        
         // Render orders table
         function renderOrdersTable(orders) {
             let tbody = $("#orderTable tbody");
@@ -293,16 +377,21 @@
             }
             
             orders.forEach(order => {
+                const statusClass = getStatusBadgeClass(order.status);
+                const paymentClass = getPaymentBadgeClass(order.payOption);
+                const statusText = getStatusText(order.status);
+                const paymentText = getPaymentText(order.payOption);
+                
                 let row = `
                     <tr>
-                        <td>${order.id}</td>
+                        <td><strong>#${order.id}</strong></td>
                         <td>${order.createdDate || "-"}</td>
                         <td>${order.userName || "-"}</td>
-                        <td>${formatPrice(order.totalPrice)}</td>
-                        <td><span class="badge bg-light text-dark px-2 py-1 fs-13">${order.payOption}</span></td>
-                        <td><span class="badge border border-secondary text-secondary px-2 py-1 fs-13">${order.status}</span></td>
+                        <td><strong class="text-success">${formatPrice(order.totalPrice)}</strong></td>
+                        <td><span class="badge ${paymentClass} px-2 py-1 fs-13">${paymentText}</span></td>
+                        <td><span class="badge ${statusClass} px-2 py-1 fs-13">${statusText}</span></td>
                         <td>
-                            <div class="d-flex gap-2">
+                            <div class="d-flex gap-2 justify-content-center">
                                 <a href="/admin/order/detail-page/${order.id}" class="btn btn-light btn-sm" title="Xem chi tiết">
                                     <iconify-icon icon="solar:eye-broken" class="align-middle fs-18"></iconify-icon>
                                 </a>
@@ -417,6 +506,25 @@
             console.log("Filter changed:", $(this).val());
             loadOrders($(this).val(), 0); // Reset to page 0 when filter changes
         });
+        
+        // Refresh orders function
+        window.refreshOrders = function() {
+            const btn = document.getElementById('refresh-button');
+            const icon = document.getElementById('refresh-icon');
+            
+            // Add spinning animation
+            icon.classList.add('spinning');
+            btn.disabled = true;
+            
+            // Reload current page
+            loadOrders(currentStatus, currentPage);
+            
+            // Remove animation after 500ms
+            setTimeout(() => {
+                icon.classList.remove('spinning');
+                btn.disabled = false;
+            }, 500);
+        };
         
         // Initial load
         loadOrders("", 0);

@@ -19,7 +19,7 @@ public class NotificationServiceImpl implements NotificationService {
     private SimpMessagingTemplate messagingTemplate;
 
     /**
-     * Gửi thông báo đơn hàng mới đến admin
+     * Gửi thông báo đơn hàng mới đến admin và manager
      */
     @Override
     public void sendNewOrderNotification(OrderNotificationDTO notification) {
@@ -36,12 +36,15 @@ public class NotificationServiceImpl implements NotificationService {
         // Send to topic /topic/admin/orders
         // Admin clients subscribe to this topic
         messagingTemplate.convertAndSend("/topic/admin/orders", notification);
-        
         System.out.println("✅ Notification sent to /topic/admin/orders");
+        
+        // Also send to manager
+        messagingTemplate.convertAndSend("/topic/manager/orders", notification);
+        System.out.println("✅ Notification sent to /topic/manager/orders");
     }
 
     /**
-     * Gửi thông báo hủy đơn hàng đến admin
+     * Gửi thông báo hủy đơn hàng đến admin và manager
      */
     @Override
     public void sendOrderCancelledNotification(OrderNotificationDTO notification) {
@@ -52,12 +55,14 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setTimestamp(System.currentTimeMillis());
         
         messagingTemplate.convertAndSend("/topic/admin/orders", notification);
+        System.out.println("✅ Cancellation notification sent to admin");
         
-        System.out.println("✅ Cancellation notification sent");
+        messagingTemplate.convertAndSend("/topic/manager/orders", notification);
+        System.out.println("✅ Cancellation notification sent to manager");
     }
 
     /**
-     * Gửi thông báo cập nhật đơn hàng đến admin
+     * Gửi thông báo cập nhật đơn hàng đến admin và manager
      */
     @Override
     public void sendOrderUpdatedNotification(OrderNotificationDTO notification) {
@@ -68,8 +73,10 @@ public class NotificationServiceImpl implements NotificationService {
         notification.setTimestamp(System.currentTimeMillis());
         
         messagingTemplate.convertAndSend("/topic/admin/orders", notification);
+        System.out.println("✅ Update notification sent to admin");
         
-        System.out.println("✅ Update notification sent");
+        messagingTemplate.convertAndSend("/topic/manager/orders", notification);
+        System.out.println("✅ Update notification sent to manager");
     }
     
     /**

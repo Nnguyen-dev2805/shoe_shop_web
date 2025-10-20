@@ -130,17 +130,16 @@ function displayOrders(orders) {
                 <td>
                     <div>
                         <strong>${order.customerName}</strong>
-                        <br>
-                        <small class="text-muted">${order.customerEmail}</small>
+                        ${order.customerEmail ? `<br><small class="text-muted">${order.customerEmail}</small>` : ''}
                     </div>
                 </td>
                 <td>
-                    <strong class="text-primary">${formatCurrency(order.totalPrice)}</strong>
+                    <strong class="text-success">${formatCurrency(order.totalPrice)}</strong>
                 </td>
                 <td>${paymentBadge}</td>
                 <td>${statusBadge}</td>
                 <td>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 justify-content-center">
                         <button class="btn btn-light btn-sm" onclick="viewOrderDetail(${order.id})" title="Xem chi tiết">
                             <iconify-icon icon="solar:eye-bold-duotone" class="fs-16"></iconify-icon>
                         </button>
@@ -235,21 +234,16 @@ function displayPagination(pageData) {
  */
 function getStatusBadge(status) {
     const statusConfig = {
-        'IN_STOCK': { class: 'status-in-stock', text: 'Trong Kho', icon: 'solar:box-bold-duotone' },
-        'SHIPPED': { class: 'status-shipping', text: 'Đang Giao', icon: 'solar:delivery-bold-duotone' },
-        'DELIVERED': { class: 'status-delivered', text: 'Đã Giao', icon: 'solar:check-circle-bold-duotone' },
-        'CANCEL': { class: 'status-canceled', text: 'Đã Hủy', icon: 'solar:close-circle-bold-duotone' },
-        'RETURN': { class: 'status-return', text: 'Trả Hàng', icon: 'solar:return-bold-duotone' }
+        'IN_STOCK': { class: 'badge badge-status-in-stock', text: 'Trong Kho' },
+        'SHIPPED': { class: 'badge badge-status-shipped', text: 'Đang Giao' },
+        'DELIVERED': { class: 'badge badge-status-delivered', text: 'Đã Giao' },
+        'CANCEL': { class: 'badge badge-status-cancel', text: 'Đã Hủy' },
+        'RETURN': { class: 'badge badge-status-return', text: 'Hoàn Trả' }
     };
     
-    const config = statusConfig[status] || { class: 'bg-secondary', text: status, icon: 'solar:question-circle-bold-duotone' };
+    const config = statusConfig[status] || { class: 'badge bg-secondary', text: status };
     
-    return `
-        <span class="status-badge ${config.class}">
-            <iconify-icon icon="${config.icon}" class="me-1"></iconify-icon>
-            ${config.text}
-        </span>
-    `;
+    return `<span class="${config.class} px-2 py-1 fs-13">${config.text}</span>`;
 }
 
 /**
@@ -257,18 +251,14 @@ function getStatusBadge(status) {
  */
 function getPaymentBadge(payOption) {
     const paymentConfig = {
-        'COD': { class: 'bg-warning text-dark', text: 'Tiền mặt', icon: 'solar:wallet-money-bold-duotone' },
-        'VNPAY': { class: 'bg-info text-white', text: 'VNPay', icon: 'solar:card-bold-duotone' }
+        'COD': { class: 'badge badge-payment-cod', text: 'Tiền mặt' },
+        'BANKING': { class: 'badge badge-payment-banking', text: 'Banking' },
+        'VNPAY': { class: 'badge badge-payment-vnpay', text: 'VNPay' }
     };
     
-    const config = paymentConfig[payOption] || { class: 'bg-secondary', text: payOption, icon: 'solar:question-circle-bold-duotone' };
+    const config = paymentConfig[payOption] || { class: 'badge bg-secondary', text: payOption };
     
-    return `
-        <span class="badge ${config.class} px-2 py-1">
-            <iconify-icon icon="${config.icon}" class="me-1"></iconify-icon>
-            ${config.text}
-        </span>
-    `;
+    return `<span class="${config.class} px-2 py-1 fs-13">${config.text}</span>`;
 }
 
 /**
