@@ -4,10 +4,15 @@ services:
     env: docker
     region: singapore
     plan: free
+    # Use pre-built image from Docker Hub (faster deployment)
+    # image:
+    #   url: docker.io/nnguyen2805/shoe-shop-web:latest
+    # OR build from Dockerfile (current method)
     dockerfilePath: ./Dockerfile
     dockerContext: .
     healthCheckPath: /actuator/health
-    autoDeploy: true
+    # Disable auto-deploy, use GitHub Actions to trigger
+    autoDeploy: false
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: pro

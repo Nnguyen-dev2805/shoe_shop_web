@@ -9,13 +9,16 @@ COPY pom.xml .
 
 # Download dependencies (cached layer)
 # chạy maven để tải toàn bộ dependency về local repository
-RUN mvn dependency:go-offline -B
+# -T 1C: Build với parallel threads (1 thread per CPU core)
+RUN mvn dependency:go-offline -B -T 1C
 
 # Copy source code
 COPY src ./src
 
 # Build application (skip tests for faster build)
-RUN mvn clean package -DskipTests
+# -T 1C: Parallel build để compile nhanh hơn
+# -o: Offline mode (đã download deps rồi)
+RUN mvn clean package -DskipTests -T 1C -o
 
 # Verify JAR file was created
 # dùng để debug có thể xóa
