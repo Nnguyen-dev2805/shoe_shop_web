@@ -7,18 +7,15 @@ WORKDIR /app
 # Copy pom.xml first for dependency caching
 COPY pom.xml .
 
-# Download dependencies (cached layer)
-# chạy maven để tải toàn bộ dependency về local repository
-# Note: Không dùng -T (parallel) cho dependency download để tránh lỗi
-RUN mvn dependency:go-offline -B
-
 # Copy source code
 COPY src ./src
 
+# RUN mvn dependency:go-offline -B
+
 # Build application (skip tests for faster build)
-# -T 1C: Parallel build để compile nhanh hơn
-# Note: Không dùng -o (offline) để tránh lỗi missing dependencies lần đầu
-RUN mvn clean package -DskipTests -T 1C
+# Maven will automatically download dependencies during build
+# Remove -T flag to avoid parallel build issues
+RUN mvn clean package -DskipTests -B
 
 # Verify JAR file was created
 # dùng để debug có thể xóa
