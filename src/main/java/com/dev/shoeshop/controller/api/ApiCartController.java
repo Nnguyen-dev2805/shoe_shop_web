@@ -11,6 +11,7 @@ import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.*;
 import com.dev.shoeshop.utils.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
@@ -41,6 +42,9 @@ public class ApiCartController {
     private final UserService userService;
     private final FlashSaleService flashSaleService;
     private final PendingPaymentService pendingPaymentService;
+    
+    @Value("${app.base-url:http://localhost:8081}")
+    private String baseUrl;
     
     @Autowired
     private PayOS payOS;
@@ -455,8 +459,8 @@ public class ApiCartController {
                         .description(description)
                         .amount(finalTotalPrice.longValue())
                         .item(item)
-                        .returnUrl("http://localhost:8081/payment/return?orderCode=" + payosOrderCode)
-                        .cancelUrl("http://localhost:8081/cart/view")
+                        .returnUrl(baseUrl + "/payment/return?orderCode=" + payosOrderCode)
+                        .cancelUrl(baseUrl + "/cart/view")
                         .build();
 
                     CreatePaymentLinkResponse payosResponse = payOS.paymentRequests().create(paymentData);
