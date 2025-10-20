@@ -9,8 +9,8 @@ COPY pom.xml .
 
 # Download dependencies (cached layer)
 # chạy maven để tải toàn bộ dependency về local repository
-# -T 1C: Build với parallel threads (1 thread per CPU core)
-RUN mvn dependency:go-offline -B -T 1C
+# Note: Không dùng -T (parallel) cho dependency download để tránh lỗi
+RUN mvn dependency:go-offline -B
 
 # Copy source code
 COPY src ./src
