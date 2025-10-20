@@ -3,12 +3,18 @@ package com.dev.shoeshop.controller.api;
 import com.dev.shoeshop.dto.AddressDTO;
 import com.dev.shoeshop.dto.CartDTO;
 import com.dev.shoeshop.dto.OrderResultDTO;
+import com.dev.shoeshop.dto.PendingPaymentDTO;
 import com.dev.shoeshop.dto.discount.DiscountResponse;
 import com.dev.shoeshop.dto.flashsale.response.CartItemFlashSaleInfo;
 import com.dev.shoeshop.dto.shippingcompany.ShippingCompanyResponse;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.*;
 import com.dev.shoeshop.utils.Constant;
+import org.springframework.beans.factory.annotation.Autowired;
+import vn.payos.PayOS;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
+import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -34,7 +40,11 @@ public class ApiCartController {
     private final ShippingCompanyService shippingCompanyService;
     private final UserService userService;
     private final FlashSaleService flashSaleService;
+    private final PendingPaymentService pendingPaymentService;
     
+    @Autowired
+    private PayOS payOS;
+
     /**
      * Get cart item count for current user
      * GET /api/cart/count
@@ -269,6 +279,62 @@ public class ApiCartController {
     }
     
     /**
+     * Verify PayOS payment status
+     * GET /api/order/verify-payos-payment?orderCode=xxx
+     */
+    @GetMapping("/order/verify-payos-payment")
+    public ResponseEntity<?> verifyPayOSPayment(@RequestParam Long orderCode) {
+        try {
+            System.out.println("\n🔍 ========== VERIFY PAYOS PAYMENT ==========");
+            System.out.println("Order Code: " + orderCode);
+
+            // Get payment info from PayOS
+            var paymentInfo = payOS.paymentRequests().get(orderCode);
+
+            System.out.println("Payment Info: " + paymentInfo);
+            System.out.println("Status: " + paymentInfo.getStatus());
+
+            Map<String, Object> response = new HashMap<>();
+
+            if ("PAID".equals(paymentInfo.getStatus())) {
+                System.out.println("✅ Payment verified: PAID");
+                response.put("success", true);
+                response.put("status", "PAID");
+                response.put("message", "Thanh toán thành công");
+            } else if ("PENDING".equals(paymentInfo.getStatus())) {
+                System.out.println("⏳ Payment status: PENDING");
+                response.put("success", false);
+                response.put("status", "PENDING");
+                response.put("message", "Hệ thống chưa nhận được thanh toán của bạn. Vui lòng kiểm tra lại hoặc thử lại sau vài phút.");
+            } else if ("CANCELLED".equals(paymentInfo.getStatus())) {
+                System.out.println("❌ Payment status: CANCELLED");
+                response.put("success", false);
+                response.put("status", "CANCELLED");
+                response.put("message", "Giao dịch đã bị hủy");
+            } else {
+                System.out.println("❓ Payment status: " + paymentInfo.getStatus());
+                response.put("success", false);
+                response.put("status", paymentInfo.getStatus());
+                response.put("message", "Trạng thái thanh toán: " + paymentInfo.getStatus());
+            }
+
+            System.out.println("🔍 ==========================================\n");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error verifying PayOS payment: " + e.getMessage());
+            e.printStackTrace();
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("status", "ERROR");
+            response.put("message", "Không thể xác minh trạng thái thanh toán. Vui lòng thử lại sau.");
+
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
      * Process checkout
      * POST /api/order/pay
      */
@@ -276,12 +342,18 @@ public class ApiCartController {
     public ResponseEntity<?> processCheckout(@RequestBody Map<String, Object> request,
                                            HttpSession session) {
         try {
+            System.out.println("\n\n========================================");
+            System.out.println("=== POST /api/order/pay CALLED ===");
+            System.out.println("========================================");
+
             Users user = (Users) session.getAttribute(Constant.SESSION_USER);
             if (user == null) {
+                System.out.println("❌ User not authenticated");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(createErrorResponse("User not authenticated"));
             }
             
+            System.out.println("✅ User authenticated: " + user.getEmail());
             System.out.println("=== Processing checkout ===");
             System.out.println("Request: " + request);
             
@@ -301,15 +373,15 @@ public class ApiCartController {
                 Long.valueOf(request.get("shippingDiscountId").toString()) : null;
             
             // 🔥 Get flash sale ID
-            Long flashSaleId = request.get("flashSaleId") != null && !request.get("flashSaleId").toString().isEmpty() ? 
+            Long flashSaleId = request.get("flashSaleId") != null && !request.get("flashSaleId").toString().isEmpty() ?
                 Long.valueOf(request.get("flashSaleId").toString()) : null;
-            
+
             // ✅ Get pricing details from frontend
             Double subtotal = request.get("subtotal") != null ? Double.valueOf(request.get("subtotal").toString()) : null;
             Double shippingFee = request.get("shippingFee") != null ? Double.valueOf(request.get("shippingFee").toString()) : null;
             Double orderDiscountAmount = request.get("orderDiscountAmount") != null ? Double.valueOf(request.get("orderDiscountAmount").toString()) : 0.0;
             Double shippingDiscountAmount = request.get("shippingDiscountAmount") != null ? Double.valueOf(request.get("shippingDiscountAmount").toString()) : 0.0;
-            
+
             // Get selected item IDs (only items user selected to purchase)
             @SuppressWarnings("unchecked")
             java.util.List<Integer> selectedItemIds = request.get("selectedItemIds") != null ? 
@@ -352,6 +424,105 @@ public class ApiCartController {
                     .body(createErrorResponse("Missing required fields"));
             }
             
+            // Check if this is payment confirmation (user already paid via PayOS)
+            Boolean isPaymentConfirmation = request.get("isPaymentConfirmation") != null ?
+                Boolean.valueOf(request.get("isPaymentConfirmation").toString()) : false;
+
+            System.out.println("Is Payment Confirmation: " + isPaymentConfirmation);
+
+            // ========== PAYOS PAYMENT: Redirect to PayOS, then create order after confirmation ==========
+            if ("PAYOS".equals(payOption) && !isPaymentConfirmation) {
+                System.out.println("\n🔵 ========== PAYOS PAYMENT FLOW ===========");
+                System.out.println("📝 This will create payment link, NOT order");
+                System.out.println("📝 Order will be created after user returns from PayOS");
+
+                try {
+                    // Generate PayOS order code
+                    long payosOrderCode = System.currentTimeMillis() / 1000;
+
+                    // Create PayOS payment link
+                    String productName = "Đơn hàng từ DeeG Shop";
+                    String description = "Thanh toán đơn hàng";
+
+                    PaymentLinkItem item = PaymentLinkItem.builder()
+                        .name(productName)
+                        .quantity(1)
+                        .price(finalTotalPrice.longValue())
+                        .build();
+
+                    CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
+                        .orderCode(payosOrderCode)
+                        .description(description)
+                        .amount(finalTotalPrice.longValue())
+                        .item(item)
+                        .returnUrl("http://localhost:8081/payment/return?orderCode=" + payosOrderCode)
+                        .cancelUrl("http://localhost:8081/cart/view")
+                        .build();
+
+                    CreatePaymentLinkResponse payosResponse = payOS.paymentRequests().create(paymentData);
+
+                    System.out.println("\n✅ PayOS payment link created successfully!");
+                    System.out.println("   Order Code: " + payosOrderCode);
+                    System.out.println("   Payment URL: " + (payosResponse.getCheckoutUrl() != null ? payosResponse.getCheckoutUrl() : "QR Code"));
+                    System.out.println("\n⏳ Waiting for user to complete payment...");
+                    
+                    // 💾 Store pending payment data for later use
+                    PendingPaymentDTO pendingPayment = PendingPaymentDTO.builder()
+                        .payosOrderCode(payosOrderCode)
+                        .userId(user.getId())
+                        .cartId(cartId)
+                        .addressId(addressId)
+                        .shippingCompanyId(shippingCompanyId)
+                        .orderDiscountId(orderDiscountId)
+                        .shippingDiscountId(shippingDiscountId)
+                        .flashSaleId(flashSaleId)
+                        .finalTotalPrice(finalTotalPrice)
+                        .subtotal(subtotal)
+                        .shippingFee(shippingFee)
+                        .orderDiscountAmount(orderDiscountAmount)
+                        .shippingDiscountAmount(shippingDiscountAmount)
+                        .selectedItemIds(selectedItemIds)
+                        .itemQuantities(itemQuantities)
+                        .build();
+                    
+                    pendingPaymentService.storePendingPayment(payosOrderCode, pendingPayment);
+                    System.out.println("✅ Pending payment stored for order code: " + payosOrderCode);
+                    System.out.println("🔵 ========================================\n");
+
+                    // Get checkout URL or QR code
+                    String paymentUrl = payosResponse.getCheckoutUrl();
+                    if (paymentUrl == null && payosResponse.getQrCode() != null) {
+                        paymentUrl = payosResponse.getQrCode();
+                    }
+
+                    OrderResultDTO orderResult = OrderResultDTO.builder()
+                        .orderId(null)
+                        .status("REDIRECT_TO_PAYMENT")
+                        .message("Redirecting to PayOS payment page")
+                        .paymentUrl(paymentUrl)
+                        .payosOrderCode(payosOrderCode)  // Return orderCode to frontend
+                        .build();
+
+                    Map<String, Object> response = new HashMap<>();
+                    response.put("success", true);
+                    response.put("message", "Payment link created successfully");
+                    response.put("data", orderResult);
+
+                    return ResponseEntity.ok(response);
+
+                } catch (Exception e) {
+                    System.err.println("❌ PayOS payment link creation failed: " + e.getMessage());
+                    e.printStackTrace();
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(createErrorResponse("Failed to create PayOS payment link: " + e.getMessage()));
+                }
+            }
+
+            // ========== COD PAYMENT: Create order immediately ==========
+            System.out.println("\n🟢 ========== COD/PAYOS-RETURN PAYMENT FLOW ===========");
+            System.out.println("📝 Payment Option: " + payOption);
+            System.out.println("📝 Creating order NOW...");
+
             // Process the order with all pricing information
             OrderResultDTO orderResult = orderService.processCheckout(
                 cartId, user.getId(), addressId, finalTotalPrice, 
@@ -365,7 +536,10 @@ public class ApiCartController {
             response.put("message", "Order processed successfully");
             response.put("data", orderResult);
             
-            System.out.println("Order created successfully with ID: " + orderResult.getOrderId());
+            System.out.println("\n✅ Order created successfully!");
+            System.out.println("   Order ID: " + orderResult.getOrderId());
+            System.out.println("   Status: " + orderResult.getStatus());
+            System.out.println("🟢 ==========================================\n");
             
             return ResponseEntity.ok(response);
             
