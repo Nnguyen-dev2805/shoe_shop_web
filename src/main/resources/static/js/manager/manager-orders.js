@@ -258,7 +258,7 @@ function getStatusBadge(status) {
 function getPaymentBadge(payOption) {
     const paymentConfig = {
         'COD': { class: 'bg-warning text-dark', text: 'Tiền mặt', icon: 'solar:wallet-money-bold-duotone' },
-        'VNPAY': { class: 'bg-info text-white', text: 'VNPay', icon: 'solar:card-bold-duotone' }
+        'PAYOS': { class: 'bg-info text-white', text: 'PayOS', icon: 'solar:card-bold-duotone' }
     };
     
     const config = paymentConfig[payOption] || { class: 'bg-secondary', text: payOption, icon: 'solar:question-circle-bold-duotone' };
