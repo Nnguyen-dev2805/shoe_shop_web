@@ -1,0 +1,14 @@
+# Dockerfile for Render - Just pull pre-built image from Docker Hub
+# This significantly reduces deploy time as image is already built by GitHub Actions
+
+FROM nnguyen2805/shoe-shop-web:latest
+
+# Expose port (Render will override with PORT env variable)
+EXPOSE 8080
+
+# Health check endpoint
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:${PORT:-8080}/actuator/health || exit 1
+
+# Run application with dynamic PORT from environment
+ENTRYPOINT ["sh", "-c", "java -Xmx400m -Xms200m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=128m -jar -Dserver.port=${PORT:-8080} app.jar"]

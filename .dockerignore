@@ -1,0 +1,66 @@
+# Ignore files that don't need to be in Docker build context
+# This reduces build context size and speeds up build
+
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+
+# Build output
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+
+# Local uploads (use Cloudinary in production)
+uploads/
+
+# Node modules (if any)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+docs/
+*.md
+
+# CI/CD
+.github/
+
+# Logs
+logs/
+*.log
+
+# Test files
+src/test/
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Upload script
+upload-to-cloudinary.js
