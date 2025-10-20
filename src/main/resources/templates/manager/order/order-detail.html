@@ -75,7 +75,7 @@
                                                                            <iconify-icon icon="solar:calendar-bold-duotone" class="me-2"></iconify-icon>
                                                                            Ngày tạo:
                                                                       </td>
-                                                                      <td th:text="${#temporals.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></td>
+                                                                      <td th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></td>
                                                                  </tr>
                                                                  <tr>
                                                                       <td class="text-muted">
@@ -132,7 +132,119 @@
                                                        </div>
                                                   </div>
                                              </div>
+                                             <!-- Action Footer - Chuyển trạng thái -->
+                                             <div class="card-footer bg-light-subtle">
+                                                  <div class="d-flex justify-content-between align-items-center">
+                                                       <div>
+                                                            <button onclick="turnOnSearch()" 
+                                                                    th:if="${order.status.name() == 'IN_STOCK'}" 
+                                                                    class="btn btn-primary">
+                                                                 <iconify-icon icon="solar:delivery-bold-duotone" class="me-2"></iconify-icon>
+                                                                 Giao Cho Shipper
+                                                            </button>
+                                                       </div>
+                                                  </div>
+                                             </div>
                                         </div>
+                                        
+                                        <!-- Search Shipper Card (Hidden by default) -->
+                                        <div class="card" style="display: none" id="searchBox">
+                                             <div class="card-header bg-primary text-white">
+                                                  <h5 class="card-title mb-0 text-white">
+                                                       <iconify-icon icon="solar:user-check-bold-duotone" class="me-2"></iconify-icon>
+                                                       Tìm Kiếm Shipper
+                                                  </h5>
+                                             </div>
+                                             <div class="card-body">
+                                                  <!-- Search Input -->
+                                                  <div class="input-group mb-3">
+                                                       <span class="input-group-text">
+                                                            <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
+                                                       </span>
+                                                       <input id="searchInput" type="search" class="form-control" 
+                                                              placeholder="Nhập tên shipper..." autocomplete="off">
+                                                       <button id="searchButton" class="btn btn-primary" type="button">
+                                                            <iconify-icon icon="solar:magnifer-bold-duotone" class="me-1"></iconify-icon>
+                                                            Tìm Kiếm
+                                                       </button>
+                                                  </div>
+                                                  
+                                                  <!-- Search Results -->
+                                                  <div class="table-responsive">
+                                                       <table id="resultSearch" class="table table-hover align-middle mb-0">
+                                                            <thead class="table-light">
+                                                                 <tr>
+                                                                      <th>ID</th>
+                                                                      <th>Tên Shipper</th>
+                                                                      <th class="text-center">Hành Động</th>
+                                                                 </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                 <tr>
+                                                                      <td colspan="3" class="text-center text-muted">
+                                                                           Nhập tên shipper và nhấn tìm kiếm
+                                                                      </td>
+                                                                 </tr>
+                                                            </tbody>
+                                                       </table>
+                                                  </div>
+                                             </div>
+                                        </div>
+                                        
+                                        <script>
+                                             function turnOnSearch() {
+                                                  const searchBox = document.getElementById('searchBox');
+                                                  searchBox.style.display = 'block';
+                                                  searchBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                             }
+                                             
+                                             $(document).ready(function() {
+                                                  var currentUrl = window.location.pathname;
+                                                  var orderid = currentUrl.split('/')[currentUrl.split('/').length - 1];
+                                                  
+                                                  $("#searchButton").click(function() {
+                                                       var fullname = $("#searchInput").val();
+                                                       
+                                                       if (fullname.trim() !== "") {
+                                                            $.ajax({
+                                                                 url: "/api/shipper/search",
+                                                                 type: "GET",
+                                                                 data: { name: fullname },
+                                                                 success: function(response) {
+                                                                      $("#resultSearch tbody").empty();
+                                                                      
+                                                                      if (response.length > 0) {
+                                                                           response.forEach(function(user) {
+                                                                                $("#resultSearch tbody").append(
+                                                                                     "<tr>" +
+                                                                                     "<td>" + user.id + "</td>" +
+                                                                                     "<td>" + user.name + "</td>" +
+                                                                                     "<td class='text-center'>" +
+                                                                                     "<a class='btn btn-success btn-sm' href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>" +
+                                                                                     "<iconify-icon icon='solar:delivery-bold-duotone' class='me-1'></iconify-icon>Giao Hàng" +
+                                                                                     "</a>" +
+                                                                                     "</td>" +
+                                                                                     "</tr>"
+                                                                                );
+                                                                           });
+                                                                      } else {
+                                                                           $("#resultSearch tbody").append(
+                                                                                "<tr><td colspan='3' class='text-center text-muted'>Không tìm thấy shipper nào.</td></tr>"
+                                                                           );
+                                                                      }
+                                                                 },
+                                                                 error: function(error) {
+                                                                      console.error("Lỗi khi gọi API", error);
+                                                                      $("#resultSearch tbody").empty();
+                                                                      $("#resultSearch tbody").append(
+                                                                           "<tr><td colspan='3' class='text-center text-danger'>Có lỗi xảy ra khi tìm kiếm.</td></tr>"
+                                                                      );
+                                                                 }
+                                                            });
+                                                       }
+                                                  });
+                                             });
+                                        </script>
 
                                         <!-- Order Items Card -->
                                         <div class="card">
@@ -155,26 +267,26 @@
                                                                  </tr>
                                                             </thead>
                                                             <tbody>
-                                                                 <tr th:each="detail : ${order.orderDetails}">
+                                                                 <tr th:each="detail : ${order.orderDetailSet}">
                                                                       <td>
                                                                            <div class="d-flex align-items-center">
                                                                                 <div>
-                                                                                     <h6 class="mb-0" th:text="${detail.productDetail.product.productName}"></h6>
-                                                                                     <small class="text-muted" th:text="${detail.productDetail.product.brand.brandName}"></small>
+                                                                                     <h6 class="mb-0" th:text="${detail.product.product.title}"></h6>
+                                                                                     <small class="text-muted" th:text="${detail.product.product.brand.name}"></small>
                                                                                 </div>
                                                                            </div>
                                                                       </td>
-                                                                      <td th:text="${detail.productDetail.size.sizeName}"></td>
+                                                                      <td th:text="${detail.product.size}"></td>
                                                                       <td class="text-center" th:text="${detail.quantity}"></td>
-                                                                      <td class="text-end" th:text="${#numbers.formatDecimal(detail.pricePerUnit, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
-                                                                      <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(detail.quantity * detail.pricePerUnit, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                                      <td class="text-end" th:text="${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
+                                                                      <td class="text-end fw-bold" th:text="${#numbers.formatDecimal(detail.quantity * detail.price, 0, 'COMMA', 0, 'POINT')} + ' ₫'"></td>
                                                                  </tr>
                                                             </tbody>
                                                             <tfoot class="table-light">
                                                                  <tr>
                                                                       <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
                                                                       <td class="text-end fw-bold text-primary" 
-                                                                          th:text="${#numbers.formatDecimal(order.orderDetails.![quantity * pricePerUnit].sum(), 0, 'COMMA', 0, 'POINT')} + ' ₫'">
+                                                                          th:text="${#numbers.formatDecimal(order.orderDetailSet.![quantity * price].sum(), 0, 'COMMA', 0, 'POINT')} + ' ₫'">
                                                                       </td>
                                                                  </tr>
                                                             </tfoot>

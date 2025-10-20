@@ -1,64 +1,280 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <div class="d-flex align-items-center gap-2 mb-2" th:fragment="edit">
-  <button class="open-popup-btn" onclick="openPopup()">Edit profile</button>
+  <!-- Edit Button with Icon -->
+  <button class="btn btn-soft-primary btn-sm" onclick="openEditProfileModal()">
+    <iconify-icon icon="solar:pen-bold-duotone" class="me-1"></iconify-icon>
+    Chỉnh Sửa Hồ Sơ
+  </button>
 
-  <!-- Popup -->
-  <div id="confirmModal" class="modal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Profile</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Edit Profile Modal -->
+  <div id="editProfileModal" class="modal fade" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <!-- Modal Header -->
+        <div class="modal-header bg-gradient-primary text-white">
+          <div class="d-flex align-items-center">
+            <iconify-icon icon="solar:user-id-bold-duotone" class="fs-24 me-2"></iconify-icon>
+            <h5 class="modal-title mb-0">Chỉnh Sửa Thông Tin Cá Nhân</h5>
+          </div>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <div>
-            <p>Full name:</p>
-            <input id="fullname" class="input-group" th:value="${user.fullname}">
-          </div>
-          <div>
-            <p>Address:</p>
-            <input id="address" class="input-group" th:value="${user.address}">
-          </div>
-          <div>
-            <p>Phone</p>
-            <input id="phone" class="input-group" th:value="${user.phone}">
-          </div>
+
+        <!-- Modal Body -->
+        <div class="modal-body p-4">
+          <form id="editProfileForm">
+            <div class="row g-3">
+              <!-- Avatar Section -->
+              <div class="col-12 text-center mb-3">
+                <div class="position-relative d-inline-block">
+                  <img src="/assets/images/users/avatar-1.jpg" 
+                       alt="User Avatar" 
+                       class="avatar-xl rounded-circle border border-3 border-light shadow-sm"
+                       id="avatarPreview">
+                  <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-light rounded-circle">
+                    <span class="visually-hidden">Online</span>
+                  </span>
+                </div>
+                <div class="mt-2">
+                  <label for="avatarUpload" class="btn btn-sm btn-outline-primary">
+                    <iconify-icon icon="solar:camera-add-bold-duotone" class="me-1"></iconify-icon>
+                    Đổi Ảnh Đại Diện
+                  </label>
+                  <input type="file" id="avatarUpload" class="d-none" accept="image/*">
+                </div>
+              </div>
+
+              <!-- Full Name -->
+              <div class="col-md-6">
+                <label for="fullname" class="form-label">
+                  <iconify-icon icon="solar:user-bold-duotone" class="me-1 text-primary"></iconify-icon>
+                  Họ và Tên <span class="text-danger">*</span>
+                </label>
+                <input type="text" 
+                       class="form-control" 
+                       id="fullname" 
+                       th:value="${user.fullname}"
+                       placeholder="Nhập họ và tên"
+                       required>
+              </div>
+
+              <!-- Email (Read-only) -->
+              <div class="col-md-6">
+                <label for="email" class="form-label">
+                  <iconify-icon icon="solar:letter-bold-duotone" class="me-1 text-info"></iconify-icon>
+                  Email
+                </label>
+                <input type="email" 
+                       class="form-control bg-light" 
+                       id="email" 
+                       th:value="${user.email}"
+                       readonly>
+                <small class="text-muted">Email không thể thay đổi</small>
+              </div>
+
+              <!-- Phone -->
+              <div class="col-md-6">
+                <label for="phone" class="form-label">
+                  <iconify-icon icon="solar:phone-bold-duotone" class="me-1 text-success"></iconify-icon>
+                  Số Điện Thoại <span class="text-danger">*</span>
+                </label>
+                <input type="tel" 
+                       class="form-control" 
+                       id="phone" 
+                       th:value="${user.phone}"
+                       placeholder="Nhập số điện thoại"
+                       pattern="[0-9]{10}"
+                       required>
+              </div>
+
+              <!-- Role (Read-only) -->
+              <div class="col-md-6">
+                <label for="role" class="form-label">
+                  <iconify-icon icon="solar:shield-user-bold-duotone" class="me-1 text-warning"></iconify-icon>
+                  Vai Trò
+                </label>
+                <input type="text" 
+                       class="form-control bg-light" 
+                       id="role" 
+                       th:value="${user.role != null ? user.role.roleName : 'User'}"
+                       readonly>
+              </div>
+
+              <!-- Address -->
+              <div class="col-12">
+                <label for="address" class="form-label">
+                  <iconify-icon icon="solar:map-point-bold-duotone" class="me-1 text-danger"></iconify-icon>
+                  Địa Chỉ
+                </label>
+                <textarea class="form-control" 
+                          id="address" 
+                          rows="2"
+                          placeholder="Nhập địa chỉ đầy đủ"
+                          th:text="${user?.userAddresses != null and !user.userAddresses.empty ? user.userAddresses[0].address.addressLine + ', ' + user.userAddresses[0].address.district + ', ' + user.userAddresses[0].address.city : ''}"></textarea>
+              </div>
+
+            </div>
+          </form>
         </div>
-        <div class="modal-footer">
-          <button onclick="sendData()" id="confirmCancelBtn" type="button" class="btn btn-danger">Enter</button>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer bg-light">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <iconify-icon icon="solar:close-circle-bold-duotone" class="me-1"></iconify-icon>
+            Hủy
+          </button>
+          <button type="button" class="btn btn-primary" onclick="saveProfile()">
+            <iconify-icon icon="solar:diskette-bold-duotone" class="me-1"></iconify-icon>
+            Lưu Thay Đổi
+          </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Custom Styles -->
+  <style>
+    .modal-content {
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    
+    .bg-gradient-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .avatar-xl {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+    }
+    
+    .form-label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-soft-primary {
+      background-color: rgba(102, 126, 234, 0.1);
+      color: #667eea;
+      border: none;
+    }
+    
+    .btn-soft-primary:hover {
+      background-color: rgba(102, 126, 234, 0.2);
+      color: #667eea;
+    }
+  </style>
+
+  <!-- Scripts -->
   <script>
-    // Open popup
-    function openPopup() {
-      $("#confirmModal").modal("show");
+    // Open Edit Profile Modal
+    function openEditProfileModal() {
+      $("#editProfileModal").modal("show");
     }
 
-    // Submit form
-    function sendData() {
-      const name = document.getElementById('fullname').value;
-      const address = document.getElementById('address').value;
-      const phone = document.getElementById('phone').value;
+    // Avatar Upload Preview
+    document.getElementById('avatarUpload')?.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          document.getElementById('avatarPreview').src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
 
-      // Gửi dữ liệu bằng jQuery Ajax
+    // Save Profile Function
+    function saveProfile() {
+      const fullname = document.getElementById('fullname').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const address = document.getElementById('address').value.trim();
+
+      // Validation
+      if (!fullname) {
+        showAlert('error', 'Vui lòng nhập họ và tên!');
+        return;
+      }
+
+      if (!phone) {
+        showAlert('error', 'Vui lòng nhập số điện thoại!');
+        return;
+      }
+
+      if (!/^[0-9]{10}$/.test(phone)) {
+        showAlert('error', 'Số điện thoại không hợp lệ! (Phải có 10 chữ số)');
+        return;
+      }
+
+      // Show loading
+      const saveBtn = event.target;
+      const originalHtml = saveBtn.innerHTML;
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Đang lưu...';
+
+      // Send AJAX request
       $.ajax({
-        url: '/api/user/update', // Thay URL API tại đây
+        url: '/api/user/update',
         method: 'POST',
-        data: {fullname: name, address: address, phone: phone},
-        success: function (response) {
-          alert('Updated successfully');
-          location.reload();
+        data: {
+          fullname: fullname,
+          phone: phone,
+          address: address
         },
-        error: function (xhr, status, error) {
-          alert('Some error: ' + error);
+        success: function(response) {
+          showAlert('success', 'Cập nhật thông tin thành công!');
+          setTimeout(function() {
+            location.reload();
+          }, 1500);
+        },
+        error: function(xhr, status, error) {
+          showAlert('error', 'Có lỗi xảy ra: ' + (xhr.responseText || error));
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = originalHtml;
         }
       });
     }
 
+    // Show Alert Function
+    function showAlert(type, message) {
+      const iconMap = {
+        'success': 'solar:check-circle-bold-duotone',
+        'error': 'solar:danger-circle-bold-duotone',
+        'warning': 'solar:danger-triangle-bold-duotone',
+        'info': 'solar:info-circle-bold-duotone'
+      };
+
+      const colorMap = {
+        'success': 'success',
+        'error': 'danger',
+        'warning': 'warning',
+        'info': 'info'
+      };
+
+      const alertHtml = `
+        <div class="alert alert-${colorMap[type]} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3" 
+             role="alert" 
+             style="z-index: 9999; min-width: 300px;">
+          <iconify-icon icon="${iconMap[type]}" class="fs-20 me-2"></iconify-icon>
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+
+      $('body').append(alertHtml);
+
+      // Auto dismiss after 3 seconds
+      setTimeout(function() {
+        $('.alert').fadeOut(function() {
+          $(this).remove();
+        });
+      }, 3000);
+    }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </div>

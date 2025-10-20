@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8"/>
+    <title>Thống Kê - Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Admin Dashboard with Statistics"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"/>
+
+    <!-- Vendor CSS -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css"/>
+    
+    <!-- ApexCharts CSS -->
+    <link th:href="@{/assets/vendor/apexcharts/apexcharts.css}" rel="stylesheet" type="text/css"/>
+
+    <style>
+        .stat-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .stat-card.clickable {
+            cursor: pointer;
+        }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+        .modal-table img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <!-- Menu Toggle Button -->
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Page Title -->
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0">Thống Kê</h4>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                    <!-- Theme Color (Light/Dark) -->
+                    <div class="topbar-item">
+                        <button type="button" class="topbar-button" id="light-dark-mode">
+                            <iconify-icon icon="solar:moon-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- User -->
+                    <div class="dropdown topbar-item">
+                        <a type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span class="d-flex align-items-center">
+                                <img class="rounded-circle" width="32" th:src="@{/assets/images/users/avatar-1.jpg}" alt="avatar">
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Welcome Admin!</h6>
+                            <a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="bx bx-log-out fs-18 align-middle me-1"></i><span class="align-middle">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- ========== App Menu Start ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+    <!-- ========== App Menu End ========== -->
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-fluid">
+
+            <!-- Page Title & Date Range Filter -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <h4 class="page-title mb-0">Thống Kê</h4>
+                            
+                            <!-- Date Range Filter -->
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="input-group" style="max-width: 500px;">
+                                    <span class="input-group-text"><i class="bx bx-calendar"></i></span>
+                                    <input type="date" class="form-control" id="startDate" placeholder="Từ ngày">
+                                    <span class="input-group-text">đến</span>
+                                    <input type="date" class="form-control" id="endDate" placeholder="Đến ngày">
+                                    <button class="btn btn-primary" id="filterBtn" type="button">
+                                        <i class="bx bx-filter-alt me-1"></i>Lọc
+                                    </button>
+                                    <button class="btn btn-secondary" id="resetBtn" type="button" title="Xem tất cả">
+                                        <i class="bx bx-reset"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-success" id="exportMainExcel" type="button" title="Xuất báo cáo Excel tổng hợp">
+                                    <i class="bx bx-download me-1"></i>Xuất Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards Row -->
+            <div class="row" id="statsCards">
+                <!-- Total Orders Card -->
+                <div class="col-md-6 col-xl-3">
+                    <div class="card stat-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="card-title mb-2">Tổng Đơn Hàng</h4>
+                                    <p class="text-muted mb-0">Đơn hợp lệ</p>
+                                </div>
+                                <div class="avatar-md bg-primary bg-opacity-10 rounded">
+                                    <iconify-icon icon="solar:cart-5-bold-duotone" class="fs-32 text-primary"></iconify-icon>
+                                </div>
+                            </div>
+                            <h2 class="mt-3 mb-0" id="totalOrders">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Revenue Card -->
+                <div class="col-md-6 col-xl-3">
+                    <div class="card stat-card clickable" data-modal="revenueModal" title="Click để xem chi tiết">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="card-title mb-2">Tổng Doanh Thu</h4>
+                                    <p class="text-muted mb-0">Từ đơn đã giao</p>
+                                </div>
+                                <div class="avatar-md bg-success bg-opacity-10 rounded">
+                                    <iconify-icon icon="solar:dollar-minimalistic-bold-duotone" class="fs-32 text-success"></iconify-icon>
+                                </div>
+                            </div>
+                            <h2 class="mt-3 mb-0" id="totalRevenue">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Products Sold Card -->
+                <div class="col-md-6 col-xl-3">
+                    <div class="card stat-card clickable" data-modal="productsSoldModal" title="Click để xem chi tiết">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="card-title mb-2">Sản Phẩm Đã Bán</h4>
+                                    <p class="text-muted mb-0">Tổng số lượng</p>
+                                </div>
+                                <div class="avatar-md bg-warning bg-opacity-10 rounded">
+                                    <iconify-icon icon="solar:box-bold-duotone" class="fs-32 text-warning"></iconify-icon>
+                                </div>
+                            </div>
+                            <h2 class="mt-3 mb-0" id="totalProductsSold">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Customers Card -->
+                <div class="col-md-6 col-xl-3">
+                    <div class="card stat-card clickable" data-modal="customersModal" title="Click để xem chi tiết">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <h4 class="card-title mb-2">Khách Hàng</h4>
+                                    <p class="text-muted mb-0">Tổng số khách</p>
+                                </div>
+                                <div class="avatar-md bg-info bg-opacity-10 rounded">
+                                    <iconify-icon icon="solar:users-group-rounded-bold-duotone" class="fs-32 text-info"></iconify-icon>
+                                </div>
+                            </div>
+                            <h2 class="mt-3 mb-0" id="totalCustomers">
+                                <span class="spinner-border spinner-border-sm" role="status"></span>
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders by Status Row -->
+            <div class="row">
+                <div class="col-xl-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Thống Kê Đơn Hàng Theo Thời Gian</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="ordersTimeSeriesChart" class="apex-charts"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Đơn Hàng Theo Trạng Thái</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="ordersByStatusChart" class="apex-charts"></div>
+                            <div class="mt-3" id="statusLegend"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Doanh Thu Theo Thời Gian (30 Ngày Gần Nhất)</h4>
+                        </div>
+                        <div class="card-body">
+                            <div id="revenueTimeSeriesChart" class="apex-charts"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Products Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h4 class="card-title mb-0">Top Sản Phẩm Bán Chạy Nhất</h4>
+                            <span class="badge bg-primary">Top 10</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-centered mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Sản Phẩm</th>
+                                            <th>Hình Ảnh</th>
+                                            <th class="text-end">Số Lượng Bán</th>
+                                            <th class="text-end">Doanh Thu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="topProductsTableBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center">
+                                                <div class="spinner-border text-primary" role="status">
+                                                    <span class="visually-hidden">Loading...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Container Fluid -->
+
+        <!-- ========== Footer Start ========== -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <script>document.write(new Date().getFullYear())</script> &copy; Shoe Shop Dashboard
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- ========== Footer End ========== -->
+
+    </div>
+    <!-- ==================================================== -->
+    <!-- End Page Content -->
+    <!-- ==================================================== -->
+    
+    <!-- Revenue Detail Modal -->
+    <div class="modal fade" id="revenueModal" tabindex="-1" aria-labelledby="revenueModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="revenueModalLabel">
+                        <i class="bx bx-dollar-circle me-2"></i>Sản Phẩm Theo Doanh Thu
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-success me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="revenueModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-success btn-sm" id="exportRevenueExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive modal-table">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Hình Ảnh</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th class="text-end">Số Lượng</th>
+                                    <th class="text-end">Doanh Thu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="revenueTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <div class="spinner-border text-success" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Products Sold Detail Modal -->
+    <div class="modal fade" id="productsSoldModal" tabindex="-1" aria-labelledby="productsSoldModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="productsSoldModalLabel">
+                        <i class="bx bx-package me-2"></i>Sản Phẩm Theo Số Lượng Bán
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-warning me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="productsSoldModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-warning btn-sm" id="exportProductsSoldExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive modal-table">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Hình Ảnh</th>
+                                    <th>Tên Sản Phẩm</th>
+                                    <th class="text-end">Số Lượng Bán</th>
+                                    <th class="text-end">Doanh Thu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsSoldTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">
+                                        <div class="spinner-border text-warning" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Top Customers Modal -->
+    <div class="modal fade" id="customersModal" tabindex="-1" aria-labelledby="customersModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header bg-info text-white">
+                    <h5 class="modal-title" id="customersModalLabel">
+                        <i class="bx bx-user-circle me-2"></i>Top Khách Hàng Mua Nhiều Nhất
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Thông tin khoảng thời gian và nút xuất -->
+                    <div class="alert alert-light border mb-3">
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div>
+                                <i class="bx bx-calendar text-info me-2"></i>
+                                <strong>Khoảng thời gian:</strong>
+                                <span id="customersModalDateRange" class="text-muted">Tất cả</span>
+                            </div>
+                            <button type="button" class="btn btn-info btn-sm text-white" id="exportCustomersExcel" title="Xuất báo cáo Excel">
+                                <i class="bx bx-download me-1"></i>Xuất Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên Khách Hàng</th>
+                                    <th>Email</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th class="text-end">Tổng Đơn</th>
+                                    <th class="text-end">Tổng Chi Tiêu</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customersTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center">
+                                        <div class="spinner-border text-info" role="status">
+                                            <span class="visually-hidden">Loading...</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor Javascript -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- ApexCharts -->
+<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Dashboard JS -->
+<script th:src="@{/js/admin/dashboard.js}"></script>
+
+</body>
+</html>
