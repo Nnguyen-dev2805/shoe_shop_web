@@ -573,7 +573,7 @@ function renderShippingVouchers(vouchers) {
         let badgeText = '';
         let descriptionText = '';
         let badgeClass = '';
-        
+
         if (voucher.discountValueType === 'PERCENTAGE') {
             const percent = Math.round(voucher.percent * 100); // Backend lưu 0-1, nhân 100 để ra %
             badgeText = `-${percent}%`;
@@ -798,18 +798,18 @@ function bindEventHandlers() {
             // Percentage discount (backend stores as 0-1, multiply by 100 for display)
             const orderDiscountPercent = selectedVoucher.percent * 100;
             discountPercent = orderDiscountPercent;
-            
+
             console.log('💰 Order discount:', orderDiscountPercent + '%');
             alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + orderDiscountPercent + '%');
         } else {
             // FIXED_AMOUNT discount
             discountPercent = 0; // Reset percentage
             discountAmount = selectedVoucher.percent; // Use fixed amount directly
-            
+
             console.log('💰 Order discount:', formatCurrency(selectedVoucher.percent));
             alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + formatCurrency(selectedVoucher.percent));
         }
-        
+
         window.appliedOrderVoucherId = selectedId;
         
         // Recalculate total
@@ -1047,12 +1047,12 @@ function handlePayment() {
     
     // 🔥 Get flash sale ID from sessionStorage (for Buy Now mode)
     const flashSaleId = sessionStorage.getItem('flashSaleId');
-    
+
     console.log('🎫 Applied Vouchers:');
     console.log('  Order voucher ID:', orderVoucherId);
     console.log('  Shipping voucher ID:', shippingVoucherId);
     console.log('🔥 Flash Sale ID:', flashSaleId);
-    
+
     const paymentData = {
         cartId: cartId ? parseInt(cartId) : null,
         addressId: parseInt(addressId),
@@ -1085,31 +1085,52 @@ function handlePayment() {
             console.log('✅ Payment API Response:', response);
             
             if (response.success) {
-                console.log('🎉 Order placed successfully!');
-                
-                // ✅ Clear ALL session storage related to checkout
-                sessionStorage.removeItem('selectedItems');        // Buy Now data
-                sessionStorage.removeItem('selectedCartItems');    // Cart data
-                sessionStorage.removeItem('selectedAddressId');
-                sessionStorage.removeItem('cartId');
-                sessionStorage.removeItem('checkoutSource');       // ✅ THÊM
-                sessionStorage.removeItem('buyNowMode');           // ✅ THÊM
-                sessionStorage.removeItem('flashSaleId');          // 🔥 Clear flash sale
-                
-                console.log('✅ SessionStorage cleared after successful payment');
-                
-                // Clear applied vouchers
-                window.appliedShippingDiscount = 0;
-                window.appliedShippingVoucherId = null;
-                window.appliedOrderVoucherId = null;
+                console.log('🎉 Payment request successful!');
                 
                 if (response.data && response.data.paymentUrl) {
-                    // Redirect to payment gateway (for online payment)
-                    console.log('💳 Redirecting to payment gateway:', response.data.paymentUrl);
-                    window.location.href = response.data.paymentUrl;
+                    // PayOS payment: Save data to sessionStorage before opening payment
+                    console.log('💳 PayOS payment - saving data and opening payment window...');
+
+                    // Save payment data for order creation after PayOS return
+                    sessionStorage.setItem('payosPaymentData', JSON.stringify(paymentData));
+                    sessionStorage.setItem('payosPaymentPending', 'true');
+                    sessionStorage.setItem('payosOrderCode', response.data.payosOrderCode); // Save orderCode for verification
+
+                    console.log('✅ Data saved to sessionStorage');
+                    console.log('PayOS Order Code:', response.data.payosOrderCode);
+                    console.log('Opening PayOS payment in new window...');
+
+                    // Open PayOS payment in new window/tab
+                    const paymentWindow = window.open(response.data.paymentUrl, '_blank');
+
+                    if (paymentWindow) {
+                        // Show message to user
+                        alert('🔔 Vui lòng hoàn tất thanh toán trong cửa sổ mới.\n\nSau khi thanh toán xong, quay lại trang này và nhấn "Xác nhận đã thanh toán".');
+
+                        // Show confirmation button
+                        showPaymentConfirmationButton();
+                    } else {
+                        // Popup blocked - fallback to redirect
+                        alert('⚠️ Trình duyệt chặn popup. Đang chuyển hướng...');
+                        window.location.href = response.data.paymentUrl;
+                    }
                 } else {
-                    // Success - redirect to order view page
-                    console.log('📦 Redirecting to order view page...');
+                    // COD payment: Order already created
+                    console.log('📦 COD payment - order created successfully!');
+
+                    // Clear session storage
+                    sessionStorage.removeItem('selectedItems');
+                    sessionStorage.removeItem('selectedCartItems');
+                    sessionStorage.removeItem('selectedAddressId');
+                    sessionStorage.removeItem('cartId');
+                    sessionStorage.removeItem('checkoutSource');
+                    sessionStorage.removeItem('buyNowMode');
+
+                    // Clear applied vouchers
+                    window.appliedShippingDiscount = 0;
+                    window.appliedShippingVoucherId = null;
+                    window.appliedOrderVoucherId = null;
+
                     alert('✅ Đặt hàng thành công!');
                     window.location.href = '/user/order/view';
                 }
@@ -1138,6 +1159,135 @@ function handlePayment() {
             
             alert('❌ ' + errorMessage);
             $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Đặt hàng');
+        }
+    });
+}
+
+/**
+ * Show payment confirmation button after opening PayOS window
+ */
+function showPaymentConfirmationButton() {
+    // Disable the original payment button
+    $('#btn-payment').prop('disabled', true).html('<i class="fa fa-clock-o"></i> Đang chờ thanh toán...');
+
+    // Create confirmation button
+    const confirmButton = $('<button>')
+        .attr('id', 'btn-confirm-payment')
+        .addClass('btn btn-success btn-lg')
+        .css({
+            'margin-left': '10px',
+            'animation': 'pulse 2s infinite'
+        })
+        .html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong')
+        .on('click', handlePaymentConfirmation);
+
+    // Add button next to payment button
+    $('#btn-payment').after(confirmButton);
+
+    // Add CSS animation
+    if (!$('#pulse-animation').length) {
+        $('<style id="pulse-animation">')
+            .text('@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }')
+            .appendTo('head');
+    }
+}
+
+/**
+ * Handle payment confirmation after user completes PayOS payment
+ */
+function handlePaymentConfirmation() {
+    console.log('=== User confirmed payment ===');
+
+    // Check if payment data exists
+    const paymentData = sessionStorage.getItem('payosPaymentData');
+    const paymentPending = sessionStorage.getItem('payosPaymentPending');
+    const payosOrderCode = sessionStorage.getItem('payosOrderCode');
+
+    if (!paymentData || paymentPending !== 'true' || !payosOrderCode) {
+        alert('❌ Không tìm thấy thông tin thanh toán. Vui lòng thử lại.');
+        return;
+    }
+
+    console.log('Payment data found, verifying payment status...');
+    console.log('PayOS Order Code:', payosOrderCode);
+
+    // Show loading - verifying
+    $('#btn-confirm-payment').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang xác minh thanh toán...');
+
+    // Step 1: Verify payment status with PayOS
+    $.ajax({
+        url: '/api/order/verify-payos-payment',
+        method: 'GET',
+        data: { orderCode: payosOrderCode },
+        success: function(verifyResponse) {
+            console.log('✅ Payment verification response:', verifyResponse);
+            console.log('Response success:', verifyResponse.success);
+            console.log('Response status:', verifyResponse.status);
+
+            // Check if payment is PAID (case-insensitive)
+            const isPaid = verifyResponse.status && verifyResponse.status.toUpperCase() === 'PAID';
+
+            if (isPaid) {
+                // Payment verified! Now create order
+                console.log('✅ Payment verified as PAID, creating order...');
+
+                // Update loading text
+                $('#btn-confirm-payment').html('<i class="fa fa-spinner fa-spin"></i> Đang tạo đơn hàng...');
+
+                // Parse payment data
+                const data = JSON.parse(paymentData);
+
+                // Add flag to tell backend this is payment confirmation
+                data.isPaymentConfirmation = true;
+
+                // Step 2: Create order
+                $.ajax({
+                    url: '/api/order/pay',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        console.log('✅ Order created:', response);
+
+                        if (response.success && response.data && response.data.orderId) {
+                            // Clear payment data
+                            sessionStorage.removeItem('payosPaymentData');
+                            sessionStorage.removeItem('payosPaymentPending');
+                            sessionStorage.removeItem('payosOrderCode');
+
+                            // Clear checkout data
+                            sessionStorage.removeItem('selectedItems');
+                            sessionStorage.removeItem('selectedCartItems');
+                            sessionStorage.removeItem('selectedAddressId');
+                            sessionStorage.removeItem('cartId');
+                            sessionStorage.removeItem('checkoutSource');
+                            sessionStorage.removeItem('buyNowMode');
+
+                            alert('✅ Thanh toán thành công! Đơn hàng #' + response.data.orderId + ' đã được tạo.');
+                            window.location.href = '/user/order/view';
+                        } else {
+                            alert('❌ Có lỗi khi tạo đơn hàng. Vui lòng liên hệ hỗ trợ.');
+                            $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('❌ Failed to create order:', error);
+                        alert('❌ Có lỗi khi tạo đơn hàng: ' + error);
+                        $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
+                    }
+                });
+
+            } else {
+                // Payment not verified
+                console.log('❌ Payment not verified:', verifyResponse.status);
+                alert('❌ ' + verifyResponse.message);
+                $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Failed to verify payment:', error);
+            alert('❌ Không thể xác minh trạng thái thanh toán. Vui lòng thử lại sau.');
+            $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
         }
     });
 }

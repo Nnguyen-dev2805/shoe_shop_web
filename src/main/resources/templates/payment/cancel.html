@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán thất bại</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <style>
+        .main-box {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .payment-title {
+            color: #dc3545;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .btn-return {
+            background: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn-return:hover {
+            background: #545b62;
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-box">
+        <h4 class="payment-title">
+            <i class="fa fa-times-circle"></i> Thanh toán thất bại
+        </h4>
+        <p>Nếu có bất kỳ câu hỏi nào, hãy gửi email tới <a href="mailto:support@payos.vn">support@payos.vn</a></p>
+        <a href="/cart/view" class="btn-return">
+            <i class="fa fa-arrow-left"></i> Quay lại giỏ hàng
+        </a>
+    </div>
+</body>
+</html>
