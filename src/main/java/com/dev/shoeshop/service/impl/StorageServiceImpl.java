@@ -1,7 +1,9 @@
 package com.dev.shoeshop.service.impl;
 
+import com.dev.shoeshop.service.CloudinaryService;
 import com.dev.shoeshop.service.StorageService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,9 @@ import java.nio.file.StandardCopyOption;
 @Service
 @Slf4j
 public class StorageServiceImpl implements StorageService {
+
+    @Autowired(required = false)
+    private CloudinaryService cloudinaryService;
 
     @Value("${storage.upload-dir}")
     private String uploadDir;
@@ -34,6 +39,21 @@ public class StorageServiceImpl implements StorageService {
                 throw new RuntimeException("File trống!");
             }
 
+            // Try Cloudinary first (if configured)
+            if (cloudinaryService != null) {
+                try {
+                    log.info("Uploading to Cloudinary: {}", file.getOriginalFilename());
+                    String cloudinaryUrl = cloudinaryService.uploadImage(file, "products");
+                    log.info("Uploaded to Cloudinary successfully: {}", cloudinaryUrl);
+                    return cloudinaryUrl;
+                } catch (Exception e) {
+                    log.error("Cloudinary upload failed, falling back to local storage: {}", e.getMessage());
+                    // Fall through to local storage
+                }
+            }
+
+            // Fallback to local storage
+            log.info("Using local storage for: {}", file.getOriginalFilename());
             String originalFilename = file.getOriginalFilename();
             String extension = "";
             String baseName = "";
