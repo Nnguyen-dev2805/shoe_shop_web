@@ -17,8 +17,8 @@ COPY src ./src
 
 # Build application (skip tests for faster build)
 # -T 1C: Parallel build để compile nhanh hơn
-# -o: Offline mode (đã download deps rồi)
-RUN mvn clean package -DskipTests -T 1C -o
+# Note: Không dùng -o (offline) để tránh lỗi missing dependencies lần đầu
+RUN mvn clean package -DskipTests -T 1C
 
 # Verify JAR file was created
 # dùng để debug có thể xóa
