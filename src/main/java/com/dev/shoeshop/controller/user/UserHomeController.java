@@ -9,8 +9,10 @@ import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
 import com.dev.shoeshop.service.UserService;
+import com.dev.shoeshop.service.StorageService;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.utils.Constant;
+import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +40,7 @@ public class UserHomeController {
     private final OrderService orderService;
     private final RatingService ratingService;
     private final OrderDetailRepository orderDetailRepository;
+    private final StorageService storageService;
 
     @GetMapping("/shop")
     public String userShop(HttpSession session) {
@@ -294,6 +297,66 @@ public class UserHomeController {
             Map<String, Object> response = new HashMap<>();
             response.put("error", "Failed to load orders: " + e.getMessage());
             response.put("success", false);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * API endpoint để upload ảnh đánh giá
+     */
+    @PostMapping("/api/upload/rating-image")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> uploadRatingImage(
+            @RequestParam("file") MultipartFile file,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Kiểm tra user đã đăng nhập
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để upload ảnh");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Validate file
+            if (file.isEmpty()) {
+                response.put("success", false);
+                response.put("message", "Vui lòng chọn file ảnh");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Kiểm tra định dạng file
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.startsWith("image/")) {
+                response.put("success", false);
+                response.put("message", "Chỉ chấp nhận file ảnh (JPG, PNG, GIF)");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Kiểm tra kích thước file (max 5MB)
+            if (file.getSize() > 5 * 1024 * 1024) {
+                response.put("success", false);
+                response.put("message", "Kích thước file không được vượt quá 5MB");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Upload using StorageService (simpler approach)
+            String imageUrl = storageService.storeFile(file);
+            
+            response.put("success", true);
+            response.put("imageUrl", imageUrl);
+            response.put("message", "Upload ảnh thành công");
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("Error uploading rating image: " + e.getMessage());
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Lỗi khi upload ảnh: " + e.getMessage());
             return ResponseEntity.status(500).body(response);
         }
     }

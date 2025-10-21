@@ -75,7 +75,8 @@ public class RatingServiceImpl implements RatingService {
             Rating savedRating = ratingRepository.save(rating);
             System.out.println("✅ Rating saved successfully with ID: " + savedRating.getId() + 
                              ", Star: " + savedRating.getStar() + 
-                             ", Comment: " + savedRating.getComment());
+                             ", Comment: " + savedRating.getComment() + 
+                             ", Image: " + savedRating.getImage());
         }
     }
     

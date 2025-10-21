@@ -2670,10 +2670,8 @@ $(document).ready(function() {
                                 ${rating.image ? `
                                     <div class="ZBCPg1">
                                         <div class="rating-media-list">
-                                            <div class="rating-media-list__container" style="display: flex; gap: 8px;">
-                                                <div class="rating-media-list__image-wrapper" style="width: 72px; height: 72px; border-radius: 4px; overflow: hidden; cursor: pointer;">
-                                                    <img src="${rating.image}" alt="Review image" style="width: 100%; height: 100%; object-fit: cover;">
-                                                </div>
+                                            <div class="rating-media-list__container" style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                                ${generateRatingImages(rating.image)}
                                             </div>
                                         </div>
                                     </div>
@@ -2691,6 +2689,265 @@ $(document).ready(function() {
         `;
         
         reviewsContent.html(html);
+        
+        // Bind click events for rating images after content is loaded
+        bindRatingImageEvents();
+    }
+    
+    // Function to generate rating images with click functionality
+    function generateRatingImages(imageString) {
+        if (!imageString) return '';
+        
+        // Split by comma if multiple images
+        const images = imageString.split(',').map(img => img.trim()).filter(img => img);
+        let html = '';
+        
+        images.forEach((imageUrl, index) => {
+            html += `
+                <div class="rating-media-list__image-wrapper" 
+                     style="width: 72px; height: 72px; border-radius: 4px; overflow: hidden; cursor: pointer; position: relative; transition: transform 0.2s ease;"
+                     data-image-url="${imageUrl}"
+                     data-image-index="${index}"
+                     data-images='${JSON.stringify(images)}'
+                     onmouseover="this.style.transform='scale(1.05)'"
+                     onmouseout="this.style.transform='scale(1)'"
+                     onclick="openImageModal('${imageUrl}', ${index}, ${JSON.stringify(images).replace(/"/g, '&quot;')})">
+                    <img src="${imageUrl}" 
+                         alt="Ảnh đánh giá ${index + 1}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.style.display='none'">
+                    ${images.length > 1 ? `
+                        <div style="position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 8px; padding: 2px 6px; font-size: 10px;">
+                            ${index + 1}/${images.length}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        });
+        
+        return html;
+    }
+    
+    // Function to bind rating image events
+    function bindRatingImageEvents() {
+        // Add hover effects and click handlers are already in the HTML
+        console.log('Rating image events bound');
+    }
+    
+    // Function to open image modal
+    function openImageModal(imageUrl, currentIndex, allImages) {
+        console.log('Opening image modal:', imageUrl, currentIndex);
+        
+        // Parse images array if it's a string
+        let images = allImages;
+        if (typeof allImages === 'string') {
+            try {
+                images = JSON.parse(allImages);
+            } catch (e) {
+                images = [imageUrl];
+            }
+        }
+        
+        // Create modal HTML
+        const modalHtml = `
+            <div id="imageModal" style="
+                position: fixed; 
+                top: 0; 
+                left: 0; 
+                width: 100%; 
+                height: 100%; 
+                background: rgba(0,0,0,0.9); 
+                z-index: 9999; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center;
+                cursor: pointer;
+            " onclick="closeImageModal()">
+                <div style="position: relative; max-width: 90%; max-height: 90%;" onclick="event.stopPropagation()">
+                    <img id="modalImage" 
+                         src="${imageUrl}" 
+                         alt="Ảnh đánh giá" 
+                         style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 8px;">
+                    
+                    <!-- Close button -->
+                    <button onclick="closeImageModal()" style="
+                        position: absolute; 
+                        top: -40px; 
+                        right: 0; 
+                        background: rgba(255,255,255,0.9); 
+                        border: none; 
+                        border-radius: 50%; 
+                        width: 32px; 
+                        height: 32px; 
+                        cursor: pointer; 
+                        font-size: 18px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">×</button>
+                    
+                    ${images.length > 1 ? `
+                        <!-- Previous button -->
+                        <button onclick="changeModalImage(-1)" style="
+                            position: absolute; 
+                            left: -50px; 
+                            top: 50%; 
+                            transform: translateY(-50%); 
+                            background: rgba(255,255,255,0.9); 
+                            border: none; 
+                            border-radius: 50%; 
+                            width: 40px; 
+                            height: 40px; 
+                            cursor: pointer; 
+                            font-size: 18px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">‹</button>
+                        
+                        <!-- Next button -->
+                        <button onclick="changeModalImage(1)" style="
+                            position: absolute; 
+                            right: -50px; 
+                            top: 50%; 
+                            transform: translateY(-50%); 
+                            background: rgba(255,255,255,0.9); 
+                            border: none; 
+                            border-radius: 50%; 
+                            width: 40px; 
+                            height: 40px; 
+                            cursor: pointer; 
+                            font-size: 18px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        ">›</button>
+                        
+                        <!-- Image counter -->
+                        <div style="
+                            position: absolute; 
+                            bottom: -40px; 
+                            left: 50%; 
+                            transform: translateX(-50%); 
+                            background: rgba(255,255,255,0.9); 
+                            padding: 8px 16px; 
+                            border-radius: 16px; 
+                            font-size: 14px;
+                            color: #333;
+                        ">${currentIndex + 1} / ${images.length}</div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if any
+        $('#imageModal').remove();
+        
+        // Add modal to body
+        $('body').append(modalHtml);
+        
+        // Store current state
+        window.currentModalIndex = currentIndex;
+        window.currentModalImages = images;
+        
+        // Prevent body scroll
+        $('body').css('overflow', 'hidden');
+    }
+    
+    // Function to close image modal
+    function closeImageModal() {
+        $('#imageModal').remove();
+        $('body').css('overflow', 'auto');
+    }
+    
+    // Function to change modal image
+    function changeModalImage(direction) {
+        if (!window.currentModalImages || window.currentModalImages.length <= 1) return;
+        
+        window.currentModalIndex += direction;
+        
+        // Loop around
+        if (window.currentModalIndex >= window.currentModalImages.length) {
+            window.currentModalIndex = 0;
+        } else if (window.currentModalIndex < 0) {
+            window.currentModalIndex = window.currentModalImages.length - 1;
+        }
+        
+        // Update image and counter
+        const newImageUrl = window.currentModalImages[window.currentModalIndex];
+        $('#modalImage').attr('src', newImageUrl);
+        
+        // Update counter
+        $('#imageModal').find('div:contains("/")').text(`${window.currentModalIndex + 1} / ${window.currentModalImages.length}`);
+    }
+    
+    // Add keyboard navigation
+    $(document).on('keydown', function(e) {
+        if ($('#imageModal').length > 0) {
+            if (e.key === 'Escape') {
+                closeImageModal();
+            } else if (e.key === 'ArrowLeft') {
+                changeModalImage(-1);
+            } else if (e.key === 'ArrowRight') {
+                changeModalImage(1);
+            }
+        }
+    });
+    
+    // Make functions global so they can be called from onclick attributes
+    window.openImageModal = openImageModal;
+    window.closeImageModal = closeImageModal;
+    window.changeModalImage = changeModalImage;
+    
+    // Function to generate star HTML
+    function generateStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                stars += '<i class="fa fa-star" style="color: #ffc107;"></i>';
+            } else {
+                stars += '<i class="fa fa-star-o" style="color: #ddd;"></i>';
+            }
+        }
+        return stars;
+    }
+    
+    // Function to generate Shopee-style stars
+    function generateShopeeStars(rating) {
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(rating)) {
+                // Full star
+                stars += `
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="#ffc107">
+                        <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                    </svg>
+                `;
+            } else if (i === Math.ceil(rating) && rating % 1 !== 0) {
+                // Half star
+                const percentage = (rating % 1) * 100;
+                stars += `
+                    <div style="position: relative; width: 15px; height: 15px;">
+                        <svg width="15" height="15" viewBox="0 0 15 15" fill="#ddd">
+                            <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                        </svg>
+                        <div style="position: absolute; top: 0; left: 0; width: ${percentage}%; height: 100%; overflow: hidden;">
+                            <svg width="15" height="15" viewBox="0 0 15 15" fill="#ffc107">
+                                <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Empty star
+                stars += `
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="#ddd">
+                        <polygon points="7.5 .8 9.7 5.4 14.5 5.9 10.7 9.1 11.8 14.2 7.5 11.6 3.2 14.2 4.3 9.1 .5 5.9 5.3 5.4" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10"></polygon>
+                    </svg>
+                `;
+            }
+        }
+        return stars;
     }
     
     // Function to generate filter buttons - moved outside document.ready

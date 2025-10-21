@@ -378,7 +378,9 @@
                                             <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
                                                 Hình ảnh (tùy chọn):
                                             </label>
-                                            <div class="upload-area" style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.3s ease;">
+                                            <div class="upload-area" 
+                                                 style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.3s ease;"
+                                                 th:data-order-detail-id="${orderDetail.id}">
                                                 <input type="file" 
                                                        th:id="'image_' + ${orderDetail.id}" 
                                                        th:name="'image_' + ${orderDetail.id}"
@@ -503,9 +505,39 @@
     
     <!-- Rating Form JavaScript -->
     <script>
+        // File dialog function removed - using simple jQuery event handler instead
+        
         $(document).ready(function() {
             // Load rating status after page loads
             loadRatingStatus();
+            
+            // FORCE REMOVE all existing event handlers
+            $('.upload-area').off('click');
+            $('.upload-content').off('click');
+            $('.upload-area *').off('click');
+            $(document).off('click', '.upload-area');
+            $(document).off('click', '.upload-content');
+            $(document).off('click', '.upload-area *');
+            
+            console.log('All upload event handlers removed');
+            
+            // Add ONE SIMPLE click handler for upload area
+            $('.upload-area').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const orderDetailId = $(this).data('order-detail-id');
+                console.log('Upload area clicked for order detail:', orderDetailId);
+                
+                const fileInput = document.getElementById('image_' + orderDetailId);
+                if (fileInput) {
+                    console.log('Opening file dialog...');
+                    fileInput.click();
+                } else {
+                    console.log('File input not found');
+                }
+            });
+            
             // Handle star rating clicks
             $('.star-rating label').on('click', function(e) {
                 e.preventDefault();
@@ -529,16 +561,15 @@
                 console.log('Radio input changed:', $(this).attr('name'), $(this).val(), $(this).is(':checked'));
             });
             
-            // Handle file upload click
-            $('.upload-area').on('click', function() {
-                const fileInput = $(this).find('input[type="file"]');
-                fileInput.click();
-            });
+            // File upload handlers removed - using onclick attribute only
             
             // Handle file selection
-            $('input[type="file"]').on('change', function() {
+            $(document).on('change', 'input[type="file"]', function() {
+                console.log('File input changed');
                 const files = this.files;
+                console.log('Files selected:', files.length);
                 const orderDetailId = $(this).attr('id').replace('image_', '');
+                console.log('Order Detail ID:', orderDetailId);
                 const previewContainer = $('#preview_' + orderDetailId);
                 const previewImages = previewContainer.find('.preview-images');
                 
@@ -691,69 +722,135 @@
                 const originalText = button.html();
                 button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
                 
-                // Prepare request data
-                const requestData = {
-                    orderId: parseInt(orderId),
-                    ratings: [{
-                        orderDetailId: parseInt(orderDetailId),
-                        star: parseInt(rating),
-                        comment: comment.trim(),
-                        image: null // TODO: Implement image upload
-                    }]
-                };
+                // Check if there are images to upload
+                const selectedFiles = $(`#image_${orderDetailId}`)[0].files;
+                console.log('Images to upload:', selectedFiles.length);
                 
-                console.log('Sending rating request:', requestData);
-                
-                // Send AJAX request
-                $.ajax({
-                    url: '/user/api/ratings',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(requestData),
-                    success: function(response) {
-                        console.log('Rating response received:', response);
-                        if (response && response.success) {
-                            alert('Cảm ơn bạn đã đánh giá!');
-                            // Hide the rating form after successful submission
-                            button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 20px;"><i class="fa fa-check-circle" style="font-size: 24px;"></i><br><strong>Đã đánh giá thành công!</strong></div>');
-                        } else {
-                            const errorMsg = response && response.message ? response.message : 'Có lỗi xảy ra';
-                            alert('Có lỗi xảy ra: ' + errorMsg);
-                            button.html(originalText).prop('disabled', false);
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error Details:');
-                        console.error('Status:', status);
-                        console.error('Error:', error);
-                        console.error('Response Text:', xhr.responseText);
-                        console.error('Status Code:', xhr.status);
-                        
-                        let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
-                        
-                        if (xhr.status === 401) {
-                            errorMessage = 'Bạn cần đăng nhập để đánh giá!';
-                        } else if (xhr.status === 404) {
-                            errorMessage = 'Đơn hàng không tồn tại!';
-                        } else if (xhr.status === 400) {
-                            errorMessage = 'Đơn hàng chưa được giao, không thể đánh giá!';
-                        } else if (xhr.responseText) {
-                            try {
-                                const errorResponse = JSON.parse(xhr.responseText);
-                                if (errorResponse.message) {
-                                    errorMessage = errorResponse.message;
-                                }
-                            } catch (e) {
-                                console.error('Could not parse error response:', e);
-                            }
-                        }
-                        
-                        alert(errorMessage);
-                        button.html(originalText).prop('disabled', false);
-                    }
-                });
+                if (selectedFiles.length > 0) {
+                    // Upload images first, then submit rating
+                    uploadImagesAndSubmitRating(orderDetailId, rating, comment, selectedFiles, orderId, button, originalText);
+                } else {
+                    // No images, submit rating directly
+                    submitRatingDirectly(orderDetailId, rating, comment, null, orderId, button, originalText);
+                }
             });
         });
+        
+        // Function to upload images and submit rating
+        function uploadImagesAndSubmitRating(orderDetailId, rating, comment, files, orderId, button, originalText) {
+            console.log('Uploading images for rating...');
+            
+            const uploadPromises = [];
+            
+            // Upload each image
+            Array.from(files).forEach(function(file, index) {
+                console.log(`Uploading image ${index + 1}/${files.length}:`, file.name);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const uploadPromise = $.ajax({
+                    url: '/user/api/upload/rating-image',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                });
+                
+                uploadPromises.push(uploadPromise);
+            });
+            
+            // Wait for all uploads to complete
+            Promise.all(uploadPromises)
+                .then(function(responses) {
+                    console.log('All images uploaded successfully:', responses);
+                    
+                    // Extract image URLs
+                    const imageUrls = responses.map(response => response.imageUrl);
+                    const imageUrlsString = imageUrls.join(',');
+                    
+                    console.log('Image URLs:', imageUrlsString);
+                    
+                    // Submit rating with image URLs
+                    submitRatingDirectly(orderDetailId, rating, comment, imageUrlsString, orderId, button, originalText);
+                })
+                .catch(function(error) {
+                    console.error('Error uploading images:', error);
+                    
+                    let errorMessage = 'Lỗi khi upload ảnh!';
+                    if (error.responseJSON && error.responseJSON.message) {
+                        errorMessage = error.responseJSON.message;
+                    }
+                    
+                    alert(errorMessage);
+                    button.html(originalText).prop('disabled', false);
+                });
+        }
+        
+        // Function to submit rating directly
+        function submitRatingDirectly(orderDetailId, rating, comment, imageUrls, orderId, button, originalText) {
+            console.log('Submitting rating directly...');
+            
+            const requestData = {
+                orderId: parseInt(orderId),
+                ratings: [{
+                    orderDetailId: parseInt(orderDetailId),
+                    star: parseInt(rating),
+                    comment: comment.trim(),
+                    image: imageUrls // Now contains actual image URLs or null
+                }]
+            };
+            
+            console.log('Sending rating request:', requestData);
+            
+            $.ajax({
+                url: '/user/api/ratings',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    console.log('Rating response received:', response);
+                    if (response && response.success) {
+                        alert('Cảm ơn bạn đã đánh giá!');
+                        // Hide the rating form after successful submission
+                        button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 20px;"><i class="fa fa-check-circle" style="font-size: 24px;"></i><br><strong>Đã đánh giá thành công!</strong></div>');
+                    } else {
+                        const errorMsg = response && response.message ? response.message : 'Có lỗi xảy ra';
+                        alert('Có lỗi xảy ra: ' + errorMsg);
+                        button.html(originalText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error Details:');
+                    console.error('Status:', status);
+                    console.error('Error:', error);
+                    console.error('Response Text:', xhr.responseText);
+                    console.error('Status Code:', xhr.status);
+                    
+                    let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
+                    
+                    if (xhr.status === 401) {
+                        errorMessage = 'Bạn cần đăng nhập để đánh giá!';
+                    } else if (xhr.status === 404) {
+                        errorMessage = 'Đơn hàng không tồn tại!';
+                    } else if (xhr.status === 400) {
+                        errorMessage = 'Đơn hàng chưa được giao, không thể đánh giá!';
+                    } else if (xhr.responseText) {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            if (errorResponse.message) {
+                                errorMessage = errorResponse.message;
+                            }
+                        } catch (e) {
+                            console.error('Could not parse error response:', e);
+                        }
+                    }
+                    
+                    alert(errorMessage);
+                    button.html(originalText).prop('disabled', false);
+                }
+            });
+        }
         
         // Function to load rating status via AJAX
         function loadRatingStatus() {
@@ -821,9 +918,22 @@
         }
         
         /* Upload Area Styles */
+        .upload-area {
+            cursor: pointer !important;
+            user-select: none;
+        }
+        
         .upload-area:hover {
             border-color: #007bff !important;
             background-color: #f0f8ff !important;
+        }
+        
+        .upload-content {
+            cursor: pointer;
+        }
+        
+        .upload-content * {
+            cursor: pointer;
         }
         
         .upload-area.dragover {
