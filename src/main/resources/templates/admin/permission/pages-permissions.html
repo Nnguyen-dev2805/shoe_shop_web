@@ -676,17 +676,23 @@
                                    <div>
                                         <h4 class="card-title">Danh Sách Tất Cả Người Dùng</h4>
                                    </div>
-                                   <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
-                                             Tháng này
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                             <!-- item-->
-                                             <a href="#!" class="dropdown-item">Tải xuống</a>
-                                             <!-- item-->
-                                             <a href="#!" class="dropdown-item">Xuất file</a>
-                                             <!-- item-->
-                                             <a href="#!" class="dropdown-item">Nhập file</a>
+                                   <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="openAddUserModal()">
+                                             <iconify-icon icon="mdi:account-plus" class="align-middle me-1"></iconify-icon>
+                                             Thêm User
+                                        </button>
+                                        <div class="dropdown">
+                                             <a href="#" class="dropdown-toggle btn btn-sm btn-outline-light rounded" data-bs-toggle="dropdown" aria-expanded="false">
+                                                  Tháng này
+                                             </a>
+                                             <div class="dropdown-menu dropdown-menu-end">
+                                                  <!-- item-->
+                                                  <a href="#!" class="dropdown-item">Tải xuống</a>
+                                                  <!-- item-->
+                                                  <a href="#!" class="dropdown-item">Xuất file</a>
+                                                  <!-- item-->
+                                                  <a href="#!" class="dropdown-item">Nhập file</a>
+                                             </div>
                                         </div>
                                    </div>
                               </div>
@@ -852,11 +858,14 @@
                                 <td>${roleBadge}</td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <select class="form-select role-select" data-user-id="${user.id}" onchange="updateUserRole(${user.id}, this.value)">
-                                            <option value="1" ${user.roleName === 'admin' ? 'selected' : ''}>Quản trị viên</option>
-                                            <option value="2" ${user.roleName === 'manager' ? 'selected' : ''}>Quản lý</option>
-                                            <option value="3" ${user.roleName === 'user' ? 'selected' : ''}>Người dùng</option>
-                                            <option value="4" ${user.roleName === 'shipper' ? 'selected' : ''}>Người giao hàng</option>
+                                        <button type="button" class="btn btn-sm btn-soft-primary" onclick="openEditUserModal(${user.id})" title="Sửa">
+                                            <iconify-icon icon="solar:pen-2-bold-duotone"></iconify-icon>
+                                        </button>
+                                        <select class="form-select form-select-sm role-select" data-user-id="${user.id}" onchange="updateUserRole(${user.id}, this.value)" style="width: auto;">
+                                            <option value="1" ${user.roleName === 'admin' ? 'selected' : ''}>Admin</option>
+                                            <option value="2" ${user.roleName === 'manager' ? 'selected' : ''}>Manager</option>
+                                            <option value="3" ${user.roleName === 'user' ? 'selected' : ''}>User</option>
+                                            <option value="4" ${user.roleName === 'shipper' ? 'selected' : ''}>Shipper</option>
                                         </select>
                                     </div>
                                 </td>
@@ -1037,7 +1046,157 @@
             }
         });
     }
+    
+    // ========== USER MANAGEMENT FUNCTIONS ==========
+    
+    /**
+     * Open Add User Modal
+     */
+    function openAddUserModal() {
+        $('#userModalLabel').text('Thêm User Mới');
+        $('#userForm')[0].reset();
+        $('#userId').val('');
+        $('#userModal').modal('show');
+    }
+    
+    /**
+     * Open Edit User Modal
+     */
+    function openEditUserModal(userId) {
+        $('#userModalLabel').text('Sửa Thông Tin User');
+        
+        // Load user data
+        $.ajax({
+            url: '/admin/api/user/' + userId,
+            type: 'GET',
+            success: function(response) {
+                if (response.success && response.data) {
+                    const user = response.data;
+                    $('#userId').val(user.id);
+                    $('#userFullname').val(user.fullname);
+                    $('#userEmail').val(user.email);
+                    $('#userPhone').val(user.phone);
+                    $('#userAddress').val(user.address);
+                    $('#userPassword').val(''); // Don't show password
+                    $('#userPassword').attr('placeholder', 'Để trống nếu không đổi mật khẩu');
+                    $('#userModal').modal('show');
+                } else {
+                    alert('Không thể tải thông tin user!');
+                }
+            },
+            error: function() {
+                alert('Lỗi khi tải thông tin user!');
+            }
+        });
+    }
+    
+    /**
+     * Save User (Add or Edit)
+     */
+    function saveUser() {
+        const userId = $('#userId').val();
+        const isEdit = userId !== '';
+        
+        const userData = {
+            fullname: $('#userFullname').val(),
+            email: $('#userEmail').val(),
+            phone: $('#userPhone').val(),
+            address: $('#userAddress').val(),
+            password: $('#userPassword').val()
+        };
+        
+        // Validation
+        if (!userData.fullname || !userData.email) {
+            alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+            return;
+        }
+        
+        // For add: password is required
+        if (!isEdit && !userData.password) {
+            alert('Vui lòng nhập mật khẩu!');
+            return;
+        }
+        
+        const url = isEdit ? '/admin/api/user/update/' + userId : '/admin/api/user/create';
+        const method = isEdit ? 'PUT' : 'POST';
+        
+        $.ajax({
+            url: url,
+            type: method,
+            contentType: 'application/json',
+            data: JSON.stringify(userData),
+            success: function(response) {
+                if (response.success) {
+                    alert(isEdit ? 'Cập nhật user thành công!' : 'Thêm user thành công!');
+                    $('#userModal').modal('hide');
+                    loadPermissions(0, '');
+                    loadRoleStats();
+                } else {
+                    alert('Lỗi: ' + (response.message || 'Không thể lưu user'));
+                }
+            },
+            error: function(xhr) {
+                let msg = 'Lỗi khi lưu user!';
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    msg = response.message || msg;
+                } catch (e) {}
+                alert(msg);
+            }
+        });
+    }
+    
 </script>
+
+<!-- User Add/Edit Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userModalLabel">Thêm User Mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <input type="hidden" id="userId">
+                    
+                    <div class="mb-3">
+                        <label for="userFullname" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="userFullname" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="userEmail" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control" id="userEmail" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="userPassword" class="form-label">Mật khẩu <span class="text-danger" id="passwordRequired">*</span></label>
+                        <input type="password" class="form-control" id="userPassword" placeholder="Nhập mật khẩu">
+                        <small class="text-muted">Tối thiểu 6 ký tự</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="userPhone" class="form-label">Số điện thoại</label>
+                        <input type="tel" class="form-control" id="userPhone">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="userAddress" class="form-label">Địa chỉ</label>
+                        <textarea class="form-control" id="userAddress" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="saveUser()">
+                    <iconify-icon icon="solar:diskette-bold-duotone" class="align-middle me-1"></iconify-icon>
+                    Lưu
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 </body>
 

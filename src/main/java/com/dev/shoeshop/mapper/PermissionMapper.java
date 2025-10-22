@@ -13,12 +13,25 @@ public class PermissionMapper {
             return null;
         }
         
+        // Get default address or first address
+        String address = "";
+        if (user.getUserAddresses() != null && !user.getUserAddresses().isEmpty()) {
+            var defaultAddr = user.getUserAddresses().stream()
+                .filter(ua -> ua.getIsDefault() != null && ua.getIsDefault())
+                .findFirst()
+                .orElse(user.getUserAddresses().get(0));
+            
+            if (defaultAddr != null && defaultAddr.getAddress() != null) {
+                var addr = defaultAddr.getAddress();
+                address = addr.getAddress_line() + ", " + addr.getCity();
+            }
+        }
+        
         return PermissionResponse.builder()
                 .id(user.getId())
                 .fullname(user.getFullname())
                 .email(user.getEmail())
-                .address("1 VVN") // đoạn này chưa fix
-//                .address(user.getUserAddresses())
+                .address(address)
                 .phone(user.getPhone())
                 .roleId(user.getRole() != null ? user.getRole().getRoleId() : null)
                 .roleName(user.getRole() != null ? user.getRole().getRoleName() : null)

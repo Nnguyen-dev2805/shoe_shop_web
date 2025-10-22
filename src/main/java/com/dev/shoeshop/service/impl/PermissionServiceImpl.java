@@ -13,8 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +30,7 @@ public class PermissionServiceImpl implements PermissionService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PermissionMapper permissionMapper;
+    private final PasswordEncoder passwordEncoder;
     
     @Override
     @Transactional(readOnly = true)
@@ -131,7 +134,7 @@ public class PermissionServiceImpl implements PermissionService {
         }
         
         return userRepository.findAll().stream()
-                .filter(user -> user.getRole() != null && user.getRole().getRoleId() == role.getRoleId())
+                .filter(user -> user.getRole() != null && user.getRole().getRoleId().equals(role.getRoleId()))
                 .count();
     }
     
@@ -147,16 +150,20 @@ public class PermissionServiceImpl implements PermissionService {
     public Page<PermissionResponse> searchUsersByName(String name, Pageable pageable) {
         log.info("Searching users by name: {}", name);
         
-        // For now, get all users and filter by name
-        // TODO: Implement proper search query in repository
-        Page<Users> usersPage = userRepository.findAll(pageable);
-        return usersPage.map(user -> {
-            if (user.getFullname().toLowerCase().contains(name.toLowerCase()) ||
-                user.getEmail().toLowerCase().contains(name.toLowerCase())) {
-                return permissionMapper.toResponse(user);
-            }
-            return null;
-        }).map(permissionResponse -> permissionResponse);
+        // Get all users first, then filter by name
+        List<Users> allUsers = userRepository.findAll();
+        List<PermissionResponse> filteredUsers = allUsers.stream()
+                .filter(user -> user.getFullname().toLowerCase().contains(name.toLowerCase()) ||
+                               user.getEmail().toLowerCase().contains(name.toLowerCase()))
+                .map(permissionMapper::toResponse)
+                .collect(Collectors.toList());
+        
+        // Manual pagination
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), filteredUsers.size());
+        List<PermissionResponse> pageContent = filteredUsers.subList(start, end);
+        
+        return new PageImpl<>(pageContent, pageable, filteredUsers.size());
     }
     
     @Override
@@ -177,5 +184,131 @@ public class PermissionServiceImpl implements PermissionService {
         List<PermissionResponse> pageContent = filteredUsers.subList(start, end);
         
         return new PageImpl<>(pageContent, pageable, filteredUsers.size());
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public Users getUserEntityById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    }
+    
+    @Override
+    public Users createUser(java.util.Map<String, Object> userData) {
+        // Validate input data
+        validateUserData(userData, true);
+        
+        String email = (String) userData.get("email");
+        
+        // Check if email already exists
+        if (userRepository.findByEmail(email) != null) {
+            throw new RuntimeException("Email đã tồn tại: " + email);
+        }
+        
+        Users user = new Users();
+        user.setFullname((String) userData.get("fullname"));
+        user.setEmail(email);
+        user.setPhone((String) userData.get("phone"));
+        
+        // Encode password
+        String password = (String) userData.get("password");
+        user.setPassword(passwordEncoder.encode(password));
+        
+        // Set default role (user)
+        Role defaultRole = roleRepository.findByRoleName("user")
+                .orElseThrow(() -> new RuntimeException("Default role not found"));
+        user.setRole(defaultRole);
+        
+        // Set default values
+        user.setIsActive(true);
+        user.setProvider("LOCAL");
+        
+        return userRepository.save(user);
+    }
+    
+    @Override
+    public Users updateUser(Long id, java.util.Map<String, Object> userData) {
+        Users user = getUserEntityById(id);
+        
+        // Validate input data
+        validateUserData(userData, false);
+        
+        String newEmail = (String) userData.get("email");
+        
+        // Check if email already exists (excluding current user)
+        if (!user.getEmail().equals(newEmail)) {
+            Users existingUser = userRepository.findByEmail(newEmail);
+            if (existingUser != null && !existingUser.getId().equals(id)) {
+                throw new RuntimeException("Email đã tồn tại: " + newEmail);
+            }
+        }
+        
+        user.setFullname((String) userData.get("fullname"));
+        user.setEmail(newEmail);
+        user.setPhone((String) userData.get("phone"));
+        
+        // Update password if provided
+        String password = (String) userData.get("password");
+        if (StringUtils.hasText(password)) {
+            user.setPassword(passwordEncoder.encode(password));
+        }
+        
+        return userRepository.save(user);
+    }
+    
+    
+    /**
+     * Validate user data
+     */
+    private void validateUserData(java.util.Map<String, Object> userData, boolean isCreate) {
+        String fullname = (String) userData.get("fullname");
+        String email = (String) userData.get("email");
+        String phone = (String) userData.get("phone");
+        String password = (String) userData.get("password");
+        
+        // Validate fullname
+        if (!StringUtils.hasText(fullname)) {
+            throw new RuntimeException("Họ tên không được để trống");
+        }
+        if (fullname.length() < 2 || fullname.length() > 100) {
+            throw new RuntimeException("Họ tên phải từ 2-100 ký tự");
+        }
+        
+        // Validate email
+        if (!StringUtils.hasText(email)) {
+            throw new RuntimeException("Email không được để trống");
+        }
+        if (!isValidEmail(email)) {
+            throw new RuntimeException("Email không đúng định dạng");
+        }
+        
+        // Validate phone
+        if (StringUtils.hasText(phone) && !isValidPhone(phone)) {
+            throw new RuntimeException("Số điện thoại không đúng định dạng (10 số)");
+        }
+        
+        // Validate password (only for create or when password is provided)
+        if (isCreate || StringUtils.hasText(password)) {
+            if (!StringUtils.hasText(password)) {
+                throw new RuntimeException("Mật khẩu không được để trống");
+            }
+            if (password.length() < 6) {
+                throw new RuntimeException("Mật khẩu phải có ít nhất 6 ký tự");
+            }
+        }
+    }
+    
+    /**
+     * Validate email format
+     */
+    private boolean isValidEmail(String email) {
+        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+    }
+    
+    /**
+     * Validate phone format (10 digits)
+     */
+    private boolean isValidPhone(String phone) {
+        return phone != null && phone.matches("^[0-9]{10}$");
     }
 }
