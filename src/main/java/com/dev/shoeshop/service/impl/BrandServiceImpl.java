@@ -21,6 +21,7 @@ public class BrandServiceImpl implements BrandService {
 
     private final BrandRepository brandRepository;
 
+    @Transactional(readOnly = true)
     @Override
     public List<BrandResponse> getAllBrandsList() {
         return brandRepository.findAll()
@@ -29,12 +30,14 @@ public class BrandServiceImpl implements BrandService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Brand getBrandById(Long id) {
         return brandRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Brand không tồn tại với ID: " + id));
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BrandResponse> getAllBrands(Pageable pageable, String search) {
         Page<Brand> brandPage;
