@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,11 +21,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    @Transactional
     @Override
     public Category saveCategory(Category category) {
         return categoryRepository.save(category);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Page<CategoryResponse> getAllCategories(Pageable pageable, String search) {
         Page<Category> categoryPage;
@@ -44,6 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         return new PageImpl<>(responses, pageable, categoryPage.getTotalElements());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CategoryResponse> getAllCategoriesList() {
         List<Category> categories = categoryRepository.findAll();
@@ -58,6 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+    @Transactional
     @Override
     public Category updateCategory(Long id, CategoryRequest request) {
         Category existing = categoryRepository.findById(id)
@@ -72,12 +77,14 @@ public class CategoryServiceImpl implements CategoryService {
         return categoryRepository.save(existing);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category không tồn tại với ID: " + id));
     }
 
+    @Transactional
     @Override
     public void deleteCategoryById(Long id) {
         Category existing = categoryRepository.findById(id)
