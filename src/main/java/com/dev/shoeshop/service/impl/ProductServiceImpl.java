@@ -6,12 +6,13 @@ import com.dev.shoeshop.dto.product.ProductResponse;
 import com.dev.shoeshop.dto.productdetail.ProductDetailRequest;
 import com.dev.shoeshop.entity.Product;
 import com.dev.shoeshop.entity.ProductDetail;
-import com.dev.shoeshop.entity.Rating;
 import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.service.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +42,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductDetailRepository productDetailRepository;
 
 
+    @CacheEvict(value = {"products", "productDetail"}, allEntries = true)
     @Transactional
     @Override
     public void saveProduct(ProductRequest request, MultipartFile image) {
@@ -73,35 +75,34 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    // Lấy danh sách sản phẩm chưa xóa
+    @Cacheable(value = "products", key = "#pageable.pageNumber + '_' + #pageable.pageSize + '_' + (#search != null ? #search : 'null') + '_' + (#categoryId != null ? #categoryId : 'null')")
+    @Transactional(readOnly = true)
     @Override
     public Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId) {
         Page<Product> productPage;
-        
-        // ✅ SOFT DELETE: Chỉ lấy sản phẩm chưa xóa (isDelete = false)
-        
-        // Filter by category and search
+
         if (categoryId != null && search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByCategoryIdAndTitleContainingIgnoreCaseAndIsDeleteFalse(categoryId, search, pageable);
+            productPage = productRepository.findByCategoryAndTitleWithFlashSale(categoryId, search, pageable);
         } 
-        // Filter by category only
+
         else if (categoryId != null) {
-            productPage = productRepository.findByCategoryIdAndIsDeleteFalse(categoryId, pageable);
+            productPage = productRepository.findByCategoryWithFlashSale(categoryId, pageable);
         } 
-        // Search only
+
         else if (search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByTitleContainingIgnoreCaseAndIsDeleteFalse(search, pageable);
+            productPage = productRepository.findByTitleWithFlashSale(search, pageable);
         } 
-        // Get all (exclude deleted)
+
         else {
-            productPage = productRepository.findByIsDeleteFalse(pageable);
+            productPage = productRepository.findAllWithFlashSale(pageable);
         }
         
         List<ProductResponse> responses = productPage.getContent().stream()
                 .map(product -> {
-                    // ========== CHECK FLASH SALE ==========
+
                     ProductResponse.FlashSaleInfo flashSaleInfo = getFlashSaleInfo(product);
-                    
-                    // Tạo ProductResponse với Builder pattern (tránh lỗi constructor)
+
                     return ProductResponse.builder()
                             .id(product.getId())
                             .title(product.getTitle())
@@ -109,8 +110,8 @@ public class ProductServiceImpl implements ProductService {
                             .image(product.getImage())
                             .categoryName(product.getCategory().getName())
                             .brandName(product.getBrand().getName())
-                            .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
-                            .flashSale(flashSaleInfo)  // ✅ Include flash sale
+                            .soldQuantity(product.getSoldQuantity())
+                            .flashSale(flashSaleInfo)
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -141,6 +142,7 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "productDetail", key = "#id")
     @Override
     public ProductDetailResponse getProductById(Long id) {
         // Use custom query to eagerly fetch details and inventories
@@ -198,6 +200,9 @@ public class ProductServiceImpl implements ProductService {
     
     /**
      * Helper method for ProductDetailResponse: Lấy thông tin Flash Sale của Product (nếu có)
+     * 
+     * ✅ OPTIMIZED: Data đã được load sẵn bởi findByIdWithDetailsAndInventories() query
+     * - Method này chỉ traverse data trong memory → ZERO additional queries
      */
     private ProductDetailResponse.FlashSaleInfo getFlashSaleInfoForDetail(Product product) {
         if (product.getDetails() == null || product.getDetails().isEmpty()) {
@@ -250,9 +255,13 @@ public class ProductServiceImpl implements ProductService {
     /**
      * Helper method for ProductResponse: Lấy thông tin Flash Sale của Product (nếu có)
      * 
+     * ✅ OPTIMIZED: Sau khi apply Fix 2, method này KHÔNG TẠO THÊM QUERIES
+     * - Tất cả data (ProductDetails + FlashSaleItems + FlashSale) đã được load sẵn bởi JOIN FETCH
+     * - Method này chỉ traverse data có sẵn trong memory → ZERO queries!
+     * 
      * Logic:
-     * - Duyệt qua tất cả ProductDetail của Product
-     * - Check xem ProductDetail có FlashSaleItem nào đang active không
+     * - Duyệt qua tất cả ProductDetail của Product (already loaded)
+     * - Check xem ProductDetail có FlashSaleItem nào đang active không (already loaded)
      * - Nếu có → return FlashSaleInfo
      * - Nếu không → return null
      */
@@ -304,6 +313,7 @@ public class ProductServiceImpl implements ProductService {
      * @param request ProductRequest with updated data
      * @param image New product image (optional)
      */
+    @CacheEvict(value = {"products", "productDetail"}, allEntries = true)
     @Override
     @Transactional
     public void updateProduct(Long id, ProductRequest request, MultipartFile image) {
@@ -361,10 +371,10 @@ public class ProductServiceImpl implements ProductService {
     }
     
     /**
-     * DELETE PRODUCT - RESTful API (Soft Delete)
-     * 
-     * @param id Product ID
+     * DELETE PRODUCT - Soft Delete
+     * Set isDelete = true instead of deleting from database
      */
+    @CacheEvict(value = {"products", "productDetail"}, allEntries = true)
     @Override
     @Transactional
     public void deleteProduct(Long id) {
