@@ -52,11 +52,11 @@ public class ApplicationInitConfig implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         // Chỉ init nếu database rỗng
         if (roleRepository.count() > 0) {
-            System.out.println("✅ Database đã có data, skip initialization");
+            System.out.println("Database đã có data, skip initialization");
             return;
         }
 
-        System.out.println("🚀 Bắt đầu khởi tạo data cơ bản...");
+        System.out.println("Bắt đầu khởi tạo data cơ bản...");
 
         // 1. Tạo Roles
         initRoles();

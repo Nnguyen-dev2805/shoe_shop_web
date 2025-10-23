@@ -2,8 +2,8 @@ package com.dev.shoeshop.service.impl;
 
 import com.dev.shoeshop.service.CloudinaryService;
 import com.dev.shoeshop.service.StorageService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,10 +16,10 @@ import java.nio.file.StandardCopyOption;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class StorageServiceImpl implements StorageService {
 
-    @Autowired(required = false)
-    private CloudinaryService cloudinaryService;
+    private final CloudinaryService cloudinaryService;
 
     @Value("${storage.upload-dir}")
     private String uploadDir;
@@ -39,17 +39,21 @@ public class StorageServiceImpl implements StorageService {
                 throw new RuntimeException("File trống!");
             }
 
-            // Try Cloudinary first (if configured)
             if (cloudinaryService != null) {
                 try {
-                    log.info("Uploading to Cloudinary: {}", file.getOriginalFilename());
+                    log.info("📤 Uploading to Cloudinary CDN: {}", file.getOriginalFilename());
                     String cloudinaryUrl = cloudinaryService.uploadImage(file, "products");
-                    log.info("Uploaded to Cloudinary successfully: {}", cloudinaryUrl);
+                    log.info("✅ Cloudinary upload SUCCESS: {}", cloudinaryUrl);
+                    log.info("🚀 Image will be served via CDN (fast worldwide delivery)");
                     return cloudinaryUrl;
                 } catch (Exception e) {
-                    log.error("Cloudinary upload failed, falling back to local storage: {}", e.getMessage());
-                    // Fall through to local storage
+                    log.error("❌ Cloudinary upload FAILED: {}", e.getMessage());
+                    log.warn("⚠️ Falling back to LOCAL storage (slower, no CDN)");
+                    log.warn("⚠️ Check Render env vars: CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET");
                 }
+            } else {
+                log.warn("⚠️ CloudinaryService is NULL - using LOCAL storage");
+                log.warn("⚠️ This means Cloudinary credentials are NOT set in Render!");
             }
 
             // Fallback to local storage
