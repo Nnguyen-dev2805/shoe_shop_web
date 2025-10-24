@@ -41,7 +41,7 @@ public interface RatingService {
     
     /**
      * Get product rating summary
-     * @param productId Product IDz
+     * @param productId Product ID
      * @return Map containing average stars and total reviewers
      */
     java.util.Map<String, Object> getProductRatingSummary(Long productId);
@@ -49,17 +49,18 @@ public interface RatingService {
     /**
      * Get rating statistics by star level
      * @param productId Product ID
-     * @return Map containing count for each star level
+     * @return Map containing statistics
      */
     java.util.Map<String, Object> getRatingStatistics(Long productId);
     
     /**
-     * Get filtered ratings
-     * @param productId Product ID
-     * @param starFilter Star filter (null for all, 1-5 for specific star)
-     * @param hasComment Filter by comments (true/false/null)
-     * @param hasImage Filter by images (true/false/null)
-     * @return List of filtered rating DTOs
+     * Get filtered ratings by criteria
      */
     List<RatingResponseDTO> getFilteredRatings(Long productId, Integer starFilter, Boolean hasComment, Boolean hasImage);
+    
+    /**
+     * Update rating statistics for all products that have ratings
+     * @return Number of products updated
+     */
+    int updateAllProductRatingStatistics();
 }

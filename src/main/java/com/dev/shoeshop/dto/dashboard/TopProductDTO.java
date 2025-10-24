@@ -18,4 +18,6 @@ public class TopProductDTO {
     private String productImage;
     private Long quantitySold;
     private Double totalRevenue;
+    private Double averageRating;  // Điểm rating trung bình
+    private Long totalReviews;     // Tổng số đánh giá
 }

@@ -16,29 +16,33 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail,Integer
     
     /**
      * Lấy top sản phẩm bán chạy nhất (theo số lượng đã bán từ các đơn DELIVERED) với date range
-     * Trả về: Product ID, Product Title, Product Image, Tổng số lượng bán, Tổng doanh thu
+     * Trả về: Product ID, Product Title, Product Image, Tổng số lượng bán, Tổng doanh thu, Average Rating, Total Reviews
      */
     @Query("SELECT od.product.product.id, od.product.product.title, od.product.product.image, " +
-           "SUM(od.quantity), SUM(od.quantity * od.price) " +
+           "SUM(od.quantity), SUM(od.quantity * od.price), " +
+           "od.product.product.average_rating, od.product.product.total_reviews " +
            "FROM OrderDetail od " +
            "WHERE od.order.status = com.dev.shoeshop.enums.ShipmentStatus.DELIVERED " +
            "AND (:startDate IS NULL OR od.order.createdDate >= :startDate) " +
            "AND (:endDate IS NULL OR od.order.createdDate <= :endDate) " +
-           "GROUP BY od.product.product.id, od.product.product.title, od.product.product.image " +
+           "GROUP BY od.product.product.id, od.product.product.title, od.product.product.image, " +
+           "od.product.product.average_rating, od.product.product.total_reviews " +
            "ORDER BY SUM(od.quantity) DESC")
     List<Object[]> findTopSellingProducts(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
     
     /**
      * Lấy sản phẩm theo doanh thu (giảm dần)
-     * Trả về: Product ID, Product Title, Product Image, Tổng số lượng bán, Tổng doanh thu
+     * Trả về: Product ID, Product Title, Product Image, Tổng số lượng bán, Tổng doanh thu, Average Rating, Total Reviews
      */
     @Query("SELECT od.product.product.id, od.product.product.title, od.product.product.image, " +
-           "SUM(od.quantity), SUM(od.quantity * od.price) " +
+           "SUM(od.quantity), SUM(od.quantity * od.price), " +
+           "od.product.product.average_rating, od.product.product.total_reviews " +
            "FROM OrderDetail od " +
            "WHERE od.order.status = com.dev.shoeshop.enums.ShipmentStatus.DELIVERED " +
            "AND (:startDate IS NULL OR od.order.createdDate >= :startDate) " +
            "AND (:endDate IS NULL OR od.order.createdDate <= :endDate) " +
-           "GROUP BY od.product.product.id, od.product.product.title, od.product.product.image " +
+           "GROUP BY od.product.product.id, od.product.product.title, od.product.product.image, " +
+           "od.product.product.average_rating, od.product.product.total_reviews " +
            "ORDER BY SUM(od.quantity * od.price) DESC")
     List<Object[]> findProductsByRevenue(@Param("startDate") Date startDate, @Param("endDate") Date endDate, Pageable pageable);
 }

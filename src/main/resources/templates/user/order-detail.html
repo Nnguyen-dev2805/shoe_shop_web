@@ -336,25 +336,25 @@
                                             <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
                                                 Đánh giá: <span style="color: red;">*</span>
                                             </label>
-                                            <div class="star-rating" data-order-detail-id="${orderDetail.id}">
-                                                <input type="radio" name="rating_${orderDetail.id}" value="5" id="star5_${orderDetail.id}">
-                                                <label for="star5_${orderDetail.id}" title="Rất hài lòng">
+                                            <div class="star-rating" th:data-order-detail-id="${orderDetail.id}">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="5" th:id="|star5_${orderDetail.id}|">
+                                                <label th:for="|star5_${orderDetail.id}|" title="Rất hài lòng">
                                                     <i class="fa fa-star"></i>
                                                 </label>
-                                                <input type="radio" name="rating_${orderDetail.id}" value="4" id="star4_${orderDetail.id}">
-                                                <label for="star4_${orderDetail.id}" title="Hài lòng">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="4" th:id="|star4_${orderDetail.id}|">
+                                                <label th:for="|star4_${orderDetail.id}|" title="Hài lòng">
                                                     <i class="fa fa-star"></i>
                                                 </label>
-                                                <input type="radio" name="rating_${orderDetail.id}" value="3" id="star3_${orderDetail.id}">
-                                                <label for="star3_${orderDetail.id}" title="Bình thường">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="3" th:id="|star3_${orderDetail.id}|">
+                                                <label th:for="|star3_${orderDetail.id}|" title="Bình thường">
                                                     <i class="fa fa-star"></i>
                                                 </label>
-                                                <input type="radio" name="rating_${orderDetail.id}" value="2" id="star2_${orderDetail.id}">
-                                                <label for="star2_${orderDetail.id}" title="Không hài lòng">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="2" th:id="|star2_${orderDetail.id}|">
+                                                <label th:for="|star2_${orderDetail.id}|" title="Không hài lòng">
                                                     <i class="fa fa-star"></i>
                                                 </label>
-                                                <input type="radio" name="rating_${orderDetail.id}" value="1" id="star1_${orderDetail.id}">
-                                                <label for="star1_${orderDetail.id}" title="Rất tệ">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="1" th:id="|star1_${orderDetail.id}|">
+                                                <label th:for="|star1_${orderDetail.id}|" title="Rất tệ">
                                                     <i class="fa fa-star"></i>
                                                 </label>
                                             </div>

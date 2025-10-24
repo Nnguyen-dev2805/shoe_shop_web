@@ -110,6 +110,8 @@ public class ProductServiceImpl implements ProductService {
                             .categoryName(product.getCategory().getName())
                             .brandName(product.getBrand().getName())
                             .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
+                            .averageRating(product.getAverage_rating())  // ← NEW: Add rating
+                            .totalReviews(product.getTotal_reviews())    // ← NEW: Add review count
                             .flashSale(flashSaleInfo)  // ✅ Include flash sale
                             .build();
                 })
@@ -135,6 +137,8 @@ public class ProductServiceImpl implements ProductService {
                             .categoryName(product.getCategory().getName())
                             .brandName(product.getBrand().getName())
                             .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
+                            .averageRating(product.getAverage_rating())  // ← NEW: Add rating
+                            .totalReviews(product.getTotal_reviews())    // ← NEW: Add review count
                             .flashSale(flashSaleInfo)  // ✅ Include flash sale
                             .build();
                 })
@@ -166,19 +170,9 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .collect(Collectors.toList());
 
-        // Calculate average rating
-        Double avgRating = 0.0;
-        Integer totalReviews = 0;
-        // đoạn này huy làm chưa đụng đến
-
-
-//        if (product.getRatings() != null && !product.getRatings().isEmpty()) {
-//            totalReviews = product.getRatings().size();
-//            avgRating = product.getRatings().stream()
-//                    .mapToInt(Rating::getStar)
-//                    .average()
-//                    .orElse(0.0);
-//        }
+        // ✅ Get rating and reviews from Product entity (stored in database)
+        Double avgRating = product.getAverage_rating() != null ? product.getAverage_rating() : 0.0;
+        Long totalReviews = product.getTotal_reviews() != null ? product.getTotal_reviews() : 0L;
 
         return ProductDetailResponse.builder()
                 .id(product.getId())
@@ -189,8 +183,8 @@ public class ProductServiceImpl implements ProductService {
                 .categoryName(product.getCategory() != null ? product.getCategory().getName() : "N/A")
                 .brandName(product.getBrand() != null ? product.getBrand().getName() : "N/A")
                 .sizeOptions(sizeOptions)
-                .avgRating(avgRating)
-                .totalReviews(totalReviews)
+                .avgRating(avgRating)  // ✅ From database
+                .totalReviews(totalReviews.intValue())  // ✅ From database
                 .soldQuantity(product.getSoldQuantity())  // ← NEW: Add sold quantity
                 .flashSale(getFlashSaleInfoForDetail(product))  // ← NEW: Add flash sale info
                 .build();
