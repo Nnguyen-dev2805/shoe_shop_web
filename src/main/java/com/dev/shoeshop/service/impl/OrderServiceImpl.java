@@ -33,6 +33,7 @@ import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.EmailService;
+import com.dev.shoeshop.service.InventoryHistoryService;
 import com.dev.shoeshop.service.NotificationService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
@@ -89,6 +90,9 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private InventoryRepository inventoryRepository;
+    
+    @Autowired
+    private InventoryHistoryService inventoryHistoryService;
 
     @Autowired
     private FlashSaleRepository flashSaleRepository;
@@ -460,6 +464,15 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setQuantity(quantity);
                 orderDetail.setPrice(unitPrice);
                 
+                // ⭐ Calculate cost price and profit
+                Double costPrice = inventoryHistoryService.getAverageCostPrice(productDetail);
+                if (costPrice != null) {
+                    orderDetail.setCostPriceAtSale(costPrice);
+                    double revenue = unitPrice * quantity;
+                    double cost = costPrice * quantity;
+                    orderDetail.setProfit(revenue - cost);
+                }
+                
                 orderDetails.add(orderDetail);
                 System.out.println("Added order detail (Buy Now): product=" + productDetail.getId() + 
                                  ", quantity=" + quantity + ", price=" + unitPrice);
@@ -558,6 +571,15 @@ public class OrderServiceImpl implements OrderService {
                 orderDetail.setProduct(cartDetail.getProduct());
                 orderDetail.setQuantity(cartDetail.getQuantity());
                 orderDetail.setPrice(cartDetail.getPricePerUnit());
+                
+                // ⭐ Calculate cost price and profit
+                Double costPrice = inventoryHistoryService.getAverageCostPrice(cartDetail.getProduct());
+                if (costPrice != null) {
+                    orderDetail.setCostPriceAtSale(costPrice);
+                    double revenue = cartDetail.getPricePerUnit() * cartDetail.getQuantity();
+                    double cost = costPrice * cartDetail.getQuantity();
+                    orderDetail.setProfit(revenue - cost);
+                }
                 
                 orderDetails.add(orderDetail);
                 System.out.println("✅ Added order detail: cartDetailId=" + cartDetail.getId() + 
@@ -1056,7 +1078,9 @@ public class OrderServiceImpl implements OrderService {
             Product product = productDetail.getProduct();
             
             // Fetch inventory mới từ DB (sau khi trigger đã chạy)
-            int newInventory = inventoryRepository.getTotalQuantityByProductDetail(productDetail);
+            int newInventory = inventoryRepository.findByProductDetail(productDetail)
+                    .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                    .orElse(0);
             
             // Broadcast inventory update
             InventoryUpdateDTO inventoryUpdate = InventoryUpdateDTO.builder()
@@ -1134,7 +1158,9 @@ public class OrderServiceImpl implements OrderService {
             Product product = productDetail.getProduct();
             
             // Fetch inventory mới từ DB (sau khi trigger đã trừ)
-            int newInventory = inventoryRepository.getTotalQuantityByProductDetail(productDetail);
+            int newInventory = inventoryRepository.findByProductDetail(productDetail)
+                    .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                    .orElse(0);
             
             // Broadcast inventory update với updateType = "DECREASE" (đã trừ kho)
             InventoryUpdateDTO inventoryUpdate = InventoryUpdateDTO.builder()

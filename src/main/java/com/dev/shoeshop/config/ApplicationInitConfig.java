@@ -14,6 +14,7 @@ import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.DiscountValueType;
 import com.dev.shoeshop.enums.VoucherType;
 import com.dev.shoeshop.repository.*;
+import com.dev.shoeshop.service.InventoryHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -40,6 +41,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final ProductRepository productRepository;
     private final ProductDetailRepository productDetailRepository;
     private final InventoryRepository inventoryRepository;
+    private final InventoryHistoryService inventoryHistoryService;
     private final UserRepository userRepository;
     private final ShippingCompanyRepository shippingCompanyRepository;
     private final ShopWarehouseRepository shopWarehouseRepository;
@@ -254,32 +256,30 @@ public class ApplicationInitConfig implements ApplicationRunner {
         int inventoryCount = 0;
         
         // Tạo inventory cho mỗi ProductDetail với quantity = 30
+        // ✅ CHỈ GỌI recordImport - nó sẽ tự tạo Inventory và History
         for (ProductDetail productDetail : allProductDetails) {
-            Inventory inventory = new Inventory();
-            inventory.setProductDetail(productDetail);
-            
             int qty = 30;
-            inventory.setQuantity(qty);  // Số lượng còn lại
-            inventory.setInitialQuantity(qty);  // ✅ Số lượng nhập ban đầu
-            inventory.setSoldQuantity(0);  // ✅ Chưa bán
             
-            // ✅ Tính cost price = 80% giá bán (đảm bảo margin 20%)
+            // ⭐ Giá nhập mẫu - TẤT CẢ SIZE CÓ GIÁ NHẬP GIỐNG NHAU
+            // Khi nhập 1 lô hàng, giá nhập mỗi size đều như nhau
             Product product = productDetail.getProduct();
-            Double sellingPrice = product.getPrice();
-            Double costPrice = sellingPrice * 0.8;  // 80% của giá bán
-            inventory.setCostPrice(costPrice);
+            double costPrice = product.getPrice() * 0.7; // Giá vốn = 70% giá cơ bản (không tính phụ phí size)
             
-            // ✅ Set import date = ngày khởi tạo
-            inventory.setImportDate(java.time.LocalDateTime.now());
+            // Gọi recordImport sẽ:
+            // 1. Tạo hoặc tìm Inventory
+            // 2. Cộng qty vào remainingQuantity và totalQuantity
+            // 3. Tạo InventoryHistory record với costPrice
+            inventoryHistoryService.recordImport(
+                    productDetail, 
+                    qty,
+                    costPrice,  // ⭐ Giá nhập cho 1 đôi
+                    "Hàng nhập lô đầu tiên - Init data"
+            );
             
-            // ✅ Thêm note mô tả
-            inventory.setNote("Hàng nhập lô đầu tiên - Init data");
-            
-            inventoryRepository.save(inventory);
             inventoryCount++;
         }
         
-        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items với cost price = 80% selling price)");
+        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items với giá vốn)");
     }
 
     private void initUsers() {
@@ -575,7 +575,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
             // Drop existing triggers trước
             dropTriggersIfExist(statement);
 
-            // 1. INVENTORY TRIGGERS
+            // 1. INVENTORY TRIGGERS - Trừ kho tự động khi đặt hàng
             createInventoryTriggers(statement);
 
             // 2. ORDER STATUS TRIGGERS  
@@ -610,7 +610,9 @@ public class ApplicationInitConfig implements ApplicationRunner {
     }
 
     private void createInventoryTriggers(Statement statement) throws Exception {
-        // Trigger 1: Trừ kho ngay khi đặt hàng
+        // Trigger 1: Trừ kho ngay khi đặt hàng (BEFORE INSERT)
+        // ✅ CẦN THIẾT - OrderService không gọi InventoryDeductionService
+        // Trigger này tự động trừ kho khi insert order_detail
         String trigger1 = """
             CREATE TRIGGER after_order_detail_insert
             BEFORE INSERT ON order_detail
@@ -620,7 +622,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
                 DECLARE v_product_name VARCHAR(255);
                 DECLARE v_error_message VARCHAR(500);
                 
-                SELECT i.quantity INTO v_current_stock
+                SELECT i.remaining_quantity INTO v_current_stock
                 FROM inventory i
                 WHERE i.product_detail_id = NEW.productdetail_id
                 LIMIT 1;
@@ -651,7 +653,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
                 END IF;
                 
                 UPDATE inventory
-                SET quantity = quantity - NEW.quantity
+                SET remaining_quantity = remaining_quantity - NEW.quantity
                 WHERE product_detail_id = NEW.productdetail_id;
             END
             """;
@@ -659,7 +661,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         statement.execute(trigger1);
         System.out.println("    ✓ after_order_detail_insert");
     }
-
+    
     private void createOrderStatusTriggers(Statement statement) throws Exception {
         // Trigger 2: Xử lý khi status thay đổi
         String trigger2 = """
@@ -678,14 +680,14 @@ public class ApplicationInitConfig implements ApplicationRunner {
                 IF NEW.status = 'CANCEL' AND OLD.status != 'CANCEL' THEN
                     UPDATE inventory i
                     INNER JOIN order_detail od ON i.product_detail_id = od.productdetail_id
-                    SET i.quantity = i.quantity + od.quantity
+                    SET i.remaining_quantity = i.remaining_quantity + od.quantity
                     WHERE od.order_id = NEW.id;
                 END IF;
                 
                 IF NEW.status = 'RETURN' AND OLD.status = 'DELIVERED' THEN
                     UPDATE inventory i
                     INNER JOIN order_detail od ON i.product_detail_id = od.productdetail_id
-                    SET i.quantity = i.quantity + od.quantity
+                    SET i.remaining_quantity = i.remaining_quantity + od.quantity
                     WHERE od.order_id = NEW.id;
                     
                     UPDATE product p

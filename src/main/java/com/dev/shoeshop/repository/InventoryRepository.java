@@ -8,69 +8,51 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+/**
+ * InventoryRepository - Quản lý tồn kho hiện tại
+ * Mỗi ProductDetail chỉ có 1 record Inventory (OneToOne)
+ */
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory,Long> {
+public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     
     /**
-     * Tính tổng số lượng tồn kho của một ProductDetail từ tất cả các bản ghi Inventory
-     * @param productDetail ProductDetail entity
-     * @return Tổng số lượng tồn kho
+     * Find inventory by ProductDetail ID
      */
-    @Query("SELECT COALESCE(SUM(i.quantity), 0) FROM Inventory i WHERE i.productDetail = :productDetail")
-    int getTotalQuantityByProductDetail(@Param("productDetail") ProductDetail productDetail);
+    Optional<Inventory> findByProductDetailId(Long productDetailId);
     
     /**
-     * Tìm Inventory theo ProductDetail
-     * @param productDetail ProductDetail entity
-     * @return Inventory nếu tìm thấy
+     * Find inventory by ProductDetail entity
      */
-    Inventory findByProductDetail(ProductDetail productDetail);
-    
-    // ===== NEW QUERIES FOR COST PRICE & PROFIT TRACKING =====
+    Optional<Inventory> findByProductDetail(ProductDetail productDetail);
     
     /**
-     * Lấy danh sách inventory theo FIFO (First In First Out)
-     * Ưu tiên lô hàng cũ nhất (import_date nhỏ nhất) và có quantity > 0
+     * Check if inventory exists for ProductDetail
      */
-    @Query("SELECT i FROM Inventory i " +
-           "WHERE i.productDetail.id = :productDetailId " +
-           "AND i.quantity > 0 " +
-           "ORDER BY i.importDate ASC, i.id ASC")
-    List<Inventory> findAvailableInventoriesFIFO(@Param("productDetailId") Long productDetailId);
+    boolean existsByProductDetailId(Long productDetailId);
     
     /**
-     * Lấy tất cả lô hàng của 1 ProductDetail (để xem báo cáo)
-     * Sorted by import date descending (mới nhất trước)
+     * Get all out of stock inventories
      */
-    @Query("SELECT i FROM Inventory i " +
-           "WHERE i.productDetail.id = :productDetailId " +
-           "ORDER BY i.importDate DESC")
-    List<Inventory> findAllByProductDetailId(@Param("productDetailId") Long productDetailId);
+    @Query("SELECT i FROM Inventory i WHERE i.remainingQuantity = 0")
+    List<Inventory> findOutOfStockInventories();
     
     /**
-     * Lấy các lô đang active (còn hàng hoặc đã có bán)
+     * Count active inventories (có hàng)
      */
-    @Query("SELECT i FROM Inventory i " +
-           "WHERE i.productDetail.id = :productDetailId " +
-           "AND (i.quantity > 0 OR i.soldQuantity > 0) " +
-           "ORDER BY i.importDate DESC")
-    List<Inventory> findActiveInventoriesByProductDetailId(@Param("productDetailId") Long productDetailId);
+    @Query("SELECT COUNT(i) FROM Inventory i WHERE i.remainingQuantity > 0")
+    Long countActiveInventories();
     
     /**
-     * Tính average cost price của ProductDetail (từ các lô còn hàng)
+     * Get total remaining quantity across all inventories
      */
-    @Query("SELECT AVG(i.costPrice) FROM Inventory i " +
-           "WHERE i.productDetail.id = :productDetailId " +
-           "AND i.quantity > 0")
-    Double getAverageCostPriceByProductDetailId(@Param("productDetailId") Long productDetailId);
+    @Query("SELECT COALESCE(SUM(i.remainingQuantity), 0) FROM Inventory i")
+    Integer getTotalRemainingQuantity();
     
     /**
-     * Tính weighted average cost (theo số lượng còn lại)
+     * Get total quantity (all imported)
      */
-    @Query("SELECT COALESCE(SUM(i.costPrice * i.quantity) / SUM(i.quantity), 0) " +
-           "FROM Inventory i " +
-           "WHERE i.productDetail.id = :productDetailId " +
-           "AND i.quantity > 0")
-    Double getWeightedAverageCostPrice(@Param("productDetailId") Long productDetailId);
+    @Query("SELECT COALESCE(SUM(i.totalQuantity), 0) FROM Inventory i")
+    Integer getTotalQuantity();
 }

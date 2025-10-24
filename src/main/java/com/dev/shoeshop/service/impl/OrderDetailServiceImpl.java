@@ -88,7 +88,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
         // Validate quantity against product stock from Inventory
-        int availableStock = inventoryRepository.getTotalQuantityByProductDetail(cartDetail.getProduct());
+        int availableStock = inventoryRepository.findByProductDetail(cartDetail.getProduct())
+                .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                .orElse(0);
         System.out.println("Available stock from Inventory: " + availableStock);
         
         if (quantity > availableStock) {
@@ -113,7 +115,9 @@ public class OrderDetailServiceImpl implements OrderDetailService {
             .orElseThrow(() -> new RuntimeException("Cart item not found or unauthorized access"));
         
         // Validate quantity against product stock from Inventory
-        int availableStock = inventoryRepository.getTotalQuantityByProductDetail(cartDetail.getProduct());
+        int availableStock = inventoryRepository.findByProductDetail(cartDetail.getProduct())
+                .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                .orElse(0);
         
         if (quantity > availableStock) {
             throw new RuntimeException("Số lượng vượt quá tồn kho. Chỉ còn " + availableStock + " sản phẩm");

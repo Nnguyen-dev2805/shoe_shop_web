@@ -6,6 +6,7 @@ import com.dev.shoeshop.entity.Inventory;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.ProductDetailRepository;
+import com.dev.shoeshop.service.InventoryHistoryService;
 import com.dev.shoeshop.service.InventoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,8 +25,8 @@ import java.util.stream.Collectors;
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
-
     private final ProductDetailRepository productDetailRepository;
+    private final InventoryHistoryService inventoryHistoryService;
 
     @Override
     @Transactional
@@ -42,20 +43,17 @@ public class InventoryServiceImpl implements InventoryService {
                         .findFirst()
                         .orElseThrow(() -> new RuntimeException("Không tìm thấy product_detail cho size " + size));
 
-                // Tìm inventory record hiện có
-                Inventory inventory = inventoryRepository.findByProductDetail(detail);
-                
-                if (inventory != null) {
-                    // Nếu đã tồn tại, cộng thêm số lượng
-                    inventory.setQuantity(inventory.getQuantity() + quantity);
-                } else {
-                    // Nếu chưa tồn tại, tạo mới
-                    inventory = new Inventory();
-                    inventory.setProductDetail(detail);
-                    inventory.setQuantity(quantity);
-                }
-
-                inventoryRepository.save(inventory);
+                // ✅ GỌI recordImport thay vì update trực tiếp
+                // recordImport sẽ:
+                // 1. Tự động tạo/update Inventory
+                // 2. Tạo InventoryHistory với costPrice
+                String note = request.getNote() != null ? request.getNote() : "Nhập hàng qua admin";
+                inventoryHistoryService.recordImport(
+                    detail,
+                    quantity,
+                    request.getCostPrice(),  // ⭐ Giá nhập
+                    note
+                );
             }
         }
     }
@@ -75,19 +73,16 @@ public class InventoryServiceImpl implements InventoryService {
                     
                     return InventoryResponse.builder()
                             .id(inv.getId())
-                            .productDetailId(pd.getId())  // ✅ THÊM
-                            .productId(pd.getProduct().getId())  // ✅ THÊM
+                            .productDetailId(pd.getId())
+                            .productId(pd.getProduct().getId())
                             .productName(pd.getProduct().getTitle())
                             .productImage(pd.getProduct().getImage())
                             .size(pd.getSize())
                             .warehouseName("Kho mặc định")
                             .warehouseId(null)
-                            .quantity(inv.getQuantity())
-                            // ✅ NEW - Cost tracking fields
-                            .costPrice(inv.getCostPrice())
-                            .soldQuantity(inv.getSoldQuantity())
-                            .initialQuantity(inv.getInitialQuantity())
-                            .note(inv.getNote())
+                            .quantity(inv.getRemainingQuantity())  // ✅ UPDATED
+                            .soldQuantity(inv.getSoldQuantity())   // ✅ Calculated method
+                            .totalQuantity(inv.getTotalQuantity()) // ✅ NEW
                             .build();
                 })
                 .filter(Objects::nonNull)
