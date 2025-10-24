@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * User Home Controller - Handles view rendering only
@@ -297,6 +296,53 @@ public class UserHomeController {
             Map<String, Object> response = new HashMap<>();
             response.put("error", "Failed to load orders: " + e.getMessage());
             response.put("success", false);
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * API endpoint để user hủy đơn hàng
+     */
+    @PostMapping("/api/orders/{orderId}/cancel")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> cancelOrder(@PathVariable Long orderId, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Kiểm tra user đã đăng nhập
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để hủy đơn hàng");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Kiểm tra đơn hàng có thuộc về user không
+            OrderDTO order = orderService.getOrderDetailById(orderId, user.getId());
+            if (order == null) {
+                response.put("success", false);
+                response.put("message", "Đơn hàng không tồn tại hoặc không thuộc về bạn");
+                return ResponseEntity.status(404).body(response);
+            }
+            
+            // Kiểm tra trạng thái đơn hàng - chỉ cho phép hủy đơn ở trạng thái IN_STOCK
+            if (order.getStatus() != ShipmentStatus.IN_STOCK) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể hủy đơn hàng đang ở trạng thái chờ xác nhận");
+                return ResponseEntity.status(400).body(response);
+            }
+            
+            // Hủy đơn hàng
+            orderService.cancelOrder(orderId);
+            
+            response.put("success", true);
+            response.put("message", "Hủy đơn hàng thành công");
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
             return ResponseEntity.status(500).body(response);
         }
     }
