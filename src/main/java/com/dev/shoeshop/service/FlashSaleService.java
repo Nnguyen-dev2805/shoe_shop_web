@@ -148,7 +148,9 @@ public class FlashSaleService {
         
         // BƯỚC 3: CHECK INVENTORY còn hàng không (Inventory sync)
         ProductDetail productDetail = item.getProductDetail();
-        int availableStock = inventoryRepo.getTotalQuantityByProductDetail(productDetail);
+        int availableStock = inventoryRepo.findByProductDetail(productDetail)
+                .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                .orElse(0);
         
         if (availableStock < request.getQuantity()) {
             log.warn("Not enough inventory for product detail {}, available: {}, requested: {}",
@@ -208,14 +210,19 @@ public class FlashSaleService {
         
         // Lấy stock của ProductDetail này (1 size)
         ProductDetail pd = item.getProductDetail();
-        int stockThisSize = inventoryRepo.getTotalQuantityByProductDetail(pd);
+        int stockThisSize = inventoryRepo.findByProductDetail(pd)
+                .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                .orElse(0);
         
         // ✅ Tính tổng inventory của TẤT CẢ size của Product
         Product product = pd.getProduct();
         int totalStockAllSizes = 0;
         if (product.getDetails() != null) {
             for (ProductDetail detail : product.getDetails()) {
-                totalStockAllSizes += inventoryRepo.getTotalQuantityByProductDetail(detail);
+                int detailStock = inventoryRepo.findByProductDetail(detail)
+                        .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                        .orElse(0);
+                totalStockAllSizes += detailStock;
             }
         }
         
@@ -351,13 +358,18 @@ public class FlashSaleService {
         Product product = pd.getProduct();
         
         // Lấy stock của ProductDetail này (1 size)
-        int totalStock = inventoryRepo.getTotalQuantityByProductDetail(pd);
+        int totalStock = inventoryRepo.findByProductDetail(pd)
+                .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                .orElse(0);
         
         // ✅ Tính tổng inventory của TẤT CẢ size của Product
         int totalStockAllSizes = 0;
         if (product.getDetails() != null) {
             for (ProductDetail detail : product.getDetails()) {
-                totalStockAllSizes += inventoryRepo.getTotalQuantityByProductDetail(detail);
+                int detailStock = inventoryRepo.findByProductDetail(detail)
+                        .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                        .orElse(0);
+                totalStockAllSizes += detailStock;
             }
         }
         
@@ -589,7 +601,9 @@ public class FlashSaleService {
                     .build());
             } else {
                 // Product has flash sale
-                int availableStock = inventoryRepo.getTotalQuantityByProductDetail(productDetail);
+                int availableStock = inventoryRepo.findByProductDetail(productDetail)
+                        .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                        .orElse(0);
                 
                 result.add(CartItemFlashSaleInfo.builder()
                     .productDetailId(productDetailId)

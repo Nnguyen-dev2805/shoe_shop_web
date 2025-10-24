@@ -172,8 +172,10 @@ public class ProductServiceImpl implements ProductService {
         // Convert ProductDetails to SizeOptions with stock from Inventory
         List<ProductDetailResponse.SizeOption> sizeOptions = uniqueDetails.stream()
                 .map(detail -> {
-                    // Get total quantity from all Inventory records for this ProductDetail
-                    int stock = inventoryRepository.getTotalQuantityByProductDetail(detail);
+                    // Get remaining quantity from Inventory for this ProductDetail
+                    int stock = inventoryRepository.findByProductDetail(detail)
+                            .map(inv -> inv.getRemainingQuantity() != null ? inv.getRemainingQuantity() : 0)
+                            .orElse(0);
                     
                     System.out.println("=== Processing ProductDetail ID: " + detail.getId() 
                             + ", Size: " + detail.getSize() 

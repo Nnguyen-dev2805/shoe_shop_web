@@ -1,12 +1,14 @@
 package com.dev.shoeshop.service.impl;
 
 import com.dev.shoeshop.dto.dashboard.*;
+import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.service.DashboardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DashboardServiceImpl implements DashboardService {
     
     private final OrderRepository orderRepository;
@@ -480,40 +483,74 @@ public class DashboardServiceImpl implements DashboardService {
     }
     
     // ========================================
-    // ✅ NEW: Inventory & Profit Calculation Methods
+    // ✅ Phương Thức Tính Toán Thống Kê
     // ========================================
     
     /**
      * Tính tổng giá trị tồn kho hiện tại
-     * Formula: SUM(costPrice × quantity) for all inventory
+     * Công thức: Tổng (Giá sản phẩm × Số lượng còn lại)
      */
     private Double calculateTotalInventoryValue() {
-        return inventoryRepository.findAll().stream()
-                .filter(inv -> inv.getCostPrice() != null && inv.getQuantity() > 0)
-                .mapToDouble(inv -> inv.getCostPrice() * inv.getQuantity())
-                .sum();
+        try {
+            return inventoryRepository.findAll().stream()
+                    .filter(inv -> inv.getRemainingQuantity() != null && inv.getRemainingQuantity() > 0)
+                    .mapToDouble(inv -> {
+                        // Lấy giá bán của sản phẩm
+                        ProductDetail pd = inv.getProductDetail();
+                        if (pd != null && pd.getProduct() != null) {
+                            double price = pd.getProduct().getPrice() + pd.getPriceadd();
+                            return price * inv.getRemainingQuantity();
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+        } catch (Exception e) {
+            log.error("Lỗi khi tính giá trị tồn kho: {}", e.getMessage());
+            return 0.0;
+        }
     }
     
     /**
-     * Tính tổng Cost of Goods Sold (COGS)
-     * Formula: SUM(costPrice × soldQuantity) for all inventory
+     * Tính tổng giá vốn hàng đã bán (COGS - Cost of Goods Sold)
+     * Công thức: Tổng (Giá nhập lúc bán × Số lượng)
      */
     private Double calculateTotalCOGS() {
-        return inventoryRepository.findAll().stream()
-                .filter(inv -> inv.getCostPrice() != null && inv.getSoldQuantity() != null && inv.getSoldQuantity() > 0)
-                .mapToDouble(inv -> inv.getCostPrice() * inv.getSoldQuantity())
-                .sum();
+        try {
+            return orderDetailRepository.findAll().stream()
+                    .filter(od -> od.getCostPriceAtSale() != null && od.getCostPriceAtSale() > 0)
+                    .mapToDouble(od -> od.getCostPriceAtSale() * od.getQuantity())
+                    .sum();
+        } catch (Exception e) {
+            log.error("Lỗi khi tính giá vốn hàng bán: {}", e.getMessage());
+            return 0.0;
+        }
     }
     
     /**
      * Tính tổng lợi nhuận
-     * Formula: SUM(profit) from all order details
-     * Note: Profit được tính khi checkout = (sellingPrice - costPrice) × quantity
+     * Công thức: Tổng (Giá bán - Giá vốn) × Số lượng
+     * Nếu có profit đã tính thì dùng, không thì tính thủ công
      */
     private Double calculateTotalProfit() {
-        return orderDetailRepository.findAll().stream()
-                .filter(od -> od.getProfit() != null)
-                .mapToDouble(od -> od.getProfit())
-                .sum();
+        try {
+            return orderDetailRepository.findAll().stream()
+                    .mapToDouble(od -> {
+                        // Nếu đã có profit tính sẵn thì dùng
+                        if (od.getProfit() != null) {
+                            return od.getProfit();
+                        }
+                        // Nếu không có, tính thủ công
+                        if (od.getCostPriceAtSale() != null && od.getCostPriceAtSale() > 0) {
+                            double revenue = od.getPrice() * od.getQuantity();
+                            double cost = od.getCostPriceAtSale() * od.getQuantity();
+                            return revenue - cost;
+                        }
+                        return 0.0;
+                    })
+                    .sum();
+        } catch (Exception e) {
+            log.error("Lỗi khi tính tổng lợi nhuận: {}", e.getMessage());
+            return 0.0;
+        }
     }
 }

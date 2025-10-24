@@ -1398,9 +1398,8 @@
     
     <!-- Goong Maps Init Script for Payment Modal -->
     <script>
-        // Goong Maps Configuration
-        goongjs.accessToken = '4pXmjW7ligFfpjNVlkIx7pvbzKHU3KCkhFRZKRR2';
-        const GOONG_API_KEY = 'xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU';
+        // ✅ GOONG_API_KEY đã được khai báo trong payment.js
+        // Không cần khai báo lại ở đây!
         
         let paymentMap, paymentMarker;
         
@@ -1465,7 +1464,7 @@
             
             console.log('🔍 Searching for:', query);
             
-            fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`)
+            fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU&input=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Search data:', data);
@@ -1484,7 +1483,7 @@
         
         // Lấy chi tiết địa điểm
         function getPaymentPlaceDetail(placeId) {
-            fetch(`https://rsapi.goong.io/Place/Detail?place_id=${placeId}&api_key=${GOONG_API_KEY}`)
+            fetch(`https://rsapi.goong.io/Place/Detail?place_id=${placeId}&api_key=xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Place detail data:', data);
@@ -1511,7 +1510,7 @@
         function updatePaymentAddressFromCoords(lng, lat) {
             console.log('📍 Reverse geocoding:', lat, lng);
             
-            fetch(`https://rsapi.goong.io/Geocode?latlng=${lat},${lng}&api_key=${GOONG_API_KEY}`)
+            fetch(`https://rsapi.goong.io/Geocode?latlng=${lat},${lng}&api_key=xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Geocoding data:', data);
