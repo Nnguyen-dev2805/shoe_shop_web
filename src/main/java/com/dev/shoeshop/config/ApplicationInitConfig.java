@@ -253,16 +253,33 @@ public class ApplicationInitConfig implements ApplicationRunner {
         
         int inventoryCount = 0;
         
-        // Tạo inventory cho mỗi ProductDetail với quantity = 10
+        // Tạo inventory cho mỗi ProductDetail với quantity = 30
         for (ProductDetail productDetail : allProductDetails) {
             Inventory inventory = new Inventory();
             inventory.setProductDetail(productDetail);
-            inventory.setQuantity(30);  // Mỗi size có 10 sản phẩm tồn kho
+            
+            int qty = 30;
+            inventory.setQuantity(qty);  // Số lượng còn lại
+            inventory.setInitialQuantity(qty);  // ✅ Số lượng nhập ban đầu
+            inventory.setSoldQuantity(0);  // ✅ Chưa bán
+            
+            // ✅ Tính cost price = 80% giá bán (đảm bảo margin 20%)
+            Product product = productDetail.getProduct();
+            Double sellingPrice = product.getPrice();
+            Double costPrice = sellingPrice * 0.8;  // 80% của giá bán
+            inventory.setCostPrice(costPrice);
+            
+            // ✅ Set import date = ngày khởi tạo
+            inventory.setImportDate(java.time.LocalDateTime.now());
+            
+            // ✅ Thêm note mô tả
+            inventory.setNote("Hàng nhập lô đầu tiên - Init data");
+            
             inventoryRepository.save(inventory);
             inventoryCount++;
         }
         
-        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items)");
+        System.out.println("  → Đã tạo " + inventoryCount + " inventory records (mỗi size 30 items với cost price = 80% selling price)");
     }
 
     private void initUsers() {

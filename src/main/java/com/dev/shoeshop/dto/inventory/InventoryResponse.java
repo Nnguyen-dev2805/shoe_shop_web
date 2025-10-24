@@ -16,5 +16,11 @@ public class InventoryResponse {
     private Integer size;
     private String warehouseName;
     private Long warehouseId;
-    private Integer quantity;
+    private Integer quantity;     // Số lượng còn lại
+    
+    // ✅ NEW FIELDS - Cost Tracking
+    private Double costPrice;     // Giá nhập / đôi
+    private Integer soldQuantity; // Số lượng đã bán
+    private Integer initialQuantity; // Số lượng nhập ban đầu
+    private String note;          // Ghi chú
 }

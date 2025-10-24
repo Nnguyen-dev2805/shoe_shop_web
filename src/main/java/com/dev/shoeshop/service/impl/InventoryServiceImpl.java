@@ -83,6 +83,11 @@ public class InventoryServiceImpl implements InventoryService {
                             .warehouseName("Kho mặc định")
                             .warehouseId(null)
                             .quantity(inv.getQuantity())
+                            // ✅ NEW - Cost tracking fields
+                            .costPrice(inv.getCostPrice())
+                            .soldQuantity(inv.getSoldQuantity())
+                            .initialQuantity(inv.getInitialQuantity())
+                            .note(inv.getNote())
                             .build();
                 })
                 .filter(Objects::nonNull)

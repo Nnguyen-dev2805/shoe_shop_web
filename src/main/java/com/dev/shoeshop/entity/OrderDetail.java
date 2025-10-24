@@ -34,9 +34,28 @@ public class OrderDetail {
 //    @PositiveOrZero(message = "Total price must be greater than or equal to 0")
     // don gia tung san pham
     private double price;
+    
+    // ✅ NEW: Cost price tracking for profit calculation
+    @Column(name = "cost_price_at_sale")
+    private Double costPriceAtSale; // Giá nhập lúc bán (weighted average)
+    
+    @Column(name = "profit")
+    private Double profit; // Lợi nhuận = (price - costPriceAtSale) × quantity
 
     @OneToOne(mappedBy = "orderDetail", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Rating rating;
+    
+    // ===== HELPER METHODS =====
+    
+    /**
+     * Tính profit margin (%)
+     */
+    @Transient
+    public double getProfitMargin() {
+        if (price == 0) return 0;
+        if (costPriceAtSale == null) return 0;
+        return ((price - costPriceAtSale) / price) * 100;
+    }
 }

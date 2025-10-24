@@ -130,6 +130,24 @@ function updateStatCards(data) {
     
     // Total Customers
     $('#totalCustomers').html(formatNumber(data.totalCustomers || 0));
+    
+    // ✅ NEW: Inventory & Profit Stats
+    // Total Inventory Value
+    $('#totalInventoryValue').html(formatCurrency(data.totalInventoryValue || 0));
+    
+    // Total Profit
+    $('#totalProfit').html(formatCurrency(data.totalProfit || 0));
+    
+    // Profit Margin
+    const profitMargin = data.profitMargin || 0;
+    $('#profitMargin').html(profitMargin.toFixed(1) + '%');
+    
+    // Total COGS
+    $('#totalCOGS').html(formatCurrency(data.totalCOGS || 0));
+    
+    // Average ROI
+    const avgROI = data.avgROI || 0;
+    $('#avgROI').html(avgROI.toFixed(1) + '%');
 }
 
 /**

@@ -13,6 +13,11 @@ public interface AddressService {
     AddressDTO addAddress(Long userId, AddressRequestDTO addressRequest);
     
     /**
+     * Update existing address
+     */
+    AddressDTO updateAddress(Long userId, Long addressId, AddressRequestDTO addressRequest);
+    
+    /**
      * Get all addresses for user
      */
     List<AddressDTO> getUserAddresses(Long userId);

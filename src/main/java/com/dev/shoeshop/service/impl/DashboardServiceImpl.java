@@ -2,6 +2,7 @@ package com.dev.shoeshop.service.impl;
 
 import com.dev.shoeshop.dto.dashboard.*;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.service.DashboardService;
@@ -23,6 +24,7 @@ public class DashboardServiceImpl implements DashboardService {
     
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final InventoryRepository inventoryRepository;
     
     @Override
     public DashboardStatsDTO getDashboardStats(Date startDate, Date endDate) {
@@ -42,11 +44,27 @@ public class DashboardServiceImpl implements DashboardService {
         // Lấy top 10 sản phẩm bán chạy (hiển thị trên dashboard, KHÔNG xuất trong Excel tổng quát)
         List<TopProductDTO> topProducts = getTopProducts(10, startDate, endDate);
         
+        // ✅ NEW: Calculate Inventory & Profit Stats
+        Double totalInventoryValue = calculateTotalInventoryValue();
+        Double totalCOGS = calculateTotalCOGS();
+        Double totalProfit = calculateTotalProfit();
+        Double profitMargin = (totalRevenue != null && totalRevenue > 0) 
+            ? (totalProfit / totalRevenue) * 100 : 0.0;
+        Double avgROI = (totalCOGS != null && totalCOGS > 0) 
+            ? ((totalRevenue - totalCOGS) / totalCOGS) * 100 : 0.0;
+        
         return DashboardStatsDTO.builder()
                 .totalOrders(totalOrders)
                 .totalRevenue(totalRevenue)
                 .totalProductsSold(totalProductsSold)
                 .totalCustomers(totalCustomers)
+                // ✅ NEW Fields
+                .totalInventoryValue(totalInventoryValue)
+                .totalProfit(totalProfit)
+                .profitMargin(profitMargin)
+                .totalCOGS(totalCOGS)
+                .avgROI(avgROI)
+                // Existing
                 .ordersByStatus(ordersByStatus)
                 .orderTimeSeries(orderTimeSeries)
                 .revenueTimeSeries(revenueTimeSeries)
@@ -459,5 +477,43 @@ public class DashboardServiceImpl implements DashboardService {
                                " - Đến ngày: " + (endDate != null ? dateFormat.format(endDate) : "Tất cả");
             dateRangeRow.createCell(0).setCellValue(dateRange);
         }
+    }
+    
+    // ========================================
+    // ✅ NEW: Inventory & Profit Calculation Methods
+    // ========================================
+    
+    /**
+     * Tính tổng giá trị tồn kho hiện tại
+     * Formula: SUM(costPrice × quantity) for all inventory
+     */
+    private Double calculateTotalInventoryValue() {
+        return inventoryRepository.findAll().stream()
+                .filter(inv -> inv.getCostPrice() != null && inv.getQuantity() > 0)
+                .mapToDouble(inv -> inv.getCostPrice() * inv.getQuantity())
+                .sum();
+    }
+    
+    /**
+     * Tính tổng Cost of Goods Sold (COGS)
+     * Formula: SUM(costPrice × soldQuantity) for all inventory
+     */
+    private Double calculateTotalCOGS() {
+        return inventoryRepository.findAll().stream()
+                .filter(inv -> inv.getCostPrice() != null && inv.getSoldQuantity() != null && inv.getSoldQuantity() > 0)
+                .mapToDouble(inv -> inv.getCostPrice() * inv.getSoldQuantity())
+                .sum();
+    }
+    
+    /**
+     * Tính tổng lợi nhuận
+     * Formula: SUM(profit) from all order details
+     * Note: Profit được tính khi checkout = (sellingPrice - costPrice) × quantity
+     */
+    private Double calculateTotalProfit() {
+        return orderDetailRepository.findAll().stream()
+                .filter(od -> od.getProfit() != null)
+                .mapToDouble(od -> od.getProfit())
+                .sum();
     }
 }

@@ -110,6 +110,57 @@ public class AddressApiController {
     }
     
     /**
+     * Update existing address
+     */
+    @PutMapping("/{addressId}")
+    public ResponseEntity<Map<String, Object>> updateAddress(
+            @PathVariable Long addressId,
+            @Valid @RequestBody AddressRequestDTO addressRequest,
+            BindingResult bindingResult,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            // Check if user is logged in
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để cập nhật địa chỉ.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            
+            // Check validation errors
+            if (bindingResult.hasErrors()) {
+                String errorMessage = bindingResult.getAllErrors()
+                        .stream()
+                        .map(error -> error.getDefaultMessage())
+                        .collect(Collectors.joining(", "));
+                
+                response.put("success", false);
+                response.put("message", errorMessage);
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Update address
+            AddressDTO updatedAddress = addressService.updateAddress(user.getId(), addressId, addressRequest);
+            
+            response.put("success", true);
+            response.put("message", "Địa chỉ đã được cập nhật thành công!");
+            response.put("address", updatedAddress);
+            
+            log.info("Address {} updated successfully for user {}", addressId, user.getId());
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("Error updating address", e);
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi cập nhật địa chỉ: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
      * Set default address
      */
     @PutMapping("/{addressId}/set-default")
