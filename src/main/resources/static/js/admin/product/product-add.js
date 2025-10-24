@@ -37,8 +37,25 @@ $(document).ready(function () {
         }
     });
 
+    // Flag để prevent double submission
+    let isSubmitting = false;
+
     $('#productForm').on('submit', function(e) {
         e.preventDefault();
+        
+        // ✅ Prevent multiple submissions
+        if (isSubmitting) {
+            console.log('⚠️ Form is already submitting, please wait...');
+            return false;
+        }
+        
+        // Set flag và disable button
+        isSubmitting = true;
+        const $submitBtn = $(this).find('button[type="submit"]');
+        const originalText = $submitBtn.html();
+        $submitBtn.prop('disabled', true)
+                  .html('<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...');
+        
         const productData = {
             title: $('#title').val(),
             categoryId: parseInt($('#categoryId').val()),
@@ -89,10 +106,15 @@ $(document).ready(function () {
             contentType: false, // bắt buộc với FormData
             success: function(response) {
                 alert("Thêm sản phẩm thành công!");
-                window.location.href = '';
+                // Redirect to product list - no need to reset button
+                window.location.href = '/admin/product';
             },
             error: function(xhr) {
                 alert("Lỗi khi thêm sản phẩm: " + xhr.responseText);
+                
+                // ✅ Reset button và flag khi có lỗi
+                isSubmitting = false;
+                $submitBtn.prop('disabled', false).html(originalText);
             }
         });
 

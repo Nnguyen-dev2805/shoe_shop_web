@@ -43,7 +43,8 @@ public class StorageServiceImpl implements StorageService {
             if (cloudinaryService != null) {
                 try {
                     log.info("Uploading to Cloudinary: {}", file.getOriginalFilename());
-                    String cloudinaryUrl = cloudinaryService.uploadImage(file, "products");
+                    // ✅ Sử dụng PRODUCT_FOLDER constant
+                    String cloudinaryUrl = cloudinaryService.uploadImage(file, CloudinaryService.PRODUCT_FOLDER);
                     log.info("Uploaded to Cloudinary successfully: {}", cloudinaryUrl);
                     return cloudinaryUrl;
                 } catch (Exception e) {
@@ -86,5 +87,45 @@ public class StorageServiceImpl implements StorageService {
         }
     }
 
+    @Override
+    public String storeRatingImage(MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                throw new RuntimeException("File trống!");
+            }
+
+            // Try Cloudinary first (if configured)
+            if (cloudinaryService != null) {
+                try {
+                    log.info("Uploading rating image to Cloudinary: {}", file.getOriginalFilename());
+                    // ✅ Sử dụng RATING_FOLDER constant
+                    String cloudinaryUrl = cloudinaryService.uploadImage(file, CloudinaryService.RATING_FOLDER);
+                    log.info("Uploaded rating image to Cloudinary successfully: {}", cloudinaryUrl);
+                    return cloudinaryUrl;
+                } catch (Exception e) {
+                    log.error("Cloudinary upload failed for rating image, falling back to local storage: {}", e.getMessage());
+                    // Fall through to local storage
+                }
+            }
+
+            // Fallback to local storage (same logic as storeFile)
+            log.info("Using local storage for rating image: {}", file.getOriginalFilename());
+            String originalFilename = file.getOriginalFilename();
+            String filename = originalFilename;
+
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            Path targetLocation = uploadPath.resolve(filename);
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+
+            return baseUrl + filename;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Không thể lưu rating image: " + e.getMessage(), e);
+        }
+    }
 
 }
