@@ -265,13 +265,19 @@ public class ManagerHomeController {
     }
 
     @GetMapping("/products/{id}")
-    public String managerProductDetail(HttpSession session, Model model) {
+    public String managerProductDetail(@PathVariable("id") Long id, HttpSession session, Model model) {
         Users user = (Users) session.getAttribute(Constant.SESSION_USER);
         if (user == null) {
             return "redirect:/login";
         }
         
+        // Kiểm tra role manager
+        if (!"manager".equalsIgnoreCase(user.getRole().getRoleName())) {
+            return "redirect:/access-denied";
+        }
+        
         model.addAttribute("user", user);
+        model.addAttribute("productId", id);
         return "manager/product/product-detail";
     }
 }

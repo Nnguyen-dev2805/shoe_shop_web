@@ -52,35 +52,16 @@ public class ManagerProductApiController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id) {
+    public ResponseEntity<?> getProductById(@PathVariable Long id) {
         try {
-            // Use getProductById method which returns ProductDetailResponse
+            // Use getProductById method which returns ProductDetailResponse with all details
             var productDetail = productService.getProductById(id);
             if (productDetail == null) {
                 return ResponseEntity.notFound().build();
             }
             
-            // Convert to DTO
-            ProductResponseDTO dto = ProductResponseDTO.builder()
-                    .id(productDetail.getId())
-                    .title(productDetail.getTitle())
-                    .description(productDetail.getDescription())
-                    .price(productDetail.getPrice())
-                    .image(productDetail.getImage())
-                    .categoryName(productDetail.getCategoryName())
-                    .brandName(productDetail.getBrandName())
-                    .totalReviews(productDetail.getTotalReviews() != null ? 
-                            productDetail.getTotalReviews().longValue() : 0L)
-                    .averageRating(productDetail.getAvgRating() != null ? 
-                            productDetail.getAvgRating() : 0.0)
-                    .totalQuantity(productDetail.getSizeOptions() != null ? 
-                            productDetail.getSizeOptions().stream()
-                                    .mapToInt(size -> size.getStock() != null ? size.getStock() : 0)
-                                    .sum() : 0)
-                    .isDelete(false) // Default value
-                    .build();
-            
-            return ResponseEntity.ok(dto);
+            // Return full ProductDetailResponse including size options
+            return ResponseEntity.ok(productDetail);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
