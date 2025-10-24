@@ -77,23 +77,23 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId) {
         Page<Product> productPage;
         
-        // ✅ SOFT DELETE: Chỉ lấy sản phẩm chưa xóa (isDelete = false)
+        // ✅ SOFT DELETE + EAGER LOADING: Lấy sản phẩm chưa xóa với Flash Sale info
         
         // Filter by category and search
         if (categoryId != null && search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByCategoryIdAndTitleContainingIgnoreCaseAndIsDeleteFalse(categoryId, search, pageable);
+            productPage = productRepository.findByCategoryAndTitleWithFlashSale(categoryId, search, pageable);
         } 
         // Filter by category only
         else if (categoryId != null) {
-            productPage = productRepository.findByCategoryIdAndIsDeleteFalse(categoryId, pageable);
+            productPage = productRepository.findByCategoryWithFlashSale(categoryId, pageable);
         } 
         // Search only
         else if (search != null && !search.trim().isEmpty()) {
-            productPage = productRepository.findByTitleContainingIgnoreCaseAndIsDeleteFalse(search, pageable);
+            productPage = productRepository.findByTitleWithFlashSale(search, pageable);
         } 
         // Get all (exclude deleted)
         else {
-            productPage = productRepository.findByIsDeleteFalse(pageable);
+            productPage = productRepository.findAllWithFlashSale(pageable);
         }
         
         List<ProductResponse> responses = productPage.getContent().stream()
