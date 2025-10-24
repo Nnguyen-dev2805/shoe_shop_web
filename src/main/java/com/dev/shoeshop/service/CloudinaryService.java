@@ -15,11 +15,15 @@ public class CloudinaryService {
 
     @Autowired
     private Cloudinary cloudinary;
+    
+    // ✅ Folder constants để tách biệt ảnh
+    public static final String PRODUCT_FOLDER = "shoe_shop/products";
+    public static final String RATING_FOLDER = "shoe_shop/ratings";
 
     /**
      * Upload image to Cloudinary
      * @param file MultipartFile to upload
-     * @param folder Folder name in Cloudinary (e.g., "products", "avatars")
+     * @param folder Folder name in Cloudinary (e.g., PRODUCT_FOLDER, RATING_FOLDER)
      * @return Image URL from Cloudinary
      */
     public String uploadImage(MultipartFile file, String folder) throws IOException {
@@ -27,15 +31,23 @@ public class CloudinaryService {
             throw new IllegalArgumentException("File is empty");
         }
 
-        // Generate unique filename
-        String publicId = folder + "/" + UUID.randomUUID().toString();
+        // ✅ Giữ nguyên tên file gốc (không thêm timestamp)
+        String originalFilename = file.getOriginalFilename();
+        String filenameWithoutExt = originalFilename != null && originalFilename.contains(".") 
+            ? originalFilename.substring(0, originalFilename.lastIndexOf("."))
+            : (originalFilename != null ? originalFilename : "image");
+        
+        // Tạo public_id: shoe_shop/products/abc
+        String publicId = folder + "/" + filenameWithoutExt;
 
         // Upload to Cloudinary
+        // overwrite=false: Nếu file đã tồn tại, Cloudinary sẽ tự động thêm suffix (abc_1, abc_2...)
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap(
                         "public_id", publicId,
-                        "folder", folder,
-                        "resource_type", "image"
+                        "resource_type", "image",
+                        "overwrite", false,
+                        "unique_filename", true
                 ));
 
         // Return secure URL

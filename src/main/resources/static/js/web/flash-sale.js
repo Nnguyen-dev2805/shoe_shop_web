@@ -84,7 +84,7 @@ $(document).ready(function() {
                 </div>
                 
                 <div class="view-all-flash-sale">
-                    <a href="/flash-sale" class="view-all-button">
+                    <a href="/user/shop" class="view-all-button">
                         XEM TẤT CẢ <i class="fa fa-arrow-right"></i>
                     </a>
                 </div>
@@ -149,7 +149,7 @@ $(document).ready(function() {
                 : 100;
             
             return `
-                <div class="flash-product-card" data-item-id="${product.firstItemId}" onclick="window.location.href='/product/${product.productId}'">
+                <div class="flash-product-card" data-item-id="${product.firstItemId}" onclick="window.location.href='/product/details/${product.productId}'">
                     <div class="flash-badge-container">
                         <div class="voucher-badge">FLASH SALE</div>
                         <div class="discount-badge">-${Math.round(product.discountPercent)}%</div>
@@ -167,7 +167,9 @@ $(document).ready(function() {
                         
                         <div class="flash-product-price">
                             <span class="flash-price">${formatPrice(product.flashSalePrice)}</span>
-                            <span class="original-price">${formatPrice(product.originalPrice)}</span>
+                            <div style="margin-top: 4px;">
+                                <span class="original-price">${formatPrice(product.originalPrice)}</span>
+                            </div>
                             <div class="savings">Tiết kiệm ${formatPrice(product.originalPrice - product.flashSalePrice)}</div>
                         </div>
                         
@@ -186,7 +188,7 @@ $(document).ready(function() {
                         </div>
                         
                         <button class="flash-buy-button ${product.remaining === 0 ? 'sold-out' : ''}" 
-                                onclick="event.stopPropagation(); window.location.href='/product/${product.productId}'">
+                                onclick="event.stopPropagation(); window.location.href='/product/details/${product.productId}'">
                             ${product.remaining === 0 ? 'HẾT HÀNG' : 'MUA NGAY'}
                         </button>
                         
@@ -250,7 +252,7 @@ $(document).ready(function() {
                                 <button class="remind-button-shopee" onclick="setReminder()">
                                     <i class="fa fa-bell-o"></i> Nhắc Tôi Khi Bắt Đầu
                                 </button>
-                                <a href="/user/shop" class="browse-button-shopee">
+                                <a href="/shop" class="browse-button-shopee">
                                     <i class="fa fa-shopping-bag"></i> Xem Sản Phẩm Khác
                                 </a>
                             </div>

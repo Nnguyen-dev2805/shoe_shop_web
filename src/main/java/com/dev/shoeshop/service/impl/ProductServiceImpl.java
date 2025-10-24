@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,8 +153,24 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findByIdWithDetailsAndInventories(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
 
+        // ✅ FIX: Remove duplicates caused by JPA Cartesian product (multiple JOIN FETCH)
+        // Use LinkedHashSet to maintain order and remove duplicates by ProductDetail.id
+        List<ProductDetail> uniqueDetails = product.getDetails().stream()
+                .collect(Collectors.collectingAndThen(
+                    Collectors.toMap(
+                        ProductDetail::getId,
+                        detail -> detail,
+                        (existing, replacement) -> existing, // Keep first occurrence
+                        LinkedHashMap::new
+                    ),
+                    map -> new ArrayList<>(map.values())
+                ));
+        
+        System.out.println("=== Before dedup: " + product.getDetails().size() 
+                + " | After dedup: " + uniqueDetails.size());
+
         // Convert ProductDetails to SizeOptions with stock from Inventory
-        List<ProductDetailResponse.SizeOption> sizeOptions = product.getDetails().stream()
+        List<ProductDetailResponse.SizeOption> sizeOptions = uniqueDetails.stream()
                 .map(detail -> {
                     // Get total quantity from all Inventory records for this ProductDetail
                     int stock = inventoryRepository.getTotalQuantityByProductDetail(detail);
