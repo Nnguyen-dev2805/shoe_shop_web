@@ -345,3 +345,48 @@ function showAlert(type, message) {
         $('.alert').fadeOut();
     }, 5000);
 }
+
+/**
+ * Search by Order ID with validation
+ */
+function searchByOrderId() {
+    const orderIdInput = document.getElementById('search-order-id');
+    const orderId = orderIdInput.value.trim();
+    
+    if (!orderId) {
+        showAlert('warning', 'Vui lòng nhập mã đơn hàng');
+        return;
+    }
+    
+    // Check if order exists before redirecting
+    $.ajax({
+        url: `/api/manager/orders/${orderId}`,
+        method: 'GET',
+        success: function(response) {
+            if (response && response.id) {
+                // Order found, redirect to detail page
+                window.location.href = `/manager/orders/${orderId}`;
+            } else {
+                showAlert('danger', 'Không tìm thấy đơn hàng với mã #' + orderId);
+                orderIdInput.value = '';
+            }
+        },
+        error: function(xhr, status, error) {
+            if (xhr.status === 404) {
+                showAlert('danger', 'Không tìm thấy đơn hàng với mã #' + orderId);
+            } else {
+                showAlert('danger', 'Có lỗi xảy ra khi tìm kiếm đơn hàng');
+            }
+            orderIdInput.value = '';
+        }
+    });
+}
+
+// Allow enter key to trigger search
+$(document).ready(function() {
+    $('#search-order-id').on('keypress', function(e) {
+        if (e.which === 13) { // Enter key
+            searchByOrderId();
+        }
+    });
+});

@@ -137,6 +137,51 @@ public class ShipperController {
 
         return "shipper/order-detail";
     }
+    
+    /**
+     * API: Check if order exists and belongs to this shipper
+     */
+    @GetMapping("/order/check/{orderId}")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> checkOrderExists(
+            @PathVariable("orderId") Long orderId,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (loggedInUser == null) {
+                response.put("exists", false);
+                response.put("message", "Chưa đăng nhập");
+                return ResponseEntity.ok(response);
+            }
+            
+            Order order = orderService.findById(orderId);
+            if (order == null) {
+                response.put("exists", false);
+                response.put("message", "Không tìm thấy đơn hàng");
+                return ResponseEntity.ok(response);
+            }
+            
+            // Check if this order belongs to this shipper
+            ShipmentDTO shipment = shipmentService.findShipmentByOrderId(orderId);
+            if (shipment != null && shipment.getShipperId().equals(loggedInUser.getId())) {
+                response.put("exists", true);
+                response.put("message", "Tìm thấy đơn hàng");
+            } else {
+                response.put("exists", false);
+                response.put("message", "Đơn hàng không thuộc quyền quản lý của bạn");
+            }
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            response.put("exists", false);
+            response.put("message", "Không tìm thấy đơn hàng");
+            return ResponseEntity.ok(response);
+        }
+    }
 
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {

@@ -144,13 +144,11 @@
                     <div class="col-xl-12">
                          <div class="card">
                               <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                                   <div class="d-flex align-items-center mb-2 mb-md-0">
-                                        <h4 class="card-title m-0 fs-5">
-                                             <iconify-icon icon="solar:list-bold-duotone" class="me-2"></iconify-icon>
-                                             Danh Sách Đơn Hàng
-                                        </h4>
-                                   </div>
-                                   <div class="d-flex align-items-center gap-2 flex-nowrap">
+                                   <h4 class="card-title m-0 fs-5">
+                                        <iconify-icon icon="solar:list-bold-duotone" class="me-2"></iconify-icon>
+                                        Danh Sách Đơn Hàng
+                                   </h4>
+                                   <div class="d-flex align-items-center gap-2 flex-wrap">
                                         <select class="form-select form-select-sm" id="status-filter" style="width: 140px;">
                                              <option value="">Tất Cả</option>
                                              <option value="IN_STOCK">Trong Kho</option>
@@ -159,6 +157,12 @@
                                              <option value="CANCEL">Đã Hủy</option>
                                              <option value="RETURN">Trả Hàng</option>
                                         </select>
+                                        <div class="input-group input-group-sm" style="width: 200px;">
+                                             <input type="number" class="form-control" id="search-order-id" placeholder="Tìm theo mã...">
+                                             <button class="btn btn-primary" type="button" onclick="searchByOrderId()">
+                                                  <iconify-icon icon="solar:magnifier-bold-duotone"></iconify-icon>
+                                             </button>
+                                        </div>
                                         <button class="btn btn-outline-primary btn-sm d-flex align-items-center flex-shrink-0" 
                                                 id="refresh-button" 
                                                 onclick="refreshOrders()">
@@ -166,8 +170,9 @@
                                              <span>Làm mới</span>
                                         </button>
                                    </div>
+                              </div>
                                    
-                                   <style>
+                                    <style>
                                         /* Card Header - Responsive và hiển thị đầy đủ */
                                         .card-header {
                                              padding: 0.875rem 1.25rem;
