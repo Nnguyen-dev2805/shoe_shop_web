@@ -37,7 +37,7 @@ function formatCurrency(amount) {
 $(document).ready(function() {
     loadDataFromSession();
     loadVouchers();
-    loadShippingCompanies();
+    // loadShippingCompanies(); // ❌ Đã bỏ chọn shipping company
     bindEventHandlers();
 });
 
@@ -574,39 +574,40 @@ function renderShippingVouchers(vouchers) {
     $('#shipping-voucher-wrapper').show();
 }
 
-/**
- * Load shipping companies
- */
-function loadShippingCompanies() {
-    $.ajax({
-        url: '/api/shipping/companies',
-        method: 'GET',
-        success: function(response) {
-            if (response.success && response.data) {
-                renderShippingCompanies(response.data);
-            }
-        },
-        error: function(xhr, status, error) {
-        }
-    });
-}
-
-/**
- * Render shipping companies
- */
-function renderShippingCompanies(companies) {
-    const select = $('#shippingCompanySelect');
-    select.empty();
-    
-    if (!companies || companies.length === 0) {
-        select.append('<option value="">Không có đơn vị vận chuyển</option>');
-        return;
-    }
-    
-    companies.forEach(function(company) {
-        select.append(`<option value="${company.id}">${company.name}</option>`);
-    });
-}
+// ❌ ĐÃ Bỏ CHỌN SHIPPING COMPANY - COMMENT CODE
+// /**
+//  * Load shipping companies
+//  */
+// function loadShippingCompanies() {
+//     $.ajax({
+//         url: '/api/shipping/companies',
+//         method: 'GET',
+//         success: function(response) {
+//             if (response.success && response.data) {
+//                 renderShippingCompanies(response.data);
+//             }
+//         },
+//         error: function(xhr, status, error) {
+//         }
+//     });
+// }
+//
+// /**
+//  * Render shipping companies
+//  */
+// function renderShippingCompanies(companies) {
+//     const select = $('#shippingCompanySelect');
+//     select.empty();
+//     
+//     if (!companies || companies.length === 0) {
+//         select.append('<option value="">Không có đơn vị vận chuyển</option>');
+//         return;
+//     }
+//     
+//     companies.forEach(function(company) {
+//         select.append(`<option value="${company.id}">${company.name}</option>`);
+//     });
+// }
 
 /**
  * Calculate all prices
@@ -1323,16 +1324,10 @@ function handleDiscountSelection() {
  */
 function handlePayment() {
     const paymentMethod = $('input[name="paymentMethod"]:checked').val();
-    const shippingCompanyId = $('#shippingCompanySelect').val();
     
     // Validation
     if (!addressId) {
         alert('Vui lòng chọn địa chỉ giao hàng!');
-        return;
-    }
-    
-    if (!shippingCompanyId) {
-        alert('Vui lòng chọn đơn vị vận chuyển!');
         return;
     }
     
@@ -1363,7 +1358,7 @@ function handlePayment() {
     const paymentData = {
         cartId: cartId ? parseInt(cartId) : null,
         addressId: parseInt(addressId),
-        shippingCompanyId: parseInt(shippingCompanyId),
+        shippingCompanyId: null, // ❌ Đã bỏ chọn shipping company
         orderDiscountId: orderVoucherId ? parseInt(orderVoucherId) : null,
         shippingDiscountId: shippingVoucherId ? parseInt(shippingVoucherId) : null,
         flashSaleId: flashSaleId ? parseInt(flashSaleId) : null, // 🔥 THÊM FLASH SALE ID
