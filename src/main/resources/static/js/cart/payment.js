@@ -59,16 +59,9 @@ function loadDataFromSession() {
     addressId = sessionStorage.getItem('selectedAddressId');
     cartId = sessionStorage.getItem('cartId');
     
-    console.log('=== PAYMENT PAGE DEBUG ===');
-    console.log('Checkout Source:', checkoutSource);
-    console.log('Items data:', itemsData);
-    console.log('Address ID:', addressId);
-    console.log('Cart ID:', cartId);
-    
     // Validate: Only check if items data exists
     // Address ID can be empty (user will select it in payment page)
     if (!itemsData) {
-        console.warn('⚠️ No checkout data found in sessionStorage');
         alert('⚠️ Không có dữ liệu thanh toán. Vui lòng chọn sản phẩm trước.');
         window.location.href = '/';
         return;
@@ -76,8 +69,6 @@ function loadDataFromSession() {
     
     // ✅ Validate: checkoutSource must be set
     if (!checkoutSource || (checkoutSource !== 'cart' && checkoutSource !== 'buynow')) {
-        console.error('❌ Invalid checkoutSource:', checkoutSource);
-        console.log('🧹 Clearing invalid sessionStorage data...');
         sessionStorage.clear();
         alert('⚠️ Dữ liệu thanh toán không hợp lệ. Vui lòng thử lại.');
         window.location.href = '/';
@@ -86,13 +77,11 @@ function loadDataFromSession() {
     
     try {
         selectedItems = JSON.parse(itemsData);
-        console.log('Parsed items:', selectedItems);
         
         // ✅ Validate: Check if cart items have valid IDs
         if (checkoutSource === 'cart' && selectedItems.length > 0) {
             const hasInvalidIds = selectedItems.some(item => !item.id || item.id <= 0);
             if (hasInvalidIds) {
-                console.error('❌ Invalid cart item IDs detected! Clearing sessionStorage...');
                 sessionStorage.clear();
                 alert('⚠️ Dữ liệu giỏ hàng không hợp lệ. Vui lòng thêm sản phẩm vào giỏ lại.');
                 window.location.href = '/cart/view';
@@ -100,7 +89,6 @@ function loadDataFromSession() {
             }
         }
     } catch (e) {
-        console.error('Error parsing items:', e);
         alert('Lỗi dữ liệu. Vui lòng thử lại.');
         window.location.href = '/cart/view';
         return;
@@ -127,11 +115,8 @@ function loadDataFromSession() {
  * Call API to get flash sale info and merge into selectedItems
  */
 function checkFlashSaleForCartItems(callback) {
-    console.log('=== Checking Flash Sale for Cart Items ===');
-    
     // Extract product detail IDs
     const productDetailIds = selectedItems.map(item => item.productDetailId);
-    console.log('Product Detail IDs:', productDetailIds);
     
     $.ajax({
         url: '/api/cart/check-flash-sale',
@@ -140,8 +125,6 @@ function checkFlashSaleForCartItems(callback) {
         data: JSON.stringify({ productDetailIds: productDetailIds }),
         success: function(response) {
             if (response.success && response.data) {
-                console.log('✅ Flash Sale info received:', response.data);
-                
                 // Merge flash sale info into selectedItems
                 response.data.forEach(flashSaleInfo => {
                     const item = selectedItems.find(i => i.productDetailId === flashSaleInfo.productDetailId);
@@ -154,21 +137,16 @@ function checkFlashSaleForCartItems(callback) {
                         item.product.product.flashSale.flashSalePrice = flashSaleInfo.flashSalePrice;
                         item.product.product.flashSale.originalPrice = flashSaleInfo.originalPrice;
                         item.product.product.flashSale.discountPercent = flashSaleInfo.discountPercent;
-                        
-                        console.log('🔥 Applied flash sale to:', item.product.product.title, 
-                                    'Price:', flashSaleInfo.flashSalePrice);
                     }
                 });
                 
                 // Call callback to continue rendering
                 if (callback) callback();
             } else {
-                console.warn('No flash sale data returned');
                 if (callback) callback();
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error checking flash sale:', error);
             // Continue rendering even if flash sale check fails
             if (callback) callback();
         }
@@ -179,9 +157,6 @@ function checkFlashSaleForCartItems(callback) {
  * Render selected products (Shopee table style)
  */
 function renderSelectedProducts() {
-    console.log('Rendering selected products...');
-    console.log('Selected items count:', selectedItems.length);
-    
     const container = $('#selected-products-list');
     container.empty();
     
@@ -212,7 +187,6 @@ function renderSelectedProducts() {
         if (product.flashSale && product.flashSale.active) {
             basePrice = product.flashSale.flashSalePrice;
             isFlashSale = true;
-            console.log('🔥 Flash Sale Active:', product.title, 'Price:', basePrice);
         }
         
         // Calculate unit price (base price + size add-on)
@@ -254,12 +228,10 @@ let allAddresses = [];  // ✅ Store all addresses
  * Load address info from API
  */
 function loadAddressInfo() {
-    console.log('Loading address info for ID:', addressId);
     $.ajax({
         url: '/api/user/addresses',
         method: 'GET',
         success: function(response) {
-            console.log('Address API response:', response);
             if (response.success && response.addresses) {
                 allAddresses = response.addresses;  // ✅ Store addresses
                 
@@ -279,7 +251,6 @@ function loadAddressInfo() {
                     if (address) {
                         addressId = address.id;
                         sessionStorage.setItem('selectedAddressId', addressId);
-                        console.log('✅ Auto-selected address ID:', addressId);
                     }
                 } else {
                     // Find address by ID
@@ -293,7 +264,6 @@ function loadAddressInfo() {
                     populateAddressModal(response.addresses);
                 } else {
                     // ⚠️ No address available - Show Add Address Modal
-                    console.warn('⚠️ No address available - Opening Add Address Modal');
                     $('#delivery-address').html('<div class="loading-text">Đang tải địa chỉ...</div>');
                     
                     // Show modal to add address
@@ -302,8 +272,6 @@ function loadAddressInfo() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading address:', error);
-            console.error('Response:', xhr.responseJSON);
         }
     });
 }
@@ -335,11 +303,8 @@ function displayAddress(address) {
  */
 function loadShippingFee(addrId) {
     if (!addrId) {
-        console.warn('⚠️ No address ID provided, using default shipping fee');
         return;
     }
-    
-    console.log('📦 Loading shipping fee for address ID:', addrId);
     
     // Show loading state
     $('#shipping-loading').show();
@@ -350,8 +315,6 @@ function loadShippingFee(addrId) {
         method: 'GET',
         data: { addressId: addrId },
         success: function(response) {
-            console.log('✅ Shipping fee response:', response);
-            
             if (response.success) {
                 // Update shipping fee
                 shippingFee = response.fee;
@@ -363,23 +326,14 @@ function loadShippingFee(addrId) {
                 $('#shipping-duration').text(response.formattedDuration);
                 $('#shipping-detail').show();
                 
-                console.log('💰 Updated shipping fee:', shippingFee);
-                console.log('📍 Distance:', response.formattedDistance);
-                console.log('⏱️ Duration:', response.formattedDuration);
-                console.log('🏭 Warehouse:', response.warehouseName);
-                
                 // Recalculate prices
                 calculatePrices();
             } else {
-                console.error('❌ Shipping fee calculation failed:', response.message);
                 // Keep default fee
                 calculatePrices();
             }
         },
         error: function(xhr, status, error) {
-            console.error('❌ Error loading shipping fee:', error);
-            console.error('Response:', xhr.responseJSON);
-            
             // Keep default fee and show error message
             $('#shipping-fee').text(formatPrice(shippingFee) + ' (Tạm tính)');
             
@@ -443,20 +397,16 @@ function populateAddressModal(addresses) {
  * Load order vouchers và shipping vouchers
  */
 function loadVouchers() {
-    console.log('Loading vouchers...');
-    
     // Load order vouchers
     $.ajax({
         url: '/api/vouchers/order',
         method: 'GET',
         success: function(response) {
-            console.log('Order vouchers response:', response);
             if (response && response.success) {
                 renderOrderVouchers(response.data);
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading order vouchers:', error);
             $('#order-voucher-loading').html('<div style="color: #999;">Không thể tải voucher</div>');
         }
     });
@@ -466,13 +416,11 @@ function loadVouchers() {
         url: '/api/vouchers/shipping',
         method: 'GET',
         success: function(response) {
-            console.log('Shipping vouchers response:', response);
             if (response && response.success) {
                 renderShippingVouchers(response.data);
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading shipping vouchers:', error);
             $('#shipping-voucher-loading').html('<div style="color: #999;">Không thể tải voucher ship</div>');
         }
     });
@@ -482,7 +430,6 @@ function loadVouchers() {
  * Render order vouchers
  */
 function renderOrderVouchers(vouchers) {
-    console.log('🎫 Rendering order vouchers:', vouchers);
     window.orderVouchers = vouchers || [];
     
     // Hide loading
@@ -555,7 +502,6 @@ function renderOrderVouchers(vouchers) {
  * Render shipping vouchers
  */
 function renderShippingVouchers(vouchers) {
-    console.log('🚚 Rendering shipping vouchers:', vouchers);
     window.shippingVouchers = vouchers || [];
     
     // Hide loading
@@ -632,7 +578,6 @@ function renderShippingVouchers(vouchers) {
  * Load shipping companies
  */
 function loadShippingCompanies() {
-    console.log('Loading shipping companies...');
     $.ajax({
         url: '/api/shipping/companies',
         method: 'GET',
@@ -642,7 +587,6 @@ function loadShippingCompanies() {
             }
         },
         error: function(xhr, status, error) {
-            console.error('Error loading shipping companies:', error);
         }
     });
 }
@@ -651,7 +595,6 @@ function loadShippingCompanies() {
  * Render shipping companies
  */
 function renderShippingCompanies(companies) {
-    console.log('Rendering shipping companies:', companies);
     const select = $('#shippingCompanySelect');
     select.empty();
     
@@ -686,11 +629,6 @@ function calculatePrices() {
         return sum + itemTotal;
     }, 0);
     
-    console.log('Calculating prices...');
-    console.log('Subtotal:', subtotal);
-    console.log('Shipping fee:', shippingFee);
-    console.log('Discount percent:', discountPercent);
-    
     // Calculate order discount (only if using percentage)
     if (discountPercent > 0) {
         discountAmount = subtotal * (discountPercent / 100);
@@ -701,13 +639,8 @@ function calculatePrices() {
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;
     
-    console.log('Shipping discount:', shippingDiscount);
-    console.log('Final shipping fee:', finalShippingFee);
-    
     // Calculate final total
     const finalTotal = subtotal + finalShippingFee - discountAmount;
-    
-    console.log('Final total:', finalTotal);
     
     // Update UI
     $('#subtotal-price').text(formatPrice(subtotal));
@@ -790,8 +723,6 @@ function bindEventHandlers() {
             return;
         }
         
-        console.log('✅ Applying order voucher:', selectedVoucher);
-        
         // Check min order value
         if (selectedVoucher.minOrderValue && subtotal < selectedVoucher.minOrderValue) {
             alert('❌ Đơn hàng chưa đủ điều kiện áp dụng voucher này!\nYêu cầu tối thiểu: ' + formatCurrency(selectedVoucher.minOrderValue));
@@ -804,14 +735,12 @@ function bindEventHandlers() {
             const orderDiscountPercent = selectedVoucher.percent * 100;
             discountPercent = orderDiscountPercent;
 
-            console.log('💰 Order discount:', orderDiscountPercent + '%');
             alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + orderDiscountPercent + '%');
         } else {
             // FIXED_AMOUNT discount
             discountPercent = 0; // Reset percentage
             discountAmount = selectedVoucher.percent; // Use fixed amount directly
 
-            console.log('💰 Order discount:', formatCurrency(selectedVoucher.percent));
             alert('✅ Đã áp dụng voucher đơn hàng: Giảm ' + formatCurrency(selectedVoucher.percent));
         }
 
@@ -836,8 +765,6 @@ function bindEventHandlers() {
             return;
         }
         
-        console.log('✅ Applying shipping voucher:', selectedVoucher);
-        
         // Calculate shipping discount
         let shippingDiscount = 0;
         
@@ -856,11 +783,6 @@ function bindEventHandlers() {
         
         // Don't exceed shipping fee
         shippingDiscount = Math.min(shippingDiscount, shippingFee);
-        
-        console.log('💰 Shipping discount calculated:', shippingDiscount);
-        console.log('   Original shipping fee:', shippingFee);
-        console.log('   Discount amount:', shippingDiscount);
-        console.log('   Final shipping fee:', shippingFee - shippingDiscount);
         
         // Store applied shipping discount
         window.appliedShippingDiscount = shippingDiscount;
@@ -1129,8 +1051,6 @@ function showAddressFormModal(address) {
  * Initialize Goong Map in address form modal
  */
 function initAddressFormGoongMap(address) {
-    console.log('🗺️ Initializing Address Form Goong Map...');
-    
     try {
         // Initialize map
         addressFormMap = new goongjs.Map({
@@ -1139,10 +1059,6 @@ function initAddressFormGoongMap(address) {
             center: [106.6297, 10.8231], // HCM
             zoom: 13,
             attributionControl: false
-        });
-        
-        addressFormMap.on('load', function() {
-            console.log('✅ Address Form Goong Map loaded!');
         });
         
         // Add marker
@@ -1174,7 +1090,6 @@ function initAddressFormGoongMap(address) {
         });
         
     } catch (error) {
-        console.error('❌ Error initializing Goong Map:', error);
     }
 }
 
@@ -1184,8 +1099,6 @@ function initAddressFormGoongMap(address) {
 function searchGoongPlace() {
     const query = $('#mapSearchInput').val();
     if (!query) return;
-    
-    console.log('🔍 Searching:', query);
     
     fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`)
         .then(response => response.json())
@@ -1198,7 +1111,6 @@ function searchGoongPlace() {
             }
         })
         .catch(error => {
-            console.error('Search error:', error);
         });
 }
 
@@ -1226,15 +1138,13 @@ function getGoongPlaceDetail(placeId) {
                 parseGoongAddress(data.result);
             }
         })
-        .catch(error => console.error('Place detail error:', error));
+        .catch(error => {});
 }
 
 /**
  * Convert coordinates to address (Reverse Geocoding)
  */
 function updateAddressFromGoongCoords(lng, lat) {
-    console.log('🔄 Reverse geocoding:', lat, lng);
-    
     fetch(`https://rsapi.goong.io/Geocode?latlng=${lat},${lng}&api_key=${GOONG_API_KEY}`)
         .then(response => response.json())
         .then(data => {
@@ -1248,7 +1158,7 @@ function updateAddressFromGoongCoords(lng, lat) {
                 parseGoongAddress(result);
             }
         })
-        .catch(error => console.error('Geocoding error:', error));
+        .catch(error => {});
 }
 
 /**
@@ -1256,7 +1166,6 @@ function updateAddressFromGoongCoords(lng, lat) {
  */
 function parseGoongAddress(result) {
     const fullAddress = result.formatted_address || '';
-    console.log('📍 Parsing:', fullAddress);
     
     // Split by comma
     const parts = fullAddress.split(',').map(p => p.trim());
@@ -1270,8 +1179,6 @@ function parseGoongAddress(result) {
     } else {
         street = fullAddress;
     }
-    
-    console.log('✅ Parsed:', { street, city });
     
     $('#street').val(street);
     $('#city').val(city);
@@ -1296,8 +1203,6 @@ function handleSaveAddress(addressId) {
         longitude: parseFloat($('#longitude').val()) || null,
         addressType: 'HOME'
     };
-    
-    console.log('📦 Address data to send:', addressData);
     
     // Validate required fields
     if (!addressData.recipientName || !addressData.recipientPhone || !addressData.street || !addressData.city) {
@@ -1325,15 +1230,12 @@ function handleSaveAddress(addressId) {
     const url = isUpdate ? `/api/user/addresses/${addressId}` : '/api/user/addresses';
     const method = isUpdate ? 'PUT' : 'POST';
     
-    console.log('📤 Sending request:', method, url);
-    
     $.ajax({
         url: url,
         method: method,
         contentType: 'application/json',
         data: JSON.stringify(addressData),
         success: function(response) {
-            console.log('✅ Address saved:', response);
             if (response.success) {
                 alert(response.message);
                 
@@ -1372,11 +1274,6 @@ function handleSaveAddress(addressId) {
             }
         },
         error: function(xhr, status, error) {
-            console.error('❌ Error saving address:', error);
-            console.error('Response:', xhr.responseJSON);
-            console.error('Status:', xhr.status);
-            console.error('Response Text:', xhr.responseText);
-            
             let errorMessage = 'Có lỗi xảy ra khi lưu địa chỉ. Vui lòng thử lại!';
             
             // Try to get detailed error message from response
@@ -1425,8 +1322,6 @@ function handleDiscountSelection() {
  * Handle payment
  */
 function handlePayment() {
-    console.log('========== HANDLE PAYMENT DEBUG ==========');
-    
     const paymentMethod = $('input[name="paymentMethod"]:checked').val();
     const shippingCompanyId = $('#shippingCompanySelect').val();
     
@@ -1451,14 +1346,6 @@ function handlePayment() {
     const finalShippingFee = shippingFee - shippingDiscount;
     const finalTotal = subtotal + finalShippingFee - discountAmount;
     
-    console.log('💰 Payment Calculation:');
-    console.log('  Subtotal:', subtotal);
-    console.log('  Original shipping fee:', shippingFee);
-    console.log('  Shipping discount:', shippingDiscount);
-    console.log('  Final shipping fee:', finalShippingFee);
-    console.log('  Order discount amount:', discountAmount);
-    console.log('  FINAL TOTAL:', finalTotal);
-    
     // Collect selected item IDs and quantities
     const selectedItemIds = selectedItems.map(item => item.id);
     const selectedItemsData = selectedItems.map(item => ({
@@ -1472,11 +1359,6 @@ function handlePayment() {
     
     // 🔥 Get flash sale ID from sessionStorage (for Buy Now mode)
     const flashSaleId = sessionStorage.getItem('flashSaleId');
-
-    console.log('🎫 Applied Vouchers:');
-    console.log('  Order voucher ID:', orderVoucherId);
-    console.log('  Shipping voucher ID:', shippingVoucherId);
-    console.log('🔥 Flash Sale ID:', flashSaleId);
 
     const paymentData = {
         cartId: cartId ? parseInt(cartId) : null,
@@ -1495,8 +1377,6 @@ function handlePayment() {
         selectedItemsData: selectedItemsData
     };
     
-    console.log('📦 Payment Data:', paymentData);
-    
     // Show loading
     $('#btn-payment').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang xử lý...');
     
@@ -1507,33 +1387,25 @@ function handlePayment() {
         contentType: 'application/json',
         data: JSON.stringify(paymentData),
         success: function(response) {
-            console.log('✅ Payment API Response:', response);
-            
             if (response.success) {
-                console.log('🎉 Payment request successful!');
-                
                 if (response.data && response.data.paymentUrl) {
                     // PayOS payment: Save data to sessionStorage before opening payment
-                    console.log('💳 PayOS payment - saving data and opening payment window...');
-
                     // Save payment data for order creation after PayOS return
                     sessionStorage.setItem('payosPaymentData', JSON.stringify(paymentData));
                     sessionStorage.setItem('payosPaymentPending', 'true');
                     sessionStorage.setItem('payosOrderCode', response.data.payosOrderCode); // Save orderCode for verification
-
-                    console.log('✅ Data saved to sessionStorage');
-                    console.log('PayOS Order Code:', response.data.payosOrderCode);
-                    console.log('Opening PayOS payment in new window...');
 
                     // Open PayOS payment in new window/tab
                     const paymentWindow = window.open(response.data.paymentUrl, '_blank');
 
                     if (paymentWindow) {
                         // Show message to user
-                        alert('🔔 Vui lòng hoàn tất thanh toán trong cửa sổ mới.\n\nSau khi thanh toán xong, quay lại trang này và nhấn "Xác nhận đã thanh toán".');
+                        alert('🔔 Vui lòng hoàn tất thanh toán trong cửa sổ mới.\n\nSau khi thanh toán xong, đơn hàng sẽ được tạo tự động.\nVào "Đơn hàng của tôi" để kiểm tra.');
 
-                        // Show confirmation button
-                        showPaymentConfirmationButton();
+                        // Auto-redirect to order page after payment window closes
+                        setTimeout(() => {
+                            window.location.href = '/user/order/view';
+                        }, 5000); // Chờ 5 giây rồi redirect
                     } else {
                         // Popup blocked - fallback to redirect
                         alert('⚠️ Trình duyệt chặn popup. Đang chuyển hướng...');
@@ -1541,8 +1413,6 @@ function handlePayment() {
                     }
                 } else {
                     // COD payment: Order already created
-                    console.log('📦 COD payment - order created successfully!');
-
                     // Clear session storage
                     sessionStorage.removeItem('selectedItems');
                     sessionStorage.removeItem('selectedCartItems');
@@ -1560,17 +1430,11 @@ function handlePayment() {
                     window.location.href = '/user/order/view';
                 }
             } else {
-                console.error('❌ Payment failed:', response.message);
                 alert('❌ ' + (response.message || 'Có lỗi xảy ra'));
                 $('#btn-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Đặt hàng');
             }
         },
         error: function(xhr, status, error) {
-            console.error('❌ Payment API Error:');
-            console.error('  Status:', status);
-            console.error('  Error:', error);
-            console.error('  Response:', xhr.responseText);
-            
             let errorMessage = 'Có lỗi xảy ra khi thanh toán. Vui lòng thử lại!';
             
             try {
@@ -1621,8 +1485,6 @@ function showPaymentConfirmationButton() {
  * Handle payment confirmation after user completes PayOS payment
  */
 function handlePaymentConfirmation() {
-    console.log('=== User confirmed payment ===');
-
     // Check if payment data exists
     const paymentData = sessionStorage.getItem('payosPaymentData');
     const paymentPending = sessionStorage.getItem('payosPaymentPending');
@@ -1633,9 +1495,6 @@ function handlePaymentConfirmation() {
         return;
     }
 
-    console.log('Payment data found, verifying payment status...');
-    console.log('PayOS Order Code:', payosOrderCode);
-
     // Show loading - verifying
     $('#btn-confirm-payment').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang xác minh thanh toán...');
 
@@ -1645,17 +1504,11 @@ function handlePaymentConfirmation() {
         method: 'GET',
         data: { orderCode: payosOrderCode },
         success: function(verifyResponse) {
-            console.log('✅ Payment verification response:', verifyResponse);
-            console.log('Response success:', verifyResponse.success);
-            console.log('Response status:', verifyResponse.status);
-
             // Check if payment is PAID (case-insensitive)
             const isPaid = verifyResponse.status && verifyResponse.status.toUpperCase() === 'PAID';
 
             if (isPaid) {
                 // Payment verified! Now create order
-                console.log('✅ Payment verified as PAID, creating order...');
-
                 // Update loading text
                 $('#btn-confirm-payment').html('<i class="fa fa-spinner fa-spin"></i> Đang tạo đơn hàng...');
 
@@ -1672,8 +1525,6 @@ function handlePaymentConfirmation() {
                     contentType: 'application/json',
                     data: JSON.stringify(data),
                     success: function(response) {
-                        console.log('✅ Order created:', response);
-
                         if (response.success && response.data && response.data.orderId) {
                             // Clear payment data
                             sessionStorage.removeItem('payosPaymentData');
@@ -1696,7 +1547,6 @@ function handlePaymentConfirmation() {
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('❌ Failed to create order:', error);
                         alert('❌ Có lỗi khi tạo đơn hàng: ' + error);
                         $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
                     }
@@ -1704,13 +1554,11 @@ function handlePaymentConfirmation() {
 
             } else {
                 // Payment not verified
-                console.log('❌ Payment not verified:', verifyResponse.status);
                 alert('❌ ' + verifyResponse.message);
                 $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
             }
         },
         error: function(xhr, status, error) {
-            console.error('❌ Failed to verify payment:', error);
             alert('❌ Không thể xác minh trạng thái thanh toán. Vui lòng thử lại sau.');
             $('#btn-confirm-payment').prop('disabled', false).html('<i class="fa fa-check-circle"></i> Tôi đã thanh toán xong');
         }
@@ -1731,8 +1579,6 @@ function formatPrice(price) {
  * Show Add Address Modal (when user has no address)
  */
 function showAddAddressModal() {
-    console.log('📍 Opening Add Address Modal...');
-    
     // Store product page URL for cancel redirect
     const referrer = document.referrer;
     if (referrer && referrer.includes('/product/details/')) {
@@ -1748,9 +1594,6 @@ function showAddAddressModal() {
     
     // Setup form submit handler
     setupAddAddressFormHandler();
-    
-    // Note: Goong Map is initialized automatically when modal opens (see payment.html script)
-    console.log('✅ Goong Map will be initialized when modal is shown');
 }
 
 /**
@@ -1758,8 +1601,6 @@ function showAddAddressModal() {
  */
 function setupCancelAddressHandlers() {
     const handleCancel = function() {
-        console.log('❌ User cancelled adding address');
-        
         // Get return URL
         const returnUrl = sessionStorage.getItem('returnToProduct') || document.referrer;
         
@@ -1783,7 +1624,6 @@ function setupCancelAddressHandlers() {
 function setupAddAddressFormHandler() {
     $('#paymentAddAddressForm').off('submit').on('submit', function(e) {
         e.preventDefault();
-        console.log('📝 Submitting add address form...');
         
         // Get form data - MATCH Backend DTO fields exactly!
         const selectedAddr = $('#paymentSelectedAddress').val() || '';
@@ -1804,17 +1644,6 @@ function setupAddAddressFormHandler() {
             longitude: parseFloat($('#paymentLongitude').val()) || null
         };
         
-        console.log('📋 Form data to submit:', formData);
-        console.log('  - recipientName:', formData.recipientName);
-        console.log('  - recipientPhone:', formData.recipientPhone);
-        console.log('  - selectedAddress:', formData.selectedAddress);
-        console.log('  - street:', formData.street);
-        console.log('  - city:', formData.city);
-        console.log('  - addressType:', formData.addressType);
-        console.log('  - isDefault:', formData.isDefault);
-        console.log('  - latitude:', formData.latitude);
-        console.log('  - longitude:', formData.longitude);
-        
         // Validate - Check required fields
         if (!formData.recipientName || !formData.recipientPhone || !formData.selectedAddress || !formData.street || !formData.city) {
             alert('Vui lòng điền đầy đủ thông tin bắt buộc (Tên, SĐT, Địa chỉ, Số nhà, Tỉnh/TP)!');
@@ -1828,8 +1657,6 @@ function setupAddAddressFormHandler() {
             contentType: 'application/json',
             data: JSON.stringify(formData),
             success: function(response) {
-                console.log('✅ Address added successfully:', response);
-                
                 if (response.success) {
                     alert('✅ Thêm địa chỉ thành công!');
                     
@@ -1849,11 +1676,6 @@ function setupAddAddressFormHandler() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('❌ Error adding address:', error);
-                console.error('Status:', xhr.status);
-                console.error('Response:', xhr.responseText);
-                console.error('Full XHR:', xhr);
-                
                 // Try to parse error message
                 let errorMessage = 'Có lỗi xảy ra khi thêm địa chỉ. Vui lòng thử lại!';
                 try {
@@ -1973,8 +1795,6 @@ function confirmVoucherSelection() {
     
     // Success message
     alert(`✅ Đã áp dụng voucher: ${voucher.name} (-${(voucher.percent * 100).toFixed(0)}%)`);
-    
-    console.log('Voucher applied:', voucher);
 }
 
 /**
