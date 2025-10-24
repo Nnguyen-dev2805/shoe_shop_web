@@ -67,6 +67,9 @@
     <!-- Newsletter CSS
     ============================================ -->
     <link rel="stylesheet" href="/css/newsletter.css">
+    <!-- Best Sellers CSS
+    ============================================ -->
+    <link rel="stylesheet" href="/css/best-sellers.css">
     <!-- modernizr JS
     ============================================ -->
     <script src="/js/vendor/modernizr-2.8.3.min.js"></script>
@@ -193,62 +196,36 @@
 <!-- products area end -->
 
 <!-- favorite products area start -->
-<div class="features-product-area">
+<div class="best-sellers-section">
     <div class="container">
-        <!-- NEW HEADING - With top border -->
-        <div class="row">
-            <div class="col-md-12">
-                <div style="text-align: center; margin-bottom: 40px; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
-                    <h2 style="font-size: 28px; font-weight: 700; color: #333; margin: 0 0 8px 0; border: none; padding: 0;">
-                        <i class="fa fa-fire" style="color: #ee4d2d; margin-right: 10px;"></i>
-                        TOP SẢN PHẨM BÁN CHẠY
-                        <i class="fa fa-fire" style="color: #ee4d2d; margin-left: 10px;"></i>
-                    </h2>
-                    <p style="color: #666; font-size: 14px; margin: 0;">
-                        Những sản phẩm được yêu thích nhất
-                    </p>
-                </div>
-            </div>
+        <!-- Header -->
+        <div class="best-sellers-header">
+            <h2>
+                <i class="fa fa-fire fire-icon"></i>
+                TOP SẢN PHẨM BÁN CHẠY
+                <i class="fa fa-fire fire-icon"></i>
+            </h2>
+            <p>Những sản phẩm được khách hàng yêu thích và mua nhiều nhất</p>
         </div>
-        <div class="row">
-            <div class="feature-product-slider carousel-margin">
-                <div class="col" th:each="ratedProduct : ${ratedProducts}">
-                    <div class="single-product">
-                        <div class="level-pro-new">
-                            <span>Favorite</span>
-                        </div>
-                        <div class="product-img">
-                            <a th:href="@{/product/details/{id}(id=${ratedProduct.id})}">
-                                <img th:src="${ratedProduct.image}" alt="" class="primary-img">
-                                <!--                                        <img src="img/product/2.png" alt="" class="secondary-img">-->
-                            </a>
-                        </div>
-                        <div class="product-name">
-                            <a th:href="@{/product/details/{id}(id=${ratedProduct.id})}"
-                               th:title="${ratedProduct.title}" th:text="${ratedProduct.title}"></a>
-                        </div>
-                        <div class="price-rating">
-                            <!--                                    <span class="old-price">$700.00</span>-->
-                            <span class="formatted-price" th:text="${ratedProduct.price}"></span>
-                            <div class="ratings">
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <!--                                        <i th:text=""></i>-->
-                            </div>
-                        </div>
-                        <!--                                <div class="actions">-->
-                        <!--                                    <button type="submit" class="cart-btn" title="Add to cart">add to cart</button>-->
-                        <!--                                    <ul class="add-to-link">-->
-                        <!--                                        <li><a class="modal-view" data-target="#productModal" data-bs-toggle="modal" href="#"> <i class="fa fa-search"></i></a></li>-->
-                        <!--                                        <li><a href="#"> <i class="fa fa-heart-o"></i></a></li>-->
-                        <!--                                        <li><a href="#"> <i class="fa fa-refresh"></i></a></li>-->
-                        <!--                                    </ul>-->
-                        <!--                                </div>-->
-                    </div>
-                </div>
+
+        <!-- Loading State -->
+        <div class="best-sellers-loading" id="bestSellersLoading">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Đang tải sản phẩm bán chạy...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div class="best-sellers-empty" id="bestSellersEmpty" style="display: none;">
+            <div class="empty-icon">
+                <i class="fa fa-inbox"></i>
+            </div>
+            <p>Chưa có dữ liệu sản phẩm bán chạy</p>
+        </div>
+
+        <!-- Products Container -->
+        <div class="row" style="display: none;" id="bestSellersContainer">
+            <div class="best-sellers-slider owl-carousel owl-theme" id="bestSellersList">
+                <!-- Products will be loaded via AJAX -->
             </div>
         </div>
     </div>
@@ -455,6 +432,9 @@
 
 <!-- Header Cart Badge JavaScript (Require jQuery) -->
 <script src="/js/header-cart.js?v=2"></script>
+
+<!-- Best Sellers JavaScript -->
+<script src="/js/web/best-sellers.js"></script>
 
 <script>
     function toggleHeart(element) {

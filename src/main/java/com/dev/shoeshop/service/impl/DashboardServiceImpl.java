@@ -120,6 +120,8 @@ public class DashboardServiceImpl implements DashboardService {
                         .productImage((String) result[2])
                         .quantitySold(((Number) result[3]).longValue())
                         .totalRevenue((Double) result[4])
+                        .averageRating((Double) result[5])  // NEW: Rating
+                        .totalReviews(result[6] != null ? ((Number) result[6]).longValue() : 0L)  // NEW: Review count
                         .build())
                 .collect(Collectors.toList());
     }
@@ -136,6 +138,8 @@ public class DashboardServiceImpl implements DashboardService {
                         .productImage((String) result[2])
                         .quantitySold(((Number) result[3]).longValue())
                         .totalRevenue((Double) result[4])
+                        .averageRating((Double) result[5])  // NEW: Rating
+                        .totalReviews(result[6] != null ? ((Number) result[6]).longValue() : 0L)  // NEW: Review count
                         .build())
                 .collect(Collectors.toList());
     }

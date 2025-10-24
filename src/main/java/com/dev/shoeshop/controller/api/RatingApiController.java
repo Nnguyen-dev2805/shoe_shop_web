@@ -59,4 +59,28 @@ public class RatingApiController {
             return ResponseEntity.status(500).body(response);
         }
     }
+    
+    /**
+     * Update rating statistics for all products (Admin endpoint)
+     */
+    @PostMapping("/update-statistics")
+    public ResponseEntity<Map<String, Object>> updateAllRatingStatistics() {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            int updatedCount = ratingService.updateAllProductRatingStatistics();
+            
+            response.put("success", true);
+            response.put("message", "Đã cập nhật rating statistics thành công");
+            response.put("updatedCount", updatedCount);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("Error updating rating statistics: " + e.getMessage());
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Lỗi khi cập nhật rating statistics: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
 }

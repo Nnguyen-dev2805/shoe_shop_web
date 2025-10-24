@@ -77,7 +77,56 @@ public class RatingServiceImpl implements RatingService {
                              ", Star: " + savedRating.getStar() + 
                              ", Comment: " + savedRating.getComment() + 
                              ", Image: " + savedRating.getImage());
+            
+            // ✅ Update Product statistics after saving rating
+            updateProductRatingStatistics(orderDetail.getProduct().getProduct().getId());
         }
+    }
+    
+    /**
+     * Update Product rating statistics (average rating, total reviews)
+     */
+    @Transactional
+    private void updateProductRatingStatistics(Long productId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        
+        List<Rating> allRatings = ratingRepository.findByProductIdOrderByCreatedDateDesc(productId);
+        
+        if (allRatings.isEmpty()) {
+            product.setAverage_rating(0.0);
+            product.setTotal_reviews(0L);
+            product.setAverage_stars(0.0);
+            product.setTotal_reviewers(0L);
+            product.setTotal_stars(0L);
+        } else {
+            // Calculate total reviews
+            long totalReviews = allRatings.size();
+            
+            // Calculate average rating
+            double averageRating = allRatings.stream()
+                    .mapToInt(Rating::getStar)
+                    .average()
+                    .orElse(0.0);
+            
+            // Calculate total stars
+            long totalStars = allRatings.stream()
+                    .mapToInt(Rating::getStar)
+                    .sum();
+            
+            // Update Product fields
+            product.setAverage_rating(averageRating);
+            product.setTotal_reviews(totalReviews);
+            product.setAverage_stars(averageRating);  // Same as average_rating
+            product.setTotal_reviewers(totalReviews); // Same as total_reviews
+            product.setTotal_stars(totalStars);
+        }
+        
+        productRepository.save(product);
+        
+        System.out.println("✅ Updated Product ID " + productId + 
+                         " - Average Rating: " + product.getAverage_rating() + 
+                         ", Total Reviews: " + product.getTotal_reviews());
     }
     
     @Override
@@ -183,6 +232,31 @@ public class RatingServiceImpl implements RatingService {
         return ratings.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
+    }
+    
+    @Override
+    @Transactional
+    public int updateAllProductRatingStatistics() {
+        // Lấy danh sách tất cả product IDs có rating
+        List<Long> productIds = ratingRepository.findAll().stream()
+                .map(rating -> rating.getProduct().getId())
+                .distinct()
+                .collect(Collectors.toList());
+        
+        System.out.println("🔄 Updating rating statistics for " + productIds.size() + " products...");
+        
+        int updatedCount = 0;
+        for (Long productId : productIds) {
+            try {
+                updateProductRatingStatistics(productId);
+                updatedCount++;
+            } catch (Exception e) {
+                System.err.println("❌ Error updating product " + productId + ": " + e.getMessage());
+            }
+        }
+        
+        System.out.println("✅ Successfully updated " + updatedCount + " products");
+        return updatedCount;
     }
     
     private RatingResponseDTO convertToDTO(Rating rating) {

@@ -1,7 +1,9 @@
 package com.dev.shoeshop.controller.web.api;
 
+import com.dev.shoeshop.dto.dashboard.TopProductDTO;
 import com.dev.shoeshop.dto.pagination.PaginationResponse;
 import com.dev.shoeshop.dto.product.ProductResponse;
+import com.dev.shoeshop.service.DashboardService;
 import com.dev.shoeshop.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +22,7 @@ import java.util.List;
 public class ApiHomeController {
 
     private final ProductService productService;
+    private final DashboardService dashboardService;
 
     /**
      * Get products with pagination and optional search
@@ -113,6 +116,25 @@ public class ApiHomeController {
         try {
             List<ProductResponse> products = productService.getAllProductsList();
             return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
+
+    /**
+     * Get top best-selling products
+     * Endpoint: GET /api/shop/best-sellers
+     * @param limit - number of products to return (default: 10)
+     */
+    @GetMapping("/best-sellers")
+    public ResponseEntity<List<TopProductDTO>> getBestSellingProducts(
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        try {
+            // Lấy top sản phẩm bán chạy nhất (không giới hạn thời gian)
+            List<TopProductDTO> bestSellers = dashboardService.getProductsByQuantity(null, null, limit);
+            return ResponseEntity.ok(bestSellers);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);

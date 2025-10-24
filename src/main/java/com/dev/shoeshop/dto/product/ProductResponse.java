@@ -16,6 +16,10 @@ public class ProductResponse {
     private String brandName;
     private Long soldQuantity;  // ← NEW: Số lượng đã bán
     
+    // ========== RATING & REVIEW FIELDS ==========
+    private Double averageRating;  // Điểm rating trung bình
+    private Long totalReviews;     // Tổng số đánh giá
+    
     // ========== FLASH SALE FIELDS ==========
     private FlashSaleInfo flashSale;  // Thông tin flash sale nếu product đang trong flash sale
     

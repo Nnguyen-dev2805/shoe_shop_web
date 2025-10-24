@@ -291,7 +291,7 @@ function renderProducts(products) {
                             <!-- Rating và Đã bán (theo style Shopee) -->
                             <div style="display: flex; align-items: center; gap: 10px; font-size: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                                 <span style="color: #FFB400; font-weight: 400; display: flex; align-items: center; gap: 2px;">
-                                    <i class="fa fa-star" style="font-size: 11px;"></i> 5.0
+                                    <i class="fa fa-star" style="font-size: 11px;"></i> ${product.averageRating ? product.averageRating.toFixed(1) : '0.0'}
                                 </span>
                                 <span style="color: #757575; font-weight: 400;">Đã bán ${formatSoldQuantity(product.soldQuantity || 0)}</span>
                             </div>
