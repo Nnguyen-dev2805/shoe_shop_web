@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Chi Tiết Sản Phẩm | Deeg Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hệ thống quản lý sản phẩm Deeg" />
+    <meta name="author" content="Deeg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}">
+
+    <!-- Vendor css (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Icons css (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App css (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Manager Custom CSS -->
+    <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config js (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <div th:include="~{fragments/manager/header.html}"></div>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- Start menu app -->
+    <div th:include="~{fragments/manager/menu_app.html}"></div>
+
+    <!-- ==================================================== -->
+    <!-- Start Content Area -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <!-- Start Page Title -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div>
+                            <h4 class="mb-1">
+                                <iconify-icon icon="solar:box-bold-duotone" class="me-2 text-primary"></iconify-icon>
+                                Chi Tiết Sản Phẩm
+                            </h4>
+                            <p class="text-muted mb-0">Thông tin chi tiết và quản lý kho hàng</p>
+                        </div>
+                        <div>
+                            <a href="/manager/products" class="btn btn-secondary">
+                                <iconify-icon icon="solar:arrow-left-bold-duotone" class="me-1"></iconify-icon>
+                                Quay lại
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- End Page Title -->
+
+            <!-- Loading State -->
+            <div id="loading-container" class="row">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                    <p class="text-muted mt-3">Đang tải thông tin sản phẩm...</p>
+                </div>
+            </div>
+
+            <!-- Product Detail Container -->
+            <div id="product-detail-container" style="display: none;">
+                <div class="row">
+                    <!-- Product Image and Basic Info -->
+                    <div class="col-lg-5 col-xl-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="product-image-container mb-3">
+                                    <img id="product-image" src="" alt="" class="img-fluid rounded" style="width: 100%; height: auto;">
+                                </div>
+                                <div class="text-center">
+                                    <h4 id="product-title" class="fw-bold mb-2"></h4>
+                                    <p class="text-muted mb-3">
+                                        <span id="product-category"></span> - <span id="product-brand"></span>
+                                    </p>
+                                    <div class="mb-3">
+                                        <h3 id="product-price" class="text-primary fw-bold"></h3>
+                                    </div>
+                                    <div class="d-flex justify-content-center gap-3 mb-3">
+                                        <div>
+                                            <div id="product-rating" class="product-rating"></div>
+                                            <small class="text-muted">(<span id="total-reviews">0</span> đánh giá)</small>
+                                        </div>
+                                    </div>
+                                    <div id="stock-status" class="alert" role="alert"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Product Details and Size Table -->
+                    <div class="col-lg-7 col-xl-8">
+                        <!-- Description Card -->
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <iconify-icon icon="solar:document-text-bold-duotone" class="me-2"></iconify-icon>
+                                    Mô Tả Sản Phẩm
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <p id="product-description" class="text-muted"></p>
+                            </div>
+                        </div>
+
+                        <!-- Size and Stock Information -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <iconify-icon icon="solar:ruler-bold-duotone" class="me-2"></iconify-icon>
+                                    Kích Cỡ và Số Lượng Tồn Kho
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>STT</th>
+                                                <th>Kích Cỡ (Size)</th>
+                                                <th>Giá Cộng Thêm</th>
+                                                <th>Số Lượng Tồn</th>
+                                                <th>Trạng Thái</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="size-table-body">
+                                            <!-- Size data will be loaded here -->
+                                        </tbody>
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <th colspan="3" class="text-end">Tổng Số Lượng:</th>
+                                                <th id="total-stock" class="text-primary fw-bold">0</th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Flash Sale Info (if applicable) -->
+                        <div id="flash-sale-card" class="card mt-3" style="display: none;">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="card-title mb-0">
+                                    <iconify-icon icon="solar:fire-bold-duotone" class="me-2"></iconify-icon>
+                                    Thông Tin Flash Sale
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Giá Flash Sale:</strong>
+                                        <span id="flash-sale-price" class="text-danger ms-2"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Giảm giá:</strong>
+                                        <span id="discount-percent" class="text-danger ms-2"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Số lượng còn lại:</strong>
+                                        <span id="flash-sale-remaining" class="ms-2"></span>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <strong>Đã bán:</strong>
+                                        <span id="flash-sale-sold" class="ms-2"></span>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="progress mt-2" style="height: 25px;">
+                                            <div id="flash-sale-progress" class="progress-bar bg-danger" role="progressbar" style="width: 0%">
+                                                <span id="flash-sale-progress-text">0%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics Card -->
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <iconify-icon icon="solar:chart-bold-duotone" class="me-2"></iconify-icon>
+                                    Thống Kê
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row text-center">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <iconify-icon icon="solar:box-bold-duotone" class="fs-1 text-primary mb-2"></iconify-icon>
+                                            <h4 id="stat-total-stock" class="mb-0 fw-bold">0</h4>
+                                            <span class="text-muted">Tổng Tồn Kho</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <iconify-icon icon="solar:cart-check-bold-duotone" class="fs-1 text-success mb-2"></iconify-icon>
+                                            <h4 id="stat-sold-quantity" class="mb-0 fw-bold">0</h4>
+                                            <span class="text-muted">Đã Bán</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="d-flex flex-column">
+                                            <iconify-icon icon="solar:star-bold-duotone" class="fs-1 text-warning mb-2"></iconify-icon>
+                                            <h4 id="stat-avg-rating" class="mb-0 fw-bold">0.0</h4>
+                                            <span class="text-muted">Đánh Giá TB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Container -->
+            <div id="error-container" style="display: none;">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card border-danger">
+                            <div class="card-body text-center py-5">
+                                <iconify-icon icon="solar:danger-circle-bold-duotone" class="fs-48 text-danger mb-3"></iconify-icon>
+                                <h5 class="text-danger mb-3">Không thể tải thông tin sản phẩm</h5>
+                                <p class="text-muted mb-3">Vui lòng thử lại hoặc quay về danh sách sản phẩm</p>
+                                <div>
+                                    <button class="btn btn-primary me-2" onclick="loadProductDetail()">
+                                        <iconify-icon icon="solar:refresh-bold-duotone" class="me-1"></iconify-icon>
+                                        Thử lại
+                                    </button>
+                                    <a href="/manager/products" class="btn btn-secondary">
+                                        <iconify-icon icon="solar:arrow-left-bold-duotone" class="me-1"></iconify-icon>
+                                        Quay lại danh sách
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- container-xxl -->
+
+    </div> <!-- page-content -->
+
+    <!-- Footer Start -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <script>document.write(new Date().getFullYear())</script> © Deeg Manager. Design by <b>Coderthemes</b>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- end Footer -->
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor js -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+
+<!-- App js -->
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- Manager Product Detail JavaScript -->
+<script th:src="@{/js/manager/manager-product-detail.js}"></script>
+
+</body>
+</html>
