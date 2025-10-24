@@ -100,24 +100,38 @@ function displayOrders(orders, currentStatus) {
     // Build orders HTML
     let ordersHTML = '';
     orders.forEach(function(order) {
-        ordersHTML += createOrderCard(order);
+        ordersHTML += createOrderCard(order, currentStatus);
     });
     
     ordersList.html(ordersHTML);
     ordersList.show();
     ordersEmpty.hide();
+    
+    // Bind cancel order events after rendering
+    bindCancelOrderEvents();
 }
 
 // Create order card HTML
-function createOrderCard(order) {
+function createOrderCard(order, currentStatus) {
     const statusClass = getStatusClass(order.status);
     const statusText = getStatusText(order.status);
     const payOptionText = getPayOptionText(order.payOption);
     const formattedDate = formatDate(order.createdDate);
     const formattedPrice = formatPrice(order.totalPrice);
     
+    // Tạo nút hủy đơn hàng nếu đang ở tab IN_STOCK
+    let cancelButton = '';
+    if (currentStatus === 'IN_STOCK' && order.status === 'IN_STOCK') {
+        cancelButton = `
+            <button class="btn-cancel-order" data-order-id="${order.id}" 
+                    style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 4px; border: none; font-size: 13px; font-weight: 500; cursor: pointer; margin-left: 10px; transition: all 0.3s ease;">
+                <i class="fa fa-times"></i> Hủy đơn
+            </button>
+        `;
+    }
+    
     return `
-        <div class="order-card">
+        <div class="order-card" data-order-id="${order.id}">
             <div class="order-header">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div>
@@ -145,11 +159,12 @@ function createOrderCard(order) {
                             <i class="fa fa-credit-card"></i> Thanh toán: ${payOptionText}
                         </p>
                     </div>
-                    <div>
+                    <div style="display: flex; align-items: center;">
                         <a href="/user/order-detail/${order.id}" 
                            style="background: #ee4d2d; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-block; transition: all 0.3s ease;">
                             <i class="fa fa-eye"></i> Xem chi tiết
                         </a>
+                        ${cancelButton}
                     </div>
                 </div>
             </div>
@@ -236,4 +251,60 @@ function showError(message) {
     `;
     
     $('.orders-content').append(errorHTML);
+}
+
+// Bind cancel order events
+function bindCancelOrderEvents() {
+    $('.btn-cancel-order').off('click').on('click', function() {
+        const orderId = $(this).data('order-id');
+        handleCancelOrder(orderId);
+    });
+}
+
+// Handle cancel order
+function handleCancelOrder(orderId) {
+    // Xác nhận trước khi hủy
+    if (!confirm('Bạn có chắc chắn muốn hủy đơn hàng #' + orderId + '?')) {
+        return;
+    }
+    
+    // Disable button và hiển thị loading
+    const button = $(`.btn-cancel-order[data-order-id="${orderId}"]`);
+    const originalText = button.html();
+    button.prop('disabled', true);
+    button.html('<i class="fa fa-spinner fa-spin"></i> Đang xử lý...');
+    
+    // Gọi API hủy đơn hàng
+    $.ajax({
+        url: `/user/api/orders/${orderId}/cancel`,
+        method: 'POST',
+        dataType: 'json',
+        success: function(response) {
+            if (response.success) {
+                // Hiển thị thông báo thành công
+                alert('Hủy đơn hàng thành công!');
+                
+                // Reload orders để cập nhật UI
+                const currentStatus = $('.tab-link.active').data('status');
+                loadOrdersByStatus(currentStatus);
+                loadOrderCounts();
+            } else {
+                alert('Lỗi: ' + (response.message || 'Không thể hủy đơn hàng'));
+                button.prop('disabled', false);
+                button.html(originalText);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error canceling order:', error);
+            let errorMessage = 'Có lỗi xảy ra khi hủy đơn hàng. Vui lòng thử lại sau.';
+            
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            }
+            
+            alert('Lỗi: ' + errorMessage);
+            button.prop('disabled', false);
+            button.html(originalText);
+        }
+    });
 }
