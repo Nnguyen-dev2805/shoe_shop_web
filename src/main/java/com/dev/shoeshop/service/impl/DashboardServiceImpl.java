@@ -3,6 +3,7 @@ package com.dev.shoeshop.service.impl;
 import com.dev.shoeshop.dto.dashboard.*;
 import com.dev.shoeshop.entity.ProductDetail;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.InventoryHistoryRepository;
 import com.dev.shoeshop.repository.InventoryRepository;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.repository.OrderRepository;
@@ -28,6 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
     private final InventoryRepository inventoryRepository;
+    private final InventoryHistoryRepository inventoryHistoryRepository;
     
     @Override
     public DashboardStatsDTO getDashboardStats(Date startDate, Date endDate) {
@@ -48,13 +50,18 @@ public class DashboardServiceImpl implements DashboardService {
         List<TopProductDTO> topProducts = getTopProducts(10, startDate, endDate);
         
         // ✅ NEW: Calculate Inventory & Profit Stats
+        // 📦 Inventory Value: Giá trị tồn kho bán (selling price) - Không đổi
+        // 💰 Inventory Cost (Giá Nhập Hàng):
+        //    - Không lọc: Tổng giá nhập TẤT CẢ lô từ trước tới nay
+        //    - Có lọc: Tổng giá nhập trong khoảng thời gian filter
+        // 💵 Profit: Lợi nhuận từ đơn hàng (filter theo date)
         Double totalInventoryValue = calculateTotalInventoryValue();
-        Double totalCOGS = calculateTotalCOGS();
-        Double totalProfit = calculateTotalProfit();
+        Double totalInventoryCost = calculateInventoryCost(startDate, endDate);
+        Double totalProfit = calculateTotalProfit(startDate, endDate);
         Double profitMargin = (totalRevenue != null && totalRevenue > 0) 
             ? (totalProfit / totalRevenue) * 100 : 0.0;
-        Double avgROI = (totalCOGS != null && totalCOGS > 0) 
-            ? ((totalRevenue - totalCOGS) / totalCOGS) * 100 : 0.0;
+        Double avgROI = (totalInventoryCost != null && totalInventoryCost > 0) 
+            ? ((totalRevenue - totalInventoryCost) / totalInventoryCost) * 100 : 0.0;
         
         return DashboardStatsDTO.builder()
                 .totalOrders(totalOrders)
@@ -65,7 +72,7 @@ public class DashboardServiceImpl implements DashboardService {
                 .totalInventoryValue(totalInventoryValue)
                 .totalProfit(totalProfit)
                 .profitMargin(profitMargin)
-                .totalCOGS(totalCOGS)
+                .totalCOGS(totalInventoryCost)  // Đổi tên: COGS → Inventory Cost
                 .avgROI(avgROI)
                 // Existing
                 .ordersByStatus(ordersByStatus)
@@ -489,6 +496,10 @@ public class DashboardServiceImpl implements DashboardService {
     /**
      * Tính tổng giá trị tồn kho hiện tại
      * Công thức: Tổng (Giá sản phẩm × Số lượng còn lại)
+     * 
+     * ⚠️ LƯU Ý: Giá trị tồn kho KHÔNG FILTER theo date range
+     * Lý do: Tồn kho là snapshot hiện tại, không phụ thuộc vào khoảng thời gian lọc
+     * Khi filter theo date, các metrics khác (revenue, profit) sẽ thay đổi nhưng inventory giữ nguyên
      */
     private Double calculateTotalInventoryValue() {
         try {
@@ -511,17 +522,36 @@ public class DashboardServiceImpl implements DashboardService {
     }
     
     /**
-     * Tính tổng giá vốn hàng đã bán (COGS - Cost of Goods Sold)
-     * Công thức: Tổng (Giá nhập lúc bán × Số lượng)
+     * Tính Tổng Giá Nhập Hàng
+     * 
+     * - KHÔNG FILTER (startDate = null, endDate = null):
+     *   → Tổng giá nhập TẤT CẢ lô hàng từ trước tới nay
+     *   → Công thức: Tổng (costPrice × quantity) từ ALL InventoryHistory
+     * 
+     * - CÓ FILTER (startDate hoặc endDate != null):
+     *   → Tổng giá nhập trong khoảng thời gian filter
+     *   → Công thức: Tổng (costPrice × quantity) từ InventoryHistory (filtered)
+     * 
+     * @param startDate Ngày bắt đầu (nullable)
+     * @param endDate Ngày kết thúc (nullable)
      */
-    private Double calculateTotalCOGS() {
+    private Double calculateInventoryCost(Date startDate, Date endDate) {
         try {
-            return orderDetailRepository.findAll().stream()
-                    .filter(od -> od.getCostPriceAtSale() != null && od.getCostPriceAtSale() > 0)
-                    .mapToDouble(od -> od.getCostPriceAtSale() * od.getQuantity())
-                    .sum();
+            return inventoryHistoryRepository.findAll().stream()
+                .filter(history -> {
+                    // CÓ FILTER → Lọc theo date range (>= startDate && <= endDate)
+                    if (startDate != null || endDate != null) {
+                        Date importDate = java.sql.Timestamp.valueOf(history.getImportDate());
+                        if (startDate != null && importDate.compareTo(startDate) < 0) return false;
+                        if (endDate != null && importDate.compareTo(endDate) > 0) return false;
+                    }
+                    // KHÔNG FILTER → Lấy tất cả (không filter gì cả)
+                    return history.getCostPrice() != null && history.getQuantity() != null;
+                })
+                .mapToDouble(history -> history.getCostPrice() * history.getQuantity())
+                .sum();
         } catch (Exception e) {
-            log.error("Lỗi khi tính giá vốn hàng bán: {}", e.getMessage());
+            log.error("Lỗi khi tính tổng giá nhập hàng: {}", e.getMessage());
             return 0.0;
         }
     }
@@ -529,11 +559,30 @@ public class DashboardServiceImpl implements DashboardService {
     /**
      * Tính tổng lợi nhuận
      * Công thức: Tổng (Giá bán - Giá vốn) × Số lượng
-     * Nếu có profit đã tính thì dùng, không thì tính thủ công
+     * 
+     * ⭐ CHỈ TÍNH ĐƠN HÀNG CÓ STATUS = DELIVERED
+     * 
+     * @param startDate Ngày bắt đầu filter (nullable)
+     * @param endDate Ngày kết thúc filter (nullable)
      */
-    private Double calculateTotalProfit() {
+    private Double calculateTotalProfit(Date startDate, Date endDate) {
         try {
             return orderDetailRepository.findAll().stream()
+                    .filter(od -> {
+                        // ✅ CHỈ TÍNH ĐƠN HÀNG ĐÃ GIAO THÀNH CÔNG
+                        if (od.getOrder().getStatus() != ShipmentStatus.DELIVERED) {
+                            return false;
+                        }
+                        
+                        // Filter by date range (>= startDate && <= endDate)
+                        if (startDate != null || endDate != null) {
+                            Date orderDate = od.getOrder().getCreatedDate();
+                            if (orderDate == null) return false;
+                            if (startDate != null && orderDate.compareTo(startDate) < 0) return false;
+                            if (endDate != null && orderDate.compareTo(endDate) > 0) return false;
+                        }
+                        return true;
+                    })
                     .mapToDouble(od -> {
                         // Nếu đã có profit tính sẵn thì dùng
                         if (od.getProfit() != null) {
