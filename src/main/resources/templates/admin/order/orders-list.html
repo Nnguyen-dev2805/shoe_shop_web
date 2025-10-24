@@ -142,17 +142,19 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="row">
           <div class="col-xl-12">
             <div class="card">
               <div class="d-flex card-header justify-content-between align-items-center">
                 <div>
                   <h4 class="card-title">All Order List</h4>
                 </div>
-                <div style="display: flex; align-content: center">
-                  <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()" style="margin-left: 10px">
+                <div style="display: flex; align-content: center; gap: 10px;">
+                  <input type="number" class="form-control form-control-sm" id="searchOrderId" placeholder="Tìm theo mã đơn" style="width: 180px;">
+                  <button class="btn btn-sm btn-primary" onclick="searchByOrderId()">
+                    <iconify-icon icon="solar:magnifier-bold-duotone" class="me-1"></iconify-icon>
+                    Tìm
+                  </button>
+                  <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()">
                     <option value="">All</option>
                     <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">Shipped</option>
                     <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL}">Cancel</option>
@@ -164,7 +166,6 @@
                     window.onload = function () {
                       const urlParams = new URLSearchParams(window.location.search);
                       const status = urlParams.get('status'); // Lấy giá trị 'status' từ URL
-
                       if (status) {
                         const selectElement = document.getElementById("orderStatus");
                         selectElement.value = status; // Đặt lại giá trị cho combobox
@@ -181,6 +182,27 @@
                       // Chuyển hướng đến trang web khác
                       window.location.href = `/admin/order/list?status=${selectedValue}`;
                     }
+                    
+                    function searchByOrderId() {
+                      const searchInput = document.getElementById("searchOrderId");
+                      const orderId = searchInput.value.trim();
+                      
+                      if (orderId) {
+                        window.location.href = `/admin/order/list?orderId=${orderId}`;
+                      }
+                    }
+                    
+                    // Allow enter key to search
+                    document.addEventListener('DOMContentLoaded', function() {
+                      const searchInput = document.getElementById("searchOrderId");
+                      if (searchInput) {
+                        searchInput.addEventListener('keypress', function(e) {
+                          if (e.key === 'Enter') {
+                            searchByOrderId();
+                          }
+                        });
+                      }
+                    });
 
                   </script>
                 </div>

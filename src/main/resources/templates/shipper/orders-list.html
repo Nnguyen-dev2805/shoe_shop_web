@@ -180,7 +180,13 @@
                                              <iconify-icon icon="solar:bag-smile-bold-duotone" class="text-primary me-2 fs-20"></iconify-icon>
                                              <h4 class="card-title mb-0">Danh Sách Đơn Hàng</h4>
                                         </div>
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                             <div class="input-group input-group-sm" style="width: 200px;">
+                                                  <input type="number" class="form-control" id="searchOrderId" placeholder="Tìm theo mã...">
+                                                  <button class="btn btn-primary" type="button" onclick="searchByOrderId()">
+                                                       <iconify-icon icon="solar:magnifier-bold-duotone"></iconify-icon>
+                                                  </button>
+                                             </div>
                                              <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()">
                                                   <option value="">Tất Cả</option>
                                                   <option th:value="${T(com.dev.shoeshop.enums.ShipmentStatus).SHIPPED}">Đang Giao</option>
@@ -212,6 +218,67 @@
                                                        // Chuyển hướng đến trang web khác
                                                        window.location.href = `/shipper/order/list?status=${selectedValue}`;
                                                   }
+                                                  
+                                                  function searchByOrderId() {
+                                                       const searchInput = document.getElementById("searchOrderId");
+                                                       const orderId = searchInput.value.trim();
+                                                       
+                                                       if (!orderId) {
+                                                            showNotification('Vui lòng nhập mã đơn hàng', 'warning');
+                                                            return;
+                                                       }
+                                                       
+                                                       // Check if order exists and belongs to this shipper
+                                                       $.ajax({
+                                                            url: '/shipper/order/check/' + orderId,
+                                                            method: 'GET',
+                                                            success: function(response) {
+                                                                 if (response && response.exists) {
+                                                                      window.location.href = `/shipper/order/detail/${orderId}`;
+                                                                 } else {
+                                                                      showNotification('Không tìm thấy đơn hàng với mã #' + orderId, 'error');
+                                                                      searchInput.value = '';
+                                                                 }
+                                                            },
+                                                            error: function(xhr, status, error) {
+                                                                 showNotification('Không tìm thấy đơn hàng với mã #' + orderId, 'error');
+                                                                 searchInput.value = '';
+                                                            }
+                                                       });
+                                                  }
+                                                  
+                                                  function showNotification(message, type) {
+                                                       const alertClass = type === 'error' ? 'alert-danger' : (type === 'warning' ? 'alert-warning' : 'alert-success');
+                                                       const iconClass = type === 'error' ? 'solar:close-circle-bold' : 
+                                                                       (type === 'warning' ? 'solar:info-circle-bold' : 'solar:check-circle-bold');
+                                                       
+                                                       const alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade show position-fixed" ' +
+                                                                       'style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">' +
+                                                                       '<iconify-icon icon="' + iconClass + '" class="me-2"></iconify-icon>' +
+                                                                       message +
+                                                                       '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                                                                       '</div>';
+                                                       
+                                                       $('body').append(alertHtml);
+                                                       
+                                                       setTimeout(function() {
+                                                            $('.alert').fadeOut(function() {
+                                                                 $(this).remove();
+                                                            });
+                                                       }, 4000);
+                                                  }
+                                                  
+                                                  // Allow enter key to search
+                                                  document.addEventListener('DOMContentLoaded', function() {
+                                                       const searchInput = document.getElementById("searchOrderId");
+                                                       if (searchInput) {
+                                                            searchInput.addEventListener('keypress', function(e) {
+                                                                 if (e.key === 'Enter') {
+                                                                      searchByOrderId();
+                                                                 }
+                                                            });
+                                                       }
+                                                  });
 
                                              </script>
                                         </div>

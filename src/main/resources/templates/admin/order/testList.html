@@ -170,7 +170,7 @@
                                 <iconify-icon icon="solar:bag-smile-bold-duotone" class="text-primary me-2 fs-20"></iconify-icon>
                                 <h4 class="card-title mb-0">Danh Sách Đơn Hàng</h4>
                             </div>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
                                 <select class="form-select form-select-sm" id="orderStatus">
                                     <option value="">Tất Cả</option>
                                     <option value="SHIPPED">Đang Giao</option>
@@ -179,6 +179,12 @@
                                     <option value="DELIVERED">Đã Giao</option>
                                     <option value="RETURN">Hoàn Trả</option>
                                 </select>
+                                <div class="input-group input-group-sm" style="width: 200px;">
+                                    <input type="number" class="form-control" id="searchOrderId" placeholder="Tìm theo mã...">
+                                    <button class="btn btn-primary" type="button" onclick="searchByOrderId()">
+                                        <iconify-icon icon="solar:magnifier-bold-duotone"></iconify-icon>
+                                    </button>
+                                </div>
                                 <button id="refresh-button" class="btn btn-sm btn-primary" onclick="refreshOrders()">
                                     <iconify-icon id="refresh-icon" icon="solar:refresh-bold-duotone" class="me-1"></iconify-icon>
                                     <span>Làm mới</span>
@@ -525,6 +531,66 @@
                 btn.disabled = false;
             }, 500);
         };
+        
+        // Search by Order ID function with validation
+        window.searchByOrderId = function() {
+            const searchInput = document.getElementById('searchOrderId');
+            const orderId = searchInput.value.trim();
+            
+            if (!orderId) {
+                showNotification('Vui lòng nhập mã đơn hàng', 'warning');
+                return;
+            }
+            
+            // Check if order exists before redirecting
+            $.ajax({
+                url: `/admin/order/detail/${orderId}`,
+                method: 'GET',
+                success: function(response) {
+                    if (response && response.order) {
+                        // Order found, redirect to detail page
+                        window.location.href = `/admin/order/detail-page/${orderId}`;
+                    } else {
+                        showNotification('Không tìm thấy đơn hàng với mã #' + orderId, 'error');
+                        searchInput.value = '';
+                    }
+                },
+                error: function(xhr, status, error) {
+                    showNotification('Không tìm thấy đơn hàng với mã #' + orderId, 'error');
+                    searchInput.value = '';
+                }
+            });
+        };
+        
+        // Show notification function
+        function showNotification(message, type) {
+            const alertClass = type === 'error' ? 'alert-danger' : (type === 'warning' ? 'alert-warning' : 'alert-info');
+            const iconClass = type === 'error' ? 'solar:close-circle-bold' : (type === 'warning' ? 'solar:info-circle-bold' : 'solar:check-circle-bold');
+            
+            const alertHtml = `
+                <div class="alert ${alertClass} alert-dismissible fade show position-fixed" 
+                     style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">
+                    <iconify-icon icon="${iconClass}" class="me-2"></iconify-icon>
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+            
+            $('body').append(alertHtml);
+            
+            setTimeout(function() {
+                $('.alert').fadeOut(function() {
+                    $(this).remove();
+                });
+            }, 4000);
+        }
+        
+        // Allow enter key to search
+        $(document).on('keypress', '#searchOrderId', function(e) {
+            if (e.which === 13) { // Enter key
+                searchByOrderId();
+            }
+        });
         
         // Initial load
         loadOrders("", 0);

@@ -141,7 +141,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                 </div>
 
                 <div class="row">
@@ -151,8 +150,8 @@
                                 <div>
                                     <h4 class="card-title">All Order List</h4>
                                 </div>
-                                <div style="display: flex; align-content: center">
-                                    <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()" style="margin-left: 10px">
+                                <div style="display: flex; align-content: center; gap: 10px;">
+                                    <select class="form-select form-select-sm" id="orderStatus" onchange="getOrderStatus()">
                                         <option value="">All</option>
                                         <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).SHIPPED}">Shipped</option>
                                         <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL}">Cancel</option>
@@ -160,28 +159,88 @@
                                         <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).DELIVERED}">Delivered</option>
                                         <option th:value="${T(hcmute.com.ShoeShop.utlis.ShipmentStatus).RETURN}">Return</option>
                                     </select>
+                                    <div class="input-group input-group-sm" style="width: 200px;">
+                                        <input type="number" class="form-control" id="searchOrderId" placeholder="Tìm theo mã...">
+                                        <button class="btn btn-primary" type="button" onclick="searchByOrderId()">
+                                            <iconify-icon icon="solar:magnifier-bold-duotone"></iconify-icon>
+                                        </button>
+                                    </div>
                                     <script>
                                         window.onload = function () {
                                             const urlParams = new URLSearchParams(window.location.search);
-                                            const status = urlParams.get('status'); // Lấy giá trị 'status' từ URL
-
+                                            const status = urlParams.get('status');
                                             if (status) {
                                                 const selectElement = document.getElementById("orderStatus");
-                                                selectElement.value = status; // Đặt lại giá trị cho combobox
+                                                selectElement.value = status;
                                             }
-
                                         };
+                                        
                                         function getOrderStatus() {
-                                            // Lấy phần tử combobox
                                             const selectElement = document.getElementById("orderStatus");
-
-                                            // Lấy giá trị trạng thái được chọn
                                             const selectedValue = selectElement.value;
-
-                                            // Chuyển hướng đến trang web khác
                                             window.location.href = `/admin/order/list?status=${selectedValue}`;
                                         }
-
+                                        
+                                        function searchByOrderId() {
+                                            const searchInput = document.getElementById("searchOrderId");
+                                            const orderId = searchInput.value.trim();
+                                            
+                                            if (!orderId) {
+                                                showAlert('Vui lòng nhập mã đơn hàng', 'warning');
+                                                return;
+                                            }
+                                            
+                                            // Check if order exists using jQuery AJAX
+                                            $.ajax({
+                                                url: `/admin/order/detail/${orderId}`,
+                                                method: 'GET',
+                                                success: function(response) {
+                                                    if (response && response.order) {
+                                                        window.location.href = `/admin/order/detail-page/${orderId}`;
+                                                    } else {
+                                                        showAlert('Không tìm thấy đơn hàng với mã #' + orderId, 'danger');
+                                                        searchInput.value = '';
+                                                    }
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    showAlert('Không tìm thấy đơn hàng với mã #' + orderId, 'danger');
+                                                    searchInput.value = '';
+                                                }
+                                            });
+                                        }
+                                        
+                                        function showAlert(message, type) {
+                                            const alertClass = 'alert-' + type;
+                                            const iconClass = type === 'danger' ? 'solar:close-circle-bold' : 
+                                                            (type === 'warning' ? 'solar:info-circle-bold' : 'solar:check-circle-bold');
+                                            
+                                            const alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible fade show position-fixed" ' +
+                                                            'style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" role="alert">' +
+                                                            '<iconify-icon icon="' + iconClass + '" class="me-2"></iconify-icon>' +
+                                                            message +
+                                                            '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>' +
+                                                            '</div>';
+                                            
+                                            $('body').append(alertHtml);
+                                            
+                                            setTimeout(function() {
+                                                $('.alert').fadeOut(function() {
+                                                    $(this).remove();
+                                                });
+                                            }, 4000);
+                                        }
+                                        
+                                        // Allow enter key to search
+                                        document.addEventListener('DOMContentLoaded', function() {
+                                            const searchInput = document.getElementById("searchOrderId");
+                                            if (searchInput) {
+                                                searchInput.addEventListener('keypress', function(e) {
+                                                    if (e.key === 'Enter') {
+                                                        searchByOrderId();
+                                                    }
+                                                });
+                                            }
+                                        });
                                     </script>
                                 </div>
                             </div>
