@@ -52,4 +52,10 @@ public interface ShipmentRepository extends JpaRepository<Shipment,Long> {
     @Query("SELECT COUNT(s) FROM Shipment s WHERE s.shipper.id = :shipperId AND s.order.status = :status")
     Long countByShipperIdAndOrderStatus(@Param("shipperId") Long shipperId, 
                                          @Param("status") ShipmentStatus status);
+    
+    /**
+     * Đếm tổng số orders của shipper
+     */
+    @Query("SELECT COUNT(s) FROM Shipment s WHERE s.shipper.id = :shipperId")
+    Long countByShipperId(@Param("shipperId") Long shipperId);
 }

@@ -56,14 +56,22 @@ public class ManagerHomeController {
 
     @GetMapping("/profile")
     public String managerProfile(HttpSession session, Model model) {
-        Users user = (Users) session.getAttribute(Constant.SESSION_USER);
-        if (user == null) {
+        Users sessionUser = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (sessionUser == null) {
             return "redirect:/login";
         }
         
+        // Kiểm tra role manager
+        if (!"manager".equalsIgnoreCase(sessionUser.getRole().getRoleName())) {
+            return "redirect:/access-denied";
+        }
+        
+        // Reload user from database to ensure all relationships are loaded
+        Users user = userRepository.findById(sessionUser.getId()).orElse(sessionUser);
+        
         model.addAttribute("user", user);
         model.addAttribute("title", "Hồ Sơ");
-        return "manager/pages-profile";
+        return "manager/manager-profile";
     }
 
     @GetMapping("/orders")

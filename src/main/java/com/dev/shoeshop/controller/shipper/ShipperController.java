@@ -6,6 +6,7 @@ import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.ShipmentService;
@@ -15,12 +16,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,8 @@ public class ShipperController {
     private final OrderService orderService;
     private final ShipmentService shipmentService;
     private final OrderDetailService orderDetailService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/order/list")
     public String orderList(
@@ -137,15 +141,120 @@ public class ShipperController {
     @GetMapping("/profile")
     public String profile(Model model, HttpSession session) {
         // Check if user is logged in
-        Users loggedInUser = (Users) session.getAttribute(Constant.SESSION_USER);
-        if (loggedInUser == null) {
+        Users sessionUser = (Users) session.getAttribute(Constant.SESSION_USER);
+        if (sessionUser == null) {
             return "redirect:/login";
         }
 
-        model.addAttribute("title", "Profile");
-        model.addAttribute("user", loggedInUser);
+        // Reload user from database to ensure all relationships are loaded
+        Users user = userRepository.findById(sessionUser.getId()).orElse(sessionUser);
+        
+        // Load statistics for shipper
+        Long shipperId = user.getId();
+        Map<String, Long> statistics = new HashMap<>();
+        statistics.put("total", shipmentService.countOrdersByShipperId(shipperId));
+        statistics.put("shipping", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.SHIPPED));
+        statistics.put("delivered", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.DELIVERED));
+        statistics.put("cancel", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.CANCEL));
+        statistics.put("return", shipmentService.countOrdersByShipperIdAndStatus(shipperId, ShipmentStatus.RETURN));
 
-        return "shipper/pages-profile";
+        model.addAttribute("title", "Hồ Sơ");
+        model.addAttribute("user", user);
+        model.addAttribute("statistics", statistics);
+
+        return "shipper/shipper-profile";
+    }
+    
+    @PostMapping("/profile/update")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> updateProfile(
+            @RequestParam("fullname") String fullname,
+            @RequestParam("email") String email,
+            @RequestParam("phone") String phone,
+            @RequestParam(value = "avatar", required = false) MultipartFile avatar,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Phiên đăng nhập đã hết hạn");
+                return ResponseEntity.ok(response);
+            }
+
+            // Cập nhật thông tin
+            user.setFullname(fullname);
+            user.setEmail(email);
+            user.setPhone(phone);
+
+            // Xử lý upload avatar nếu có
+            if (avatar != null && !avatar.isEmpty()) {
+                // TODO: Implement file upload logic
+                // String avatarPath = fileUploadService.uploadFile(avatar);
+                // user.setProfilePicture(avatarPath);
+            }
+
+            // Lưu vào database
+            Users updatedUser = userRepository.save(user);
+            
+            // Cập nhật session
+            session.setAttribute(Constant.SESSION_USER, updatedUser);
+
+            response.put("success", true);
+            response.put("message", "Cập nhật hồ sơ thành công");
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/profile/change-password")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> changePassword(
+            @RequestBody Map<String, String> passwordData,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Phiên đăng nhập đã hết hạn");
+                return ResponseEntity.ok(response);
+            }
+
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            // Kiểm tra mật khẩu hiện tại
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                response.put("success", false);
+                response.put("message", "Mật khẩu hiện tại không đúng");
+                return ResponseEntity.ok(response);
+            }
+
+            // Mã hóa mật khẩu mới
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            user.setPassword(encodedNewPassword);
+
+            // Lưu vào database
+            userRepository.save(user);
+
+            response.put("success", true);
+            response.put("message", "Đổi mật khẩu thành công");
+            
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+        }
+
+        return ResponseEntity.ok(response);
     }
     
     /**
