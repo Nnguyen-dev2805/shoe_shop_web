@@ -158,8 +158,12 @@ function renderSizeButtons(sizeOptions, basePrice) {
     const $container = $('#size-buttons');
     $container.empty();
     
+    console.log('🔧 renderSizeButtons called with:', sizeOptions);
+    console.log('📊 Total size options:', sizeOptions ? sizeOptions.length : 0);
+    
     if (sizeOptions && sizeOptions.length > 0) {
-        sizeOptions.forEach(function(size) {
+        sizeOptions.forEach(function(size, index) {
+            console.log(`  [${index}] Size:`, size.size, 'ID:', size.id, 'Stock:', size.stock);
             const priceAdd = size.priceAdd || 0;
             const stock = size.stock || 0; // Get stock from API
             const sizeLabel = size.size; // Just show size number

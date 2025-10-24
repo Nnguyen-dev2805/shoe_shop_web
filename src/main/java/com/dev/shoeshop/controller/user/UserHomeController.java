@@ -389,8 +389,8 @@ public class UserHomeController {
                 return ResponseEntity.status(400).body(response);
             }
             
-            // Upload using StorageService (simpler approach)
-            String imageUrl = storageService.storeFile(file);
+            // ✅ Upload using storeRatingImage (uploads to shoe_shop/ratings folder)
+            String imageUrl = storageService.storeRatingImage(file);
             
             response.put("success", true);
             response.put("imageUrl", imageUrl);
