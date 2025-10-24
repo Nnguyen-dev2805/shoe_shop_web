@@ -60,24 +60,46 @@
                 
 
                 <!-- Profile Card -->
+                <!-- Page Title -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <h4 class="mb-1">
+                                    <iconify-icon icon="solar:user-id-bold-duotone" class="me-2 text-primary"></iconify-icon>
+                                    Hồ Sơ Cá Nhân
+                                </h4>
+                                <p class="text-muted mb-0">Xem và chỉnh sửa thông tin cá nhân của bạn</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="row">
                     <div class="col-12">
                         <div class="card profile-card">
-                            <div class="card-header bg-light">
+                            <div class="card-header bg-primary text-white">
                                 <h5 class="card-title mb-0">
-                                    <iconify-icon icon="solar:user-id-bold-duotone" class="me-2 text-primary"></iconify-icon>
+                                    <iconify-icon icon="solar:user-id-bold-duotone" class="me-2"></iconify-icon>
                                     Thông Tin Cá Nhân
                                 </h5>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-3 text-center">
-                                        <img th:src="@{/assets/images/users/avatar-1.jpg}" 
-                                             alt="Avatar" 
-                                             class="rounded-circle mb-3 profile-avatar" 
-                                             style="width: 150px; height: 150px; border: 4px solid #007bff; cursor: pointer;">
-                                        <h5 th:text="${user?.fullname ?: 'Manager'}" class="mb-1 fw-bold">Manager</h5>
-                                        <p class="text-muted" th:text="${user?.role?.roleName ?: 'Manager'}">Manager</p>
+                                        <div class="position-relative d-inline-block mb-3">
+                                            <img th:src="${user?.profilePicture != null ? user.profilePicture : '/assets/images/users/avatar-1.jpg'}" 
+                                                 alt="Avatar" 
+                                                 class="rounded-circle profile-avatar" 
+                                                 style="width: 150px; height: 150px; border: 4px solid #007bff; object-fit: cover;">
+                                            <span th:if="${user?.isActive == true}" class="position-absolute bottom-0 end-0 badge rounded-pill bg-success" style="padding: 8px;">
+                                                <iconify-icon icon="solar:check-circle-bold" style="font-size: 1.2rem;"></iconify-icon>
+                                            </span>
+                                        </div>
+                                        <h5 th:text="${user?.fullname != null ? user.fullname : 'Manager'}" class="mb-1 fw-bold">Manager</h5>
+                                        <p class="text-muted mb-2" th:text="${user?.role?.roleName != null ? user.role.roleName : 'Manager'}">Manager</p>
+                                        <span th:if="${user?.isActive == true}" class="badge bg-success-subtle text-success">Đang hoạt động</span>
+                                        <span th:unless="${user?.isActive == true}" class="badge bg-danger-subtle text-danger">Không hoạt động</span>
                                     </div>
                                     <div class="col-md-9">
                                         <div class="table-responsive">
@@ -88,21 +110,24 @@
                                                             <iconify-icon icon="solar:user-bold-duotone" class="me-2"></iconify-icon>
                                                             Họ và tên:
                                                         </td>
-                                                        <td th:text="${user?.fullname ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                        <td class="fw-semibold" th:text="${user?.fullname != null ? user.fullname : 'Chưa cập nhật'}">Chưa cập nhật</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="fw-medium text-muted">
                                                             <iconify-icon icon="solar:letter-bold-duotone" class="me-2"></iconify-icon>
                                                             Email:
                                                         </td>
-                                                        <td th:text="${user?.email ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                        <td>
+                                                            <iconify-icon icon="solar:check-circle-bold" class="text-success me-1"></iconify-icon>
+                                                            <span th:text="${user?.email != null ? user.email : 'Chưa cập nhật'}">Chưa cập nhật</span>
+                                                        </td>
                                                     </tr>
                                                     <tr>
                                                         <td class="fw-medium text-muted">
                                                             <iconify-icon icon="solar:phone-bold-duotone" class="me-2"></iconify-icon>
                                                             Số điện thoại:
                                                         </td>
-                                                        <td th:text="${user?.phone ?: 'Chưa cập nhật'}">Chưa cập nhật</td>
+                                                        <td th:text="${user?.phone != null and user.phone != '' ? user.phone : 'Chưa cập nhật'}">Chưa cập nhật</td>
                                                     </tr>
                                                     <tr>
                                                         <td class="fw-medium text-muted">
@@ -124,7 +149,7 @@
                                                             Chức vụ:
                                                         </td>
                                                         <td>
-                                                            <span class="badge bg-primary" th:text="${user?.role?.roleName ?: 'Manager'}">Manager</span>
+                                                            <span class="badge bg-primary fs-6" th:text="${user?.role?.roleName != null ? user.role.roleName : 'Manager'}">Manager</span>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -137,10 +162,28 @@
                                                     <tr>
                                                         <td class="fw-medium text-muted">
                                                             <iconify-icon icon="solar:shield-check-bold-duotone" class="me-2"></iconify-icon>
-                                                            Provider:
+                                                            Phương thức đăng nhập:
                                                         </td>
                                                         <td>
-                                                            <span class="badge bg-info" th:text="${user?.provider ?: 'LOCAL'}">LOCAL</span>
+                                                            <span class="badge" 
+                                                                  th:classappend="${user?.provider == 'GOOGLE' ? 'bg-danger' : (user?.provider == 'FACEBOOK' ? 'bg-info' : 'bg-secondary')}" 
+                                                                  th:text="${user?.provider != null ? user.provider : 'LOCAL'}">LOCAL</span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-medium text-muted">
+                                                            <iconify-icon icon="solar:calendar-bold-duotone" class="me-2"></iconify-icon>
+                                                            Trạng thái tài khoản:
+                                                        </td>
+                                                        <td>
+                                                            <span th:if="${user?.isActive == true}" class="badge bg-success-subtle text-success fs-6">
+                                                                <iconify-icon icon="solar:check-circle-bold" class="me-1"></iconify-icon>
+                                                                Đang hoạt động
+                                                            </span>
+                                                            <span th:unless="${user?.isActive == true}" class="badge bg-danger-subtle text-danger fs-6">
+                                                                <iconify-icon icon="solar:close-circle-bold" class="me-1"></iconify-icon>
+                                                                Bị khóa
+                                                            </span>
                                                         </td>
                                                     </tr>
                                                 </tbody>

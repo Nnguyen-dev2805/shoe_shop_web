@@ -114,4 +114,9 @@ public class ShipmentServiceImpl implements ShipmentService {
     public Long countOrdersByShipperIdAndStatus(Long shipperId, ShipmentStatus status) {
         return shipmentRepository.countByShipperIdAndOrderStatus(shipperId, status);
     }
+    
+    @Override
+    public Long countOrdersByShipperId(Long shipperId) {
+        return shipmentRepository.countByShipperId(shipperId);
+    }
 }

@@ -43,4 +43,9 @@ public interface ShipmentService {
      * Đếm số orders của shipper theo status
      */
     Long countOrdersByShipperIdAndStatus(Long shipperId, ShipmentStatus status);
+    
+    /**
+     * Đếm tổng số orders của shipper
+     */
+    Long countOrdersByShipperId(Long shipperId);
 }

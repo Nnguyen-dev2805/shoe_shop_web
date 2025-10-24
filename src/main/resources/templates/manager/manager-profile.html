@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8" />
+    <title>Hồ Sơ | Deeg Manager</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hệ thống quản lý cửa hàng giày Deeg" />
+    <meta name="author" content="Deeg" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}" />
+
+    <!-- Vendor CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Icons CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- App CSS (Require in all Page) -->
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Manager Custom CSS -->
+    <link th:href="@{/css/manager/manager-custom.css}" rel="stylesheet" type="text/css" />
+
+    <!-- Theme Config JS (Require in all Page) -->
+    <script th:src="@{/assets/js/config.js}"></script>
+
+    <!-- Iconify -->
+    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+
+    <style>
+        .profile-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .profile-avatar {
+            transition: transform 0.3s ease;
+        }
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+        .profile-info-item {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        .profile-info-item:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+            min-width: 150px;
+            display: inline-block;
+        }
+        .info-value {
+            color: #212529;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar Start ========== -->
+    <div th:include="~{fragments/manager/header.html}"></div>
+    <!-- ========== Topbar End ========== -->
+
+    <!-- Start menu app -->
+    <div th:include="~{fragments/manager/menu_app.html}"></div>
+
+    <!-- ==================================================== -->
+    <!-- Start right Content here -->
+    <!-- ==================================================== -->
+    <div class="page-content">
+
+        <!-- Start Container Fluid -->
+        <div class="container-xxl">
+
+            <!-- Page Title -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h4 class="mb-1">
+                                <iconify-icon icon="solar:user-id-bold-duotone" class="me-2 text-primary"></iconify-icon>
+                                Hồ Sơ Cá Nhân
+                            </h4>
+                            <p class="text-muted mb-0">Xem và quản lý thông tin cá nhân của bạn</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card profile-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="card-title mb-0">
+                                <iconify-icon icon="solar:user-id-bold-duotone" class="me-2"></iconify-icon>
+                                Thông Tin Cá Nhân
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <!-- Avatar Column -->
+                                <div class="col-md-4 text-center border-end">
+                                    <div class="position-relative d-inline-block mb-3">
+                                        <img th:src="${user?.profilePicture != null ? user.profilePicture : '/assets/images/users/avatar-1.jpg'}" 
+                                             alt="Avatar" 
+                                             class="rounded-circle profile-avatar" 
+                                             style="width: 150px; height: 150px; border: 4px solid #0d6efd; object-fit: cover;">
+                                        <span th:if="${user?.isActive == true}" 
+                                              class="position-absolute bottom-0 end-0 badge rounded-pill bg-success" 
+                                              style="padding: 8px;"
+                                              title="Tài khoản đang hoạt động">
+                                            <iconify-icon icon="solar:check-circle-bold" style="font-size: 1.2rem;"></iconify-icon>
+                                        </span>
+                                    </div>
+                                    <h5 class="fw-bold mb-1" th:text="${user?.fullname != null ? user.fullname : 'Người dùng'}">Người dùng</h5>
+                                    <p class="text-muted mb-2" th:text="${user?.role?.roleName != null ? user.role.roleName : 'Manager'}">Manager</p>
+                                    <span th:if="${user?.isActive == true}" class="badge bg-success-subtle text-success px-3 py-2">
+                                        <iconify-icon icon="solar:check-circle-bold" class="me-1"></iconify-icon>
+                                        Đang hoạt động
+                                    </span>
+                                    <span th:unless="${user?.isActive == true}" class="badge bg-danger-subtle text-danger px-3 py-2">
+                                        <iconify-icon icon="solar:close-circle-bold" class="me-1"></iconify-icon>
+                                        Không hoạt động
+                                    </span>
+                                </div>
+
+                                <!-- Info Column -->
+                                <div class="col-md-8">
+                                    <h6 class="text-uppercase text-muted mb-3 mt-2">Thông Tin Chi Tiết</h6>
+                                    
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:user-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">Họ và tên:</span>
+                                                <span class="info-value fw-semibold" th:text="${user?.fullname != null ? user.fullname : 'Chưa cập nhật'}">Chưa cập nhật</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:letter-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">Email:</span>
+                                                <span class="info-value" th:text="${user?.email != null ? user.email : 'Chưa cập nhật'}">Chưa cập nhật</span>
+                                                <iconify-icon icon="solar:check-circle-bold" class="text-success ms-2" title="Email đã xác thực"></iconify-icon>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:phone-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">Số điện thoại:</span>
+                                                <span class="info-value" th:text="${user?.phone != null and user.phone != '' ? user.phone : 'Chưa cập nhật'}">Chưa cập nhật</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:shield-user-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">Chức vụ:</span>
+                                                <span class="badge bg-primary fs-6" th:text="${user?.role?.roleName != null ? user.role.roleName : 'Manager'}">Manager</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:user-id-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">ID Người dùng:</span>
+                                                <span class="info-value font-monospace" th:text="${user?.id != null ? user.id : 'N/A'}">N/A</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="profile-info-item">
+                                        <div class="d-flex align-items-center">
+                                            <iconify-icon icon="solar:shield-check-bold-duotone" class="fs-5 text-primary me-3"></iconify-icon>
+                                            <div>
+                                                <span class="info-label">Phương thức đăng nhập:</span>
+                                                <span class="badge" 
+                                                      th:classappend="${user?.provider == 'GOOGLE' ? 'bg-danger' : (user?.provider == 'FACEBOOK' ? 'bg-info' : 'bg-secondary')}"
+                                                      th:text="${user?.provider != null ? user.provider : 'LOCAL'}">LOCAL</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-4 pt-3 border-top">
+                                        <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                            <iconify-icon icon="solar:pen-bold-duotone" class="me-1"></iconify-icon>
+                                            Chỉnh sửa hồ sơ
+                                        </button>
+                                        <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                            <iconify-icon icon="solar:key-bold-duotone" class="me-1"></iconify-icon>
+                                            Đổi mật khẩu
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Container Fluid -->
+
+    </div>
+    <!-- End page-content -->
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <iconify-icon icon="solar:pen-bold-duotone" class="me-2"></iconify-icon>
+                    Chỉnh Sửa Hồ Sơ
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="editProfileForm">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="editFullname" class="form-label">Họ và tên</label>
+                            <input type="text" class="form-control" id="editFullname" th:value="${user?.fullname}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="editEmail" th:value="${user?.email}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editPhone" class="form-label">Số điện thoại</label>
+                            <input type="tel" class="form-control" id="editPhone" th:value="${user?.phone}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="editAvatar" class="form-label">Ảnh đại diện</label>
+                            <input type="file" class="form-control" id="editAvatar" accept="image/*">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <iconify-icon icon="solar:key-bold-duotone" class="me-2"></iconify-icon>
+                    Đổi Mật Khẩu
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">Mật khẩu hiện tại</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Mật khẩu mới</label>
+                        <input type="password" class="form-control" id="newPassword" required minlength="6">
+                        <div class="form-text">Mật khẩu phải có ít nhất 6 ký tự</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-danger">Đổi mật khẩu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Vendor Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/vendor.js}"></script>
+
+<!-- App Javascript (Require in all Page) -->
+<script th:src="@{/assets/js/app.js}"></script>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Edit Profile Form Handler
+        $('#editProfileForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('fullname', $('#editFullname').val());
+            formData.append('email', $('#editEmail').val());
+            formData.append('phone', $('#editPhone').val());
+            
+            const avatarFile = $('#editAvatar')[0].files[0];
+            if (avatarFile) {
+                formData.append('avatar', avatarFile);
+            }
+            
+            const submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang lưu...');
+            
+            $.ajax({
+                url: '/manager/profile/update',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', 'Cập nhật hồ sơ thành công!');
+                        $('#editProfileModal').modal('hide');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showAlert('danger', response.message || 'Có lỗi xảy ra');
+                    }
+                },
+                error: function() {
+                    showAlert('danger', 'Có lỗi xảy ra khi cập nhật hồ sơ');
+                },
+                complete: function() {
+                    submitBtn.prop('disabled', false).html('Lưu thay đổi');
+                }
+            });
+        });
+
+        // Change Password Form Handler
+        $('#changePasswordForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            const newPassword = $('#newPassword').val();
+            const confirmPassword = $('#confirmPassword').val();
+            
+            if (newPassword !== confirmPassword) {
+                showAlert('danger', 'Mật khẩu mới và xác nhận mật khẩu không khớp');
+                return;
+            }
+            
+            const submitBtn = $(this).find('button[type="submit"]');
+            submitBtn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Đang đổi...');
+            
+            $.ajax({
+                url: '/manager/profile/change-password',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    currentPassword: $('#currentPassword').val(),
+                    newPassword: newPassword
+                }),
+                success: function(response) {
+                    if (response.success) {
+                        showAlert('success', 'Đổi mật khẩu thành công!');
+                        $('#changePasswordModal').modal('hide');
+                        $('#changePasswordForm')[0].reset();
+                    } else {
+                        showAlert('danger', response.message || 'Có lỗi xảy ra');
+                    }
+                },
+                error: function() {
+                    showAlert('danger', 'Có lỗi xảy ra khi đổi mật khẩu');
+                },
+                complete: function() {
+                    submitBtn.prop('disabled', false).html('Đổi mật khẩu');
+                }
+            });
+        });
+
+        // Show alert function
+        function showAlert(type, message) {
+            const alertDiv = $('<div>')
+                .addClass(`alert alert-${type} alert-dismissible fade show position-fixed`)
+                .css({
+                    'top': '20px',
+                    'right': '20px',
+                    'z-index': '9999',
+                    'min-width': '300px'
+                })
+                .html(`
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `);
+            
+            $('body').append(alertDiv);
+            
+            setTimeout(() => alertDiv.fadeOut(() => alertDiv.remove()), 5000);
+        }
+    });
+</script>
+
+</body>
+</html>

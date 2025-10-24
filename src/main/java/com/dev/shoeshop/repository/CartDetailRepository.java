@@ -32,7 +32,6 @@ public interface CartDetailRepository extends JpaRepository<CartDetail, Integer>
     @Modifying(clearAutomatically = true)
     @Query("UPDATE CartDetail cd SET cd.quantity = :quantity WHERE cd.id = :detailId AND cd.id IN (SELECT cd2.id FROM CartDetail cd2 WHERE cd2.cart.user.id = :userId)")
     int updateQuantity(@Param("detailId") Long detailId, @Param("quantity") Integer quantity, @Param("userId") Long userId);
-    
     /**
      * Delete cart detail by ID and user ID (for security)
      */
