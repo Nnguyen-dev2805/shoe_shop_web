@@ -78,6 +78,55 @@ public class AddressServiceImpl implements AddressService {
     }
     
     @Override
+    @Transactional
+    public AddressDTO updateAddress(Long userId, Long addressId, AddressRequestDTO addressRequest) {
+        log.info("Updating address {} for user {}", addressId, userId);
+        
+        // Find user
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        
+        // Find existing address
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+        
+        // Check if address belongs to user
+        UserAddressId userAddressId = new UserAddressId(userId, addressId);
+        UserAddress userAddress = userAddressRepository.findById(userAddressId)
+                .orElseThrow(() -> new RuntimeException("Address does not belong to user"));
+        
+        // Update Address entity
+        address.setAddress_line(addressRequest.getStreet());
+        address.setCity(addressRequest.getCity());
+        address.setCountry(addressRequest.getCountry() != null ? addressRequest.getCountry() : "Việt Nam");
+        address.setLatitude(addressRequest.getLatitude());
+        address.setLongitude(addressRequest.getLongitude());
+        address.setAddressType(addressRequest.getAddressType() != null ? addressRequest.getAddressType() : "HOME");
+        
+        // Save updated address
+        address = addressRepository.save(address);
+        
+        // Update UserAddress relationship
+        userAddress.setRecipientName(addressRequest.getRecipientName());
+        userAddress.setRecipientPhone(addressRequest.getRecipientPhone());
+        
+        // If this is set as default, unset all other defaults first
+        if (Boolean.TRUE.equals(addressRequest.getIsDefault()) && !userAddress.getIsDefault()) {
+            userAddressRepository.unsetAllDefaultForUser(userId);
+            userAddress.setIsDefault(true);
+        } else if (Boolean.FALSE.equals(addressRequest.getIsDefault())) {
+            userAddress.setIsDefault(false);
+        }
+        
+        userAddressRepository.save(userAddress);
+        
+        log.info("Address updated successfully with ID: {}", address.getId());
+        
+        // Return DTO
+        return convertToDTO(address, userAddress);
+    }
+    
+    @Override
     public List<AddressDTO> getUserAddresses(Long userId) {
         log.info("Getting addresses for user {}", userId);
         

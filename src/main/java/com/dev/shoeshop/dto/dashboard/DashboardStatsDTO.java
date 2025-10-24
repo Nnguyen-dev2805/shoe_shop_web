@@ -23,6 +23,13 @@ public class DashboardStatsDTO {
     private Long totalProductsSold;
     private Long totalCustomers;
     
+    // ✅ NEW: Inventory & Profit Stats
+    private Double totalInventoryValue;  // Tổng giá trị tồn kho (cost × quantity)
+    private Double totalProfit;          // Tổng lợi nhuận đã bán
+    private Double profitMargin;         // % lợi nhuận (profit / revenue × 100)
+    private Double totalCOGS;            // Cost of Goods Sold (cost × soldQuantity)
+    private Double avgROI;               // ROI trung bình ((revenue - cogs) / cogs × 100)
+    
     // Số lượng đơn hàng theo trạng thái
     private Map<String, Long> ordersByStatus;
     

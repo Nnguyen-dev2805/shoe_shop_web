@@ -120,15 +120,18 @@
                                             <th>ID</th>
                                             <th>Sản phẩm</th>
                                             <th>Size</th>
-                                            <th class="text-center">Số lượng</th>
-                                            <th class="text-center">Trạng thái</th>
-                                            <th class="text-center">Hành động</th>
+                                            <th class="text-center">Giá Nhập</th>
+                                            <th class="text-center">Số Lượng</th>
+                                            <th class="text-center">Đã Bán</th>
+                                            <th class="text-center">Còn Lại</th>
+                                            <th class="text-center">Trạng Thái</th>
+                                            <th class="text-center">Hành Động</th>
                                         </tr>
                                     </thead>
                                     <tbody id="inventoryTableBody">
                                         <!-- Load via AJAX -->
                                         <tr>
-                                            <td colspan="6" class="text-center">
+                                            <td colspan="9" class="text-center">
                                                 <div class="spinner-border text-primary" role="status">
                                                     <span class="visually-hidden">Loading...</span>
                                                 </div>
@@ -235,7 +238,7 @@ function loadInventory(page) {
     console.log(`📦 Loading inventory - page: ${page}, product: "${productFilter}", size: "${sizeFilter}"`);
     
     const tbody = $('#inventoryTableBody');
-    tbody.html('<tr><td colspan="6" class="text-center"><div class="spinner-border text-primary"></div></td></tr>');
+    tbody.html('<tr><td colspan="9" class="text-center"><div class="spinner-border text-primary"></div></td></tr>');
     
     // Build filter params
     const params = {
@@ -271,7 +274,7 @@ function loadInventory(page) {
             console.error('❌ Failed to load inventory:', xhr);
             tbody.html(`
                 <tr>
-                    <td colspan="6" class="text-center text-danger">
+                    <td colspan="9" class="text-center text-danger">
                         Lỗi tải dữ liệu: ${xhr.status} - ${xhr.statusText}
                     </td>
                 </tr>
@@ -285,13 +288,19 @@ function renderInventoryTable(inventories) {
     const tbody = $('#inventoryTableBody');
     
     if (!inventories || inventories.length === 0) {
-        tbody.html('<tr><td colspan="6" class="text-center">Không có dữ liệu tồn kho</td></tr>');
+        tbody.html('<tr><td colspan="9" class="text-center">Không có dữ liệu tồn kho</td></tr>');
         return;
     }
     
     let rows = '';
     inventories.forEach(function(inv) {
         const stockStatus = getStockStatus(inv.quantity);
+        
+        // Format numbers
+        const costPrice = inv.costPrice ? inv.costPrice.toLocaleString('vi-VN') + 'đ' : '-';
+        const initialQty = inv.initialQuantity || inv.quantity;
+        const soldQty = inv.soldQuantity || 0;
+        const remainingQty = inv.quantity;
         
         rows += `
             <tr data-product-detail-id="${inv.productDetailId}" data-product-id="${inv.productId}">
@@ -309,9 +318,18 @@ function renderInventoryTable(inventories) {
                         </div>
                     </div>
                 </td>
-                <td><span class="badge bg-secondary">Size ${inv.size}</span></td>
+                <td class="text-center"><span class="badge bg-secondary">Size ${inv.size}</span></td>
                 <td class="text-center">
-                    <h5 class="mb-0 ${stockStatus.class} inventory-quantity" data-field="quantity">${inv.quantity}</h5>
+                    <strong class="text-primary">${costPrice}</strong>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-info">${initialQty}</span>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-success">${soldQty}</span>
+                </td>
+                <td class="text-center">
+                    <h5 class="mb-0 ${stockStatus.class}">${remainingQty}</h5>
                 </td>
                 <td class="text-center">
                     <span class="badge ${stockStatus.badgeClass}">${stockStatus.text}</span>

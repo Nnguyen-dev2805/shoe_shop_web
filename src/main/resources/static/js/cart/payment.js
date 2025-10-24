@@ -2,6 +2,11 @@
  * payment.js - Trang thanh toán
  */
 
+// ========== GOONG MAPS CONFIG ==========
+if (typeof goongjs !== 'undefined') {
+    goongjs.accessToken = '4pXmjW7ligFfpjNVlkIx7pvbzKHU3KCkhFRZKRR2';
+}
+
 let selectedItems = [];
 let addressId = null;
 let cartId = null;
@@ -960,8 +965,7 @@ function handleRadioItemClick(e) {
  */
 function handleAddNewAddress(e) {
     e.stopPropagation();
-    // TODO: Implement add address functionality
-    alert('Chức năng thêm địa chỉ mới đang phát triển');
+    showAddressFormModal(null); // null = add mode
 }
 
 /**
@@ -970,8 +974,429 @@ function handleAddNewAddress(e) {
 function handleUpdateAddress(e) {
     e.stopPropagation();
     const addressId = $(this).data('address-id');
-    // TODO: Implement update address functionality
-    alert('Chức năng cập nhật địa chỉ đang phát triển');
+    const address = allAddresses.find(a => a.id == addressId);
+    if (address) {
+        showAddressFormModal(address); // pass address = update mode
+    }
+}
+
+// ========== GOONG MAP VARIABLES ==========
+const GOONG_API_KEY = 'xaYvtvHWHGQswPol8J4GZX1LFRcC5pCsJmCfOcOU';
+let addressFormMap, addressFormMarker;
+
+/**
+ * Show address form modal with Goong Map for add or update
+ */
+function showAddressFormModal(address) {
+    const isUpdate = address !== null;
+    const modalTitle = isUpdate ? 'Cập nhật địa chỉ' : 'Thêm địa chỉ mới';
+    
+    // Build modal HTML với Goong Map
+    const formHtml = `
+        <div id="address-form-modal" style="display:flex; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; overflow-y: auto;">
+            <div style="background: white; border-radius: 8px; max-width: 1100px; width: 95%; margin: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+                <!-- Header -->
+                <div style="padding: 20px 30px; border-bottom: 1px solid #e5e5e5;">
+                    <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #333;">
+                        <i class="fa fa-map-marker" style="color: #ee4d2d;"></i> ${modalTitle}
+                    </h3>
+                </div>
+                
+                <!-- Body -->
+                <div style="padding: 25px 30px; max-height: calc(90vh - 150px); overflow-y: auto;">
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <!-- Map Column -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #e5e5e5;">
+                                <div style="position: relative; margin-bottom: 12px;">
+                                    <i class="fa fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #999;"></i>
+                                    <input type="text" id="mapSearchInput" placeholder="Tìm kiếm địa chỉ" 
+                                           style="width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                <div id="addressFormGoongMap" style="width: 100%; height: 380px; border-radius: 6px; overflow: hidden;"></div>
+                                <p style="font-size: 12px; color: #999; margin-top: 8px; margin-bottom: 0;">
+                                    <i class="fa fa-info-circle" style="color: #ee4d2d;"></i> Click vào bản đồ để chọn vị trí
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Form Column -->
+                        <div style="flex: 1; min-width: 300px;">
+                            <form id="address-form" style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e5e5;">
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
+                                        <i class="fa fa-user" style="color: #ee4d2d;"></i> Họ tên người nhận *
+                                    </label>
+                                    <input type="text" id="recipientName" placeholder="Nhập họ tên" required 
+                                           value="${address ? address.recipientName : ''}"
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
+                                        <i class="fa fa-phone" style="color: #ee4d2d;"></i> Số điện thoại *
+                                    </label>
+                                    <input type="tel" id="recipientPhone" placeholder="0901234567" required 
+                                           value="${address ? address.recipientPhone : ''}"
+                                           pattern="^0\\d{9}$" title="Số điện thoại phải là 10 số"
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
+                                        <i class="fa fa-map-marker" style="color: #ee4d2d;"></i> Địa chỉ đã chọn *
+                                    </label>
+                                    <textarea id="selectedAddress" placeholder="Chọn vị trí trên bản đồ" readonly
+                                              style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 13px; height: 60px; resize: none; background: #f9f9f9;"></textarea>
+                                </div>
+                                
+                                <input type="hidden" id="latitude">
+                                <input type="hidden" id="longitude">
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
+                                        <i class="fa fa-home" style="color: #ee4d2d;"></i> Số nhà, tên đường *
+                                    </label>
+                                    <textarea id="street" placeholder="Số nhà, đường, phường, quận" required
+                                              style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; height: 60px; resize: none;">${address ? address.street : ''}</textarea>
+                                </div>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
+                                        <i class="fa fa-building-o" style="color: #ee4d2d;"></i> Tỉnh/Thành phố *
+                                    </label>
+                                    <input type="text" id="city" placeholder="Tự động điền" required readonly
+                                           value="${address ? address.city : ''}"
+                                           style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; background: #f9f9f9;">
+                                </div>
+                                
+                                <input type="hidden" id="country" value="Việt Nam">
+                                
+                                <div style="margin-bottom: 0;">
+                                    <label style="display: flex; align-items: center; cursor: pointer; padding: 12px; background: #fff8f0; border: 1px solid #ffe8cc; border-radius: 6px;">
+                                        <input type="checkbox" id="isDefault" ${address && address.isDefault ? 'checked' : ''}
+                                               style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;">
+                                        <span style="font-weight: 500; font-size: 14px;">
+                                            <i class="fa fa-star" style="color: #ee4d2d;"></i> Đặt làm địa chỉ mặc định
+                                        </span>
+                                    </label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="padding: 15px 30px; border-top: 1px solid #e5e5e5; display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" id="btn-cancel-address-form">Hủy</button>
+                    <button type="submit" form="address-form" class="btn btn-primary" id="btn-save-address" style="background: #ee4d2d; border: none;">
+                        ${isUpdate ? 'Cập nhật' : 'Thêm mới'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    $('#address-form-modal').remove();
+    
+    // Append to body
+    $('body').append(formHtml);
+    
+    // Initialize Goong Map after modal is added to DOM
+    setTimeout(() => initAddressFormGoongMap(address), 300);
+    
+    // Bind events
+    $('#btn-cancel-address-form').on('click', function() {
+        $('#address-form-modal').remove();
+        if (addressFormMap) addressFormMap.remove();
+    });
+    
+    $('#address-form').on('submit', function(e) {
+        e.preventDefault();
+        handleSaveAddress(address ? address.id : null);
+    });
+    
+    $('#address-form-modal').on('click', function(e) {
+        if (e.target.id === 'address-form-modal') {
+            $('#address-form-modal').remove();
+            if (addressFormMap) addressFormMap.remove();
+        }
+    });
+}
+
+/**
+ * Initialize Goong Map in address form modal
+ */
+function initAddressFormGoongMap(address) {
+    console.log('🗺️ Initializing Address Form Goong Map...');
+    
+    try {
+        // Initialize map
+        addressFormMap = new goongjs.Map({
+            container: 'addressFormGoongMap',
+            style: 'https://tiles.goong.io/assets/goong_map_web.json',
+            center: [106.6297, 10.8231], // HCM
+            zoom: 13,
+            attributionControl: false
+        });
+        
+        addressFormMap.on('load', function() {
+            console.log('✅ Address Form Goong Map loaded!');
+        });
+        
+        // Add marker
+        addressFormMarker = new goongjs.Marker({
+            draggable: true,
+            color: '#ee4d2d'
+        })
+        .setLngLat([106.6297, 10.8231])
+        .addTo(addressFormMap);
+        
+        // Click on map
+        addressFormMap.on('click', function(e) {
+            addressFormMarker.setLngLat(e.lngLat);
+            updateAddressFromGoongCoords(e.lngLat.lng, e.lngLat.lat);
+        });
+        
+        // Drag marker
+        addressFormMarker.on('dragend', function() {
+            const lngLat = addressFormMarker.getLngLat();
+            updateAddressFromGoongCoords(lngLat.lng, lngLat.lat);
+        });
+        
+        // Search place
+        $('#mapSearchInput').on('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                searchGoongPlace();
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error initializing Goong Map:', error);
+    }
+}
+
+/**
+ * Search place with Goong API
+ */
+function searchGoongPlace() {
+    const query = $('#mapSearchInput').val();
+    if (!query) return;
+    
+    console.log('🔍 Searching:', query);
+    
+    fetch(`https://rsapi.goong.io/Place/AutoComplete?api_key=${GOONG_API_KEY}&input=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.predictions && data.predictions.length > 0) {
+                const placeId = data.predictions[0].place_id;
+                getGoongPlaceDetail(placeId);
+            } else {
+                alert('Không tìm thấy địa điểm!');
+            }
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+        });
+}
+
+/**
+ * Get place detail
+ */
+function getGoongPlaceDetail(placeId) {
+    fetch(`https://rsapi.goong.io/Place/Detail?place_id=${placeId}&api_key=${GOONG_API_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.result && data.result.geometry) {
+                const location = data.result.geometry.location;
+                addressFormMap.flyTo({
+                    center: [location.lng, location.lat],
+                    zoom: 16
+                });
+                addressFormMarker.setLngLat([location.lng, location.lat]);
+                
+                // Update form
+                $('#selectedAddress').val(data.result.formatted_address || data.result.name);
+                $('#latitude').val(location.lat);
+                $('#longitude').val(location.lng);
+                
+                // Parse address
+                parseGoongAddress(data.result);
+            }
+        })
+        .catch(error => console.error('Place detail error:', error));
+}
+
+/**
+ * Convert coordinates to address (Reverse Geocoding)
+ */
+function updateAddressFromGoongCoords(lng, lat) {
+    console.log('🔄 Reverse geocoding:', lat, lng);
+    
+    fetch(`https://rsapi.goong.io/Geocode?latlng=${lat},${lng}&api_key=${GOONG_API_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                const result = data.results[0];
+                $('#selectedAddress').val(result.formatted_address);
+                $('#latitude').val(lat);
+                $('#longitude').val(lng);
+                
+                // Parse address
+                parseGoongAddress(result);
+            }
+        })
+        .catch(error => console.error('Geocoding error:', error));
+}
+
+/**
+ * Parse Vietnamese address
+ */
+function parseGoongAddress(result) {
+    const fullAddress = result.formatted_address || '';
+    console.log('📍 Parsing:', fullAddress);
+    
+    // Split by comma
+    const parts = fullAddress.split(',').map(p => p.trim());
+    
+    let street = '';
+    let city = '';
+    
+    if (parts.length >= 2) {
+        city = parts[parts.length - 1]; // Last part is city
+        street = parts.slice(0, -1).join(', '); // Rest is street
+    } else {
+        street = fullAddress;
+    }
+    
+    console.log('✅ Parsed:', { street, city });
+    
+    $('#street').val(street);
+    $('#city').val(city);
+}
+
+/**
+ * Handle save address (add or update)
+ */
+function handleSaveAddress(addressId) {
+    // Collect form data
+    const selectedAddress = $('#selectedAddress').val().trim();
+    
+    const addressData = {
+        recipientName: $('#recipientName').val().trim(),
+        recipientPhone: $('#recipientPhone').val().trim(),
+        selectedAddress: selectedAddress || 'N/A',  // ✅ REQUIRED by backend
+        street: $('#street').val().trim(),
+        city: $('#city').val().trim(),
+        country: $('#country').val().trim() || 'Việt Nam',
+        isDefault: $('#isDefault').is(':checked'),
+        latitude: parseFloat($('#latitude').val()) || null,
+        longitude: parseFloat($('#longitude').val()) || null,
+        addressType: 'HOME'
+    };
+    
+    console.log('📦 Address data to send:', addressData);
+    
+    // Validate required fields
+    if (!addressData.recipientName || !addressData.recipientPhone || !addressData.street || !addressData.city) {
+        alert('⚠️ Vui lòng điền đầy đủ thông tin bắt buộc!');
+        return;
+    }
+    
+    // Validate: Must select location on map
+    if (!selectedAddress || !$('#latitude').val() || !$('#longitude').val()) {
+        alert('⚠️ Vui lòng chọn vị trí trên bản đồ trước khi lưu!');
+        return;
+    }
+    
+    // Validate phone number format
+    const phoneRegex = /^0\d{9}$/;
+    if (!phoneRegex.test(addressData.recipientPhone)) {
+        alert('⚠️ Số điện thoại phải là 10 số và bắt đầu bằng 0!');
+        return;
+    }
+    
+    // Show loading
+    $('#btn-save-address').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang lưu...');
+    
+    const isUpdate = addressId !== null;
+    const url = isUpdate ? `/api/user/addresses/${addressId}` : '/api/user/addresses';
+    const method = isUpdate ? 'PUT' : 'POST';
+    
+    console.log('📤 Sending request:', method, url);
+    
+    $.ajax({
+        url: url,
+        method: method,
+        contentType: 'application/json',
+        data: JSON.stringify(addressData),
+        success: function(response) {
+            console.log('✅ Address saved:', response);
+            if (response.success) {
+                alert(response.message);
+                
+                // Close address form modal
+                $('#address-form-modal').remove();
+                if (addressFormMap) addressFormMap.remove();
+                
+                // Reload addresses and show address selection modal
+                $.ajax({
+                    url: '/api/user/addresses',
+                    method: 'GET',
+                    success: function(addressResponse) {
+                        if (addressResponse.success && addressResponse.addresses) {
+                            allAddresses = addressResponse.addresses;
+                            
+                            // Update current display if needed
+                            const newAddressId = response.address ? response.address.id : null;
+                            if (newAddressId) {
+                                addressId = newAddressId;
+                                sessionStorage.setItem('selectedAddressId', newAddressId);
+                                const newAddress = allAddresses.find(a => a.id == newAddressId);
+                                if (newAddress) {
+                                    displayAddress(newAddress);
+                                }
+                            }
+                            
+                            // Show address selection modal with updated list
+                            populateAddressModal(allAddresses);
+                            $('#address-modal').fadeIn(200);
+                        }
+                    }
+                });
+            } else {
+                alert('❌ ' + (response.message || 'Có lỗi xảy ra'));
+                $('#btn-save-address').prop('disabled', false).html(isUpdate ? 'Cập nhật' : 'Thêm mới');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Error saving address:', error);
+            console.error('Response:', xhr.responseJSON);
+            console.error('Status:', xhr.status);
+            console.error('Response Text:', xhr.responseText);
+            
+            let errorMessage = 'Có lỗi xảy ra khi lưu địa chỉ. Vui lòng thử lại!';
+            
+            // Try to get detailed error message from response
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMessage = xhr.responseJSON.message;
+            } else if (xhr.responseText) {
+                try {
+                    const errorObj = JSON.parse(xhr.responseText);
+                    if (errorObj.message) {
+                        errorMessage = errorObj.message;
+                    }
+                } catch (e) {
+                    // Keep default error message
+                }
+            }
+            
+            alert('❌ ' + errorMessage);
+            $('#btn-save-address').prop('disabled', false).html(isUpdate ? 'Cập nhật' : 'Thêm mới');
+        }
+    });
 }
 
 /**

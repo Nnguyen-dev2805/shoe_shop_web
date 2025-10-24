@@ -444,13 +444,20 @@ public class ApiCartController {
                     // Generate PayOS order code
                     long payosOrderCode = System.currentTimeMillis() / 1000;
 
-                    // Create PayOS payment link
-                    String productName = "Đơn hàng từ DeeG Shop";
-                    String description = "Thanh toán đơn hàng";
+                    // ✅ Calculate total quantity from selected items
+                    int totalQuantity = itemQuantities.values().stream()
+                        .mapToInt(Integer::intValue)
+                        .sum();
+                    
+                    // ✅ Simple product name with quantity
+                    String productName = String.format("Đơn hàng từ DeeG Shop x %d", totalQuantity);
+                    
+                    // ✅ Keep description short (max 25 chars)
+                    String description = String.format("DH #%d", payosOrderCode); // Only 12-15 chars
 
                     PaymentLinkItem item = PaymentLinkItem.builder()
-                        .name(productName)
-                        .quantity(1)
+                        .name(productName) // ✅ Detailed info here
+                        .quantity(totalQuantity) // ✅ Use real quantity
                         .price(finalTotalPrice.longValue())
                         .build();
 
