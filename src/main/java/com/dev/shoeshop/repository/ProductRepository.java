@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Long> {
-
+    
     // lấy danh sách sản phẩm không phân trang
     List<Product> findByIsDeleteFalse();
 
