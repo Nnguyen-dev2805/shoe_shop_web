@@ -1,5 +1,6 @@
 package com.dev.shoeshop.config;
 
+import com.dev.shoeshop.entity.Address;
 import com.dev.shoeshop.entity.Brand;
 import com.dev.shoeshop.entity.Category;
 import com.dev.shoeshop.entity.Discount;
@@ -10,6 +11,8 @@ import com.dev.shoeshop.entity.Role;
 import com.dev.shoeshop.entity.ShippingCompany;
 import com.dev.shoeshop.entity.ShippingRate;
 import com.dev.shoeshop.entity.ShopWarehouse;
+import com.dev.shoeshop.entity.UserAddress;
+import com.dev.shoeshop.entity.UserAddressId;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.DiscountValueType;
 import com.dev.shoeshop.enums.VoucherType;
@@ -43,6 +46,8 @@ public class ApplicationInitConfig implements ApplicationRunner {
     private final InventoryRepository inventoryRepository;
     private final InventoryHistoryService inventoryHistoryService;
     private final UserRepository userRepository;
+    private final AddressRepository addressRepository;
+    private final UserAddressRepository userAddressRepository;
     private final ShippingCompanyRepository shippingCompanyRepository;
     private final ShopWarehouseRepository shopWarehouseRepository;
     private final ShippingRateRepository shippingRateRepository;
@@ -73,24 +78,27 @@ public class ApplicationInitConfig implements ApplicationRunner {
         initProducts();
 
         // 5. Tạo Inventory (tồn kho)
-        initInventory();
+        // initInventory();
 
         // 6. Tạo Users
         initUsers();
 
-        // 7. Tạo Shipping Companies
+        // 7. Tạo Test Addresses & Link với Users
+        initTestAddresses();
+
+        // 8. Tạo Shipping Companies
         initShippingCompanies();
 
-        // 8. Tạo Shop Warehouse
+        // 9. Tạo Shop Warehouse
         initWarehouse();
 
-        // 9. Tạo Shipping Rates
+        // 10. Tạo Shipping Rates
         initShippingRates();
 
-        // 10. Tạo Discounts/Vouchers
+        // 11. Tạo Discounts/Vouchers
         initDiscounts();
 
-        // 11. Tạo Triggers
+        // 12. Tạo Triggers
         initTriggers();
 
         System.out.println("✅ Khởi tạo data thành công!");
@@ -330,7 +338,112 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shipper.setProvider("LOCAL");
         userRepository.save(shipper);
 
-        System.out.println("  → Đã tạo 4 users (password: 123456)");
+        // ⭐ Thêm 5 customers mới để test
+        Users customer1 = new Users();
+        customer1.setEmail("customer1@test.com");
+        customer1.setPassword(encodedPassword);
+        customer1.setFullname("Nguyễn Văn An");
+        customer1.setPhone("0905234567");
+        customer1.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer1.setIsActive(true);
+        customer1.setProvider("LOCAL");
+        userRepository.save(customer1);
+
+        Users customer2 = new Users();
+        customer2.setEmail("customer2@test.com");
+        customer2.setPassword(encodedPassword);
+        customer2.setFullname("Trần Thị Bình");
+        customer2.setPhone("0906345678");
+        customer2.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer2.setIsActive(true);
+        customer2.setProvider("LOCAL");
+        userRepository.save(customer2);
+
+        Users customer3 = new Users();
+        customer3.setEmail("customer3@test.com");
+        customer3.setPassword(encodedPassword);
+        customer3.setFullname("Lê Văn Cường");
+        customer3.setPhone("0907456789");
+        customer3.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer3.setIsActive(true);
+        customer3.setProvider("LOCAL");
+        userRepository.save(customer3);
+
+        Users customer4 = new Users();
+        customer4.setEmail("customer4@test.com");
+        customer4.setPassword(encodedPassword);
+        customer4.setFullname("Phạm Thị Dung");
+        customer4.setPhone("0908567890");
+        customer4.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer4.setIsActive(true);
+        customer4.setProvider("LOCAL");
+        userRepository.save(customer4);
+
+        Users customer5 = new Users();
+        customer5.setEmail("customer5@test.com");
+        customer5.setPassword(encodedPassword);
+        customer5.setFullname("Hoàng Văn Em");
+        customer5.setPhone("0909678901");
+        customer5.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer5.setIsActive(true);
+        customer5.setProvider("LOCAL");
+        userRepository.save(customer5);
+
+        // ⭐ Thêm 2 shippers nữa
+        Users shipper2 = new Users();
+        shipper2.setEmail("shipper2@test.com");
+        shipper2.setPassword(encodedPassword);
+        shipper2.setFullname("Nguyễn Văn Ship");
+        shipper2.setPhone("0910789012");
+        shipper2.setRole(roleRepository.findByRoleName("shipper").orElseThrow());
+        shipper2.setIsActive(true);
+        shipper2.setProvider("LOCAL");
+        userRepository.save(shipper2);
+
+        Users shipper3 = new Users();
+        shipper3.setEmail("shipper3@test.com");
+        shipper3.setPassword(encodedPassword);
+        shipper3.setFullname("Trần Thị Giao");
+        shipper3.setPhone("0911890123");
+        shipper3.setRole(roleRepository.findByRoleName("shipper").orElseThrow());
+        shipper3.setIsActive(true);
+        shipper3.setProvider("LOCAL");
+        userRepository.save(shipper3);
+
+        System.out.println("  → Đã tạo 11 users: 1 admin, 1 manager, 6 customers, 3 shippers (password: 123456)");
+    }
+
+    private void initTestAddresses() {
+        // Tạo 1 địa chỉ chung để test cho users 3-8 (6 customers)
+        Address sharedAddress = new Address();
+        sharedAddress.setAddress_line("38 Hẻm 268 Nguyễn Văn Quá, Đông Hưng Thuận, Quận 12");
+        sharedAddress.setCity("Hồ Chí Minh");
+        sharedAddress.setCountry("Việt Nam");
+        sharedAddress.setLatitude(10.833233157151525);
+        sharedAddress.setLongitude(106.6296313338766);
+        sharedAddress.setAddressType("HOME");
+        addressRepository.save(sharedAddress);
+
+        // Liên kết địa chỉ với users 3-8
+        // User 3: user@user
+        // User 4-8: customer1-5
+        for (int userId = 3; userId <= 8; userId++) {
+            Users user = userRepository.findById((long) userId).orElse(null);
+            if (user != null) {
+                UserAddress userAddress = new UserAddress();
+                userAddress.setId(new UserAddressId(user.getId(), sharedAddress.getId()));
+                userAddress.setUser(user);
+                userAddress.setAddress(sharedAddress);
+                userAddress.setRecipientName(user.getFullname());
+                userAddress.setRecipientPhone(user.getPhone());
+                userAddress.setLabel("Nhà riêng");
+                userAddress.setIsDefault(true);
+                userAddress.setIsDelete(false);
+                userAddressRepository.save(userAddress);
+            }
+        }
+
+        System.out.println("  → Đã tạo 1 địa chỉ chung và liên kết với 6 users (ID 3-8)");
     }
 
     private void initShippingCompanies() {
