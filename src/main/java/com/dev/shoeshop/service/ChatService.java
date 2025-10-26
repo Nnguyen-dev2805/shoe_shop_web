@@ -35,9 +35,14 @@ public interface ChatService {
     Page<ChatConversationDTO> getUnreadConversations(Pageable pageable);
 
     /**
-     * Đếm số conversation có tin nhắn chưa đọc
+     * Đếm số conversation chưa đọc
      */
     Long countUnreadConversations();
+
+    /**
+     * Đếm số tin nhắn chưa đọc cho user
+     */
+    Long countUnreadMessagesForUser(Long userId);
 
     /**
      * Gửi tin nhắn từ user

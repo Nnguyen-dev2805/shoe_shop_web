@@ -30,8 +30,14 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     /**
      * Đếm số tin nhắn chưa đọc trong một conversation
      */
-    @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.conversation.id = :conversationId AND m.isRead = false AND m.senderType = 'USER'")
-    Long countUnreadMessagesInConversation(@Param("conversationId") Long conversationId);
+    @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.conversation.id = :conversationId AND m.senderType = 'USER' AND m.isRead = false")
+    Long countUnreadUserMessagesInConversation(@Param("conversationId") Long conversationId);
+
+    /**
+     * Đếm tin nhắn chưa đọc cho user (từ manager)
+     */
+    @Query("SELECT COUNT(m) FROM ChatMessage m WHERE m.conversation.user.id = :userId AND m.senderType = 'MANAGER' AND m.isRead = false")
+    Long countUnreadMessagesForUser(@Param("userId") Long userId);
 
     /**
      * Lấy tin nhắn cuối cùng của một conversation
