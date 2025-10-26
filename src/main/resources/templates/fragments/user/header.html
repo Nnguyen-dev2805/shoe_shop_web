@@ -1,7 +1,24 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <!-- Cart Badge CSS -->
     <link rel="stylesheet" href="/css/header-cart.css?v=5">
+    
+    <!-- Chat Widget - Load jQuery first then scripts -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <th:block sec:authorize="isAuthenticated()">
+        <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            // Try both session.user and authentication.principal
+            var currentUserId = /*[[${session.user != null ? session.user.id : #authentication.principal.id}]]*/ 0;
+            var currentUserName = /*[[${session.user != null ? session.user.fullname : #authentication.principal.fullname}]]*/ 'User';
+            console.log('🔑 User Auth: ID =', currentUserId, ', Name =', currentUserName);
+            /*]]>*/
+        </script>
+        <script src="/js/chat/chat-widget.js"></script>
+    </th:block>
 </head>
 <div th:fragment="header">
     <header>
@@ -42,6 +59,7 @@
                                                 <li><a href="/user/my_account">Tài khoản</a></li>
                                                 <li><a href="/user/wishlist">Sản phẩm Yêu thích</a></li>
                                                 <li><a href="/cart/view">Giỏ hàng</a></li>
+                                                <li><a href="javascript:void(0);" id="chat-menu-link">Chat với Shop</a></li>
                                                 <li><a href="/user/order/view">Đơn hàng</a></li>
                                                 <li><a href="/order">Thanh toán</a></li>
                                                 <li><a href="/user/blog">Bài viết</a></li>
@@ -64,6 +82,15 @@
                             </div>
                             <div class="cart-menu">
                                 <ul>
+                                    <!-- Chat Icon -->
+                                    <li sec:authorize="isAuthenticated()" id="chat-icon-container" style="position: relative; display: inline-block;">
+                                        <a href="javascript:void(0);" id="chat-icon-link" title="Chat với Shop" style="position: relative; text-decoration: none; display: inline-block; cursor: pointer; pointer-events: auto; z-index: 100;">
+                                            <i class="fa fa-comments" style="font-size: 24px; color: #333; cursor: pointer; pointer-events: auto;"></i>
+                                            <!-- Unread badge - updated via JS -->
+                                            <span id="chat-unread-count" style="display: none; position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 11px; align-items: center; justify-content: center; font-weight: bold; pointer-events: none;">0</span>
+                                        </a>
+                                    </li>
+                                    <!-- Cart Icon -->
                                     <li>
                                         <a th:href="@{/cart/view}">
                                             <img src="/img/icon-cart.png" alt="Cart Icon">

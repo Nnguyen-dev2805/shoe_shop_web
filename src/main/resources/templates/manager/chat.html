@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{manager/layout}">
+
+<head>
+    <title>Quản lý Chat - Manager</title>
+    <style>
+        .chat-layout {
+            display: flex;
+            height: calc(100vh - 150px);
+            gap: 20px;
+        }
+        
+        .conversations-panel {
+            width: 350px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .conversations-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .conversations-header h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .conversations-filter {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .filter-btn {
+            flex: 1;
+            padding: 5px 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        
+        .conversation-item {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .conversation-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .conversation-item.active {
+            background: #ede9fe;
+            border-color: #7c3aed;
+        }
+        
+        .conversation-item.unread {
+            background: #fef3c7;
+        }
+        
+        .conversation-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 8px;
+        }
+        
+        .conversation-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+        
+        .conversation-time {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .conversation-preview {
+            font-size: 13px;
+            color: #6b7280;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .unread-badge {
+            display: inline-block;
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+        }
+        
+        .chat-panel {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f9fafb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-user-info h5 {
+            margin: 0;
+            color: #1f2937;
+            font-weight: 600;
+        }
+        
+        .chat-user-info small {
+            color: #6b7280;
+        }
+        
+        .chat-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-close-chat {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .btn-close-chat:hover {
+            background: #fecaca;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            display: flex;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .message-manager {
+            justify-content: flex-end;
+        }
+        
+        .message-user {
+            justify-content: flex-start;
+        }
+        
+        .message-content {
+            max-width: 70%;
+            padding: 12px 18px;
+            border-radius: 18px;
+        }
+        
+        .message-manager .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message-user .message-content {
+            background: white;
+            color: #333;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .message-sender {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .message-time {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        
+        .chat-input {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .chat-input-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chat-input-form input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 1px solid #e5e7eb;
+            border-radius: 25px;
+            outline: none;
+        }
+        
+        .chat-input-form input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .chat-input-form button {
+            padding: 12px 30px;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .chat-input-form button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #9ca3af;
+        }
+        
+        .empty-state i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .connection-status {
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .connection-status.connected {
+            background: #d1fae5;
+            color: #065f46;
+        }
+    </style>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div class="container-fluid mt-4">
+        <div class="row mb-3">
+            <div class="col">
+                <h3><i class="fas fa-comments"></i> Quản lý Chat</h3>
+            </div>
+        </div>
+        
+        <!-- Connection Status -->
+        <div id="connectionStatus" class="connection-status mb-3">
+            <i class="fas fa-circle-notch fa-spin"></i> Đang kết nối...
+        </div>
+        
+        <div class="chat-layout">
+            <!-- Conversations List Panel -->
+            <div class="conversations-panel">
+                <div class="conversations-header">
+                    <h5>
+                        Cuộc trò chuyện 
+                        <span id="unreadCount" class="badge bg-danger">0</span>
+                    </h5>
+                    <div class="conversations-filter">
+                        <button class="filter-btn active" data-filter="all">
+                            Tất cả
+                        </button>
+                        <button class="filter-btn" data-filter="unread">
+                            Chưa đọc
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="conversations-list" id="conversationsList">
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <p>Chưa có cuộc trò chuyện nào</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Chat Panel -->
+            <div class="chat-panel">
+                <div id="noChatSelected" class="empty-state">
+                    <i class="fas fa-comments"></i>
+                    <p>Chọn một cuộc trò chuyện để bắt đầu</p>
+                </div>
+                
+                <div id="chatContent" style="display: none; height: 100%; flex-direction: column;">
+                    <div class="chat-header">
+                        <div class="chat-user-info">
+                            <h5 id="chatUserName">-</h5>
+                            <small id="chatUserEmail">-</small>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="btn-close-chat" onclick="closeConversation()">
+                                <i class="fas fa-times"></i> Đóng chat
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="chatMessages">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                    
+                    <div class="chat-input">
+                        <form id="chatForm" class="chat-input-form">
+                            <input type="text" 
+                                   id="messageInput" 
+                                   placeholder="Nhập tin nhắn..." 
+                                   autocomplete="off"
+                                   required>
+                            <button type="submit">
+                                <i class="fas fa-paper-plane"></i> Gửi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<th:block layout:fragment="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    
+    <script th:inline="javascript">
+        const currentManagerId = [[${#authentication.principal.id}]];
+        const currentManagerName = [[${#authentication.principal.fullname}]];
+    </script>
+    
+    <script th:src="@{/js/chat/manager-chat.js}"></script>
+</th:block>
+</body>
+</html>

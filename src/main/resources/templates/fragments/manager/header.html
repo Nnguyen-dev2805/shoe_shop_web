@@ -1,4 +1,24 @@
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="chat-badge-script">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script th:src="@{/js/chat/chat-badge-updater.js}"></script>
+    
+    <!-- Manager Chat Widget Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var currentManagerId = /*[[${session.user != null ? session.user.id : 0}]]*/ 0;
+        var currentManagerName = /*[[${session.user != null ? session.user.fullname : 'Manager'}]]*/ 'Manager';
+        console.log('🔑 Manager Auth: ID =', currentManagerId, ', Name =', currentManagerName);
+        /*]]>*/
+    </script>
+    <script src="/js/chat/manager-chat-widget.js"></script>
+</head>
 <header class="topbar" th:fragment="header" >
     <div class="container-fluid">
         <div class="navbar-header">
@@ -12,6 +32,17 @@
             </div>
 
             <div class="d-flex align-items-center gap-1">
+
+                <!-- Chat Icon -->
+                <div class="topbar-item" id="manager-chat-icon-container" style="position: relative;">
+                    <a href="javascript:void(0);" id="manager-chat-icon-link" class="topbar-button" title="Quản lý Chat" style="position: relative; text-decoration: none;">
+                        <iconify-icon icon="solar:chat-dots-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                        <!-- Unread badge -->
+                        <span id="manager-chat-unread-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 10px;">
+                            0
+                        </span>
+                    </a>
+                </div>
 
                 <!-- Theme Color (Light/Dark) -->
                 <div class="topbar-item">
