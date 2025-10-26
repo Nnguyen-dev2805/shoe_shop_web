@@ -1,5 +1,6 @@
 package com.dev.shoeshop.entity;
 
+import com.dev.shoeshop.enums.MembershipTier;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -43,6 +44,21 @@ public class Users {
     @Column(name = "is_active")
     @Builder.Default
     private Boolean isActive = true;
+
+    // ========== MEMBERSHIP & LOYALTY POINTS ==========
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "membership_tier", length = 20)
+    @Builder.Default
+    private MembershipTier membershipTier = MembershipTier.SILVER;
+    
+    @Column(name = "loyalty_points")
+    @Builder.Default
+    private Integer loyaltyPoints = 0;
+    
+    @Column(name = "total_spending")
+    @Builder.Default
+    private Double totalSpending = 0.0;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -172,5 +188,115 @@ public class Users {
             return baseRole + " (Shipper)";
         }
         return baseRole;
+    }
+
+    // ========== MEMBERSHIP & LOYALTY POINTS METHODS ==========
+
+    /**
+     * Cộng điểm loyalty points
+     */
+    public void addPoints(int points) {
+        if (points > 0) {
+            this.loyaltyPoints += points;
+        }
+    }
+
+    /**
+     * Trừ điểm loyalty points (không cho âm)
+     */
+    public void deductPoints(int points) {
+        if (points > 0) {
+            this.loyaltyPoints = Math.max(0, this.loyaltyPoints - points);
+        }
+    }
+
+    /**
+     * Cộng vào tổng chi tiêu
+     */
+    public void addSpending(double amount) {
+        if (amount > 0) {
+            this.totalSpending += amount;
+        }
+    }
+
+    /**
+     * Trừ tổng chi tiêu (khi hủy đơn, không âm)
+     */
+    public void deductSpending(double amount) {
+        if (amount > 0) {
+            this.totalSpending = Math.max(0, this.totalSpending - amount);
+        }
+    }
+
+    /**
+     * Tính hạng thành viên phù hợp dựa trên tổng chi tiêu
+     */
+    public MembershipTier calculateEligibleTier() {
+        return MembershipTier.calculateTier(this.totalSpending);
+    }
+
+    /**
+     * Kiểm tra có thể lên hạng không
+     */
+    public boolean canUpgradeTier() {
+        MembershipTier eligible = calculateEligibleTier();
+        return eligible.ordinal() > membershipTier.ordinal();
+    }
+
+    /**
+     * Lên hạng mới và nhận bonus points
+     * @return true nếu đã upgrade, false nếu không đủ điều kiện
+     */
+    public boolean upgradeToEligibleTier() {
+        if (!canUpgradeTier()) {
+            return false;
+        }
+        
+        MembershipTier newTier = calculateEligibleTier();
+        this.membershipTier = newTier;
+        
+        // Tặng bonus điểm khi lên hạng
+        int bonus = newTier.getUpgradeBonus();
+        if (bonus > 0) {
+            addPoints(bonus);
+        }
+        
+        return true;
+    }
+
+    /**
+     * Quy đổi điểm hiện tại sang tiền
+     */
+    public double getPointsValue() {
+        return MembershipTier.pointsToMoney(loyaltyPoints);
+    }
+
+    /**
+     * Lấy số tiền còn thiếu để lên hạng tiếp theo
+     */
+    public double getRemainingToNextTier() {
+        return membershipTier.getRemainingToNextTier(totalSpending);
+    }
+
+    /**
+     * Lấy % progress đến hạng tiếp theo
+     */
+    public int getProgressToNextTier() {
+        return membershipTier.getProgressToNextTier(totalSpending);
+    }
+
+    /**
+     * Kiểm tra có thể dùng điểm cho đơn hàng không
+     */
+    public boolean canRedeemPoints(int points, double orderAmount) {
+        return MembershipTier.canRedeemPoints(points, orderAmount, this.loyaltyPoints);
+    }
+
+    /**
+     * Lấy số điểm tối đa có thể dùng cho đơn hàng
+     */
+    public int getMaxRedeemablePoints(double orderAmount) {
+        int maxByOrder = MembershipTier.getMaxRedeemablePoints(orderAmount);
+        return Math.min(maxByOrder, this.loyaltyPoints);
     }
 }

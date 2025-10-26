@@ -90,6 +90,16 @@ public class Order {
     @Temporal(TemporalType.TIMESTAMP)
     private Date paidAt; // Thời điểm thanh toán thành công
 
+    // ========== LOYALTY POINTS ==========
+    
+    @Column(name = "points_earned")
+    @Builder.Default
+    private Integer pointsEarned = 0; // Điểm tích được từ đơn này
+    
+    @Column(name = "points_redeemed")
+    @Builder.Default
+    private Integer pointsRedeemed = 0; // Điểm đã sử dụng cho đơn này
+
     // Business logic methods
     
     /**
@@ -117,5 +127,38 @@ public class Order {
      */
     public boolean isFromFlashSale() {
         return appliedFlashSale != null;
+    }
+    
+    // ========== LOYALTY POINTS METHODS ==========
+    
+    /**
+     * Tính giá trị giảm từ điểm
+     */
+    public double calculatePointsDiscount() {
+        if (pointsRedeemed == null || pointsRedeemed == 0) {
+            return 0;
+        }
+        return pointsRedeemed * 1000.0; // 1 điểm = 1,000 VNĐ
+    }
+    
+    /**
+     * Tính giá cuối cùng sau khi trừ điểm (dùng để tính points earned)
+     */
+    public double getFinalPriceAfterPoints() {
+        return Math.max(0, totalPrice - calculatePointsDiscount());
+    }
+    
+    /**
+     * Kiểm tra order có dùng điểm không
+     */
+    public boolean hasPointsRedeemed() {
+        return pointsRedeemed != null && pointsRedeemed > 0;
+    }
+    
+    /**
+     * Kiểm tra order có tích điểm không
+     */
+    public boolean hasPointsEarned() {
+        return pointsEarned != null && pointsEarned > 0;
     }
 }

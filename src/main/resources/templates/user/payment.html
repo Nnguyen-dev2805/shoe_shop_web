@@ -1264,6 +1264,88 @@
                     <input type="hidden" id="selected-shipping-voucher-id" value="">
                 </div>
                 
+                <!-- ========== LOYALTY POINTS SECTION (Shopee Style) ========== -->
+                <div class="payment-card" id="points-section" style="display: none;">
+                    <div class="section-title">
+                        <i class="fa fa-star"></i>
+                        Điểm tích lũy
+                    </div>
+                    
+                    <!-- Points Balance Card (Shopee Orange-Red Style) -->
+                    <div style="background: linear-gradient(135deg, #fff5f5, #ffe8e6); border: 1px solid #ee4d2d; border-radius: 4px; padding: 14px 16px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 400;">Điểm hiện có</div>
+                                <div style="font-weight: 700; font-size: 20px; color: #ee4d2d;">
+                                    <span id="user-points-balance">0 điểm</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; color: #888; font-weight: 400;">Hạng <i class="fa fa-shield" style="color: #ee4d2d;"></i> <span id="user-tier-name" style="font-weight: 500; color: #ee4d2d;">Bạc</span></div>
+                                <div style="font-size: 11px; color: #888; margin-top: 2px; font-weight: 400;">Giá trị <span id="points-value" style="font-weight: 500; color: #ee4d2d;">0đ</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Points Earn Info (Shopee Green) -->
+                    <div id="points-earn-info" style="background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 3px; padding: 10px 12px; margin-bottom: 12px; display: none;">
+                        <div style="font-size: 13px; color: #2e7d32; font-weight: 400;">
+                            <i class="fa fa-check-circle" style="margin-right: 5px; color: #4caf50;"></i>
+                            Đơn hàng này sẽ tích được: <strong style="color: #1b5e20; font-weight: 600;"><span id="points-will-earn">0 điểm</span></strong> (<span id="earn-rate-display">1%</span>)
+                        </div>
+                    </div>
+                    
+                    <!-- Use Points Section -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="background: #fafafa; padding: 10px 12px; border: 1px solid #e0e0e0; border-bottom: none; border-radius: 4px 4px 0 0;">
+                            <div style="font-size: 14px; font-weight: 400; color: #333;">
+                                Sử dụng điểm
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 12px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 4px 4px;">
+                            <input type="number" 
+                                   id="points-to-use-input" 
+                                   placeholder="Nhập số điểm" 
+                                   min="0" 
+                                   style="width: 100%; padding: 8px 12px; border: 1px solid #d0d0d0; border-radius: 2px; font-size: 14px; outline: none; font-weight: 400; color: #333; margin-bottom: 12px;">
+                            
+                            <div style="font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.5; font-weight: 400;">
+                                <i class="fa fa-info-circle" style="color: #ee4d2d; font-size: 11px;"></i> Quy đổi: 1 điểm = 1.000đ | Tối đa 50% giá trị đơn
+                            </div>
+                            
+                            <div class="voucher-footer-inline">
+                                <div class="voucher-footer-info">
+                                    <span id="points-selected-count">0</span> Điểm được chọn
+                                </div>
+                                <button type="button" class="voucher-confirm-btn-inline" id="btn-apply-points">
+                                    Áp dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Applied Points Display (Shopee Style) -->
+                    <div id="points-redeemed-row" style="background: #e3f2fd; border-left: 3px solid #2196f3; border-radius: 3px; padding: 10px 12px; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 13px; color: #1565c0; font-weight: 400;">
+                                <i class="fa fa-check-circle" style="margin-right: 5px;"></i>
+                                Đã dùng <strong style="font-weight: 600;"><span id="points-applied-amount">0 điểm</span></strong>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <strong style="color: #1565c0; font-size: 14px; font-weight: 600;">-<span id="points-discount-value">0đ</span></strong>
+                                <button type="button" 
+                                        id="btn-clear-points" 
+                                        style="background: transparent; color: #f44336; border: none; padding: 4px 8px; border-radius: 3px; font-size: 18px; cursor: pointer; line-height: 1; transition: all 0.2s;"
+                                        onmouseover="this.style.background='#ffebee'"
+                                        onmouseout="this.style.background='transparent'">
+                                    <i class="fa fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Payment Method Section -->
                 <div class="payment-card">
                     <div class="section-title">
