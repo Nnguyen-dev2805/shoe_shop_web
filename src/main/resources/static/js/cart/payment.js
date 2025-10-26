@@ -23,6 +23,13 @@ window.appliedOrderVoucherId = null;
 window.orderVouchers = [];
 window.shippingVouchers = [];
 
+// ========== LOYALTY POINTS TRACKING ==========
+let userPoints = 0; // Số điểm hiện tại của user
+let pointsToRedeem = 0; // Số điểm user muốn dùng
+let pointsDiscount = 0; // Giá trị giảm từ điểm (VNĐ)
+let pointsWillEarn = 0; // Điểm sẽ nhận được từ đơn này
+let membershipTier = 'SILVER'; // Hạng thành viên
+
 /**
  * Format currency to Vietnamese format
  */
@@ -37,6 +44,7 @@ function formatCurrency(amount) {
 $(document).ready(function() {
     loadDataFromSession();
     loadVouchers();
+    loadUserPoints(); // ✅ Load loyalty points
     // loadShippingCompanies(); // ❌ Đã bỏ chọn shipping company
     bindEventHandlers();
 });
@@ -609,6 +617,169 @@ function renderShippingVouchers(vouchers) {
 //     });
 // }
 
+// ========== LOYALTY POINTS FUNCTIONS ==========
+
+/**
+ * Load user loyalty points balance
+ */
+function loadUserPoints() {
+    $.ajax({
+        url: '/api/membership/points/balance',
+        method: 'GET',
+        success: function(response) {
+            if (response && response.points !== undefined) {
+                userPoints = response.points || 0;
+                membershipTier = response.tier || 'SILVER';
+                
+                // Update UI
+                $('#user-points-balance').text(formatPoints(userPoints));
+                $('#user-tier-name').text(response.tierDisplayName || 'Bạc');
+                $('#points-value').text(formatCurrency(response.pointsValue || 0));
+                
+                // Show points section
+                $('#points-section').show();
+                
+                // Calculate points will earn
+                calculatePointsWillEarn();
+            }
+        },
+        error: function(xhr, status, error) {
+            // Silently fail - user might not be logged in or points feature disabled
+            console.log('Could not load points balance');
+        }
+    });
+}
+
+/**
+ * Calculate points user will earn from this order
+ */
+function calculatePointsWillEarn() {
+    // Wait until subtotal is calculated
+    if (subtotal <= 0) {
+        return;
+    }
+    
+    // Calculate final amount after voucher discounts (but before points)
+    const shippingDiscount = window.appliedShippingDiscount || 0;
+    const finalShippingFee = shippingFee - shippingDiscount;
+    const orderTotal = subtotal + finalShippingFee - discountAmount;
+    
+    $.ajax({
+        url: '/api/membership/points/calculate-earn',
+        method: 'GET',
+        data: { orderAmount: orderTotal },
+        success: function(response) {
+            if (response && response.points !== undefined) {
+                pointsWillEarn = response.points || 0;
+                
+                // Update UI
+                $('#points-will-earn').text(formatPoints(pointsWillEarn));
+                $('#earn-rate-display').text((response.earnRate || 1) + '%');
+                
+                // Show earn info
+                if (pointsWillEarn > 0) {
+                    $('#points-earn-info').show();
+                }
+            }
+        },
+        error: function(xhr, status, error) {
+            console.log('Could not calculate points earn');
+        }
+    });
+}
+
+/**
+ * Apply points redemption
+ */
+function applyPointsRedeem() {
+    const inputPoints = parseInt($('#points-to-use-input').val()) || 0;
+    
+    // Validation
+    if (inputPoints <= 0) {
+        alert('⚠️ Vui lòng nhập số điểm muốn sử dụng!');
+        return;
+    }
+    
+    if (inputPoints > userPoints) {
+        alert(`⚠️ Bạn chỉ có ${formatPoints(userPoints)} điểm!`);
+        return;
+    }
+    
+    // Calculate order amount (after vouchers, before points)
+    const shippingDiscount = window.appliedShippingDiscount || 0;
+    const finalShippingFee = shippingFee - shippingDiscount;
+    const orderAmount = subtotal + finalShippingFee - discountAmount;
+    
+    // Validate with backend
+    $.ajax({
+        url: '/api/membership/points/validate-redeem',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({
+            points: inputPoints,
+            orderAmount: orderAmount
+        }),
+        success: function(response) {
+            if (response.canRedeem) {
+                // Apply points
+                pointsToRedeem = response.pointsToRedeem;
+                pointsDiscount = response.discountAmount;
+                
+                // Update UI
+                $('#points-applied-amount').text(formatPoints(pointsToRedeem));
+                $('#points-discount-value').text(formatCurrency(pointsDiscount));
+                $('#points-redeemed-row').show();
+                
+                // Update counter
+                $('#points-selected-count').text(pointsToRedeem > 0 ? '1' : '0');
+                
+                // Recalculate total
+                calculatePrices();
+                
+                // Re-calculate points will earn (based on new total)
+                calculatePointsWillEarn();
+                
+                alert(`✅ ${response.message}\nSố điểm còn lại: ${formatPoints(response.remainingPoints)}`);
+            } else {
+                alert('❌ ' + response.message);
+            }
+        },
+        error: function(xhr, status, error) {
+            let errorMessage = 'Có lỗi khi áp dụng điểm!';
+            try {
+                const errorResponse = JSON.parse(xhr.responseText);
+                if (errorResponse.message) {
+                    errorMessage = errorResponse.message;
+                }
+            } catch (e) {}
+            alert('❌ ' + errorMessage);
+        }
+    });
+}
+
+/**
+ * Clear applied points
+ */
+function clearAppliedPoints() {
+    pointsToRedeem = 0;
+    pointsDiscount = 0;
+    
+    $('#points-to-use-input').val('');
+    $('#points-redeemed-row').hide();
+    $('#points-selected-count').text('0');
+    
+    // Recalculate
+    calculatePrices();
+    calculatePointsWillEarn();
+}
+
+/**
+ * Format points with emoji
+ */
+function formatPoints(points) {
+    return `${points.toLocaleString('vi-VN')} điểm`;
+}
+
 /**
  * Calculate all prices
  */
@@ -640,8 +811,8 @@ function calculatePrices() {
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;
     
-    // Calculate final total
-    const finalTotal = subtotal + finalShippingFee - discountAmount;
+    // Calculate final total (with points discount)
+    const finalTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount;
     
     // Update UI
     $('#subtotal-price').text(formatPrice(subtotal));
@@ -800,6 +971,16 @@ function bindEventHandlers() {
     
     // Payment button
     $('#btn-payment').on('click', handlePayment);
+    
+    // ✅ Loyalty Points handlers
+    $('#btn-apply-points').on('click', applyPointsRedeem);
+    $('#btn-clear-points').on('click', clearAppliedPoints);
+    
+    // Update counter when user types points
+    $('#points-to-use-input').on('input', function() {
+        const inputPoints = parseInt($(this).val()) || 0;
+        $('#points-selected-count').text(inputPoints > 0 ? inputPoints.toLocaleString('vi-VN') : '0');
+    });
     
     // ✅ Address modal handlers
     $('#btn-change-address').on('click', handleOpenAddressModal);
@@ -1336,10 +1517,10 @@ function handlePayment() {
         return;
     }
     
-    // Calculate final total correctly with shipping discount
+    // Calculate final total correctly with shipping discount and points
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;
-    const finalTotal = subtotal + finalShippingFee - discountAmount;
+    const finalTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount;
     
     // Collect selected item IDs and quantities
     const selectedItemIds = selectedItems.map(item => item.id);
@@ -1368,6 +1549,7 @@ function handlePayment() {
         shippingFee: shippingFee, // ✅ THÊM shipping fee gốc
         orderDiscountAmount: discountAmount, // ✅ THÊM discount amount
         shippingDiscountAmount: shippingDiscount, // ✅ THÊM shipping discount
+        pointsRedeemed: pointsToRedeem, // 🪙 THÊM POINTS REDEEMED
         selectedItemIds: selectedItemIds,
         selectedItemsData: selectedItemsData
     };
