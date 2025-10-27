@@ -19,6 +19,7 @@ public class RatingResponseDTO {
     private Date createdDate;
     private String userName;
     private String userEmail;
+    private String userAvatar;  // User avatar from database
     private String productName;
     private String productSize;
     private Double averageStars;

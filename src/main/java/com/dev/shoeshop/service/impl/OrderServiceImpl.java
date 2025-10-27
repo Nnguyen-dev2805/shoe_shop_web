@@ -909,6 +909,9 @@ public class OrderServiceImpl implements OrderService {
         
         // Convert ProductDetail
         if (orderDetail.getProduct() != null) {
+            // ⭐ SET FLAT FIELDS FOR TEMPLATE ACCESS
+            dto.setSize(orderDetail.getProduct().getSize());
+            
             OrderDetailDTO.ProductDetailDTO productDetailDTO = OrderDetailDTO.ProductDetailDTO.builder()
                     .id(orderDetail.getProduct().getId())
                     .size(orderDetail.getProduct().getSize())
@@ -917,6 +920,10 @@ public class OrderServiceImpl implements OrderService {
             
             // Convert Product info
             if (orderDetail.getProduct().getProduct() != null) {
+                // ⭐ SET FLAT FIELDS FOR TEMPLATE ACCESS
+                dto.setProduct_name(orderDetail.getProduct().getProduct().getTitle());
+                dto.setImage(orderDetail.getProduct().getProduct().getImage());
+                
                 OrderDetailDTO.ProductDetailDTO.ProductInfo productInfo = OrderDetailDTO.ProductDetailDTO.ProductInfo.builder()
                         .id(orderDetail.getProduct().getProduct().getId())
                         .title(orderDetail.getProduct().getProduct().getTitle())
@@ -1251,6 +1258,12 @@ public class OrderServiceImpl implements OrderService {
     private void calculateAndSetOrderPricing(Order order, Double subtotal, Double shippingFee,
                                              Double orderDiscountAmount, Double shippingDiscountAmount) {
         System.out.println("=== Setting Order Pricing from Frontend ===");
+
+        // Set shipping fee (IMPORTANT: Must save to database)
+        if (shippingFee != null) {
+            order.setShippingFee(shippingFee);
+            System.out.println("Shipping fee: " + shippingFee);
+        }
 
         // Use values from frontend (already calculated accurately)
         if (subtotal != null && shippingFee != null) {

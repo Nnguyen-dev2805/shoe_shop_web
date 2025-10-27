@@ -10,7 +10,13 @@ import com.dev.shoeshop.service.OrderService;
 import com.dev.shoeshop.service.RatingService;
 import com.dev.shoeshop.service.UserService;
 import com.dev.shoeshop.service.StorageService;
+import com.dev.shoeshop.service.CloudinaryService;
 import com.dev.shoeshop.repository.OrderDetailRepository;
+import com.dev.shoeshop.repository.RatingRepository;
+import com.dev.shoeshop.entity.OrderDetail;
+import com.dev.shoeshop.entity.Rating;
+import com.dev.shoeshop.entity.Order;
+import java.util.ArrayList;
 import com.dev.shoeshop.utils.Constant;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpSession;
@@ -25,7 +31,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.io.IOException;
 /**
  * User Home Controller - Handles view rendering only
  * API endpoints are in ApiHomeController (/api/shop/*)
@@ -34,12 +40,13 @@ import java.util.Map;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserHomeController {
-
-    private final UserService userService;
-    private final OrderService orderService;
-    private final RatingService ratingService;
-    private final OrderDetailRepository orderDetailRepository;
     private final StorageService storageService;
+    private final OrderService orderService;
+    private final UserService userService;
+    private final RatingService ratingService;
+    private final CloudinaryService cloudinaryService;
+    private final OrderDetailRepository orderDetailRepository;
+    private final RatingRepository ratingRepository;
 
     @GetMapping("/shop")
     public String userShop(HttpSession session) {
@@ -148,9 +155,20 @@ public class UserHomeController {
             // Check rating status for each order detail
             if (orderDetail.getOrderDetails() != null) {
                 for (OrderDetailDTO detail : orderDetail.getOrderDetails()) {
-                    // Temporarily set to false to avoid circular dependency
-                    // Rating status will be loaded via AJAX after page loads
-                    detail.setHasRating(false);
+                    // Check if this order detail has been rated by user
+                    try {
+                        OrderDetail orderDetailEntity = orderDetailRepository.findById(detail.getId().intValue()).orElse(null);
+                        if (orderDetailEntity != null) {
+                            boolean hasRating = ratingService.hasRating(orderDetailEntity, u);
+                            detail.setHasRating(hasRating);
+                            System.out.println("OrderDetail " + detail.getId() + " hasRating: " + hasRating);
+                        } else {
+                            detail.setHasRating(false);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Error checking rating status: " + e.getMessage());
+                        detail.setHasRating(false);
+                    }
                 }
             }
             
@@ -168,7 +186,123 @@ public class UserHomeController {
     }
     
     /**
-     * API endpoint để submit ratings
+     * API endpoint để submit single rating (with image support)
+     */
+    @PostMapping("/api/rating/submit")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> submitSingleRating(
+            @RequestParam Long orderDetailId,
+            @RequestParam Integer rating,
+            @RequestParam String comment,
+            @RequestParam(required = false) MultipartFile[] images,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            System.out.println("=== Single Rating Request Received ===");
+            System.out.println("Order Detail ID: " + orderDetailId);
+            System.out.println("Rating: " + rating);
+            System.out.println("Comment: " + comment);
+            System.out.println("Images count: " + (images != null ? images.length : 0));
+            
+            // Lấy user từ session
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập để đánh giá");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // Validate rating value
+            if (rating < 1 || rating > 5) {
+                response.put("success", false);
+                response.put("message", "Đánh giá phải từ 1-5 sao");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Validate orderDetailId belongs to user's order
+            OrderDetail orderDetail = orderDetailRepository.findById(orderDetailId.intValue())
+                .orElse(null);
+            
+            if (orderDetail == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy chi tiết đơn hàng");
+                return ResponseEntity.status(404).body(response);
+            }
+            
+            // Check if order belongs to user
+            if (!orderDetail.getOrder().getUser().getId().equals(user.getId())) {
+                response.put("success", false);
+                response.put("message", "Bạn không có quyền đánh giá đơn hàng này");
+                return ResponseEntity.status(403).body(response);
+            }
+            
+            // Check if order is DELIVERED
+            if (orderDetail.getOrder().getStatus() != ShipmentStatus.DELIVERED) {
+                response.put("success", false);
+                response.put("message", "Chỉ có thể đánh giá đơn hàng đã giao thành công");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Check if already rated
+            boolean alreadyRated = ratingService.hasRating(orderDetail, user);
+            if (alreadyRated) {
+                response.put("success", false);
+                response.put("message", "Bạn đã đánh giá sản phẩm này rồi");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            // Upload images to Cloudinary
+            List<String> imageUrls = new ArrayList<>();
+            if (images != null && images.length > 0) {
+                System.out.println("Uploading " + images.length + " images to Cloudinary...");
+                for (MultipartFile image : images) {
+                    if (!image.isEmpty()) {
+                        try {
+                            String imageUrl = cloudinaryService.uploadImage(image, CloudinaryService.RATING_FOLDER);
+                            imageUrls.add(imageUrl);
+                            System.out.println("✅ Uploaded: " + imageUrl);
+                        } catch (Exception e) {
+                            System.err.println("❌ Failed to upload image: " + e.getMessage());
+                        }
+                    }
+                }
+            }
+            
+            System.out.println("Total images uploaded: " + imageUrls.size());
+            
+            // Save rating to database
+            Rating newRating = Rating.builder()
+                .star(rating)
+                .comment(comment)
+                .image(imageUrls.isEmpty() ? null : String.join(",", imageUrls))
+                .user(user)
+                .product(orderDetail.getProduct().getProduct())
+                .productDetail(orderDetail.getProduct())
+                .orderDetail(orderDetail)
+                .build();
+            
+            ratingRepository.save(newRating);
+            System.out.println("✅ Rating saved to database with ID: " + newRating.getId());
+            
+            response.put("success", true);
+            response.put("message", "Đánh giá đã được gửi thành công");
+            response.put("uploadedImages", imageUrls.size());
+            System.out.println("✅ Rating submitted successfully");
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
+        }
+    }
+    
+    /**
+     * API endpoint để submit ratings (batch)
      */
     @PostMapping("/api/ratings")
     @ResponseBody

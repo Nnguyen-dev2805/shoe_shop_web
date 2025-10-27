@@ -85,8 +85,8 @@ public class RatingServiceImpl implements RatingService {
     
     /**
      * Update Product rating statistics (average rating, total reviews)
+     * Note: This method is called from @Transactional methods, so no need to annotate it again
      */
-    @Transactional
     private void updateProductRatingStatistics(Long productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -268,6 +268,7 @@ public class RatingServiceImpl implements RatingService {
                 .createdDate(rating.getCreatedDate())
                 .userName(rating.getUser() != null ? rating.getUser().getFullname() : "Khách hàng")
                 .userEmail(rating.getUser() != null ? rating.getUser().getEmail() : "")
+                .userAvatar(rating.getUser() != null ? rating.getUser().getProfilePicture() : null)
                 .productName(rating.getProduct() != null ? rating.getProduct().getTitle() : "Sản phẩm")
                 .productSize(rating.getProductDetail() != null ? String.valueOf(rating.getProductDetail().getSize()) : "N/A")
                 .build();
