@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" data-menu-color="dark">
 
 <head>
     <!-- Title Meta -->
@@ -21,6 +21,11 @@
     <link th:href="@{/assets/vendor/apexcharts/apexcharts.css}" rel="stylesheet" type="text/css"/>
 
     <style>
+        /* Ensure consistent background color with other pages */
+        body, .page-content {
+            background-color: #f9f7f7 !important;
+        }
+        
         .stat-card {
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
