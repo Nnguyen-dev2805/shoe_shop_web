@@ -7,7 +7,7 @@
 <head>
      <!-- Title Meta -->
      <meta charset="utf-8" />
-     <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+     <title>Chi tiết đơn hàng | Larkon - Responsive Admin Dashboard Template</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta name="description" content="A fully responsive premium admin dashboard template" />
      <meta name="author" content="Techzaa" />
@@ -56,14 +56,14 @@
                                                   <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                                                        <div>
                                                             <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
-                                                                 <span>Order id:</span>
+                                                                 <span>Mã đơn hàng:</span>
                                                                  <span th:text="${order.id}"></span>
                                                                  <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" th:text="${order.payOption}">hehe</span>
                                                                  <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
                                                             </h4>
-                                                            <p class="mb-0">Created date: <span th:text="${#dates.format(order.createdDate, 'MMM dd, yyyy')}"></span></p>
+                                                            <p class="mb-0">Ngày tạo: <span th:text="${#dates.format(order.createdDate, 'MMM dd, yyyy')}"></span></p>
                                                        </div>
-                                                       <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-primary" style="margin-right: 100%">Cancel</a>
+                                                       <a th:onclick="'popUpClick(' + ${order.id} + ')'" class="btn btn-primary" style="margin-right: 100%">Hủy đơn</a>
                                                        <!-- Order cancel fragment-->
                                                        <div th:include="~{fragments/order/order_cancel.html}"></div>
                                                   </div>
@@ -72,10 +72,10 @@
                                              <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
                                                   <p th:if="${order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL && order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}" class="border rounded mb-0 px-2 py-1 bg-body">
                                                        <i class='bx bx-arrow-from-left align-middle fs-16'>
-                                                       </i> Last updated date: <span class="text-dark fw-medium" th:text="${#dates.format(shipper.updatedDate, 'MMM dd, yyyy')}"></span>
+                                                       </i> Ngày cập nhật cuối: <span class="text-dark fw-medium" th:text="${#dates.format(shipper.updatedDate, 'MMM dd, yyyy')}"></span>
                                                   </p>
                                                   <div>
-                                                       <button onclick="turnOnSearch()" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}" href="#!" class="btn btn-primary" >Make as ready ship</button>
+                                                       <button onclick="turnOnSearch()" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}" href="#!" class="btn btn-primary" >Giao cho vận chuyển</button>
                                                   </div>
 
                                                   <script>
@@ -90,9 +90,9 @@
                                              <div class="card-body">
                                                   <!-- App Search-->
                                                   <div class="position-relative">
-                                                       <input id="searchInput" type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
+                                                       <input id="searchInput" type="search" class="form-control" placeholder="Tìm kiếm shipper..." autocomplete="off" value="">
 <!--                                                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>-->
-                                                       <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Search</button>
+                                                       <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Tìm</button>
                                                   </div>
                                                   <!-- search result -->
                                                   <div class="table-responsive" >
@@ -141,7 +141,7 @@
                                                                                                   .append("<tr>\n" +
                                                                                                           "<td>" + user.id + "</td>\n" +
                                                                                                           "<td>" + user.name +"</td>\n" +
-                                                                                                          "<td><a class=\"btn btn-primary\" href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +  // Thêm thẻ <a> với orderid lấy từ URL
+                                                                                                          "<td><a class=\"btn btn-primary\" href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Giao hàng</a></td>" +  // Thêm thẻ <a> với orderid lấy từ URL
                                                                                                           " </tr>");
                                                                                      });
                                                                                 } else {
@@ -163,17 +163,17 @@
                                         </div>
                                         <div class="card">
                                              <div class="card-header">
-                                                  <h4 class="card-title">Product</h4>
+                                                  <h4 class="card-title">Sản phẩm</h4>
                                              </div>
                                              <div class="card-body">
                                                   <div class="table-responsive">
                                                        <table class="table align-middle mb-0 table-hover table-centered">
                                                             <thead class="bg-light-subtle border-bottom">
                                                             <tr>
-                                                                 <th>Product Name & Size</th>
-                                                                 <th>Quantity</th>
-                                                                 <th>Price</th>
-                                                                 <th>Amount</th>
+                                                                 <th>Tên sản phẩm & Size</th>
+                                                                 <th>Số lượng</th>
+                                                                 <th>Giá</th>
+                                                                 <th>Thành tiền</th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
@@ -190,7 +190,7 @@
                                         </div>
                                         <div class="card">
                               <div class="card-header">
-                                   <h4 class="card-title">Shipping detail</h4>
+                                   <h4 class="card-title">Chi tiết vận chuyển</h4>
                               </div>
                               <div class="card-body" th:if="${order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).CANCEL && order.status != T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
                                    <div class="position-relative ms-2">
@@ -207,7 +207,7 @@
                               </div>
                               <div class="card-body" th:if="${order.status == T(hcmute.com.ShoeShop.utlis.ShipmentStatus).IN_STOCK}">
                                    <div class="position-relative ms-2">
-                                        <p class="mb-1" >Need shipper for this order</p>
+                                        <p class="mb-1" >Cần shipper cho đơn hàng này</p>
                                    </div>
                               </div>
                          </div>
@@ -217,7 +217,7 @@
                          <div class="col-xl-3 col-lg-4">
                               <div class="card">
                                    <div class="card-header">
-                                        <h4 class="card-title">Order Summary</h4>
+                                        <h4 class="card-title">Tóm tắt đơn hàng</h4>
                                    </div>
                                    <div class="card-body">
                                         <div class="table-responsive">
@@ -225,13 +225,13 @@
                                                   <tbody>
                                                        <tr>
                                                             <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total : </p>
+                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Tạm tính: </p>
                                                             </td>
                                                             <td th:text="${payment.subtotal}" class="text-end text-dark fw-medium px-0"></td>
                                                        </tr>
                                                        <tr>
                                                             <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount : </p>
+                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Giảm giá: </p>
                                                             </td>
                                                             <td th:text="${payment.discount}" class="text-end text-dark fw-medium px-0"></td>
                                                        </tr>
@@ -242,7 +242,7 @@
                                    </div>
                                    <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
                                         <div>
-                                             <p class="fw-medium text-dark mb-0">Total Amount</p>
+                                             <p class="fw-medium text-dark mb-0">Tổng cộng</p>
                                         </div>
                                         <div>
                                              <p class="fw-medium text-dark mb-0" th:text="${payment.totalpay}"></p>
@@ -253,7 +253,7 @@
 
                               <div class="card">
                                    <div class="card-header">
-                                        <h4 class="card-title">Customer Details</h4>
+                                        <h4 class="card-title">Thông tin khách hàng</h4>
                                    </div>
                                    <div class="card-body">
                                         <div class="d-flex align-items-center gap-2">
@@ -272,7 +272,7 @@
                                         <p class="mb-1">0968543251</p>
 
                                         <div class="d-flex justify-content-between mt-3">
-                                             <h5 class="">Shipping Address</h5>
+                                             <h5 class="">Địa chỉ giao hàng</h5>
                                              <div>
                                                   <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
                                              </div>
