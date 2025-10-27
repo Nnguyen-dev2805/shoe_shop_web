@@ -135,6 +135,9 @@ function renderProductDetails(product) {
     $('#product-category').text(product.categoryName || 'N/A');
     $('#product-brand').text(product.brandName || 'N/A');
     
+    // ✅ Reset button states before rendering (fix disabled state issue)
+    resetButtonStatesOnProductLoad();
+    
     // Render size buttons
     renderSizeButtons(product.sizeOptions, product.price);
     
@@ -149,6 +152,35 @@ function renderProductDetails(product) {
         checkProductInWishlist(product.id);
         console.log('🔄 Triggered wishlist check for product:', product.id);
     }
+}
+
+/**
+ * Reset button states when loading new product
+ */
+function resetButtonStatesOnProductLoad() {
+    const $addButton = $('#add-to-cart-btn');
+    const $buyNowButton = $('#buy-now-btn');
+    
+    console.log('🔄 Resetting buttons for new product...');
+    
+    // Reset to initial disabled state (until size is selected)
+    $addButton.prop('disabled', true);
+    $addButton.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
+    $addButton.css({
+        'background': '',
+        'opacity': '0.6',
+        'cursor': 'not-allowed'
+    });
+    
+    $buyNowButton.prop('disabled', true);
+    $buyNowButton.html('<span>Mua Ngay</span>');
+    $buyNowButton.css({
+        'background': '',
+        'opacity': '0.6',
+        'cursor': 'not-allowed'
+    });
+    
+    console.log('✅ Buttons reset to initial state');
 }
 
 /**
@@ -257,29 +289,51 @@ function selectSize($button, basePrice) {
     const $qtyInput = $('#qty-input');
     
     if (maxStock > 0) {
-        // Enable all controls
+        // ✅ Enable all controls and reset styles
         $addButton.prop('disabled', false);
         $addButton.html('<i class="fa fa-shopping-cart"></i><span>Thêm Vào Giỏ Hàng</span>');
+        $addButton.css({
+            'background': '',  // Reset to CSS default
+            'opacity': '1',
+            'cursor': 'pointer'
+        });
         
         $buyNowButton.prop('disabled', false);
         $buyNowButton.html('<span>Mua Ngay</span>');
+        $buyNowButton.css({
+            'background': '',  // Reset to CSS default (#ee4d2d)
+            'opacity': '1',
+            'cursor': 'pointer'
+        });
         
         $qtyMinus.prop('disabled', false);
         $qtyPlus.prop('disabled', false);
         $qtyInput.prop('disabled', false);
+        
+        console.log('✅ Buttons enabled - Stock available:', maxStock);
     } else {
-        // Disable all controls for out-of-stock
+        // ❌ Disable all controls for out-of-stock
         $addButton.prop('disabled', true);
         $addButton.html('<i class="fa fa-ban"></i><span>Hết Hàng</span>');
-        $addButton.css('background', '#ccc');
+        $addButton.css({
+            'background': '#ccc',
+            'opacity': '0.6',
+            'cursor': 'not-allowed'
+        });
         
         $buyNowButton.prop('disabled', true);
         $buyNowButton.html('<span>Hết Hàng</span>');
-        $buyNowButton.css('background', '#ccc');
+        $buyNowButton.css({
+            'background': '#ccc',
+            'opacity': '0.6',
+            'cursor': 'not-allowed'
+        });
         
         $qtyMinus.prop('disabled', true);
         $qtyPlus.prop('disabled', true);
         $qtyInput.prop('disabled', true);
+        
+        console.log('❌ Buttons disabled - OUT OF STOCK');
     }
 }
 

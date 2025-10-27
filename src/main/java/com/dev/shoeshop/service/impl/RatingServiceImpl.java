@@ -79,7 +79,13 @@ public class RatingServiceImpl implements RatingService {
                              ", Image: " + savedRating.getImage());
             
             // ✅ Update Product statistics after saving rating
-            updateProductRatingStatistics(orderDetail.getProduct().getProduct().getId());
+            Long productId = orderDetail.getProduct().getProduct().getId();
+            System.out.println("🔄 Updating statistics for Product ID: " + productId);
+            updateProductRatingStatistics(productId);
+            
+            // Flush to ensure database is updated immediately
+            productRepository.flush();
+            System.out.println("💾 Database flushed - Product statistics committed");
         }
     }
     
@@ -94,11 +100,14 @@ public class RatingServiceImpl implements RatingService {
         List<Rating> allRatings = ratingRepository.findByProductIdOrderByCreatedDateDesc(productId);
         
         if (allRatings.isEmpty()) {
+            // ✅ Primary fields
             product.setAverage_rating(0.0);
             product.setTotal_reviews(0L);
+            product.setTotal_stars(0L);
+            
+            // Deprecated fields (for backward compatibility)
             product.setAverage_stars(0.0);
             product.setTotal_reviewers(0L);
-            product.setTotal_stars(0L);
         } else {
             // Calculate total reviews
             long totalReviews = allRatings.size();
@@ -114,19 +123,28 @@ public class RatingServiceImpl implements RatingService {
                     .mapToInt(Rating::getStar)
                     .sum();
             
-            // Update Product fields
+            // ✅ Update Product fields (primary: average_rating, total_reviews)
             product.setAverage_rating(averageRating);
             product.setTotal_reviews(totalReviews);
-            product.setAverage_stars(averageRating);  // Same as average_rating
-            product.setTotal_reviewers(totalReviews); // Same as total_reviews
             product.setTotal_stars(totalStars);
+            
+            // Also update deprecated fields for backward compatibility
+            product.setAverage_stars(averageRating);
+            product.setTotal_reviewers(totalReviews);
+            
+            System.out.println("📊 Calculated Stats:");
+            System.out.println("  Average Rating: " + averageRating);
+            System.out.println("  Total Reviews: " + totalReviews);
+            System.out.println("  Total Stars: " + totalStars);
         }
         
-        productRepository.save(product);
+        // Save to database
+        Product savedProduct = productRepository.save(product);
         
-        System.out.println("✅ Updated Product ID " + productId + 
-                         " - Average Rating: " + product.getAverage_rating() + 
-                         ", Total Reviews: " + product.getTotal_reviews());
+        System.out.println("✅ Updated Product ID " + productId + ":");
+        System.out.println("  ⭐ average_rating: " + savedProduct.getAverage_rating() + " (PRIMARY)");
+        System.out.println("  📊 total_reviews: " + savedProduct.getTotal_reviews() + " (PRIMARY)");
+        System.out.println("  📦 total_stars: " + savedProduct.getTotal_stars());
     }
     
     @Override
@@ -154,8 +172,17 @@ public class RatingServiceImpl implements RatingService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
         
-        summary.put("averageStars", product.getAverage_stars() != null ? product.getAverage_stars() : 0.0);
-        summary.put("totalReviewers", product.getTotal_reviewers() != null ? product.getTotal_reviewers() : 0L);
+        // ✅ Chỉ dùng average_rating và total_reviews (không dùng average_stars, total_reviewers)
+        Double averageRating = product.getAverage_rating() != null ? product.getAverage_rating() : 0.0;
+        Long totalReviews = product.getTotal_reviews() != null ? product.getTotal_reviews() : 0L;
+        
+        System.out.println("=== Product Rating Summary (from average_rating) ===");
+        System.out.println("Product ID: " + productId);
+        System.out.println("Average Rating: " + averageRating);
+        System.out.println("Total Reviews: " + totalReviews);
+        
+        summary.put("averageStars", averageRating);
+        summary.put("totalReviewers", totalReviews);
         
         return summary;
     }
