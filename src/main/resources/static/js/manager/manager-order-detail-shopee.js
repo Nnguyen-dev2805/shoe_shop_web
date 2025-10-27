@@ -1,4 +1,4 @@
-// ========== SHOPEE-STYLE ADMIN ORDER DETAIL JAVASCRIPT ==========
+// ========== SHOPEE-STYLE MANAGER ORDER DETAIL JAVASCRIPT ==========
 
 // Toggle Payment Details
 function togglePaymentDetails() {
@@ -44,20 +44,22 @@ function turnOnSearch() {
     loadAllShippers();
 }
 
-// Popup cancel order
-let selectedOrderId = null;
-
-function popUpClick(orderId) {
-    let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
-    modal.show();
-    selectedOrderId = orderId;
-    console.log("🚨 Order ID selected for cancellation:", selectedOrderId);
-}
+// Popup cancel order - scoped to avoid conflicts
+(function() {
+    window.managerSelectedOrderId = null;
+    
+    window.popUpClick = function(orderId) {
+        let modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        modal.show();
+        window.managerSelectedOrderId = orderId;
+        console.log("🚨 Order ID selected for cancellation:", window.managerSelectedOrderId);
+    };
+})();
 
 // Load all shippers
 function loadAllShippers() {
     var currentUrl = window.location.pathname;
-    var orderid = currentUrl.split('/')[4];
+    var orderid = currentUrl.split('/')[currentUrl.split('/').length - 1];
 
     $.ajax({
         url: "/user/shipper/all",
@@ -72,7 +74,7 @@ function loadAllShippers() {
                         "<tr>" +
                         "<td>" + user.id + "</td>" +
                         "<td>" + user.fullname + "</td>" +
-                        "<td style='text-align: center;'><a class='btn-shopee' style='padding: 8px 16px; font-size: 13px; text-decoration: none;' href='/admin/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Giao hàng</a></td>" +
+                        "<td style='text-align: center;'><a class='btn-shopee' style='padding: 8px 16px; font-size: 13px; text-decoration: none;' href='/manager/order/shipping?orderid=" + orderid + "&userid=" + user.id + "'>Giao hàng</a></td>" +
                         "</tr>"
                     );
                 });
@@ -89,25 +91,30 @@ function loadAllShippers() {
 // Main AJAX - Load order details
 $(document).ready(function() {
     var currentUrl = window.location.pathname;
-    var orderId = currentUrl.split('/')[4];
+    var orderId = currentUrl.split('/')[currentUrl.split('/').length - 1];
+    
+    console.log("🔍 Current URL:", currentUrl);
+    console.log("🔍 Order ID:", orderId);
+    console.log("🔍 API URL:", "/manager/order/detail/" + orderId);
     
     // ========== READY TO SHIP BUTTON ==========
     $("#makeReadyShipBtn").off("click").on("click", function() {
+        console.log("✅ Ready to Ship button clicked!");
         turnOnSearch();
     });
     
     // ========== CANCEL ORDER MODAL HANDLERS ==========
     $("#confirmCancelBtn").off("click").on("click", function() {
-        if (selectedOrderId) {
-            console.log("⚠️ Cancelling order ID:", selectedOrderId);
+        if (window.managerSelectedOrderId) {
+            console.log("⚠️ Cancelling order ID:", window.managerSelectedOrderId);
             
             $.ajax({
-                url: "/admin/order/cancel",
+                url: "/manager/order/cancel",
                 type: "POST",
-                data: { orderId: selectedOrderId },
+                data: { orderId: window.managerSelectedOrderId },
                 success: function(response) {
                     console.log("✅ Order cancelled successfully:", response);
-                    alert("Đơn hàng #" + selectedOrderId + " đã được hủy thành công!");
+                    alert("Đơn hàng #" + window.managerSelectedOrderId + " đã được hủy thành công!");
                     $("#confirmModal").modal("hide");
                     location.reload();
                 },
@@ -148,7 +155,7 @@ $(document).ready(function() {
                                 "<tr>" +
                                 "<td>" + user.id + "</td>" +
                                 "<td>" + user.fullname + "</td>" +
-                                "<td style='text-align: center;'><a class='btn-shopee' style='padding: 8px 16px; font-size: 13px; text-decoration: none;' href='/admin/order/shipping?orderid=" + orderId + "&userid=" + user.id + "'>Giao hàng</a></td>" +
+                                "<td style='text-align: center;'><a class='btn-shopee' style='padding: 8px 16px; font-size: 13px; text-decoration: none;' href='/manager/order/shipping?orderid=" + orderId + "&userid=" + user.id + "'>Giao hàng</a></td>" +
                                 "</tr>"
                             );
                         });
@@ -164,12 +171,13 @@ $(document).ready(function() {
     });
     
     // Load order details
+    console.log("📡 Starting AJAX call to load order details...");
     $.ajax({
-        url: "/admin/order/detail/" + orderId,
+        url: "/manager/order/detail/" + orderId,
         type: "GET",
         dataType: "json",
         success: function(response) {
-            console.log("=== API Response ===", response);
+            console.log("✅ === API Response SUCCESS ===", response);
             
             var order = response.order;
             var list = response.listOrderDetail;
@@ -395,7 +403,14 @@ $(document).ready(function() {
             }
         },
         error: function(xhr, status, error) {
-            console.error("Error loading order details:", error);
+            console.error("❌ === API Response ERROR ===");
+            console.error("Status:", status);
+            console.error("Error:", error);
+            console.error("XHR:", xhr);
+            console.error("Response Text:", xhr.responseText);
+            
+            alert("Lỗi khi tải chi tiết đơn hàng!\nStatus: " + status + "\nError: " + error + "\nVui lòng kiểm tra console (F12) để xem chi tiết.");
         }
     });
 });
+
