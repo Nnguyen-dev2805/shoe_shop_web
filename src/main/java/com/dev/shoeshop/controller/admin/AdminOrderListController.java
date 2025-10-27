@@ -7,7 +7,6 @@ import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.OrderPaymentDTO;
 import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
-import com.dev.shoeshop.entity.Shipment;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
@@ -19,9 +18,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,8 @@ public class AdminOrderListController {
     // 1️⃣ Endpoint hiển thị giao diện
     @GetMapping("/list")
     public String listPage() {
-        // map tới templates/admin/order/testList.html
-        return "admin/order/testList";
+        // map tới templates/admin/order/order-list-new.html (temporary use existing file)
+        return "admin/order/order-list-new";
     }
 
 
@@ -77,9 +76,40 @@ public class AdminOrderListController {
     }
 
     @GetMapping("/detail-page/{id}")
-    public String orderDetailPage(@PathVariable("id") Long id) {
-
-        return "admin/order/test"; // file templates/admin/order/order-detail.html
+    public String orderDetailPage(@PathVariable("id") Long id, Model model) {
+        try {
+            // Load order details
+            List<OrderDetailDTO> orderDetails = orderDetailService.findAllOrderDetailById(id);
+            
+            // Load payment info
+            OrderPaymentDTO payment = orderDetailService.getOrderPayment(id);
+            
+            // Load order
+            Order orderEntity = orderService.findById(id);
+            if (orderEntity == null) {
+                model.addAttribute("error", "Không tìm thấy đơn hàng #" + id);
+                return "admin/order/order-detail";
+            }
+            
+            // Convert to DTO
+            OrderDTO order = orderDTOConverter.toOrderDTO(orderEntity);
+            
+            // Load shipment info if exists
+            ShipmentDTO shipment = shipmentService.findShipmentByOrderId(id);
+            
+            // Add to model
+            model.addAttribute("order", order);
+            model.addAttribute("list", orderDetails);
+            model.addAttribute("payment", payment);
+            model.addAttribute("shipment", shipment);
+            model.addAttribute("user", order.getUser());
+            
+            return "admin/order/order-detail";
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Có lỗi xảy ra: " + e.getMessage());
+            return "admin/order/order-detail";
+        }
     }
 
 

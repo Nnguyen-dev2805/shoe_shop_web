@@ -102,6 +102,16 @@ public class Order {
     @Column(name = "points_redeemed")
     @Builder.Default
     private Integer pointsRedeemed = 0; // Điểm đã sử dụng cho đơn này
+    
+    // ========== DEEG XU (COINS) ==========
+    
+    @Column(name = "coins_used")
+    @Builder.Default
+    private Long coinsUsed = 0L; // Số xu đã sử dụng khi đặt hàng
+    
+    @Column(name = "coins_discount")
+    @Builder.Default
+    private Double coinsDiscount = 0.0; // Số tiền giảm giá từ xu (VNĐ)
 
     // Business logic methods
     

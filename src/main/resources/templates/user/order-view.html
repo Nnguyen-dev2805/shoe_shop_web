@@ -455,6 +455,204 @@
         </div>
     </div>
     <!-- order view area end -->
+    
+    <!-- ========== RETURN REQUEST MODAL - SHOPEE STYLE ========== -->
+    <div id="returnRequestModal" class="modal fade" tabindex="-1" role="dialog" style="display: none;">
+        <div class="modal-dialog modal-lg" role="document" style="max-width: 800px; margin: 30px auto;">
+            <div class="modal-content" style="border-radius: 0; border: none; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                <!-- Modal Header - Shopee Style Fixed -->
+                <div class="modal-header" style="background: linear-gradient(180deg, #ee4d2d 0%, #d73211 100%); color: white; padding: 20px 24px; border-bottom: none; display: flex; align-items: center; justify-content: space-between;">
+                    <h4 class="modal-title" style="font-weight: 400; margin: 0; font-size: 20px; display: flex; align-items: center;">
+                        <i class="fa fa-undo" style="margin-right: 12px; font-size: 18px;"></i>
+                        <span>Yêu Cầu Trả Hàng - Đơn <span id="modal-order-id">#17</span></span>
+                    </h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 1; text-shadow: none; font-size: 28px; font-weight: 300; margin: 0; padding: 0; background: none; border: none; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 2px; transition: background 0.2s;">
+                        <span aria-hidden="true" style="line-height: 1;">×</span>
+                    </button>
+                </div>
+                
+                <!-- Modal Body - Shopee Style -->
+                <div class="modal-body" style="padding: 24px; background: #fafafa;">
+                    <form id="returnRequestForm">
+                        <!-- Hidden Order ID -->
+                        <input type="hidden" id="return-order-id" name="orderId">
+                        
+                        <!-- Product Info - Shopee Style -->
+                        <div style="background: white; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+                            <h5 style="font-size: 14px; color: #333; margin: 0 0 12px 0; font-weight: 500;">Sản phẩm cần trả</h5>
+                            <div id="return-product-preview" style="background: #f5f5f5; padding: 12px; border-radius: 4px;">
+                                <!-- Product info will be populated dynamically -->
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <img id="return-product-image" src="/img/product/default.jpg" alt="Product" style="width: 60px; height: 60px; object-fit: cover; border-radius: 2px; border: 1px solid #e0e0e0;">
+                                    <div style="flex: 1;">
+                                        <div id="return-product-name" style="font-weight: 500; color: #333; margin-bottom: 4px; font-size: 14px;">Loading...</div>
+                                        <div id="return-product-quantity" style="color: #888; font-size: 13px;">Số lượng: 1</div>
+                                    </div>
+                                    <div id="return-product-price" style="font-weight: 700; color: #ee4d2d; font-size: 16px;">0 đ</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Return Reason - Shopee Style -->
+                        <div style="background: white; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+                            <label style="font-weight: 500; color: #333; margin-bottom: 12px; display: block; font-size: 14px;">
+                                <i class="fa fa-tag" style="margin-right: 6px; color: #ee4d2d;"></i>
+                                Lý do trả hàng: <span style="color: #ee4d2d;">*</span>
+                            </label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="WRONG_SIZE" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Sai size</span>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="DEFECTIVE" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Lỗi sản phẩm</span>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="NOT_AS_DESCRIBED" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Không đúng mô tả</span>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="WRONG_ITEM" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Gửi nhầm hàng</span>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="DAMAGED" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Hàng bị hư hỏng</span>
+                                </label>
+                                <label style="display: flex; align-items: center; padding: 10px 12px; border: 1px solid #e0e0e0; border-radius: 2px; cursor: pointer; transition: all 0.2s; background: white;" class="return-reason-option">
+                                    <input type="radio" name="reason" value="CHANGE_MIND" required style="margin-right: 10px; accent-color: #ee4d2d;">
+                                    <span style="font-size: 14px; color: #333;">Đổi ý không muốn mua</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Description - Shopee Style -->
+                        <div style="background: white; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+                            <label style="font-weight: 500; color: #333; margin-bottom: 12px; display: block; font-size: 14px;">
+                                <i class="fa fa-edit" style="margin-right: 6px; color: #ee4d2d;"></i>
+                                Mô tả chi tiết: <span style="color: #ee4d2d;">*</span>
+                            </label>
+                            <textarea name="description" id="return-description" rows="4" class="form-control" required 
+                                      style="border: 1px solid #d9d9d9; border-radius: 2px; padding: 12px; font-size: 14px; resize: vertical; width: 100%;"
+                                      placeholder="Nhập mô tả chi tiết về lý do trả hàng..."></textarea>
+                        </div>
+                        
+                        <!-- Images Upload - Shopee Style -->
+                        <div style="background: white; border-radius: 4px; padding: 16px; margin-bottom: 16px;">
+                            <label style="font-weight: 500; color: #333; margin-bottom: 12px; display: block; font-size: 14px;">
+                                <i class="fa fa-camera" style="margin-right: 6px; color: #ee4d2d;"></i>
+                                Ảnh sản phẩm: <span style="color: #ee4d2d;">*</span>
+                            </label>
+                            <div style="border: 1px dashed #d9d9d9; padding: 24px; border-radius: 2px; text-align: center; cursor: pointer; background: #fafafa;" id="image-upload-area">
+                                <input type="file" id="return-images" name="image" accept="image/*" required style="display: none;">
+                                <label for="return-images" style="cursor: pointer; margin: 0;">
+                                    <i class="fa fa-cloud-upload" style="font-size: 48px; color: #bbb; display: block; margin-bottom: 12px;"></i>
+                                    <div style="color: #666; font-size: 14px; margin-bottom: 4px;">Nhấp để tải ảnh lên</div>
+                                    <div style="color: #999; font-size: 12px;">JPG, PNG - Tối đa 5MB</div>
+                                </label>
+                            </div>
+                            <div id="image-preview" style="margin-top: 12px; display: none;">
+                                <!-- Preview image will appear here -->
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+                
+                <!-- Modal Footer - Shopee Style -->
+                <div class="modal-footer" style="padding: 12px 24px; background: white; border-top: 1px solid #e0e0e0; border-radius: 0 0 4px 4px; display: flex; justify-content: flex-end; gap: 12px;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="padding: 10px 28px; border-radius: 2px; font-weight: 400; font-size: 14px; background: white; color: #555; border: 1px solid #d9d9d9;">
+                        Hủy
+                    </button>
+                    <button type="button" id="submitReturnRequest" class="btn btn-primary" style="background: #ee4d2d; border: none; padding: 10px 28px; border-radius: 2px; font-weight: 400; font-size: 14px; box-shadow: 0 1px 1px rgba(0,0,0,0.09);">
+                        Gửi Yêu Cầu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal CSS - Shopee Style -->
+    <style>
+        /* Close button hover effect */
+        #returnRequestModal .modal-header .close:hover {
+            background: rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        #returnRequestModal .modal-header .close:active {
+            background: rgba(255, 255, 255, 0.25) !important;
+        }
+        
+        /* Return reason options */
+        .return-reason-option:hover {
+            border-color: #ee4d2d !important;
+            background: #fff5f5 !important;
+        }
+        
+        .return-reason-option input[type="radio"]:checked + span {
+            color: #ee4d2d;
+            font-weight: 500;
+        }
+        
+        .return-reason-option:has(input[type="radio"]:checked) {
+            border-color: #ee4d2d !important;
+            background: #fff5f5 !important;
+        }
+        
+        /* Modal fade in animation */
+        #returnRequestModal.fade .modal-dialog {
+            transform: scale(0.9);
+            opacity: 0;
+            transition: all 0.2s ease-out;
+        }
+        
+        #returnRequestModal.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        #image-preview .preview-item {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 2px solid #e0e0e0;
+        }
+        
+        #image-preview .preview-item img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #image-preview .preview-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        #image-preview .preview-item .remove-btn:hover {
+            background: #dc3545;
+            transform: scale(1.1);
+        }
+    </style>
 
     <!-- footer area start -->
     <div th:include="~{fragments/web/footer.html}"></div>
@@ -489,6 +687,281 @@
     
     <!-- Header Cart Badge JavaScript (Require jQuery) -->
     <script src="/js/header-cart.js?v=3"></script>
+    
+    <!-- Return Request Modal JS -->
+    <script>
+        $(document).ready(function() {
+            
+            // =========================
+            // Image Upload Preview (SINGLE IMAGE)
+            // =========================
+            $('#return-images').on('change', function(e) {
+                const file = e.target.files[0];
+                const preview = $('#image-preview');
+                preview.html('');
+                
+                if (!file) {
+                    preview.hide();
+                    return;
+                }
+                
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('⚠️ Ảnh quá lớn! Tối đa 5MB.');
+                    this.value = '';
+                    preview.hide();
+                    return;
+                }
+                
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('⚠️ Vui lòng chọn file ảnh!');
+                    this.value = '';
+                    preview.hide();
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.html(`
+                        <div style="position: relative; max-width: 300px; margin: 0 auto;">
+                            <img src="${event.target.result}" style="width: 100%; border-radius: 8px; border: 2px solid #e0e0e0;">
+                            <button type="button" id="remove-image" style="position: absolute; top: 10px; right: 10px; background: rgba(220, 53, 69, 0.9); color: white; border: none; border-radius: 50%; width: 32px; height: 32px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center;">×</button>
+                        </div>
+                    `);
+                    preview.show();
+                    
+                    // Remove button handler
+                    $('#remove-image').on('click', function() {
+                        $('#return-images').val('');
+                        preview.html('').hide();
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // =========================
+            // Open Return Modal (Global Function)
+            // =========================
+            window.openReturnRequestModal = function(orderId, orderInfo) {
+                console.log('🔄 Opening return modal for order:', orderId);
+                
+                // Set order ID
+                $('#return-order-id').val(orderId);
+                $('#modal-order-id').text(orderId);
+                
+                // Reset form
+                $('#returnRequestForm')[0].reset();
+                $('#image-preview').html('').hide();
+                $('input[name="reason"]').prop('checked', false);
+                
+                // Show modal first
+                $('#returnRequestModal').modal('show');
+                
+                // Load product data from USER API
+                console.log('📤 Loading product data for order:', orderId);
+                $.ajax({
+                    url: '/user/returns/api/order/' + orderId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        console.log('✅ Order data loaded:', response);
+                        
+                        if (response.listOrderDetail && response.listOrderDetail.length > 0) {
+                            var product = response.listOrderDetail[0];
+                            console.log('📦 Product:', product);
+                            
+                            // Update product image
+                            var imageUrl = product.image || '/img/product/default.jpg';
+                            $('#return-product-image').attr('src', imageUrl);
+                            console.log('🖼️ Image:', imageUrl);
+                            
+                            // Update product name
+                            var productName = product.product_name + ' - Size ' + product.size;
+                            $('#return-product-name').text(productName);
+                            console.log('📝 Name:', productName);
+                            
+                            // Update quantity
+                            $('#return-product-quantity').text('Số lượng: ' + product.quantity);
+                            
+                            // Update price
+                            var price = new Intl.NumberFormat('vi-VN').format(product.price) + ' đ';
+                            $('#return-product-price').text(price);
+                            console.log('💰 Price:', price);
+                        } else {
+                            console.error('❌ No products found in order');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('❌ Error loading order data:', error);
+                        console.error('Status:', status);
+                        console.error('Response:', xhr.responseText);
+                        alert('Không thể tải thông tin sản phẩm. Vui lòng thử lại!');
+                    }
+                });
+            };
+            
+            // =========================
+            // Submit Return Request
+            // =========================
+            $('#submitReturnRequest').on('click', function() {
+                const form = $('#returnRequestForm')[0];
+                
+                // Validate form
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+                
+                // Validate description (removed 20 chars requirement)
+                const description = $('#return-description').val().trim();
+                if (description.length === 0) {
+                    alert('⚠️ Vui lòng nhập mô tả!');
+                    $('#return-description').focus();
+                    return;
+                }
+                
+                // Validate image
+                const imageFile = $('#return-images')[0].files[0];
+                if (!imageFile) {
+                    alert('⚠️ Vui lòng tải lên ảnh sản phẩm!');
+                    return;
+                }
+                
+                // Get form data
+                const orderId = $('#return-order-id').val();
+                const reason = $('input[name="reason"]:checked').val();
+                
+                console.log('📝 Submitting return request:', {
+                    orderId,
+                    reason,
+                    description,
+                    imageFileName: imageFile.name
+                });
+                
+                // Show loading
+                const $btn = $(this);
+                const originalText = $btn.html();
+                $btn.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...');
+                $btn.prop('disabled', true);
+                
+                // Prepare FormData for file upload
+                const formData = new FormData();
+                formData.append('orderId', orderId);
+                formData.append('reason', reason);
+                formData.append('description', description);
+                formData.append('image', imageFile);
+                
+                console.log('📤 Sending return request to backend...');
+                
+                // Send AJAX request to backend
+                $.ajax({
+                    url: '/user/returns/create',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,  // Important for FormData
+                    contentType: false,  // Important for FormData
+                    success: function(response) {
+                        console.log('✅ Return request created:', response);
+                        
+                        // Hide modal
+                        $('#returnRequestModal').modal('hide');
+                        
+                        // Show success message
+                        alert('✅ Yêu cầu trả hàng đã được gửi thành công!\n\n' + 
+                              'Mã yêu cầu: #' + response.returnRequestId + '\n' +
+                              'Shop sẽ xem xét và phản hồi trong vòng 24 giờ.');
+                        
+                        // Reset button
+                        $btn.html(originalText);
+                        $btn.prop('disabled', false);
+                        
+                        // Redirect to RETURN tab
+                        setTimeout(function() {
+                            // Switch to RETURN tab and load orders
+                            $('.tab-link').removeClass('active');
+                            $('.tab-link[data-status="RETURN"]').addClass('active');
+                            
+                            // Trigger tab change to load RETURN orders
+                            if (typeof window.loadOrdersByStatus === 'function') {
+                                window.loadOrdersByStatus('RETURN');
+                            } else {
+                                location.reload();
+                            }
+                        }, 1000);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('❌ Error creating return request:', error);
+                        
+                        // Parse error message
+                        let errorMessage = 'Có lỗi xảy ra khi gửi yêu cầu!';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response.message) {
+                                errorMessage = response.message;
+                            }
+                        } catch (e) {
+                            errorMessage = xhr.statusText || errorMessage;
+                        }
+                        
+                        // Show error
+                        alert('❌ ' + errorMessage);
+                        
+                        // Reset button
+                        $btn.html(originalText);
+                        $btn.prop('disabled', false);
+                    }
+                });
+            });
+            
+            // =========================
+            // Add Return Button to DELIVERED Orders
+            // =========================
+            // This will be called from order-view.js after orders are loaded
+            window.addReturnButtonsToOrders = function() {
+                $('.order-card-shopee').each(function() {
+                    const $card = $(this);
+                    const status = $card.data('status');
+                    
+                    // Only show for DELIVERED orders
+                    if (status === 'DELIVERED') {
+                        const $footer = $card.find('.order-footer-shopee');
+                        const orderId = $card.data('order-id');
+                        
+                        // Check if button already exists
+                        if ($footer.find('.btn-return-request').length === 0) {
+                            // Add return request button
+                            const $returnBtn = $(`
+                                <button class="btn-return-request" 
+                                        style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); 
+                                               color: white; 
+                                               border: none; 
+                                               padding: 10px 20px; 
+                                               border-radius: 6px; 
+                                               font-weight: 600; 
+                                               cursor: pointer; 
+                                               transition: all 0.3s; 
+                                               box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3); 
+                                               margin-left: 10px;"
+                                        onclick="openReturnRequestModal(${orderId})">
+                                    <i class="fa fa-undo" style="margin-right: 6px;"></i>
+                                    Yêu Cầu Trả Hàng
+                                </button>
+                            `);
+                            
+                            $returnBtn.hover(
+                                function() { $(this).css('transform', 'translateY(-2px)'); },
+                                function() { $(this).css('transform', 'translateY(0)'); }
+                            );
+                            
+                            $footer.find('.d-flex').first().append($returnBtn);
+                        }
+                    }
+                });
+            };
+            
+        });
+    </script>
     
     <!-- Chat Widget -->
     <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
