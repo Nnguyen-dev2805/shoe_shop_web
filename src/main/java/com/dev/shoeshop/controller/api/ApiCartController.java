@@ -347,6 +347,10 @@ public class ApiCartController {
             Double shippingFee = request.get("shippingFee") != null ? Double.valueOf(request.get("shippingFee").toString()) : null;
             Double orderDiscountAmount = request.get("orderDiscountAmount") != null ? Double.valueOf(request.get("orderDiscountAmount").toString()) : 0.0;
             Double shippingDiscountAmount = request.get("shippingDiscountAmount") != null ? Double.valueOf(request.get("shippingDiscountAmount").toString()) : 0.0;
+            
+            // 🪙 Get loyalty points redeemed
+            Integer pointsRedeemed = request.get("pointsRedeemed") != null && !request.get("pointsRedeemed").toString().isEmpty() ? 
+                Integer.valueOf(request.get("pointsRedeemed").toString()) : null;
 
             // Get selected item IDs (only items user selected to purchase)
             @SuppressWarnings("unchecked")
@@ -427,6 +431,7 @@ public class ApiCartController {
                         .shippingFee(shippingFee)
                         .orderDiscountAmount(orderDiscountAmount)
                         .shippingDiscountAmount(shippingDiscountAmount)
+                        .pointsRedeemed(pointsRedeemed) // 🪙 Add points
                         .selectedItemIds(selectedItemIds)
                         .itemQuantities(itemQuantities)
                         .build();
@@ -466,7 +471,8 @@ public class ApiCartController {
                 cartId, user.getId(), addressId, finalTotalPrice, 
                 payOption, shippingCompanyId, orderDiscountId, shippingDiscountId, 
                 flashSaleId, selectedItemIds, itemQuantities,
-                subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount
+                subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount,
+                pointsRedeemed
             );
             
             Map<String, Object> response = new HashMap<>();

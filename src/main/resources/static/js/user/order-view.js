@@ -111,60 +111,141 @@ function displayOrders(orders, currentStatus) {
     bindCancelOrderEvents();
 }
 
-// Create order card HTML
+// Create order card HTML (Shopee Style)
 function createOrderCard(order, currentStatus) {
     const statusClass = getStatusClass(order.status);
     const statusText = getStatusText(order.status);
-    const payOptionText = getPayOptionText(order.payOption);
+    const borderColor = getStatusBorderColor(order.status); // ✅ Get border color based on status
     const formattedDate = formatDate(order.createdDate);
     const formattedPrice = formatPrice(order.totalPrice);
     
-    // Tạo nút hủy đơn hàng nếu đang ở tab IN_STOCK
-    let cancelButton = '';
+    // Build product items HTML
+    let productsHTML = '';
+    let totalQuantity = 0; // ✅ Tính tổng số lượng sản phẩm
+    if (order.orderDetails && order.orderDetails.length > 0) {
+        order.orderDetails.forEach(function(item) {
+            productsHTML += createProductItem(item);
+            totalQuantity += item.quantity || 0; // ✅ Cộng dồn quantity
+        });
+    }
+    
+    // Action buttons based on status
+    let actionButtons = '';
     if (currentStatus === 'IN_STOCK' && order.status === 'IN_STOCK') {
-        cancelButton = `
+        actionButtons = `
             <button class="btn-cancel-order" data-order-id="${order.id}" 
-                    style="background: #dc3545; color: white; padding: 8px 16px; border-radius: 4px; border: none; font-size: 13px; font-weight: 500; cursor: pointer; margin-left: 10px; transition: all 0.3s ease;">
-                <i class="fa fa-times"></i> Hủy đơn
+                    style="background: #ee4d2d; color: white; padding: 10px 24px; border: 1px solid #ee4d2d; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(238,77,45,0.2);">
+                <i class="fa fa-times-circle"></i> Hủy đơn
+            </button>
+        `;
+    } else if (order.status === 'DELIVERED') {
+        actionButtons = `
+            <button class="btn-reorder" data-order-id="${order.id}" 
+                    style="background: white; color: #ee4d2d; padding: 10px 24px; border: 1px solid #ee4d2d; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
+                <i class="fa fa-refresh"></i> Mua lại
             </button>
         `;
     }
     
     return `
-        <div class="order-card" data-order-id="${order.id}">
-            <div class="order-header">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div>
-                        <h5 style="margin: 0; font-size: 16px; font-weight: 600; color: #333;">
-                            Đơn hàng #${order.id}
-                        </h5>
-                        <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">
-                            <i class="fa fa-calendar"></i> ${formattedDate}
-                        </p>
+        <div class="order-card-shopee" data-order-id="${order.id}" style="border-left-color: ${borderColor};">
+            <!-- Order Header -->
+            <div class="order-header-shopee">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa fa-shopping-bag" style="color: #ee4d2d; font-size: 18px;"></i>
+                        <span style="font-size: 14px; font-weight: 600; color: #333;">DeeG Shop</span>
+                        <span style="font-size: 12px; color: #999;">|</span>
+                        <span style="font-size: 13px; color: #666;">${formattedDate}</span>
                     </div>
-                    <div style="text-align: right;">
-                        <span class="status-badge ${statusClass}" style="padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 8px;">
-                            ${statusText}
-                        </span>
-                        <p style="margin: 0; font-size: 16px; font-weight: 600; color: #ee4d2d;">
-                            ${formattedPrice}
-                        </p>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span class="status-badge-shopee ${statusClass}">${statusText}</span>
                     </div>
                 </div>
             </div>
-            <div class="order-body">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+            
+            <!-- Order Products -->
+            <div class="order-products-shopee">
+                ${productsHTML}
+            </div>
+            
+            <!-- Order Footer -->
+            <div class="order-footer-shopee">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #f5f5f5;">
+                    <div style="color: #666; font-size: 14px;">
+                        <i class="fa fa-credit-card" style="margin-right: 6px;"></i>
+                        Thanh toán: <span style="font-weight: 500; color: #333;">${getPayOptionText(order.payOption)}</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="color: #666; font-size: 14px;">Tổng số tiền (${totalQuantity} sản phẩm):</span>
+                        <span style="color: #ee4d2d; font-size: 20px; font-weight: 600;">${formattedPrice}</span>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 12px; padding: 16px 20px;">
+                    <a href="/user/order-detail/${order.id}" 
+                       style="background: white; color: #555; padding: 10px 24px; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; font-size: 14px; font-weight: 500; transition: all 0.3s ease; display: inline-block;">
+                        Xem chi tiết
+                    </a>
+                    ${actionButtons}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Create product item HTML (Shopee Style)
+function createProductItem(item) {
+    // Support both flat structure and nested structure
+    const productImage = item.image || 
+                        (item.productDetail && item.productDetail.product && item.productDetail.product.image) || 
+                        '/img/product-default.jpg';
+    const productName = item.product_name || 
+                       (item.productDetail && item.productDetail.product && item.productDetail.product.title) || 
+                       'Sản phẩm';
+    const size = item.size || 
+                (item.productDetail && item.productDetail.size) || 
+                'N/A';
+    const quantity = item.quantity || 1;
+    const price = item.price || 0; // ✅ Giá đã mua (có flash sale nếu có)
+    const originalPrice = item.originalPrice || 0; // ✅ Giá gốc từ OrderDetail
+    const total = price * quantity;
+    
+    return `
+        <div class="product-item-shopee">
+            <div style="display: flex; gap: 16px; padding: 16px 20px;">
+                <!-- Product Image -->
+                <div style="flex-shrink: 0;">
+                    <img src="${productImage}" 
+                         alt="${productName}"
+                         style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #f0f0f0;">
+                </div>
+                
+                <!-- Product Info -->
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <p style="margin: 0; color: #666; font-size: 14px;">
-                            <i class="fa fa-credit-card"></i> Thanh toán: ${payOptionText}
+                        <h4 style="margin: 0 0 8px 0; font-size: 15px; font-weight: 500; color: #333; line-height: 1.4;">
+                            ${productName}
+                        </h4>
+                        <p style="margin: 0; font-size: 13px; color: #888;">
+                            Size: ${size}
                         </p>
                     </div>
-                    <div style="display: flex; align-items: center;">
-                        <a href="/user/order-detail/${order.id}" 
-                           style="background: #ee4d2d; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500; display: inline-block; transition: all 0.3s ease;">
-                            <i class="fa fa-eye"></i> Xem chi tiết
-                        </a>
-                        ${cancelButton}
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: #888; font-size: 14px;">x${quantity}</span>
+                    </div>
+                </div>
+                
+                <!-- Product Price -->
+                <div style="flex-shrink: 0; text-align: right; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;">
+                    <div>
+                        ${originalPrice > price ? `
+                            <span style="color: #888; font-size: 13px; text-decoration: line-through; display: block; margin-bottom: 4px;">
+                                ${formatPrice(originalPrice)}
+                            </span>
+                        ` : ''}
+                        <span style="color: #ee4d2d; font-size: 16px; font-weight: 600;">
+                            ${formatPrice(price)}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -192,6 +273,17 @@ function getStatusText(status) {
         case 'CANCEL': return 'Đã hủy';
         case 'RETURN': return 'Trả hàng';
         default: return 'Không xác định';
+    }
+}
+
+function getStatusBorderColor(status) {
+    switch(status) {
+        case 'DELIVERED': return '#27ae60'; // Green
+        case 'SHIPPED': return '#3498db'; // Blue
+        case 'IN_STOCK': return '#ee4d2d'; // Orange/Red
+        case 'CANCEL': return '#e74c3c'; // Red
+        case 'RETURN': return '#95a5a6'; // Gray
+        default: return '#ee4d2d';
     }
 }
 

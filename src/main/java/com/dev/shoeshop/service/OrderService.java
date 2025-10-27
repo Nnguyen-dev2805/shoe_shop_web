@@ -53,7 +53,8 @@ public interface OrderService {
                                  Long flashSaleId,
                                  java.util.List<Integer> selectedItemIds,
                                  java.util.Map<Integer, Integer> itemQuantities,
-                                 Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount);
+                                 Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount,
+                                 Integer pointsRedeemed);
     
     /**
      * Đánh dấu đơn hàng đã giao thành công

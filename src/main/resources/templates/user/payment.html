@@ -1156,11 +1156,13 @@
     <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
         <div class="container">
             <div style="display: flex; align-items: center; gap: 15px;">
-                <a href="/cart/view" style="color: #ee4d2d; font-size: 18px; text-decoration: none;">
+                <a href="/cart/view" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại giỏ hàng">
                     <i class="fa fa-arrow-left"></i>
                 </a>
                 <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
                     <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                    <span style="color: #ccc;">/</span>
+                    <a href="/user/shop" class="breadcrumb-link" style="color: #666; text-decoration: none;">Cửa hàng</a>
                     <span style="color: #ccc;">/</span>
                     <a href="/cart/view" class="breadcrumb-link" style="color: #666; text-decoration: none;">Giỏ hàng</a>
                     <span style="color: #ccc;">/</span>
@@ -1287,14 +1289,6 @@
                         </div>
                     </div>
                     
-                    <!-- Points Earn Info (Shopee Green) -->
-                    <div id="points-earn-info" style="background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 3px; padding: 10px 12px; margin-bottom: 12px; display: none;">
-                        <div style="font-size: 13px; color: #2e7d32; font-weight: 400;">
-                            <i class="fa fa-check-circle" style="margin-right: 5px; color: #4caf50;"></i>
-                            Đơn hàng này sẽ tích được: <strong style="color: #1b5e20; font-weight: 600;"><span id="points-will-earn">0 điểm</span></strong> (<span id="earn-rate-display">1%</span>)
-                        </div>
-                    </div>
-                    
                     <!-- Use Points Section -->
                     <div style="margin-bottom: 12px;">
                         <div style="background: #fafafa; padding: 10px 12px; border: 1px solid #e0e0e0; border-bottom: none; border-radius: 4px 4px 0 0;">
@@ -1403,6 +1397,14 @@
                         <div class="price-row total">
                             <span class="price-label">Tổng thanh toán</span>
                             <span class="price-value" id="final-total-price">0đ</span>
+                        </div>
+                        
+                        <!-- Points Earn Info (Shopee Style) -->
+                        <div id="points-earn-info-summary" style="background: #e8f5e9; border-left: 2px solid #4caf50; border-radius: 2px; padding: 8px 10px; margin-top: 12px; display: none;">
+                            <div style="font-size: 12px; color: #388e3c; font-weight: 400; line-height: 1.5;">
+                                <i class="fa fa-check-circle" style="margin-right: 4px; color: #4caf50; font-size: 11px;"></i>
+                                Đơn hàng này sẽ tích được: <strong style="color: #2e7d32; font-weight: 600;"><span id="points-will-earn-summary">0 điểm</span></strong> (<span id="earn-rate-display-summary">1%</span>)
+                            </div>
                         </div>
                         
                         <button type="button" id="btn-payment" class="btn-order">
@@ -1698,7 +1700,7 @@
                                     <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
                                         <i class="fa fa-phone" style="color: #ee4d2d; width: 16px;"></i> Số điện thoại <span style="color: #ee4d2d;">*</span>
                                     </label>
-                                    <input type="tel" id="paymentRecipientPhone" name="recipientPhone" placeholder="0901234567" required
+                                    <input type="tel" id="paymentRecipientPhone" name="recipientPhone" placeholder="Nhâ số điện thoại" required
                                            pattern="^0\d{9}$" title="Số điện thoại phải là 10 số và bắt đầu bằng 0"
                                            style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
                                            onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">

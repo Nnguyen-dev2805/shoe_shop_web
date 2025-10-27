@@ -107,7 +107,8 @@ public class PaymentController {
               pendingPayment.getSubtotal(),
               pendingPayment.getShippingFee(),
               pendingPayment.getOrderDiscountAmount(),
-              pendingPayment.getShippingDiscountAmount()
+              pendingPayment.getShippingDiscountAmount(),
+              pendingPayment.getPointsRedeemed() // 🪙 Add points
           );
           
           System.out.println("✅ Order created successfully with ID: " + orderResult.getOrderId());

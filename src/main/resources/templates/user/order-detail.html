@@ -36,6 +36,11 @@
     
     <!-- Custom CSS for Order Detail -->
     <style>
+        /* Breadcrumb */
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
+        }
+        
         /* Order Status Badge Colors */
         .status-delivered {
             background-color: #d4edda !important;
@@ -148,24 +153,6 @@
             color: #ee4d2d;
         }
         
-        .back-button {
-            background: #ee4d2d;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            display: inline-block;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .back-button:hover {
-            background: #d73527;
-            color: white;
-            text-decoration: none;
-            transform: translateY(-1px);
-        }
-        
         /* Responsive Design */
         @media (max-width: 768px) {
             .order-header > div {
@@ -199,28 +186,30 @@
         <!-- header area start -->
     <div th:insert="~{fragments/user/header.html}"></div>
         <!-- header area end -->
+        
+    <!-- Breadcrumb Area -->
+    <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/user/order/view" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại đơn hàng">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                    <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                    <span style="color: #ccc;">/</span>
+                    <a href="/user/order/view" class="breadcrumb-link" style="color: #666; text-decoration: none;">Đơn hàng</a>
+                    <span style="color: #ccc;">/</span>
+                    <span style="color: #333; font-weight: 500;">Chi tiết đơn hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- order detail area start -->
     <div class="account-area">
             <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="location">
-                            <ul>
-                            <li><a href="/user/shop" title="go to homepage">Trang Chủ<span>/</span></a></li>
-                            <li><a href="/user/order/view">Đơn Hàng<span>/</span></a></li>
-                            <li><strong>Chi Tiết Đơn Hàng</strong></li>
-                            </ul>
-                    </div>
-                </div>
-            </div>
             <div class="row" style="display: flex; justify-content: center; align-items: center;">
                 <div class="col-lg-10">
-                    <!-- Back Button -->
-                    <a href="/user/order/view" class="back-button">
-                        <i class="fa fa-arrow-left"></i> Quay lại danh sách đơn hàng
-                    </a>
-                    
                     <!-- Error Message -->
                     <div th:if="${error}" class="alert alert-danger" style="margin-bottom: 20px;">
                         <i class="fa fa-exclamation-triangle"></i> <span th:text="${error}"></span>

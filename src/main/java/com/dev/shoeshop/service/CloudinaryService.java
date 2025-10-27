@@ -19,6 +19,7 @@ public class CloudinaryService {
     // ✅ Folder constants để tách biệt ảnh
     public static final String PRODUCT_FOLDER = "shoe_shop/products";
     public static final String RATING_FOLDER = "shoe_shop/ratings";
+    public static final String AVATAR_FOLDER = "shoe_shop/avatars";
 
     /**
      * Upload image to Cloudinary

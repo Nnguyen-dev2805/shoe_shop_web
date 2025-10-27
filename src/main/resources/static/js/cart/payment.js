@@ -109,12 +109,14 @@ function loadDataFromSession() {
             renderSelectedProducts();
             loadAddressInfo();
             calculatePrices();
+            calculatePointsWillEarn(); // 🪙 Calculate initial points
         });
     } else {
         // Buy Now flow - render directly (flash sale already in product data)
         renderSelectedProducts();
         loadAddressInfo();
         calculatePrices();
+        calculatePointsWillEarn(); // 🪙 Calculate initial points
     }
 }
 
@@ -336,9 +338,11 @@ function loadShippingFee(addrId) {
                 
                 // Recalculate prices
                 calculatePrices();
+                calculatePointsWillEarn(); // 🪙 Update points after shipping fee changes
             } else {
                 // Keep default fee
                 calculatePrices();
+                calculatePointsWillEarn(); // 🪙 Update points
             }
         },
         error: function(xhr, status, error) {
@@ -347,6 +351,7 @@ function loadShippingFee(addrId) {
             
             // Recalculate prices with default fee
             calculatePrices();
+            calculatePointsWillEarn(); // 🪙 Update points
         },
         complete: function() {
             // Hide loading state
@@ -672,13 +677,13 @@ function calculatePointsWillEarn() {
             if (response && response.points !== undefined) {
                 pointsWillEarn = response.points || 0;
                 
-                // Update UI
-                $('#points-will-earn').text(formatPoints(pointsWillEarn));
-                $('#earn-rate-display').text((response.earnRate || 1) + '%');
+                // Update UI in Chi tiết thanh toán (Right side)
+                $('#points-will-earn-summary').text(formatPoints(pointsWillEarn));
+                $('#earn-rate-display-summary').text((response.earnRate || 1) + '%');
                 
-                // Show earn info
+                // Show earn info in payment summary
                 if (pointsWillEarn > 0) {
-                    $('#points-earn-info').show();
+                    $('#points-earn-info-summary').show();
                 }
             }
         },
@@ -920,6 +925,9 @@ function bindEventHandlers() {
         
         // Recalculate total
         calculatePrices();
+        
+        // 🪙 Recalculate points will earn (vì order amount đã thay đổi)
+        calculatePointsWillEarn();
     });
     
     // Confirm shipping voucher button
@@ -965,6 +973,9 @@ function bindEventHandlers() {
         
         // Recalculate total
         calculatePrices();
+        
+        // 🪙 Recalculate points will earn (vì shipping discount đã thay đổi)
+        calculatePointsWillEarn();
         
         alert('✅ Đã áp dụng voucher ship: Giảm ' + formatCurrency(shippingDiscount));
     });
@@ -1140,7 +1151,7 @@ function showAddressFormModal(address) {
                                     <label style="display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; color: #333;">
                                         <i class="fa fa-phone" style="color: #ee4d2d;"></i> Số điện thoại *
                                     </label>
-                                    <input type="tel" id="recipientPhone" placeholder="0901234567" required 
+                                    <input type="tel" id="recipientPhone" placeholder="Nhập số điện thoại" required 
                                            value="${address ? address.recipientPhone : ''}"
                                            pattern="^0\\d{9}$" title="Số điện thoại phải là 10 số"
                                            style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px;">

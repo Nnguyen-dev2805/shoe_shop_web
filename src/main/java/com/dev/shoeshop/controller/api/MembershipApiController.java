@@ -4,6 +4,8 @@ import com.dev.shoeshop.dto.MembershipInfoDTO;
 import com.dev.shoeshop.dto.PointsRedeemRequest;
 import com.dev.shoeshop.dto.PointsRedeemResponse;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.MembershipService;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class MembershipApiController {
 
     private final MembershipService membershipService;
     private final UserRepository userRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * Lấy thông tin membership của user đang login
@@ -74,11 +77,17 @@ public class MembershipApiController {
                         .body(Map.of("error", "User not found"));
             }
 
+            // Count delivered orders
+            long deliveredOrderCount = orderRepository.countByUserAndStatus(user, ShipmentStatus.DELIVERED);
+            
             Map<String, Object> response = new HashMap<>();
             response.put("points", user.getLoyaltyPoints());
             response.put("pointsValue", user.getPointsValue());
             response.put("tier", user.getMembershipTier().name());
             response.put("tierDisplayName", user.getMembershipTier().getDisplayName());
+            response.put("totalSpending", user.getTotalSpending()); // ✅ Add total spending
+            response.put("earnRate", user.getMembershipTier().getEarnRatePercent()); // ✅ Add earn rate
+            response.put("orderCount", deliveredOrderCount); // ✅ Add order count
 
             return ResponseEntity.ok(response);
 

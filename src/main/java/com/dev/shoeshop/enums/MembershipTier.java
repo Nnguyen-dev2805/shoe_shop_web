@@ -43,6 +43,13 @@ public enum MembershipTier {
     public double getEarnRate() {
         return earnRate;
     }
+    
+    /**
+     * Get earn rate as percentage (e.g., 1, 1.5, 2, 3)
+     */
+    public double getEarnRatePercent() {
+        return earnRate * 100;
+    }
 
     public double getShippingDiscount() {
         return shippingDiscount;

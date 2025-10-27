@@ -364,14 +364,19 @@ function setupAddToCartButton() {
             return;
         }
         
-        // Calculate price per unit (base price + size fee)
-        const pricePerUnit = baseProductPrice + selectedSizeData.priceAdd;
+        // ✅ Calculate price per unit (flash sale price if available, else base price + size fee)
+        let effectiveBasePrice = baseProductPrice;
+        if (window.currentFlashSale && window.currentFlashSale.active) {
+            effectiveBasePrice = window.currentFlashSale.flashSalePrice;
+            console.log('🔥 Adding to cart with Flash Sale Price:', effectiveBasePrice);
+        }
+        const pricePerUnit = effectiveBasePrice + selectedSizeData.priceAdd;
         
         // Prepare data
         const cartData = {
             productDetailId: selectedSizeData.sizeId,
             quantity: currentQuantity,
-            pricePerUnit: pricePerUnit
+            pricePerUnit: pricePerUnit // ✅ GỬI FLASH SALE PRICE NẾU CÓ
         };
         
         console.log('Adding to cart:', cartData);

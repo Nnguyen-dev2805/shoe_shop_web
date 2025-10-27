@@ -157,9 +157,6 @@
                                             <a class="collapsed" role="button" data-bs-toggle="collapse" href="#collapseMembership" aria-expanded="false" aria-controls="collapseMembership">
                                                 <i class="fa fa-star"></i>
                                                 Thành Viên & Điểm Tích Lũy
-                                                <span style="float: right; color: #f39c12; font-size: 13px; font-weight: 600;">
-                                                    🥇 VÀNG
-                                                </span>
                                             </a>
                                         </h4>
                                     </div>
@@ -176,29 +173,131 @@
                                                             </p>
                                                         </div>
                                                         
-                                                        <!-- Membership Card Container -->
-                                                        <div style="background: white; border: 1px solid #efefef; border-radius: 6px; padding: 20px; margin-bottom: 20px;">
-                                                            <!-- Empty State -->
-                                                            <div style="text-align: center; padding: 40px 20px;">
-                                                                <div style="font-size: 48px; margin-bottom: 15px;">🎁</div>
-                                                                <h4 style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
-                                                                    Chưa có thông tin thành viên
-                                                                </h4>
-                                                                <p style="font-size: 14px; color: #999; margin: 0;">
-                                                                    Hãy mua sắm để tích điểm và nhận nhiều ưu đãi hấp dẫn.
-                                                                </p>
+                                                        <!-- Membership Card Container (Shopee Style) -->
+                                                        <div id="membership-card-container" style="border-radius: 8px; padding: 0; margin-bottom: 20px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1);">
+                                                            <!-- Loading State -->
+                                                            <div id="membership-loading" style="text-align: center; padding: 40px 20px; background: white;">
+                                                                <i class="fa fa-spinner fa-spin" style="font-size: 32px; color: #ee4d2d;"></i>
+                                                                <p style="margin-top: 15px; font-size: 14px; color: #999;">Đang tải thông tin...</p>
                                                             </div>
-                                                        </div>
-                                                        
-                                                        <!-- View All Button -->
-                                                        <div style="text-align: center;">
-                                                            <button type="button"
-                                                                    style="background: white; color: #f39c12; border: 1px solid #f39c12; padding: 10px 24px; 
-                                                                           border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s;"
-                                                                    onmouseover="this.style.background='#f39c12'; this.style.color='white'" 
-                                                                    onmouseout="this.style.background='white'; this.style.color='#f39c12'">
-                                                                <i class="fa fa-gift"></i> Xem Quyền Lợi Thành Viên
-                                                            </button>
+                                                            
+                                                            <!-- Membership Card (Will be populated by JS) -->
+                                                            <div id="membership-card" style="display: none;">
+                                                                <!-- Header Section with Tier Background -->
+                                                                <div id="tier-header" style="background: linear-gradient(135deg, #757575, #9e9e9e); padding: 24px; color: white; position: relative; overflow: hidden;">
+                                                                    <!-- Decorative Pattern -->
+                                                                    <div style="position: absolute; right: -20px; top: -20px; width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.1);"></div>
+                                                                    <div style="position: absolute; right: 40px; bottom: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.08);"></div>
+                                                                    
+                                                                    <div style="position: relative; z-index: 1;">
+                                                                        <div style="font-size: 32px; font-weight: 700; margin-bottom: 8px; letter-spacing: 2px;">
+                                                                            <span id="tier-name">BẠC</span>
+                                                                        </div>
+                                                                        <div style="font-size: 14px; opacity: 0.9;">
+                                                                            <span id="user-fullname" th:text="${session.user?.fullname}">User Name</span>
+                                                                        </div>
+                                                                        <div style="position: absolute; top: 0; right: 0; text-align: right;">
+                                                                            <div style="font-size: 12px; opacity: 0.8; margin-bottom: 4px;">Ưu đãi mỗi thứ hạng</div>
+                                                                            <div id="btn-view-benefits" style="background: rgba(255,255,255,0.2); padding: 6px 12px; border-radius: 20px; display: inline-block; cursor: pointer; font-size: 13px;">
+                                                                                <i class="fa fa-angle-right"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Main Content View -->
+                                                                <div id="main-content-view">
+                                                                    <!-- Duy trì thứ hạng thẻ (Shopee Style) -->
+                                                                    <div style="background: white; padding: 20px;">
+                                                                    <div style="color: #ee4d2d; font-size: 15px; font-weight: 600; margin-bottom: 16px;">
+                                                                        Duy trì thứ hạng thẻ
+                                                                    </div>
+                                                                    
+                                                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                                                        <!-- Đơn hàng Progress -->
+                                                                        <div style="cursor: pointer;" onclick="window.location.href='/user/order/view'">
+                                                                            <div style="font-size: 14px; color: #333; margin-bottom: 8px;">Đơn hàng</div>
+                                                                            <div style="font-size: 20px; font-weight: 700; color: #ee4d2d; margin-bottom: 8px;">
+                                                                                <span id="order-current">0</span><span style="font-size: 14px; font-weight: 400; color: #666;">/</span><span style="font-size: 16px; font-weight: 600; color: #666;" id="order-target">3</span>
+                                                                            </div>
+                                                                            <div style="background: #e0e0e0; height: 6px; border-radius: 3px; overflow: hidden;">
+                                                                                <div id="order-progress-bar" style="background: #ee4d2d; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                        
+                                                                        <!-- Chi tiêu Progress -->
+                                                                        <div>
+                                                                            <div style="font-size: 14px; color: #333; margin-bottom: 8px;">Chi tiêu</div>
+                                                                            <div style="font-size: 20px; font-weight: 700; color: #ee4d2d; margin-bottom: 8px;">
+                                                                                <span id="spending-current">0đ</span><span style="font-size: 14px; font-weight: 400; color: #666;">/</span><span style="font-size: 16px; font-weight: 600; color: #666;" id="spending-target">5.000.000</span>
+                                                                            </div>
+                                                                            <div style="background: #e0e0e0; height: 6px; border-radius: 3px; overflow: hidden;">
+                                                                                <div id="spending-progress-bar" style="background: #ee4d2d; height: 100%; width: 0%; transition: width 0.5s ease;"></div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Next Tier Info -->
+                                                                    <div id="next-tier-info" style="margin-top: 12px; padding: 10px; background: #fff8f5; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                                                                        <div style="font-size: 12px; color: #888;">
+                                                                            <span id="progress-text">Chi tiêu thêm 0đ để lên hạng Vàng</span>
+                                                                        </div>
+                                                                        <a href="/user/order/view" style="font-size: 13px; color: #ee4d2d; text-decoration: none; font-weight: 500;">
+                                                                            Chi Tiết <i class="fa fa-angle-right"></i>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                <!-- Benefits Section -->
+                                                                <div style="padding: 20px; background: #fafafa; border-top: 1px solid #f0f0f0;">
+                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                                                        <span style="font-size: 14px; color: #333; font-weight: 500;">Quyền lợi thành viên</span>
+                                                                        <span style="font-size: 13px; color: #888;">
+                                                                            Tỷ lệ tích điểm: <strong style="color: #4caf50;"><span id="earn-rate">1%</span></strong>
+                                                                        </span>
+                                                                    </div>
+                                                                    <div style="font-size: 12px; color: #666; line-height: 1.5;">
+                                                                        • Quy đổi: 1 điểm = 1,000đ<br>
+                                                                        • Tích điểm từ mỗi đơn hàng thành công<br>
+                                                                        • Sử dụng điểm để giảm giá đơn hàng (tối đa 50%)
+                                                                    </div>
+                                                                </div>
+                                                                </div>
+                                                                </div>
+                                                                <!-- End Main Content View -->
+                                                                
+                                                                <!-- Benefits View (Shopee Style) -->
+                                                                <div id="benefits-view" style="display: none;">
+                                                                    
+                                                                    <!-- Tabs -->
+                                                                    <div style="display: flex; background: white; border-bottom: 2px solid #f0f0f0;">
+                                                                        <div class="tier-tab active" data-tier="SILVER" style="flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid #757575;">
+                                                                            Bạc
+                                                                        </div>
+                                                                        <div class="tier-tab" data-tier="GOLD" style="flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent;">
+                                                                            Vàng
+                                                                        </div>
+                                                                        <div class="tier-tab" data-tier="PLATINUM" style="flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent;">
+                                                                            Bạch Kim
+                                                                        </div>
+                                                                        <div class="tier-tab" data-tier="DIAMOND" style="flex: 1; text-align: center; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 500; color: #666; border-bottom: 3px solid transparent;">
+                                                                            Kim Cương
+                                                                        </div>
+                                                                    </div>
+                                                                    
+                                                                    <!-- Tab Content -->
+                                                                    <div id="tier-benefits-content" style="background: white; padding: 20px;">
+                                                                        <!-- Will be populated by JavaScript -->
+                                                                    </div>
+                                                                    
+                                                                    <!-- Back Button -->
+                                                                    <div style="padding: 20px; background: #fafafa; text-align: center; border-top: 1px solid #f0f0f0;">
+                                                                        <button id="btn-back-to-main" style="background: white; color: #ee4d2d; border: 1px solid #ee4d2d; padding: 10px 30px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                                                            <i class="fa fa-arrow-left"></i> Quay lại
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -301,7 +400,7 @@
                                                                                         <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333; font-size: 14px;">
                                                                                             <i class="fa fa-phone" style="color: #ee4d2d; width: 16px;"></i> Số điện thoại <span style="color: #ee4d2d;">*</span>
                                                                                         </label>
-                                                                                        <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="0901234567" required
+                                                                                        <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="Nhập số điện thoại" required
                                                                                                pattern="^0\d{9}$" title="Số điện thoại phải là 10 số và bắt đầu bằng 0"
                                                                                                style="width: 100%; padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.3s;"
                                                                                                onfocus="this.style.borderColor='#ee4d2d'" onblur="this.style.borderColor='#e5e5e5'">
@@ -427,8 +526,28 @@
                                         <div class="panel-body">
                                             <div class="col-md-12">
                                                 <div class="delivery-details">
-                                                    <form id="updateProfileForm">
+                                                    <form id="updateProfileForm" enctype="multipart/form-data">
                                                         <div class="list-style">
+                                                            <!-- Avatar Upload Section (Shopee Style) -->
+                                                            <div style="background: linear-gradient(135deg, #ee4d2d, #ff6635); padding: 40px 20px; text-align: center; margin: -15px -15px 20px -15px; position: relative;">
+                                                                <div style="position: relative; display: inline-block;">
+                                                                    <div style="width: 100px; height: 100px; border-radius: 50%; overflow: hidden; border: 4px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); background: white; margin: 0 auto; display: flex; align-items: center; justify-content: center;">
+                                                                        <img id="profile-avatar-preview" 
+                                                                             th:src="${session.user?.profilePicture ?: '/img/avatar-default.svg'}"
+                                                                             alt="Avatar" 
+                                                                             style="width: 100%; height: 100%; object-fit: cover;"
+                                                                             onerror="this.src='/img/avatar-default.svg'">
+                                                                    </div>
+                                                                    <label for="avatar-upload" style="position: absolute; bottom: 0; right: 0; background: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 2px solid #ee4d2d; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                                                        <i class="fa fa-camera" style="color: #ee4d2d; font-size: 14px;"></i>
+                                                                    </label>
+                                                                    <input type="file" id="avatar-upload" name="avatar" accept="image/*" style="display: none;" onchange="previewAvatar(event)">
+                                                                </div>
+                                                                <div style="color: white; margin-top: 12px; font-size: 14px; opacity: 0.9;">
+                                                                    Click vào camera để thay đổi ảnh
+                                                                </div>
+                                                            </div>
+                                                            
                                                             <div class="account-title">
                                                                 <h4>Vui Lòng Cập Nhật Thông Tin Cá Nhân Nếu Có Thay Đổi</h4>
                                                             </div>
@@ -445,17 +564,23 @@
 
                                                             <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                                 <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Email</label>
-                                                                <input type="email" id="user-email" name="email" placeholder="Email" readonly style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; background-color: #f5f5f5; cursor: not-allowed;">
+                                                                <input type="email" id="user-email" name="email" placeholder="Email" readonly 
+                                                                       th:value="${session.user?.email}"
+                                                                       style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px; background-color: #f5f5f5; cursor: not-allowed;">
                                                             </div>
 
                                                             <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
                                                                 <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Họ Và Tên <em>*</em></label>
-                                                                <input type="text" id="user-fullname" name="fullname" placeholder="Nhập họ và tên" required style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
+                                                                <input type="text" id="user-fullname" name="fullname" placeholder="Nhập họ và tên" required 
+                                                                       th:value="${session.user?.fullname}"
+                                                                       style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
 
                                                             <div class="form-name" style="display: flex; align-items: center; margin-bottom: 20px;">
-                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Số Điện Thoại <em>*</em></label>
-                                                                <input type="text" id="user-phone" name="phone" placeholder="Nhập số điện thoại (10 số)" required pattern="^0\d{9}$" style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
+                                                                <label style="width: 200px; min-width: 200px; margin-right: 15px; margin-bottom: 0; white-space: nowrap; font-size: 13px; text-align: right; font-family: inherit; color: #666;">Số Điện Thoại</label>
+                                                                <input type="text" id="user-phone" name="phone" placeholder="Nhập số điện thoại (10 số)" pattern="^0\d{9}$"
+                                                                       th:value="${session.user?.phone}"
+                                                                       style="flex: 1; font-size: 13px; font-family: inherit; line-height: 1.5; padding: 8px 12px; border: 1px solid #ddd; border-radius: 3px;">
                                                             </div>
 
                                                             <div class="save-button">
@@ -484,7 +609,27 @@
                                     <div id="collapseResetPassword" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingResetPassword" data-bs-parent="#accordion">
                                         <div class="panel-body">
                                             <div class="col-md-12">
-                                                <div class="delivery-details">
+                                                <!-- Check if user logged in with Google -->
+                                                <div th:if="${session.user?.provider != null and session.user.provider == 'GOOGLE'}">
+                                                    <!-- Shopee Style Notice -->
+                                                    <div style="text-align: center; padding: 40px 20px;">
+                                                        <div style="width: 80px; height: 80px; background: #fff8f5; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                                                            <i class="fa fa-google" style="font-size: 36px; color: #ee4d2d;"></i>
+                                                        </div>
+                                                        <h4 style="color: #333; margin-bottom: 12px; font-size: 18px; font-weight: 600;">Tài khoản Google</h4>
+                                                        <p style="color: #666; font-size: 14px; line-height: 1.6; max-width: 400px; margin: 0 auto;">
+                                                            Bạn đang sử dụng tài khoản Google để đăng nhập.<br>
+                                                            Không thể thay đổi mật khẩu cho tài khoản này.
+                                                        </p>
+                                                        <div style="margin-top: 20px; padding: 12px 20px; background: #fff8f5; border-radius: 6px; display: inline-block;">
+                                                            <i class="fa fa-info-circle" style="color: #ee4d2d; margin-right: 6px;"></i>
+                                                            <span style="color: #666; font-size: 13px;">Vui lòng quản lý mật khẩu qua tài khoản Google của bạn</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Normal password change form (for LOCAL accounts) -->
+                                                <div th:if="${session.user?.provider == null or session.user.provider == 'LOCAL'}" class="delivery-details">
                                                     <form id="changePasswordForm">
                                                         <div class="list-style">
                                                             <div class="account-title">
@@ -529,10 +674,6 @@
                                     </div>
                                 </div>
                                 <!-- ========== KẾT THÚC PANEL ĐỔI MẬT KHẨU ========== -->
-                            <div class="account-button" style="margin-top: 30px; margin-bottom: 40px;">
-                                <div class="back-btn"> <a href="/user/my_account">Quay Lại Tài Khoản</a> </div>
-                                <div class="home"> <a href="/user/shop">Trang Chủ</a> </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -594,6 +735,459 @@
         
         <!-- Header Cart Badge JavaScript (Require jQuery) -->
         <script src="/js/header-cart.js?v=3"></script>
+        
+        <!-- Membership Points Script -->
+        <script>
+        $(document).ready(function() {
+            // Load membership info when Membership panel is opened
+            $('#headingMembership a').on('click', function() {
+                if (!$(this).hasClass('loaded')) {
+                    $(this).addClass('loaded');
+                    loadMembershipInfo();
+                }
+            });
+            
+            // Auto-load if panel is already expanded
+            if ($('#collapseMembership').hasClass('show')) {
+                loadMembershipInfo();
+            }
+            
+            // View benefits button click
+            $(document).on('click', '#btn-view-benefits', function() {
+                $('#main-content-view').fadeOut(300, function() {
+                    $('#benefits-view').fadeIn(300);
+                    // Load default tier (SILVER)
+                    showTierBenefits('SILVER');
+                });
+            });
+            
+            // Back button click
+            $(document).on('click', '#btn-back-to-main', function() {
+                $('#benefits-view').fadeOut(300, function() {
+                    $('#main-content-view').fadeIn(300);
+                });
+            });
+            
+            // Tier tab click
+            $(document).on('click', '.tier-tab', function() {
+                const tier = $(this).data('tier');
+                
+                // Update active tab
+                $('.tier-tab').css('border-bottom-color', 'transparent').removeClass('active');
+                $(this).addClass('active');
+                
+                // Update border color based on tier
+                const tierColors = {
+                    'SILVER': '#757575',
+                    'GOLD': '#ffc107',
+                    'PLATINUM': '#9c27b0',
+                    'DIAMOND': '#212121'
+                };
+                $(this).css('border-bottom-color', tierColors[tier]);
+                
+                // Load tier benefits
+                showTierBenefits(tier);
+            });
+        });
+        
+        function loadMembershipInfo() {
+            $.ajax({
+                url: '/api/membership/points/balance',
+                method: 'GET',
+                success: function(response) {
+                    if (response && response.points !== undefined) {
+                        // Tier colors (Shopee style)
+                        const tierColors = {
+                            'SILVER': 'linear-gradient(135deg, #757575, #9e9e9e)',
+                            'GOLD': 'linear-gradient(135deg, #ffa000, #ffc107)',
+                            'PLATINUM': 'linear-gradient(135deg, #9c27b0, #ba68c8)',
+                            'DIAMOND': 'linear-gradient(135deg, #212121, #424242)'
+                        };
+                        
+                        const tierName = response.tierDisplayName || 'Bạc';
+                        
+                        // Update header background color
+                        $('#tier-header').css('background', tierColors[response.tier] || tierColors['SILVER']);
+                        
+                        // Update card content
+                        $('#tier-name').text(tierName.toUpperCase());
+                        $('#points-display').text(response.points.toLocaleString('vi-VN'));
+                        $('#points-value-inline').text(formatCurrency(response.pointsValue || 0));
+                        $('#earn-rate').text((response.earnRate || 1) + '%');
+                        
+                        // Update spending progress
+                        const currentSpending = response.totalSpending || 0;
+                        $('#spending-current').text(currentSpending.toLocaleString('vi-VN') + 'đ');
+                        
+                        // Update order progress
+                        const orderCount = response.orderCount || 0;
+                        updateOrderProgress(response.tier, orderCount);
+                        
+                        // Calculate tier progress
+                        calculateTierProgress(response.tier, currentSpending);
+                        
+                        // Show card, hide loading
+                        $('#membership-loading').hide();
+                        $('#membership-card').show();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Failed to load membership info:', error);
+                    $('#membership-loading').html(`
+                        <div style="text-align: center; padding: 40px 20px;">
+                            <div style="font-size: 48px; margin-bottom: 15px;">⚠️</div>
+                            <h4 style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px;">
+                                Không thể tải thông tin
+                            </h4>
+                            <p style="font-size: 14px; color: #999; margin: 0;">
+                                Vui lòng thử lại sau.
+                            </p>
+                        </div>
+                    `);
+                }
+            });
+        }
+        
+        function updateOrderProgress(currentTier, orderCount) {
+            // Order requirements per tier
+            const orderRequirements = {
+                'SILVER': 3,
+                'GOLD': 10,
+                'PLATINUM': 30,
+                'DIAMOND': 100
+            };
+            
+            const targetOrders = orderRequirements[currentTier] || 3;
+            const progressPercent = Math.min((orderCount / targetOrders) * 100, 100);
+            
+            // Update UI
+            $('#order-current').text(orderCount);
+            $('#order-target').text(targetOrders);
+            $('#order-progress-bar').css('width', progressPercent + '%');
+        }
+        
+        function calculateTierProgress(currentTier, totalSpending) {
+            // Tier requirements (same as MembershipTier enum)
+            const tierRequirements = {
+                'SILVER': { next: 'GOLD', nextName: 'Vàng', requirement: 5000000 },
+                'GOLD': { next: 'PLATINUM', nextName: 'Bạch Kim', requirement: 20000000 },
+                'PLATINUM': { next: 'DIAMOND', nextName: 'Kim Cương', requirement: 50000000 },
+                'DIAMOND': { next: null, nextName: null, requirement: null }
+            };
+            
+            const tierInfo = tierRequirements[currentTier];
+            
+            if (!tierInfo || !tierInfo.next) {
+                // Already max tier - hide next tier info
+                $('#next-tier-info').html('<div style="font-size: 12px; color: #888;">Bạn đã đạt hạng cao nhất! 🎉</div>');
+                $('#spending-target').text('Max');
+                $('#spending-progress-bar').css('width', '100%');
+                return;
+            }
+            
+            const nextTierRequirement = tierInfo.requirement;
+            const currentSpending = totalSpending || 0;
+            const remainingAmount = nextTierRequirement - currentSpending;
+            
+            // Calculate progress percentage
+            let progressPercent = 0;
+            if (currentTier === 'SILVER') {
+                progressPercent = (currentSpending / nextTierRequirement) * 100;
+            } else if (currentTier === 'GOLD') {
+                const previousTier = 5000000;
+                progressPercent = ((currentSpending - previousTier) / (nextTierRequirement - previousTier)) * 100;
+            } else if (currentTier === 'PLATINUM') {
+                const previousTier = 20000000;
+                progressPercent = ((currentSpending - previousTier) / (nextTierRequirement - previousTier)) * 100;
+            }
+            
+            progressPercent = Math.min(Math.max(progressPercent, 0), 100);
+            
+            // Update UI
+            $('#spending-target').text(nextTierRequirement.toLocaleString('vi-VN'));
+            $('#spending-progress-bar').css('width', progressPercent + '%');
+            
+            if (remainingAmount > 0) {
+                $('#progress-text').text('Chi tiêu thêm ' + formatCurrency(remainingAmount) + ' để lên hạng ' + tierInfo.nextName);
+            } else {
+                $('#progress-text').text('Đã đủ điều kiện lên hạng ' + tierInfo.nextName + '!');
+            }
+        }
+        
+        function showTierBenefits(tier) {
+            const benefits = {
+                'SILVER': {
+                    color: '#757575',
+                    icon: '🥈',
+                    requirement: 'Tham gia ngay',
+                    items: [
+                        { icon: 'fa-truck', title: 'Miễn phí vận chuyển', desc: 'Giảm 5,000đ phí ship' },
+                        { icon: 'fa-calendar', title: 'Ngày hội Thành viên', desc: '2 voucher mỗi tháng' },
+                        { icon: 'fa-tags', title: 'Sản phẩm giá hạng Bạc', desc: 'Giá ưu đãi dành riêng hạng Bạc' },
+                        { icon: 'fa-percent', title: 'Voucher HOT từ Shop', desc: 'Ưu đãi tới 30%' }
+                    ]
+                },
+                'GOLD': {
+                    color: '#ffc107',
+                    icon: '🥇',
+                    requirement: 'Chi tiêu từ 5,000,000đ',
+                    items: [
+                        { icon: 'fa-truck', title: 'Miễn phí vận chuyển', desc: 'Giảm 15,000đ phí ship' },
+                        { icon: 'fa-calendar', title: 'Ngày hội Thành viên', desc: '5 voucher mỗi tháng' },
+                        { icon: 'fa-tags', title: 'Sản phẩm giá hạng Vàng', desc: 'Giá ưu đãi dành riêng hạng Vàng' },
+                        { icon: 'fa-percent', title: 'Voucher HOT từ Shop', desc: 'Ưu đãi tới 50% từ Shop' },
+                        { icon: 'fa-gift', title: 'Quà tặng sinh nhật', desc: 'Voucher đặc biệt ngày sinh nhật' }
+                    ]
+                },
+                'PLATINUM': {
+                    color: '#9c27b0',
+                    icon: '💎',
+                    requirement: 'Chi tiêu từ 20,000,000đ',
+                    items: [
+                        { icon: 'fa-truck', title: 'Miễn phí vận chuyển', desc: 'Giảm 30,000đ phí ship' },
+                        { icon: 'fa-calendar', title: 'Ngày hội Thành viên', desc: '10 voucher mỗi tháng' },
+                        { icon: 'fa-tags', title: 'Sản phẩm giá hạng Bạch Kim', desc: 'Giá VIP dành riêng hạng Bạch Kim' },
+                        { icon: 'fa-percent', title: 'Voucher HOT từ Shop', desc: 'Ưu đãi tới 70% từ Shop' },
+                        { icon: 'fa-gift', title: 'Quà tặng sinh nhật', desc: 'Voucher đặc biệt + Quà tặng' },
+                        { icon: 'fa-star', title: 'Ưu tiên hỗ trợ', desc: 'Hỗ trợ khách hàng ưu tiên' }
+                    ]
+                },
+                'DIAMOND': {
+                    color: '#212121',
+                    icon: '💠',
+                    requirement: 'Chi tiêu từ 50,000,000đ',
+                    items: [
+                        { icon: 'fa-truck', title: 'Miễn phí vận chuyển', desc: 'FREE SHIP toàn bộ đơn hàng' },
+                        { icon: 'fa-calendar', title: 'Ngày hội Thành viên', desc: 'Voucher không giới hạn' },
+                        { icon: 'fa-tags', title: 'Sản phẩm giá hạng Kim Cương', desc: 'Giá độc quyền - Thấp nhất' },
+                        { icon: 'fa-percent', title: 'Voucher HOT từ Shop', desc: 'Ưu đãi lên tới 90% từ Shop' },
+                        { icon: 'fa-gift', title: 'Quà tặng cao cấp', desc: 'Quà tặng VIP + Ưu đãi đặc biệt' },
+                        { icon: 'fa-star', title: 'Dịch vụ VIP', desc: 'Chăm sóc 1-1, ưu tiên cao nhất' },
+                        { icon: 'fa-crown', title: 'Sự kiện độc quyền', desc: 'Tham gia sự kiện dành riêng VIP' }
+                    ]
+                }
+            };
+            
+            const tierData = benefits[tier];
+            const tierNames = {
+                'SILVER': 'Bạc',
+                'GOLD': 'Vàng', 
+                'PLATINUM': 'Bạch Kim',
+                'DIAMOND': 'Kim Cương'
+            };
+            
+            let html = `
+                <div style="border-left: 4px solid ${tierData.color}; padding-left: 15px; margin-bottom: 20px;">
+                    <div style="font-size: 18px; font-weight: 600; color: ${tierData.color}; margin-bottom: 5px;">
+                        ${tierData.icon} Thẻ ${tierNames[tier]}
+                    </div>
+                    <div style="font-size: 13px; color: #666;">
+                        ${tierData.requirement}
+                    </div>
+                </div>
+            `;
+            
+            tierData.items.forEach(item => {
+                html += `
+                    <div style="display: flex; align-items: flex-start; padding: 15px 0; border-bottom: 1px solid #f5f5f5;">
+                        <div style="width: 40px; height: 40px; background: ${tierData.color}15; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="fa ${item.icon}" style="color: ${tierData.color}; font-size: 18px;"></i>
+                        </div>
+                        <div style="margin-left: 15px; flex: 1;">
+                            <div style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 4px;">
+                                ${item.title}
+                            </div>
+                            <div style="font-size: 13px; color: #666;">
+                                ${item.desc}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            $('#tier-benefits-content').html(html);
+        }
+        
+        function formatCurrency(amount) {
+            if (!amount && amount !== 0) return '0đ';
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount);
+        }
+        
+        // Avatar preview and upload function
+        function previewAvatar(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Vui lòng chọn file ảnh!');
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Kích thước ảnh tối đa 5MB!');
+                    event.target.value = '';
+                    return;
+                }
+                
+                // Preview image immediately
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#profile-avatar-preview').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+                
+                // Auto-upload to Cloudinary
+                uploadAvatarToCloudinary(file);
+            }
+        }
+        
+        // Upload avatar to Cloudinary
+        function uploadAvatarToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+            
+            // Show loading
+            showAvatarLoading();
+            
+            $.ajax({
+                url: '/api/user/profile/upload-avatar',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    hideAvatarLoading();
+                    
+                    if (response.success) {
+                        console.log('✅ Avatar uploaded to Cloudinary:', response.avatarUrl);
+                        
+                        // Show success notification
+                        showNotification('success', '✓ Cập nhật ảnh đại diện thành công!');
+                        
+                        // Update avatar with Cloudinary URL
+                        $('#profile-avatar-preview').attr('src', response.avatarUrl);
+                        
+                        // Reload avatar from API
+                        setTimeout(function() {
+                            loadUserProfileWithAvatar();
+                        }, 500);
+                    } else {
+                        console.error('❌ Upload failed:', response.message);
+                        showNotification('error', '✕ ' + response.message);
+                    }
+                },
+                error: function(xhr) {
+                    hideAvatarLoading();
+                    console.error('❌ Upload error:', xhr);
+                    
+                    let errorMsg = 'Có lỗi khi upload ảnh lên cloud. Vui lòng thử lại.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    showNotification('error', '✕ ' + errorMsg);
+                }
+            });
+        }
+        
+        // Show loading overlay
+        function showAvatarLoading() {
+            const $avatarContainer = $('#profile-avatar-preview').parent();
+            $avatarContainer.append(`
+                <div id="avatar-loading-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                    <div style="text-align: center;">
+                        <i class="fa fa-spinner fa-spin" style="color: white; font-size: 32px;"></i>
+                        <div style="color: white; font-size: 11px; margin-top: 8px;">Uploading...</div>
+                    </div>
+                </div>
+            `);
+        }
+        
+        // Hide loading overlay
+        function hideAvatarLoading() {
+            $('#avatar-loading-overlay').remove();
+        }
+        
+        // Show notification toast
+        function showNotification(type, message) {
+            const bgColor = type === 'success' ? '#4caf50' : '#f44336';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+            
+            const $notification = $(`
+                <div style="position: fixed; top: 80px; right: 20px; z-index: 9999; background: ${bgColor}; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); min-width: 320px; animation: slideInRight 0.3s;">
+                    <i class="fa ${icon}" style="margin-right: 10px; font-size: 18px;"></i>
+                    <span style="font-size: 14px; font-weight: 500;">${message}</span>
+                </div>
+            `);
+            
+            $('body').append($notification);
+            
+            setTimeout(function() {
+                $notification.fadeOut(300, function() {
+                    $(this).remove();
+                });
+            }, 3500);
+        }
+        
+        // Debug avatar loading and load from API
+        $(document).ready(function() {
+            const avatarSrc = $('#profile-avatar-preview').attr('src');
+            console.log('Initial avatar source:', avatarSrc);
+            
+            // Load user profile with avatar when page loads
+            loadUserProfileWithAvatar();
+            
+            // When profile panel is opened, reload avatar
+            $('#collapseFour').on('shown.bs.collapse', function() {
+                loadUserProfileWithAvatar();
+            });
+        });
+        
+        // Load user profile including avatar
+        function loadUserProfileWithAvatar() {
+            $.ajax({
+                url: '/api/user/profile/avatar',
+                type: 'GET',
+                success: function(response) {
+                    console.log('📦 Full API Response:', response);
+                    
+                    if (response.success && response.user) {
+                        const user = response.user;
+                        console.log('👤 User data:', user);
+                        console.log('🖼️ Profile picture value:', user.profilePicture);
+                        console.log('🖼️ Profile picture type:', typeof user.profilePicture);
+                        console.log('🖼️ Profile picture length:', user.profilePicture ? user.profilePicture.length : 0);
+                        
+                        // Update avatar if available and not empty
+                        if (user.profilePicture && user.profilePicture.trim() !== '') {
+                            console.log('✅ Updating avatar to:', user.profilePicture);
+                            $('#profile-avatar-preview').attr('src', user.profilePicture);
+                            
+                            // Test if image loads successfully
+                            $('#profile-avatar-preview').on('load', function() {
+                                console.log('✅ Avatar image loaded successfully');
+                            }).on('error', function() {
+                                console.error('❌ Avatar image failed to load, using default');
+                                $(this).attr('src', '/img/avatar-default.svg');
+                            });
+                        } else {
+                            console.log('⚠️ No profile picture or empty string, using default');
+                        }
+                    } else {
+                        console.log('❌ API response invalid:', response);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ AJAX Error:', {xhr, status, error});
+                    console.error('Response Text:', xhr.responseText);
+                }
+            });
+        }
+        </script>
         
         <!-- Chat Widget -->
         <div th:replace="fragments/user/chat-widget :: chat-widget"></div>

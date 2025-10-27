@@ -1,6 +1,7 @@
 package com.dev.shoeshop.repository;
 
 import com.dev.shoeshop.entity.Order;
+import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,8 +37,18 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     // Lấy danh sách orders của user theo userId, sắp xếp theo ngày tạo mới nhất
     public List<Order> findByUserIdOrderByCreatedDateDesc(Long userId);
     
-    // Lấy danh sách orders của user theo userId và status
-    public List<Order> findByUserIdAndStatusOrderByCreatedDateDesc(Long userId, ShipmentStatus status);
+    // Lấy danh sách orders của user theo userId và status (với JOIN FETCH orderDetailSet)
+    @Query("SELECT DISTINCT o FROM Order o " +
+           "LEFT JOIN FETCH o.orderDetailSet od " +
+           "LEFT JOIN FETCH od.product pd " +
+           "LEFT JOIN FETCH pd.product p " +
+           "WHERE o.user.id = :userId AND o.status = :status " +
+           "ORDER BY o.createdDate DESC")
+    public List<Order> findByUserIdAndStatusOrderByCreatedDateDesc(@Param("userId") Long userId, 
+                                                                   @Param("status") ShipmentStatus status);
+    
+    // Đếm số đơn hàng của user theo status
+    Long countByUserAndStatus(Users user, ShipmentStatus status);
     
     // ========== DASHBOARD STATISTICS QUERIES ==========
     
