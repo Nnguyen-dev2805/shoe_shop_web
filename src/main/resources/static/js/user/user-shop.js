@@ -182,7 +182,7 @@ function loadProducts(page) {
     
     let params = {
         page: page,
-        size: 6
+        size: 8
     };
 
     if (searchKeyword && searchKeyword.trim() !== '') {
@@ -247,7 +247,7 @@ function renderProducts(products) {
             let formattedOriginalPrice = new Intl.NumberFormat('vi-VN').format(originalPrice);
             
             productHtml += `
-                <div class="col-lg-4 col-md-6">
+                <div class="col-lg-3 col-md-6">
                     <div class="single-product ${hasFlashSale ? 'flash-sale-product' : ''}">
                         ${hasFlashSale ? `
                             <!-- Flash Sale Badges -->
