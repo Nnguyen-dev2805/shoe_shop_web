@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<!-- Admin Chat Badge Script (Copy from Manager) -->
+<head th:fragment="chat-badge-script">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script th:src="@{/js/chat/chat-badge-updater.js}"></script>
+    
+    <!-- Manager Chat Widget Scripts (for Admin) -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var currentManagerId = /*[[${session.admin != null ? session.admin.id : 0}]]*/ 0;
+        var currentManagerName = /*[[${session.admin != null ? session.admin.fullname : 'Admin'}]]*/ 'Admin';
+        console.log('🔑 Admin Auth: ID =', currentManagerId, ', Name =', currentManagerName);
+        /*]]>*/
+    </script>
+    <script src="/js/chat/manager-chat-widget.js"></script>
+</head>
+
+<!-- Admin Topbar Fragment -->
+<div th:fragment="topbar(pageTitle)">
+    <header class="topbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <div class="d-flex align-items-center">
+                    <!-- Menu Toggle Button -->
+                    <div class="topbar-item">
+                        <button type="button" class="button-toggle-menu me-2">
+                            <iconify-icon icon="solar:hamburger-menu-broken" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Page Title -->
+                    <div class="topbar-item">
+                        <h4 class="fw-bold topbar-button pe-none text-uppercase mb-0" th:text="${pageTitle}">Dashboard</h4>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center gap-1">
+                    <!-- Theme Color (Light/Dark) -->
+                    <div class="topbar-item">
+                        <button type="button" class="topbar-button" id="light-dark-mode">
+                            <iconify-icon icon="solar:moon-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                        </button>
+                    </div>
+
+                    <!-- Chat Icon (Copy from Manager) -->
+                    <div class="topbar-item" id="manager-chat-icon-container" style="position: relative;">
+                        <a href="javascript:void(0);" id="manager-chat-icon-link" class="topbar-button" title="Quản lý Chat" style="position: relative; text-decoration: none;">
+                            <iconify-icon icon="solar:chat-dots-bold-duotone" class="fs-24 align-middle"></iconify-icon>
+                            <!-- Unread badge -->
+                            <span id="manager-chat-unread-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none; font-size: 10px;">
+                                0
+                            </span>
+                        </a>
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="dropdown topbar-item">
+                        <a type="button" class="topbar-button" id="page-header-user-dropdown" data-bs-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="false">
+                            <span class="d-flex align-items-center">
+                                <img class="rounded-circle" width="32" th:src="@{/assets/images/users/avatar-1.jpg}" alt="avatar">
+                            </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header">Welcome Admin!</h6>
+                            <a class="dropdown-item" th:href="@{/admin/profile}">
+                                <i class="bx bx-user fs-18 align-middle me-1"></i><span class="align-middle">Profile</span>
+                            </a>
+                            <a class="dropdown-item" th:href="@{/admin/settings}">
+                                <i class="bx bx-cog fs-18 align-middle me-1"></i><span class="align-middle">Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="bx bx-log-out fs-18 align-middle me-1"></i><span class="align-middle">Logout</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</div>
+

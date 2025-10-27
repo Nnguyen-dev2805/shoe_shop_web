@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <!-- Title Meta -->
+    <meta charset="utf-8"/>
+    <title>Your Page Title - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" th:href="@{/assets/images/favicon.ico}"/>
+
+    <!-- Vendor CSS -->
+    <link th:href="@{/assets/css/vendor.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css"/>
+
+    <!-- Theme Config -->
+    <script th:src="@{/assets/js/config.js}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Page specific CSS -->
+    <style>
+        /* Your custom styles here */
+    </style>
+</head>
+
+<body>
+
+<!-- START Wrapper -->
+<div class="wrapper">
+
+    <!-- ========== Topbar with Chat ========== -->
+    <div th:replace="~{fragments/admin/topbar :: topbar('Your Page Title')}"></div>
+
+    <!-- ========== Sidebar Menu ========== -->
+    <div th:include="~{fragments/admin/panel_menu.html}"></div>
+
+    <!-- ========== Page Content ========== -->
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <!-- Page Title -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box">
+                        <h4 class="page-title">Your Page Title</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your page content here -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========== Footer ========== -->
+    <footer class="footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <script>document.write(new Date().getFullYear())</script> © Shoe Shop - Admin
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div>
+<!-- END Wrapper -->
+
+<!-- Vendor JS -->
+<script th:src="@{/assets/js/vendor.min.js}"></script>
+<script th:src="@{/assets/js/app.min.js}"></script>
+
+<!-- Page specific JS -->
+<script th:src="@{/js/admin/your-page.js}"></script>
+
+<!-- ========== Admin Chat Integration ========== -->
+<div th:replace="~{fragments/admin/topbar :: chat-scripts}"></div>
+
+</body>
+</html>

@@ -60,9 +60,9 @@ function createChatWidget() {
         <div id="chatWidget" class="chat-widget" style="display: none;">
             <div class="chat-widget-header">
                 <div class="d-flex align-items-center">
-                    <i class="fa fa-store me-2"></i>
+                    <i class="fa fa-comments-o me-2"></i>
                     <div>
-                        <strong>Shop Support</strong>
+                        <strong>Hỗ trợ khách hàng</strong>
                         <div class="chat-status">
                             <span class="status-indicator"></span>
                             <small id="chatStatus">Đang kết nối...</small>
@@ -117,42 +117,71 @@ function createChatWidget() {
                 position: absolute;
                 top: 100%;
                 right: 0;
-                margin-top: 10px;
-                width: 450px;
-                height: 620px;
+                margin-top: 12px;
+                width: 420px;
+                max-width: 95vw;
+                height: 680px;
+                max-height: 85vh;
                 background: white;
-                border-radius: 16px;
-                box-shadow: 0 10px 50px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.1);
+                border-radius: 24px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 25px rgba(0,0,0,0.1);
                 display: flex;
                 flex-direction: column;
                 z-index: 9999;
-                animation: slideDown 0.3s ease;
+                animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
                 overflow: hidden;
+                border: 1px solid rgba(0,0,0,0.06);
             }
             
             @keyframes slideDown {
                 from {
                     opacity: 0;
+                    transform: translateY(-30px) scale(0.9);
                 }
                 to {
                     opacity: 1;
+                    transform: translateY(0) scale(1);
                 }
             }
             
             .chat-widget-header {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
                 color: white;
-                padding: 18px 20px;
-                border-radius: 16px 16px 0 0;
+                padding: 20px 24px;
+                border-radius: 24px 24px 0 0;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+                position: relative;
+                z-index: 10;
+            }
+            
+            .chat-widget-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2) 50%, transparent);
             }
             
             .chat-widget-header strong {
-                font-size: 16px;
-                font-weight: 600;
+                font-size: 17px;
+                font-weight: 700;
+                letter-spacing: -0.2px;
+            }
+            
+            .chat-widget-header i.fa-comments-o {
+                font-size: 20px;
+                opacity: 0.95;
+            }
+            
+            .chat-widget-header .chat-status small {
+                font-size: 12px;
+                opacity: 0.9;
+                font-weight: 500;
             }
             
             .chat-status {
@@ -163,50 +192,64 @@ function createChatWidget() {
             }
             
             .status-indicator {
-                width: 8px;
-                height: 8px;
+                width: 9px;
+                height: 9px;
                 border-radius: 50%;
                 background: #fbbf24;
                 display: inline-block;
+                box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3);
             }
             
             .status-indicator.connected {
-                background: #4ade80;
-                animation: pulse 2s infinite;
+                background: #10b981;
+                box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+                animation: pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
             }
             
             @keyframes pulse {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.5; }
+                0%, 100% { 
+                    opacity: 1; 
+                    transform: scale(1);
+                }
+                50% { 
+                    opacity: 0.7; 
+                    transform: scale(1.1);
+                }
             }
             
             .btn-close-widget {
-                background: none;
+                background: rgba(255,255,255,0.1);
                 border: none;
                 color: white;
                 font-size: 20px;
                 cursor: pointer;
                 padding: 0;
-                width: 30px;
-                height: 30px;
+                width: 36px;
+                height: 36px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 border-radius: 50%;
-                transition: background 0.2s;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(10px);
             }
             
             .btn-close-widget:hover {
-                background: rgba(255,255,255,0.2);
+                background: rgba(255,255,255,0.25);
+                transform: rotate(90deg);
+            }
+            
+            .btn-close-widget:active {
+                transform: rotate(90deg) scale(0.9);
             }
             
             .chat-widget-messages {
                 flex: 1;
-                padding: 20px 30px 20px 20px;
+                padding: 18px 24px 18px 18px;
                 overflow-y: auto;
                 overflow-x: visible;
-                background: #f5f7fa;
-                background-image: linear-gradient(to bottom, #f8f9fa 0%, #f5f7fa 100%);
+                background: #f8f9fa;
+                background-image: linear-gradient(to bottom, #fafbfc 0%, #f5f7fa 100%);
                 min-height: 0;
                 scroll-behavior: smooth;
                 position: relative;
@@ -223,10 +266,9 @@ function createChatWidget() {
             }
             
             .chat-message {
-                margin-bottom: 16px;
+                margin-bottom: 14px;
                 display: flex;
-{{ ... }}
-                animation: messageSlide 0.3s ease;
+                animation: messageSlide 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 position: relative;
             }
             
@@ -249,28 +291,55 @@ function createChatWidget() {
             }
             
             .chat-message.user .chat-message-content {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
                 color: white;
                 border-bottom-right-radius: 6px;
-                box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+                font-weight: 500;
             }
             
             .chat-message.shop .chat-message-content {
                 background: white;
-                color: #2d3748;
-                border: 1px solid #e2e8f0;
+                color: #1f2937;
+                border: 1px solid #e5e7eb;
                 border-bottom-left-radius: 6px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+                box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+                font-weight: 500;
             }
             
             .chat-message-content {
-                max-width: 75%;
+                max-width: 72%;
                 padding: 12px 16px;
-                border-radius: 18px;
-                font-size: 14.5px;
-                line-height: 1.5;
+                border-radius: 16px;
+                font-size: 14px;
+                line-height: 1.6;
                 word-wrap: break-word;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                position: relative;
+            }
+            
+            .chat-message-content::before {
+                content: '';
+                position: absolute;
+                width: 8px;
+                height: 8px;
+                border-radius: 2px;
+            }
+            
+            .chat-message.user .chat-message-content::before {
+                right: -4px;
+                bottom: 0;
+                background: inherit;
+                transform: rotate(45deg) skewX(20deg);
+            }
+            
+            .chat-message.shop .chat-message-content::before {
+                left: -4px;
+                bottom: 0;
+                background: white;
+                border-left: 1px solid #e5e7eb;
+                border-bottom: 1px solid #e5e7eb;
+                transform: rotate(45deg) skewX(-20deg);
             }
             
             .chat-message-time {
@@ -284,23 +353,34 @@ function createChatWidget() {
                 padding: 18px 20px;
                 border-top: 2px solid #e5e7eb;
                 background: white;
-                border-radius: 0 0 16px 16px;
-                box-shadow: 0 -3px 15px rgba(0,0,0,0.08);
+                border-radius: 0 0 24px 24px;
+                box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
                 flex-shrink: 0;
+                position: relative;
+            }
+            
+            .chat-widget-input::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05) 50%, transparent);
             }
             
             .chat-widget-input input {
-                border-radius: 24px;
+                border-radius: 12px;
                 border: 2px solid #e5e7eb;
-                padding: 12px 20px;
-                font-size: 15px;
+                padding: 11px 16px;
+                font-size: 14px;
                 transition: all 0.2s;
-                background: #f9fafb;
+                background: #fafbfc;
             }
             
             .chat-widget-input input:focus {
-                border-color: #667eea;
-                box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
                 outline: none;
                 background: white;
             }
@@ -317,25 +397,49 @@ function createChatWidget() {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
                 border: none;
-                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-                transition: all 0.2s;
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                flex-shrink: 0;
+            }
+            
+            .chat-widget-input button::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255,255,255,0.3);
+                transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+            }
+            
+            .chat-widget-input button:hover::before {
+                width: 100px;
+                height: 100px;
+                top: -50px;
+                left: -50px;
             }
             
             .chat-widget-input button:hover {
-                transform: scale(1.1);
-                box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+                transform: scale(1.08);
+                box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
             }
             
             .chat-widget-input button:active {
-                transform: scale(0.95);
+                transform: scale(0.92);
             }
             
             .chat-widget-input button i {
                 font-size: 16px;
                 color: white;
+                position: relative;
+                z-index: 1;
             }
             
             @media (max-width: 768px) {
