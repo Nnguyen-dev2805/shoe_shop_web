@@ -38,4 +38,10 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, UserAd
      */
     @Query("SELECT COUNT(ua) > 0 FROM UserAddress ua WHERE ua.user.id = :userId AND ua.address.id = :addressId AND ua.isDelete = false")
     boolean existsByUserIdAndAddressId(@Param("userId") Long userId, @Param("addressId") Long addressId);
+    
+    /**
+     * Find UserAddress by userId and addressId
+     */
+    @Query("SELECT ua FROM UserAddress ua WHERE ua.user.id = :userId AND ua.address.id = :addressId AND ua.isDelete = false")
+    Optional<UserAddress> findByUserIdAndAddressId(@Param("userId") Long userId, @Param("addressId") Long addressId);
 }

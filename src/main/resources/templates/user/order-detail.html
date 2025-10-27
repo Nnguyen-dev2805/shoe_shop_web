@@ -1,192 +1,548 @@
 <!doctype html>
 <html class="no-js" lang="">
-    
 <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>Chi Tiết Đơn Hàng || DeeG Shop</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
 
     <!-- favicon -->
-        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
 
     <!-- Google Fonts -->
-        <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
-        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
-        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
 
     <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/owl.carousel.css">
-        <link rel="stylesheet" href="/css/owl.theme.css">
-        <link rel="stylesheet" href="/css/owl.transitions.css">
-        <link rel="stylesheet" href="/css/jquery-ui.css">
-        <link rel="stylesheet" href="/css/meanmenu.min.css">
-        <link rel="stylesheet" href="/lib/css/nivo-slider.css">
-        <link rel="stylesheet" href="/lib/css/preview.css">
-        <link rel="stylesheet" href="/css/animate.css">
-        <link rel="stylesheet" href="/css/magic.css">
-        <link rel="stylesheet" href="/css/normalize.css">
-        <link rel="stylesheet" href="/css/main.css">
-        <link rel="stylesheet" href="/style.css">
-        <link rel="stylesheet" href="/css/responsive.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/owl.carousel.css">
+    <link rel="stylesheet" href="/css/owl.theme.css">
+    <link rel="stylesheet" href="/css/owl.transitions.css">
+    <link rel="stylesheet" href="/css/jquery-ui.css">
+    <link rel="stylesheet" href="/css/meanmenu.min.css">
+    <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+    <link rel="stylesheet" href="/lib/css/preview.css">
+    <link rel="stylesheet" href="/css/animate.css">
+    <link rel="stylesheet" href="/css/magic.css">
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/css/responsive.css">
     
-    <!-- Custom CSS for Order Detail -->
     <style>
+        /* ========== SHOPEE ORDER DETAIL STYLE ========== */
+        
         /* Breadcrumb */
         .breadcrumb-link:hover {
             color: #ee4d2d !important;
         }
         
-        /* Order Status Badge Colors */
-        .status-delivered {
-            background-color: #d4edda !important;
-            color: #155724 !important;
-            border: 1px solid #c3e6cb !important;
+        /* Override body for order detail page */
+        .account-area {
+            background: #f5f5f5;
+            padding: 20px 0;
         }
         
-        .status-shipped {
-            background-color: #cce5ff !important;
-            color: #004085 !important;
-            border: 1px solid #b3d7ff !important;
+        /* Container */
+        .order-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0;
+            background: #f5f5f5;
         }
         
-        .status-in_stock {
-            background-color: #fff3cd !important;
-            color: #856404 !important;
-            border: 1px solid #ffeaa7 !important;
+        /* Status Banner */
+        .status-banner {
+            background: linear-gradient(135deg, #26aa99 0%, #16a085 100%);
+            color: white;
+            padding: 20px;
+            margin-bottom: 10px;
         }
         
-        .status-cancel {
-            background-color: #f8d7da !important;
-            color: #721c24 !important;
-            border: 1px solid #f5c6cb !important;
+        .status-banner.delivered {
+            background: linear-gradient(135deg, #26aa99 0%, #16a085 100%);
         }
         
-        .status-return {
-            background-color: #e2e3e5 !important;
-            color: #383d41 !important;
-            border: 1px solid #d6d8db !important;
+        .status-banner.shipped {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
         }
         
-        /* Order Detail Styling */
-        .order-detail-container {
+        .status-banner.in-stock {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        }
+        
+        .status-banner.cancel {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .status-banner.return {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+        
+        .status-text {
+            font-size: 16px;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        /* White Card Section */
+        .white-card {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
+            padding: 16px;
+            margin-bottom: 10px;
         }
         
-        .order-header {
-            background: #f8f9fa;
-            padding: 20px;
-            border-bottom: 1px solid #e5e5e5;
+        /* Shipping Info */
+        .shipping-info {
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 16px;
+            margin-bottom: 16px;
         }
         
-        .order-body {
-            padding: 20px;
+        .shipping-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        
+        .shipping-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .shipping-code {
+            font-size: 13px;
+            color: #666;
+            margin: 0 0 12px 0;
+        }
+        
+        .shipping-status {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .shipping-icon {
+            color: #26aa99;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+        
+        .shipping-text {
+            flex: 1;
+        }
+        
+        .shipping-status-text {
+            color: #26aa99;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 0 0 4px 0;
+        }
+        
+        .shipping-time {
+            color: #999;
+            font-size: 13px;
+            margin: 0;
+        }
+        
+        /* Address Section */
+        .address-section {
+            padding-top: 16px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin: 0 0 12px 0;
+        }
+        
+        .address-info {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .address-icon {
+            color: #ee4d2d;
+            font-size: 18px;
+            margin-top: 2px;
+        }
+        
+        .address-details {
+            flex: 1;
+        }
+        
+        .recipient-name {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin: 0 0 4px 0;
+        }
+        
+        .recipient-phone {
+            color: #666;
+        }
+        
+        .recipient-address {
+            font-size: 13px;
+            color: #666;
+            margin: 4px 0 0 0;
+            line-height: 1.5;
+        }
+        
+        .see-more {
+            color: #ee4d2d;
+            font-size: 13px;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+        
+        /* Product Section */
+        .shop-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .shop-name {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin: 0;
+        }
+        
+        .shop-arrow {
+            margin-left: auto;
+            color: #999;
+            font-size: 14px;
         }
         
         .product-item {
-            background: white;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .product-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
+            display: flex;
+            gap: 12px;
+            padding: 16px;
         }
         
         .product-image {
             width: 80px;
             height: 80px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 4px;
+            border: 1px solid #f0f0f0;
         }
         
-        .product-info h5 {
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-name {
+            font-size: 14px;
             color: #333;
-            font-weight: 600;
-            margin-bottom: 5px;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
         }
         
-        .product-meta {
-            color: #666;
+        .product-variant {
+            font-size: 12px;
+            color: #999;
+            margin: 0 0 8px 0;
+        }
+        
+        .product-price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .product-quantity {
             font-size: 13px;
-            margin-bottom: 5px;
+            color: #666;
         }
         
-        .product-price {
+        .product-prices {
+            text-align: right;
+        }
+        
+        .original-price {
+            font-size: 12px;
+            color: #999;
+            text-decoration: line-through;
+            margin-right: 8px;
+        }
+        
+        .final-price {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Payment Summary */
+        .payment-summary {
+            padding: 16px;
+        }
+        
+        .summary-total-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .summary-total-header .summary-label {
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .summary-total-header .summary-value {
+            font-size: 20px;
+            font-weight: 700;
             color: #ee4d2d;
-            font-weight: 600;
-            font-size: 16px;
         }
         
-        .order-summary {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 20px;
+        .payment-details {
+            border-top: 1px solid #f0f0f0;
+            margin-top: 12px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+        }
+        
+        .payment-details.show {
+            max-height: 600px;
+            padding-top: 12px;
         }
         
         .summary-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
         }
         
-        .summary-row.total {
-            border-top: 1px solid #e5e5e5;
-            padding-top: 15px;
-            margin-top: 15px;
-            font-weight: 600;
-            font-size: 18px;
+        .summary-label {
+            color: #666;
+        }
+        
+        .summary-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* Shopee style - Emphasize important numbers */
+        .summary-value.price-highlight {
             color: #ee4d2d;
+            font-size: 18px;
+            font-weight: 600;
         }
         
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .order-header > div {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-            }
-            
-            .order-header > div > div:last-child {
-                text-align: left !important;
-                margin-top: 15px;
-            }
-            
-            .product-item > div {
-                flex-direction: column !important;
-                align-items: flex-start !important;
-            }
-            
-            .product-item > div > div:last-child {
-                margin-top: 15px;
-                text-align: left !important;
-            }
+        .summary-value.discount {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+        
+        /* Rating Section */
+        .rating-section {
+            padding: 16px;
+        }
+        
+        .rating-header-toggle {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .rating-products {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .rating-products.show {
+            max-height: 2000px;
+            margin-top: 16px;
+        }
+        
+        .rating-product-item {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .rating-product-header {
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .rating-product-header:hover {
+            background: #f8f9fa;
+        }
+        
+        .rating-product-header.active {
+            background: #fff8e1;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .rating-product-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .rating-product-body.show {
+            max-height: 800px;
+            padding: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .star-rating {
+            direction: rtl;
+            display: inline-flex;
+            font-size: 24px;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            color: #ddd;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: color 0.2s;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        /* Support Section */
+        .support-section {
+            padding: 16px;
+        }
+        
+        .support-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin: 0 0 12px 0;
+        }
+        
+        .support-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        
+        .support-option:last-child {
+            border-bottom: none;
+        }
+        
+        .support-icon {
+            font-size: 20px;
+            color: #666;
+            margin-right: 12px;
+            width: 24px;
+            text-align: center;
+        }
+        
+        .support-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .support-arrow {
+            color: #999;
+            font-size: 14px;
+        }
+        
+        /* Timeline */
+        .timeline-section {
+            padding: 16px;
+        }
+        
+        .timeline-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .timeline-details.show {
+            max-height: 300px;
+        }
+        
+        .timeline-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+        
+        .timeline-label {
+            color: #666;
+        }
+        
+        .timeline-value {
+            color: #333;
+        }
+        
+        .collapse-btn {
+            background: white;
+            border: 1px solid #ddd;
+            color: #666;
+            width: 100%;
+            padding: 10px;
+            font-size: 13px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
         }
     </style>
-    </head>
+</head>
 
-    <body>
-        <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-        <![endif]-->
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
 
-        <!-- header area start -->
+    <!-- header area start -->
     <div th:insert="~{fragments/user/header.html}"></div>
-        <!-- header area end -->
-        
+    <!-- header area end -->
+    
     <!-- Breadcrumb Area -->
     <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
         <div class="container">
@@ -204,787 +560,575 @@
             </div>
         </div>
     </div>
-
+    
     <!-- order detail area start -->
     <div class="account-area">
-            <div class="container">
-            <div class="row" style="display: flex; justify-content: center; align-items: center;">
-                <div class="col-lg-10">
-                    <!-- Error Message -->
-                    <div th:if="${error}" class="alert alert-danger" style="margin-bottom: 20px;">
-                        <i class="fa fa-exclamation-triangle"></i> <span th:text="${error}"></span>
+        <div class="order-container">
+        
+        <!-- Error Message -->
+        <div th:if="${error}" class="white-card" style="background: #fff3cd; border-left: 4px solid #ffc107; margin-bottom: 20px;">
+            <p style="margin: 0; color: #856404;"><i class="fa fa-exclamation-triangle"></i> <span th:text="${error}"></span></p>
+        </div>
+        
+        <!-- Order Detail Content -->
+        <div th:if="${order != null}">
+        
+        <!-- Status Banner -->
+        <div th:class="'status-banner ' + ${order.status.name() == 'DELIVERED' ? 'delivered' : 
+                                                order.status.name() == 'SHIPPED' ? 'shipped' :
+                                                order.status.name() == 'IN_STOCK' ? 'in-stock' :
+                                                order.status.name() == 'CANCEL' ? 'cancel' : 
+                                                order.status.name() == 'RETURN' ? 'return' : 'in-stock'}">
+            <p class="status-text" th:text="${order.status.name() == 'DELIVERED' ? 'Đơn hàng đã hoàn thành' : 
+                                              order.status.name() == 'SHIPPED' ? 'Đơn hàng đang được vận chuyển' :
+                                              order.status.name() == 'IN_STOCK' ? 'Đơn hàng đang chờ xác nhận' :
+                                              order.status.name() == 'CANCEL' ? 'Đơn hàng đã hủy' : 
+                                              order.status.name() == 'RETURN' ? 'Đơn hàng đã trả lại' : 'Đơn hàng đang chờ xác nhận'}"></p>
+        </div>
+        
+        <!-- Shipping & Address Info -->
+        <div class="white-card">
+            <!-- Shipping Info -->
+            <div class="shipping-info">
+                <div class="shipping-header">
+                    <p class="shipping-title">Thông tin vận chuyển</p>
+                    <i class="fa fa-chevron-right" style="color: #999; font-size: 14px;"></i>
+                </div>
+                
+                <div class="shipping-status">
+                    <i th:class="'fa ' + ${order.status.name() == 'DELIVERED' ? 'fa-check-circle' : 'fa-truck'} + ' shipping-icon'"></i>
+                    <div class="shipping-text">
+                        <p class="shipping-status-text" th:text="${order.status.name() == 'DELIVERED' ? 'Giao hàng thành công' : 
+                                                                  order.status.name() == 'SHIPPED' ? 'Đang vận chuyển' :
+                                                                  order.status.name() == 'IN_STOCK' ? 'Chờ lấy hàng' : 'Chờ xác nhận'}"></p>
+                        <p class="shipping-time" th:text="${order.shipmentUpdatedDate != null ? #dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm') : #dates.format(order.createdDate, 'dd-MM-yyyy HH:mm')}"></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Address Section -->
+            <div class="address-section">
+                <p class="section-title">Địa chỉ nhận hàng</p>
+                <div class="address-info">
+                    <i class="fa fa-map-marker address-icon"></i>
+                    <div class="address-details">
+                        <p class="recipient-name">
+                            <span th:text="${order.address.recipientName != null ? order.address.recipientName : order.user.fullname}"></span> 
+                            <span class="recipient-phone" th:if="${order.address.recipientPhone != null && order.address.recipientPhone != ''}" th:text="'(+84) ' + ${order.address.recipientPhone}"></span>
+                            <span class="recipient-phone" th:if="${order.address.recipientPhone == null || order.address.recipientPhone == ''}" style="color: #999;">(Chưa cập nhật SĐT)</span>
+                        </p>
+                        <p class="recipient-address" id="full-address">
+                            <span th:text="${order.address.addressLine + ', ' + order.address.city + (order.address.country != null && order.address.country != '' ? ', ' + order.address.country : '')}"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Product Section -->
+        <div class="white-card" style="padding: 0;">
+            <!-- Shop Header -->
+            <div class="shop-header">
+                <p class="shop-name">DeeG Shop</p>
+                <i class="fa fa-chevron-right shop-arrow"></i>
+            </div>
+            
+            <!-- Product Item -->
+            <div class="product-item" th:each="detail : ${order.orderDetails}">
+                <img th:src="${detail.image != null ? detail.image : (detail.productDetail != null && detail.productDetail.product != null ? detail.productDetail.product.image : '/img/product/1.png')}" 
+                     th:alt="${detail.product_name != null ? detail.product_name : (detail.productDetail != null && detail.productDetail.product != null ? detail.productDetail.product.title : 'Product')}"
+                     class="product-image"
+                     onerror="this.src='/img/product/1.png'">
+                <div class="product-info" style="padding: 0;">
+                    <!-- Product Name -->
+                    <p class="product-name" style="margin: 0 0 4px 0; padding: 0;" 
+                       th:text="${detail.product_name != null ? detail.product_name : (detail.productDetail != null && detail.productDetail.product != null ? detail.productDetail.product.title : 'Sản phẩm')}"></p>
+                    
+                    <!-- Size & Brand -->
+                    <p class="product-variant" style="margin: 0 0 8px 0; padding: 0; font-size: 12px; color: #999;">
+                        <span>Size: </span>
+                        <span th:text="${detail.size != null ? detail.size : (detail.productDetail != null ? detail.productDetail.size : 'N/A')}"></span>
+                        <span th:if="${detail.productDetail != null && detail.productDetail.product != null && detail.productDetail.product.brandName != null && detail.productDetail.product.brandName != ''}"> 
+                            | <span th:text="${detail.productDetail.product.brandName}"></span>
+                        </span>
+                    </p>
+                    
+                    <!-- Quantity & Prices -->
+                    <div class="product-price-row" style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+                        <span class="product-quantity" style="font-size: 13px; color: #666;" th:text="'x' + ${detail.quantity}"></span>
+                        <div class="product-prices" style="text-align: right;">
+                            <!-- Original Price (before discount) -->
+                            <div th:if="${detail.productDetail != null && detail.productDetail.product != null && detail.productDetail.product.price != null && detail.productDetail.product.price > detail.price}">
+                                <span style="font-size: 12px; color: #999; text-decoration: line-through;" 
+                                      th:text="${#numbers.formatDecimal(detail.productDetail.product.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                            </div>
+                            <!-- Final Price (purchased price) -->
+                            <div>
+                                <span style="font-size: 14px; color: #333; font-weight: 500;" 
+                                      th:text="${#numbers.formatDecimal(detail.price, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payment Summary -->
+        <div class="white-card payment-summary">
+            <!-- Total with collapse button -->
+            <div class="summary-total-header" onclick="togglePaymentDetails()">
+                <span class="summary-label">Thành tiền:</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="summary-value" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                    <i class="fa fa-chevron-down" id="payment-chevron" style="font-size: 14px; color: #ee4d2d;"></i>
+                </div>
+            </div>
+            
+            <!-- Collapsible Payment Details -->
+            <div id="payment-details" class="payment-details">
+                <!-- Tổng tiền hàng -->
+                <div class="summary-row">
+                    <span class="summary-label">Tổng tiền hàng</span>
+                    <span class="summary-value price-highlight" th:text="${#numbers.formatDecimal(order.originalTotalPrice != null && order.originalTotalPrice > 0 ? order.originalTotalPrice : order.totalPrice, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                </div>
+                
+                <!-- Phí vận chuyển (always show, default 0) -->
+                <div class="summary-row">
+                    <span class="summary-label">Phí vận chuyển</span>
+                    <span class="summary-value" th:text="${#numbers.formatDecimal(order.shippingFee != null ? order.shippingFee : 0, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                </div>
+                
+                <!-- Ưu đãi phí vận chuyển (only if > 0) -->
+                <div class="summary-row" th:if="${order.shippingDiscountAmount != null && order.shippingDiscountAmount > 0}">
+                    <span class="summary-label">Ưu đãi phí vận chuyển <i class="fa fa-info-circle" style="color: #999; font-size: 12px;"></i></span>
+                    <span class="summary-value discount" th:text="'-' + ${#numbers.formatDecimal(order.shippingDiscountAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                </div>
+                
+                <!-- Voucher đơn hàng (only if > 0) -->
+                <div class="summary-row" th:if="${order.discountAmount != null && order.discountAmount > 0}">
+                    <span class="summary-label">Voucher giảm giá</span>
+                    <span class="summary-value discount" th:text="'-' + ${#numbers.formatDecimal(order.discountAmount, 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                </div>
+                
+                <!-- Đổi điểm thưởng (only if > 0) -->
+                <div class="summary-row" th:if="${order.pointsRedeemed != null && order.pointsRedeemed > 0}">
+                    <span class="summary-label">Đổi điểm thưởng</span>
+                    <span class="summary-value discount" th:text="'-' + ${#numbers.formatDecimal(order.calculatePointsDiscount(), 0, 'COMMA', 0, 'POINT')} + 'đ'"></span>
+                </div>
+                
+                <!-- Điểm tích lũy (always show) -->
+                <div class="summary-row" style="border-top: 1px dashed #e5e5e5; margin-top: 8px; padding-top: 8px;">
+                    <span class="summary-label" style="color: #ee4d2d;">
+                        <i class="fa fa-gift"></i> Điểm tích lũy
+                    </span>
+                    <span class="summary-value" style="color: #ee4d2d; font-weight: 600;" th:text="'+' + ${order.pointsEarned != null ? order.pointsEarned : 0} + ' điểm'"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Rating Section (DELIVERED only) -->
+        <div class="white-card rating-section" th:if="${order.status.name() == 'DELIVERED'}">
+            <div class="rating-header-toggle" id="rating-toggle-btn">
+                <div>
+                    <p style="margin: 0; font-size: 14px; font-weight: 600; color: #333;">
+                        <i class="fa fa-star" style="color: #ffc107;"></i> Đánh giá sản phẩm
+                    </p>
+                </div>
+                <i class="fa fa-chevron-down" style="color: #666; font-size: 14px;"></i>
+            </div>
+            
+            <div class="rating-products">
+                <!-- Loop through order details -->
+                <div class="rating-product-item" th:each="orderDetail, iterStat : ${order.orderDetails}">
+                    <!-- Product Header (Always Visible) -->
+                    <div class="rating-product-header" th:data-product-id="${orderDetail.id}" onclick="toggleRatingProduct(this)">
+                        <img th:src="${orderDetail.image}" 
+                             alt="Product" 
+                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                        <div style="flex: 1;">
+                            <p style="margin: 0 0 4px 0; font-size: 14px; font-weight: 500; color: #333;" 
+                               th:text="${orderDetail.product_name}"></p>
+                            <p style="margin: 0; font-size: 12px; color: #999;">
+                                <span th:text="'Size: ' + ${orderDetail.size}"></span>
+                                <span th:if="${orderDetail.hasRating}" style="margin-left: 8px; color: #ffc107;">
+                                    <i class="fa fa-star"></i> Đã đánh giá
+                                </span>
+                            </p>
+                        </div>
+                        <i class="fa fa-chevron-down" style="color: #999; font-size: 14px; transition: transform 0.3s;"></i>
                     </div>
                     
-                    <!-- Order Detail -->
-                    <div th:if="${order != null}" class="order-detail-container">
-                        <!-- Order Header -->
-                        <div class="order-header">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <div>
-                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #333;">
-                                        Đơn hàng #<span th:text="${order.id}"></span>
-                                    </h3>
-                                    <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">
-                                        <i class="fa fa-calendar"></i> 
-                                        <span th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
-                                    </p>
-                                </div>
-                                <div style="text-align: right;">
-                                    <span th:class="'status-badge status-' + ${order.status.name().toLowerCase()}" 
-                                          th:text="${order.status.name() == 'DELIVERED' ? 'Đã giao' : 
-                                                    order.status.name() == 'SHIPPED' ? 'Đang giao' :
-                                                    order.status.name() == 'IN_STOCK' ? 'Chờ xử lý' :
-                                                    order.status.name() == 'CANCEL' ? 'Đã hủy' :
-                                                    order.status.name() == 'RETURN' ? 'Trả hàng' : 'Không xác định'}"
-                                          style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 10px;">
-                                    </span>
-                                    <p style="margin: 0; font-size: 18px; font-weight: 600; color: #ee4d2d;">
-                                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
-                                    </p>
-                                </div>
+                    <!-- Product Body (Collapsible) -->
+                    <div class="rating-product-body" th:id="'rating-body-' + ${orderDetail.id}">
+                    
+                    <!-- Already Rated Status (Shopee Style) -->
+                    <div th:if="${orderDetail.hasRating}" 
+                         style="padding: 16px; background: #fff8e1; border-radius: 4px; border: 1px solid #ffd54f; display: flex; align-items: center; gap: 12px;">
+                        <i class="fa fa-star" style="font-size: 20px; color: #ffc107;"></i>
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 14px; font-weight: 500; color: #333;">Đã đánh giá</p>
+                            <p style="margin: 2px 0 0 0; font-size: 12px; color: #666;">Cảm ơn bạn đã chia sẻ đánh giá về sản phẩm này</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Form (only if not rated yet) -->
+                    <div th:unless="${orderDetail.hasRating}" class="rating-form-container" th:data-order-detail-id="${orderDetail.id}">
+                        <!-- Star Rating -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #333;">
+                                Đánh giá: <span style="color: red;">*</span>
+                            </label>
+                            <div class="star-rating" th:data-order-detail-id="${orderDetail.id}">
+                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="5" th:id="|star5_${orderDetail.id}|">
+                                <label th:for="|star5_${orderDetail.id}|" title="Rất hài lòng">
+                                    <i class="fa fa-star"></i>
+                                </label>
+                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="4" th:id="|star4_${orderDetail.id}|">
+                                <label th:for="|star4_${orderDetail.id}|" title="Hài lòng">
+                                    <i class="fa fa-star"></i>
+                                </label>
+                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="3" th:id="|star3_${orderDetail.id}|">
+                                <label th:for="|star3_${orderDetail.id}|" title="Bình thường">
+                                    <i class="fa fa-star"></i>
+                                </label>
+                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="2" th:id="|star2_${orderDetail.id}|">
+                                <label th:for="|star2_${orderDetail.id}|" title="Không hài lòng">
+                                    <i class="fa fa-star"></i>
+                                </label>
+                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="1" th:id="|star1_${orderDetail.id}|">
+                                <label th:for="|star1_${orderDetail.id}|" title="Rất tệ">
+                                    <i class="fa fa-star"></i>
+                                </label>
                             </div>
                         </div>
                         
-                        <!-- Order Body -->
-                        <div class="order-body">
-                            <!-- Payment Info -->
-                            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
-                                <h5 style="margin: 0 0 10px 0; color: #333;">
-                                    <i class="fa fa-credit-card"></i> Thông tin thanh toán
-                                </h5>
-                                <p style="margin: 0; color: #666;">
-                                    Phương thức: 
-                                    <span th:text="${order.payOption.name() == 'COD' ? 'Thanh toán khi nhận hàng' : 'Thanh toán PayOS'}"></span>
+                        <!-- Comment -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #333;">
+                                Bình luận: <span style="color: red;">*</span>
+                            </label>
+                            <textarea class="form-control" 
+                                      th:id="'comment_' + ${orderDetail.id}" 
+                                      rows="3" 
+                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                                      style="width: 100%; resize: vertical; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-size: 13px;"></textarea>
+                        </div>
+                        
+                        <!-- Image Upload -->
+                        <div style="margin-bottom: 12px;">
+                            <label style="display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #333;">
+                                Hình ảnh (tùy chọn):
+                            </label>
+                            <div class="upload-area" 
+                                 style="border: 2px dashed #ddd; border-radius: 4px; padding: 16px; text-align: center; background: #fafafa; cursor: pointer;"
+                                 th:data-order-detail-id="${orderDetail.id}">
+                                <input type="file" 
+                                       th:id="'image_' + ${orderDetail.id}" 
+                                       accept="image/*" 
+                                       style="display: none;"
+                                       multiple>
+                                <i class="fa fa-cloud-upload" style="font-size: 20px; color: #999;"></i>
+                                <p style="margin: 8px 0 0 0; color: #666; font-size: 12px;">
+                                    Nhấp để chọn ảnh
                                 </p>
                             </div>
-                            
-                            <!-- Products List -->
-                            <div>
-                                <h5 style="margin: 0 0 20px 0; color: #333;">
-                                    <i class="fa fa-shopping-bag"></i> Sản phẩm đã đặt
-                                </h5>
-                                
-                                <div th:each="orderDetail : ${order.orderDetails}" class="product-item">
-                                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                                        <div style="display: flex; align-items: center;">
-                                            <!-- Product Image -->
-                                            <div style="margin-right: 15px;">
-                                                <img th:src="${orderDetail.productDetail.product.image}" 
-                                                     th:alt="${orderDetail.productDetail.product.title}"
-                                                     class="product-image"
-                                                     onerror="this.src='/img/product/1.png'">
-                                            </div>
-                                            
-                                            <!-- Product Info -->
-                                            <div class="product-info">
-                                                <h5 th:text="${orderDetail.productDetail.product.title}"></h5>
-                                                <div class="product-meta">
-                                                    <span th:if="${orderDetail.productDetail.product.brandName}" 
-                                                          th:text="'Thương hiệu: ' + ${orderDetail.productDetail.product.brandName}"></span>
-                                                    <span th:if="${orderDetail.productDetail.product.categoryName}" 
-                                                          th:text="' | Danh mục: ' + ${orderDetail.productDetail.product.categoryName}"></span>
-                                                </div>
-                                                <div class="product-meta">
-                                                    <span th:text="'Size: ' + ${orderDetail.productDetail.size}"></span>
-                                                    <span th:text="' | Số lượng: ' + ${orderDetail.quantity}"></span>
-                    </div>
-                                                <div class="product-meta" th:if="${orderDetail.productDetail.product.description}">
-                                                    <span th:text="${orderDetail.productDetail.product.description}"></span>
-                </div>
-            </div>
-        </div>
-                                        
-                                        <!-- Price -->
-                                        <div style="text-align: right;">
-                                            <div class="product-price">
-                                                <span th:text="${#numbers.formatDecimal(orderDetail.price, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                            <div class="image-preview" th:id="'preview_' + ${orderDetail.id}" style="margin-top: 8px; display: none;">
+                                <div class="preview-images" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                            </div>
                         </div>
-                                            <div style="color: #666; font-size: 13px; margin-top: 5px;">
-                                                <span th:text="${#numbers.formatDecimal(orderDetail.price * orderDetail.quantity, 0, 'COMMA', 0, 'POINT')}"></span> ₫
-                                    </div>
-                                        </div>
-                                    </div>
-                                    
-        <!-- Rating Form for DELIVERED orders -->
-        <div th:if="${order.status.name() == 'DELIVERED' && !orderDetail.hasRating}"
-             class="rating-form" 
-             th:data-order-detail-id="${orderDetail.id}"
-             style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
-                                        
-                                        <div class="rating-header" style="margin-bottom: 15px;">
-                                            <h6 style="margin: 0; color: #333; font-size: 16px; font-weight: 600;">
-                                                <i class="fa fa-star" style="color: #ffc107;"></i> Đánh giá sản phẩm
-                                            </h6>
-                                            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">
-                                                Chia sẻ trải nghiệm của bạn về sản phẩm này
-                                            </p>
-                                        </div>
-                                        
-                                        <!-- Star Rating -->
-                                        <div class="star-rating-container" style="margin-bottom: 15px;">
-                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
-                                                Đánh giá: <span style="color: red;">*</span>
-                                            </label>
-                                            <div class="star-rating" th:data-order-detail-id="${orderDetail.id}">
-                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="5" th:id="|star5_${orderDetail.id}|">
-                                                <label th:for="|star5_${orderDetail.id}|" title="Rất hài lòng">
-                                                    <i class="fa fa-star"></i>
-                                                </label>
-                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="4" th:id="|star4_${orderDetail.id}|">
-                                                <label th:for="|star4_${orderDetail.id}|" title="Hài lòng">
-                                                    <i class="fa fa-star"></i>
-                                                </label>
-                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="3" th:id="|star3_${orderDetail.id}|">
-                                                <label th:for="|star3_${orderDetail.id}|" title="Bình thường">
-                                                    <i class="fa fa-star"></i>
-                                                </label>
-                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="2" th:id="|star2_${orderDetail.id}|">
-                                                <label th:for="|star2_${orderDetail.id}|" title="Không hài lòng">
-                                                    <i class="fa fa-star"></i>
-                                                </label>
-                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="1" th:id="|star1_${orderDetail.id}|">
-                                                <label th:for="|star1_${orderDetail.id}|" title="Rất tệ">
-                                                    <i class="fa fa-star"></i>
-                                                </label>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Comment -->
-                                        <div class="comment-container" style="margin-bottom: 15px;">
-                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
-                                                Bình luận: <span style="color: red;">*</span>
-                                            </label>
-                                            <textarea class="form-control" 
-                                                      th:id="'comment_' + ${orderDetail.id}" 
-                                                      th:name="'comment_' + ${orderDetail.id}"
-                                                      rows="4" 
-                                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
-                                                      style="resize: vertical; border: 1px solid #ddd; border-radius: 4px; padding: 10px;"></textarea>
-                                        </div>
-                                        
-                                        <!-- Image Upload -->
-                                        <div class="image-upload-container" style="margin-bottom: 15px;">
-                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
-                                                Hình ảnh (tùy chọn):
-                                            </label>
-                                            <div class="upload-area" 
-                                                 style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.3s ease;"
-                                                 th:data-order-detail-id="${orderDetail.id}">
-                                                <input type="file" 
-                                                       th:id="'image_' + ${orderDetail.id}" 
-                                                       th:name="'image_' + ${orderDetail.id}"
-                                                       accept="image/*" 
-                                                       style="display: none;"
-                                                       multiple>
-                                                <div class="upload-content">
-                                                    <i class="fa fa-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
-                                                    <p style="margin: 0; color: #666; font-size: 14px;">
-                                                        Nhấp để chọn hình ảnh hoặc kéo thả vào đây
-                                                    </p>
-                                                    <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">
-                                                        Hỗ trợ: JPG, PNG, GIF (tối đa 5MB mỗi ảnh)
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Image Preview -->
-                                            <div class="image-preview" th:id="'preview_' + ${orderDetail.id}" style="margin-top: 10px; display: none;">
-                                                <div class="preview-images" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Submit Button -->
-                                        <div class="submit-container" style="text-align: right;">
-                                            <button type="button" 
-                                                    class="btn btn-primary submit-rating" 
-                                                    th:data-order-detail-id="${orderDetail.id}"
-                                                    style="padding: 10px 20px; border-radius: 4px; font-weight: 500;">
-                                                <i class="fa fa-paper-plane"></i> Gửi đánh giá
-                                            </button>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Rating Status for DELIVERED orders that have been rated -->
-                                    <div th:if="${order.status.name() == 'DELIVERED' && orderDetail.hasRating}"
-                                         class="rating-status" 
-                                         th:data-order-detail-id="${orderDetail.id}"
-                                         style="margin-top: 20px; padding: 20px; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb; display: none;">
-                                        <div style="text-align: center; color: #155724;">
-                                            <i class="fa fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
-                                            <h6 style="margin: 0; font-weight: 600;">Đã đánh giá sản phẩm</h6>
-                                            <p style="margin: 5px 0 0 0; font-size: 14px;">Cảm ơn bạn đã chia sẻ trải nghiệm!</p>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                            
-                            <!-- Order Summary -->
-                            <div class="order-summary">
-                                <h5 style="margin: 0 0 15px 0; color: #333;">
-                                    <i class="fa fa-calculator"></i> Tổng kết đơn hàng
-                                </h5>
-                                
-                                <div class="summary-row">
-                                    <span>Tạm tính:</span>
-                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
-                        </div>
-                                
-                                <div class="summary-row">
-                                    <span>Phí vận chuyển:</span>
-                                    <span>Miễn phí</span>
-                    </div>
-                                
-                                <div class="summary-row total">
-                                    <span>Tổng cộng:</span>
-                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
-                            </div>
-                            </div>
+                        
+                        <!-- Submit Button -->
+                        <div style="text-align: right;">
+                            <button type="button" 
+                                    class="btn btn-primary submit-rating" 
+                                    th:data-order-detail-id="${orderDetail.id}"
+                                    style="padding: 8px 16px; border-radius: 4px; font-size: 13px; background: #ee4d2d; border: none; color: white; font-weight: 500;">
+                                <i class="fa fa-paper-plane"></i> Gửi đánh giá
+                            </button>
                         </div>
                     </div>
                     
-                    <!-- Empty State -->
-                    <div th:if="${order == null and error == null}" style="text-align: center; padding: 60px 20px;">
-                        <i class="fa fa-shopping-cart" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
-                        <h3 style="color: #999; margin-bottom: 10px;">Không tìm thấy đơn hàng</h3>
-                        <p style="color: #aaa; margin-bottom: 20px;">Đơn hàng không tồn tại hoặc bạn không có quyền xem.</p>
-                        <a href="/user/order/view" class="back-button">
-                            <i class="fa fa-arrow-left"></i> Quay lại danh sách đơn hàng
-                        </a>
-                    </div>
+                    </div><!-- End rating-product-body -->
+                </div><!-- End rating-product-item -->
+            </div><!-- End rating-products -->
+            
+            <!-- Toggle Script -->
+            <script>
+                function toggleRatingProduct(header) {
+                    const productId = header.getAttribute('data-product-id');
+                    const body = document.getElementById('rating-body-' + productId);
+                    const icon = header.querySelector('i.fa-chevron-down, i.fa-chevron-up');
+                    
+                    // Toggle body
+                    if (body.classList.contains('show')) {
+                        body.classList.remove('show');
+                        header.classList.remove('active');
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                    } else {
+                        body.classList.add('show');
+                        header.classList.add('active');
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                    }
+                }
+            </script>
+        </div>
+        
+        <!-- Support Section -->
+        <div class="white-card support-section">
+            <p class="support-title">Bạn cần hỗ trợ?</p>
+            
+            <div class="support-option">
+                <i class="fa fa-comment-o support-icon"></i>
+                <span class="support-text">Liên hệ Shop</span>
+                <i class="fa fa-chevron-right support-arrow"></i>
+            </div>
+        </div>
+        
+        <!-- Timeline Section -->
+        <div class="white-card timeline-section">
+            <div class="timeline-details">
+                <div class="timeline-item">
+                    <span class="timeline-label">Thời gian đặt hàng</span>
+                    <span class="timeline-value" th:text="${#dates.format(order.createdDate, 'dd-MM-yyyy HH:mm')}"></span>
+                </div>
+                
+                <!-- Thời gian thanh toán -->
+                <div class="timeline-item" th:if="${order.payOption.name() == 'PAYOS' && order.paidAt != null}">
+                    <span class="timeline-label">Thời gian thanh toán (PayOS)</span>
+                    <span class="timeline-value" th:text="${#dates.format(order.paidAt, 'dd-MM-yyyy HH:mm')}"></span>
+                </div>
+                <div class="timeline-item" th:if="${order.payOption.name() == 'COD' && order.status.name() == 'DELIVERED' && order.shipmentUpdatedDate != null}">
+                    <span class="timeline-label">Thời gian thanh toán (COD)</span>
+                    <span class="timeline-value" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+                </div>
+                
+                <!-- Thời gian hoàn thành đơn -->
+                <div class="timeline-item" th:if="${order.status.name() == 'DELIVERED' && order.shipmentUpdatedDate != null}">
+                    <span class="timeline-label">Thời gian hoàn thành đơn</span>
+                    <span class="timeline-value" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
                 </div>
             </div>
+            
+            <button class="collapse-btn" id="timeline-toggle-btn">
+                <span>Xem thêm</span>
+                <i class="fa fa-chevron-down" style="font-size: 12px;"></i>
+            </button>
+        </div>
+        
+        </div><!-- End Order Detail Content -->
         </div>
     </div>
     <!-- order detail area end -->
-
-        <!-- footer area start -->
+    
+    <!-- footer area start -->
     <div th:insert="~{fragments/web/footer.html}"></div>
-        <!-- footer area end -->
-
+    <!-- footer area end -->
+    
     <!-- jquery -->
-        <script src="/js/vendor/jquery-1.12.4.min.js"></script>
-    <!-- bootstrap JS -->
-        <script src="/js/bootstrap.min.js"></script>
-    <!-- wow JS -->
-        <script src="/js/wow.min.js"></script>
-    <!-- price-slider JS -->
-        <script src="/js/jquery-price-slider.js"></script>
-    <!-- nivoslider JS -->
-        <script src="/lib/js/jquery.nivo.slider.js"></script>
-        <script src="/lib/home.js"></script>
-    <!-- meanmenu JS -->
-        <script src="/js/jquery.meanmenu.js"></script>
-    <!-- owl.carousel JS -->
-        <script src="/js/owl.carousel.min.js"></script>
-    <!-- elevatezoom JS -->
-        <script src="/js/jquery.elevatezoom.js"></script>
-    <!-- scrollUp JS -->
-        <script src="/js/jquery.scrollUp.min.js"></script>
-    <!-- plugins JS -->
-        <script src="/js/plugins.js"></script>
-    <!-- main JS -->
-        <script src="/js/main.js"></script>
+    <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/plugins.js"></script>
+    <script src="/js/main.js"></script>
     
-    <!-- Hidden input for orderId -->
-    <input type="hidden" id="orderId" th:value="${order.id}">
-    
-    <!-- Chat Widget -->
-    <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
-    
-    <!-- Rating Form JavaScript -->
     <script>
-        // File dialog function removed - using simple jQuery event handler instead
+        // Toggle payment details (slide from bottom up)
+        function togglePaymentDetails() {
+            const details = document.getElementById('payment-details');
+            const chevron = document.getElementById('payment-chevron');
+            
+            if (details.classList.contains('show')) {
+                details.classList.remove('show');
+                chevron.classList.remove('fa-chevron-up');
+                chevron.classList.add('fa-chevron-down');
+            } else {
+                details.classList.add('show');
+                chevron.classList.remove('fa-chevron-down');
+                chevron.classList.add('fa-chevron-up');
+            }
+        }
         
-        $(document).ready(function() {
-            // Load rating status after page loads
-            loadRatingStatus();
+        // Toggle timeline (slide from bottom up)
+        document.getElementById('timeline-toggle-btn').addEventListener('click', function() {
+            const details = document.querySelector('.timeline-details');
+            const icon = this.querySelector('i');
+            const text = this.querySelector('span');
             
-            // FORCE REMOVE all existing event handlers
-            $('.upload-area').off('click');
-            $('.upload-content').off('click');
-            $('.upload-area *').off('click');
-            $(document).off('click', '.upload-area');
-            $(document).off('click', '.upload-content');
-            $(document).off('click', '.upload-area *');
-            
-            console.log('All upload event handlers removed');
-            
-            // Add ONE SIMPLE click handler for upload area
-            $('.upload-area').on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
+            if (details.classList.contains('show')) {
+                details.classList.remove('show');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+                text.textContent = 'Xem thêm';
+            } else {
+                details.classList.add('show');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+                text.textContent = 'Rút gọn';
+            }
+        });
+        
+        // Toggle rating section (if exists)
+        const ratingToggleBtn = document.getElementById('rating-toggle-btn');
+        if (ratingToggleBtn) {
+            ratingToggleBtn.addEventListener('click', function() {
+                const products = document.querySelector('.rating-products');
+                const icon = this.querySelector('i');
                 
-                const orderDetailId = $(this).data('order-detail-id');
-                console.log('Upload area clicked for order detail:', orderDetailId);
-                
-                const fileInput = document.getElementById('image_' + orderDetailId);
-                if (fileInput) {
-                    console.log('Opening file dialog...');
-                    fileInput.click();
+                if (products.classList.contains('show')) {
+                    products.classList.remove('show');
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
                 } else {
-                    console.log('File input not found');
+                    products.classList.add('show');
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
                 }
             });
+        }
+        
+        // Handle image upload - Click to select
+        $('.upload-area').on('click', function(e) {
+            e.stopPropagation();
+            const orderDetailId = $(this).data('order-detail-id');
+            $('#image_' + orderDetailId).click();
+        });
+        
+        // Handle drag & drop
+        $('.upload-area').on('dragover', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).css('background', '#e8f4ff');
+            $(this).css('border-color', '#ee4d2d');
+        });
+        
+        $('.upload-area').on('dragleave', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).css('background', '#fafafa');
+            $(this).css('border-color', '#ddd');
+        });
+        
+        $('.upload-area').on('drop', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            $(this).css('background', '#fafafa');
+            $(this).css('border-color', '#ddd');
             
-            // Handle star rating clicks
-            $('.star-rating label').on('click', function(e) {
-                e.preventDefault();
-                const input = $(this).prev('input');
-                if (input.length) {
-                    // Uncheck all other inputs in the same group
-                    const name = input.attr('name');
-                    $(`input[name="${name}"]`).prop('checked', false);
-                    
-                    // Check the clicked input
-                    input.prop('checked', true);
-                    console.log('Star clicked:', input.attr('name'), input.val());
-                    
-                    // Trigger change event
-                    input.trigger('change');
-                }
-            });
+            const orderDetailId = $(this).data('order-detail-id');
+            const files = e.originalEvent.dataTransfer.files;
             
-            // Also handle direct input clicks (fallback)
-            $('.star-rating input[type="radio"]').on('change', function() {
-                console.log('Radio input changed:', $(this).attr('name'), $(this).val(), $(this).is(':checked'));
-            });
+            if (files.length > 0) {
+                // Set files to input
+                const input = $('#image_' + orderDetailId)[0];
+                input.files = files;
+                
+                // Trigger change event
+                $('#image_' + orderDetailId).trigger('change');
+            }
+        });
+        
+        $('input[type=\"file\"]').on('change', function() {
+            const orderDetailId = $(this).attr('id').replace('image_', '');
+            const files = this.files;
+            const previewContainer = $('#preview_' + orderDetailId + ' .preview-images');
             
-            // File upload handlers removed - using onclick attribute only
+            previewContainer.empty();
             
-            // Handle file selection
-            $(document).on('change', 'input[type="file"]', function() {
-                console.log('File input changed');
-                const files = this.files;
-                console.log('Files selected:', files.length);
-                const orderDetailId = $(this).attr('id').replace('image_', '');
-                console.log('Order Detail ID:', orderDetailId);
-                const previewContainer = $('#preview_' + orderDetailId);
-                const previewImages = previewContainer.find('.preview-images');
+            if (files.length > 0) {
+                $('#preview_' + orderDetailId).show();
                 
-                // Clear previous previews
-                previewImages.empty();
-                
-                if (files.length > 0) {
-                    previewContainer.show();
-                    
-                    Array.from(files).forEach(function(file) {
-                        if (file.type.startsWith('image/')) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                const imagePreview = $(`
-                                    <div class="preview-item" style="position: relative; display: inline-block;">
-                                        <img src="${e.target.result}" 
-                                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
-                                        <button type="button" class="remove-image" 
-                                                style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">
-                                            ×
-                                        </button>
-                                    </div>
-                                `);
-                                previewImages.append(imagePreview);
-                            };
-                            reader.readAsDataURL(file);
-                        }
-                    });
-                } else {
-                    previewContainer.hide();
-                }
-            });
-            
-            // Handle remove image
-            $(document).on('click', '.remove-image', function() {
-                $(this).closest('.preview-item').remove();
-                const previewContainer = $(this).closest('.image-preview');
-                if (previewContainer.find('.preview-item').length === 0) {
-                    previewContainer.hide();
-                }
-            });
-            
-            // Handle drag and drop
-            $('.upload-area').on('dragover', function(e) {
-                e.preventDefault();
-                $(this).css('border-color', '#007bff');
-                $(this).css('background-color', '#f0f8ff');
-            });
-            
-            $('.upload-area').on('dragleave', function(e) {
-                e.preventDefault();
-                $(this).css('border-color', '#ddd');
-                $(this).css('background-color', '#fafafa');
-            });
-            
-            $('.upload-area').on('drop', function(e) {
-                e.preventDefault();
-                $(this).css('border-color', '#ddd');
-                $(this).css('background-color', '#fafafa');
-                
-                const files = e.originalEvent.dataTransfer.files;
-                const fileInput = $(this).find('input[type="file"]')[0];
-                fileInput.files = files;
-                $(fileInput).trigger('change');
-            });
-            
-            // Handle submit button click
-            $('.submit-rating').on('click', function() {
-                const orderDetailId = $(this).data('order-detail-id');
-                const button = $(this);
-                
-                console.log('Submit rating for order detail:', orderDetailId);
-                
-                // Get form data - try multiple approaches
-                let rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
-                console.log('Rating (method 1):', rating);
-                
-                // If not found, try finding within the same container
-                if (!rating) {
-                    const container = button.closest('.rating-form');
-                    rating = container.find('input[type="radio"]:checked').val();
-                    console.log('Rating (method 2):', rating);
-                }
-                
-                // If still not found, try with string conversion
-                if (!rating) {
-                    rating = $(`input[name="rating_${String(orderDetailId)}"]:checked`).val();
-                    console.log('Rating (method 3):', rating);
-                }
-                
-                const comment = $(`#comment_${orderDetailId}`).val();
-                const images = $(`#image_${orderDetailId}`)[0].files;
-                
-                console.log('Final Rating:', rating);
-                console.log('Comment:', comment);
-                console.log('Images:', images.length);
-                
-                // Debug: Check all rating inputs for this order detail
-                const allRatingInputs = $(`input[name="rating_${orderDetailId}"]`);
-                console.log('All rating inputs found:', allRatingInputs.length);
-                allRatingInputs.each(function() {
-                    console.log('Input:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
+                Array.from(files).forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = $('<img>').attr('src', e.target.result)
+                            .css({
+                                'width': '80px',
+                                'height': '80px',
+                                'object-fit': 'cover',
+                                'border-radius': '4px',
+                                'border': '1px solid #ddd'
+                            });
+                        previewContainer.append(img);
+                    };
+                    reader.readAsDataURL(file);
                 });
-                
-                // Debug: Check all radio inputs in the container
-                const container = button.closest('.rating-form');
-                const containerRadios = container.find('input[type="radio"]');
-                console.log('Radio inputs in container:', containerRadios.length);
-                containerRadios.each(function() {
-                    console.log('Container Radio:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
-                });
-                
-                // Debug: Check any checked radio in the entire document
-                const anyCheckedRadio = $('input[type="radio"]:checked');
-                console.log('Any checked radio in document:', anyCheckedRadio.length);
-                anyCheckedRadio.each(function() {
-                    console.log('Any checked:', $(this).attr('name'), 'Value:', $(this).val());
-                });
-                
-                // Final attempt to get rating
-                if (!rating) {
-                    // Try to get from any checked radio in the container
-                    const container = button.closest('.rating-form');
-                    const checkedRadio = container.find('input[type="radio"]:checked');
-                    if (checkedRadio.length > 0) {
-                        rating = checkedRadio.val();
-                        console.log('Found rating from container:', rating);
+            } else {
+                $('#preview_' + orderDetailId).hide();
+            }
+        });
+        
+        // Handle star rating
+        $('.star-rating label').on('click', function() {
+            const input = $(this).prev('input');
+            if (input.length) {
+                input.prop('checked', true);
+            }
+        });
+        
+        // Submit rating
+        $('.submit-rating').on('click', function() {
+            const orderDetailId = $(this).data('order-detail-id');
+            const rating = $('input[name="rating_' + orderDetailId + '"]:checked').val();
+            const comment = $('#comment_' + orderDetailId).val();
+            const imageFiles = $('#image_' + orderDetailId)[0].files;
+            
+            // Validation
+            if (!rating) {
+                alert('⚠️ Vui lòng chọn số sao đánh giá!');
+                return;
+            }
+            
+            if (!comment || comment.trim() === '') {
+                alert('⚠️ Vui lòng nhập bình luận!');
+                return;
+            }
+            
+            // Prepare FormData
+            const formData = new FormData();
+            formData.append('orderDetailId', orderDetailId);
+            formData.append('rating', rating);
+            formData.append('comment', comment.trim());
+            
+            // Append multiple images
+            if (imageFiles && imageFiles.length > 0) {
+                for (let i = 0; i < imageFiles.length; i++) {
+                    formData.append('images', imageFiles[i]);
+                }
+            }
+            
+            // Disable button
+            $(this).prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...');
+            
+            // Submit via AJAX
+            $.ajax({
+                url: '/user/api/rating/submit',
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    if (response.success) {
+                        alert('✅ Cảm ơn bạn đã đánh giá!');
+                        location.reload();
+                    } else {
+                        alert('❌ ' + (response.message || 'Có lỗi xảy ra!'));
                     }
-                }
-                
-                // Validation
-                if (!rating) {
-                    alert('Vui lòng chọn số sao đánh giá!');
-                    return;
-                }
-                
-                if (!comment || comment.trim() === '') {
-                    alert('Vui lòng nhập bình luận!');
-                    return;
-                }
-                
-                // Get orderId from hidden input
-                const orderId = $('#orderId').val();
-                if (!orderId) {
-                    alert('Lỗi: Không tìm thấy ID đơn hàng!');
-                    return;
-                }
-                
-                // Show loading
-                const originalText = button.html();
-                button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
-                
-                // Check if there are images to upload
-                const selectedFiles = $(`#image_${orderDetailId}`)[0].files;
-                console.log('Images to upload:', selectedFiles.length);
-                
-                if (selectedFiles.length > 0) {
-                    // Upload images first, then submit rating
-                    uploadImagesAndSubmitRating(orderDetailId, rating, comment, selectedFiles, orderId, button, originalText);
-                } else {
-                    // No images, submit rating directly
-                    submitRatingDirectly(orderDetailId, rating, comment, null, orderId, button, originalText);
+                },
+                error: function(xhr) {
+                    console.error('Error:', xhr);
+                    let errorMsg = 'Không thể gửi đánh giá';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert('❌ Lỗi: ' + errorMsg);
+                },
+                complete: function() {
+                    $('.submit-rating[data-order-detail-id="' + orderDetailId + '"]')
+                        .prop('disabled', false)
+                        .html('<i class="fa fa-paper-plane"></i> Gửi đánh giá');
                 }
             });
         });
-        
-        // Function to upload images and submit rating
-        function uploadImagesAndSubmitRating(orderDetailId, rating, comment, files, orderId, button, originalText) {
-            console.log('Uploading images for rating...');
-            
-            const uploadPromises = [];
-            
-            // Upload each image
-            Array.from(files).forEach(function(file, index) {
-                console.log(`Uploading image ${index + 1}/${files.length}:`, file.name);
-                
-                const formData = new FormData();
-                formData.append('file', file);
-                
-                const uploadPromise = $.ajax({
-                    url: '/user/api/upload/rating-image',
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false
-                });
-                
-                uploadPromises.push(uploadPromise);
-            });
-            
-            // Wait for all uploads to complete
-            Promise.all(uploadPromises)
-                .then(function(responses) {
-                    console.log('All images uploaded successfully:', responses);
-                    
-                    // Extract image URLs
-                    const imageUrls = responses.map(response => response.imageUrl);
-                    const imageUrlsString = imageUrls.join(',');
-                    
-                    console.log('Image URLs:', imageUrlsString);
-                    
-                    // Submit rating with image URLs
-                    submitRatingDirectly(orderDetailId, rating, comment, imageUrlsString, orderId, button, originalText);
-                })
-                .catch(function(error) {
-                    console.error('Error uploading images:', error);
-                    
-                    let errorMessage = 'Lỗi khi upload ảnh!';
-                    if (error.responseJSON && error.responseJSON.message) {
-                        errorMessage = error.responseJSON.message;
-                    }
-                    
-                    alert(errorMessage);
-                    button.html(originalText).prop('disabled', false);
-                });
-        }
-        
-        // Function to submit rating directly
-        function submitRatingDirectly(orderDetailId, rating, comment, imageUrls, orderId, button, originalText) {
-            console.log('Submitting rating directly...');
-            
-            const requestData = {
-                orderId: parseInt(orderId),
-                ratings: [{
-                    orderDetailId: parseInt(orderDetailId),
-                    star: parseInt(rating),
-                    comment: comment.trim(),
-                    image: imageUrls // Now contains actual image URLs or null
-                }]
-            };
-            
-            console.log('Sending rating request:', requestData);
-            
-            $.ajax({
-                url: '/user/api/ratings',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: function(response) {
-                    console.log('Rating response received:', response);
-                    if (response && response.success) {
-                        alert('Cảm ơn bạn đã đánh giá!');
-                        // Hide the rating form after successful submission
-                        button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 20px;"><i class="fa fa-check-circle" style="font-size: 24px;"></i><br><strong>Đã đánh giá thành công!</strong></div>');
-                    } else {
-                        const errorMsg = response && response.message ? response.message : 'Có lỗi xảy ra';
-                        alert('Có lỗi xảy ra: ' + errorMsg);
-                        button.html(originalText).prop('disabled', false);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error Details:');
-                    console.error('Status:', status);
-                    console.error('Error:', error);
-                    console.error('Response Text:', xhr.responseText);
-                    console.error('Status Code:', xhr.status);
-                    
-                    let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
-                    
-                    if (xhr.status === 401) {
-                        errorMessage = 'Bạn cần đăng nhập để đánh giá!';
-                    } else if (xhr.status === 404) {
-                        errorMessage = 'Đơn hàng không tồn tại!';
-                    } else if (xhr.status === 400) {
-                        errorMessage = 'Đơn hàng chưa được giao, không thể đánh giá!';
-                    } else if (xhr.responseText) {
-                        try {
-                            const errorResponse = JSON.parse(xhr.responseText);
-                            if (errorResponse.message) {
-                                errorMessage = errorResponse.message;
-                            }
-                        } catch (e) {
-                            console.error('Could not parse error response:', e);
-                        }
-                    }
-                    
-                    alert(errorMessage);
-                    button.html(originalText).prop('disabled', false);
-                }
-            });
-        }
-        
-        // Function to load rating status via AJAX
-        function loadRatingStatus() {
-            const orderId = $('#orderId').val();
-            if (!orderId) return;
-            
-            $.ajax({
-                url: '/user/api/order/' + orderId + '/rating-status',
-                method: 'GET',
-                success: function(response) {
-                    if (response && response.success && response.ratingStatus) {
-                        // Update rating status for each order detail
-                        Object.keys(response.ratingStatus).forEach(function(orderDetailId) {
-                            const hasRating = response.ratingStatus[orderDetailId];
-                            const ratingForm = $('.rating-form[data-order-detail-id="' + orderDetailId + '"]');
-                            const ratingStatus = $('.rating-status[data-order-detail-id="' + orderDetailId + '"]');
-                            
-                            if (hasRating) {
-                                // Hide rating form and show status
-                                ratingForm.hide();
-                                ratingStatus.show();
-                            } else {
-                                // Show rating form and hide status
-                                ratingForm.show();
-                                ratingStatus.hide();
-                            }
-                        });
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.log('Error loading rating status:', error);
-                    // Keep default behavior (show rating forms)
-                }
-            });
-        }
     </script>
-    
-    <!-- Rating Form CSS -->
-    <style>
-        /* Star Rating Styles */
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-start;
-            margin: 10px 0;
-        }
-        
-        .star-rating input {
-            display: none !important;
-        }
-        
-        .star-rating label {
-            font-size: 24px;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.2s;
-            margin-right: 5px;
-            user-select: none;
-        }
-        
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
-            color: #ffc107;
-        }
-        
-        /* Upload Area Styles */
-        .upload-area {
-            cursor: pointer !important;
-            user-select: none;
-        }
-        
-        .upload-area:hover {
-            border-color: #007bff !important;
-            background-color: #f0f8ff !important;
-        }
-        
-        .upload-content {
-            cursor: pointer;
-        }
-        
-        .upload-content * {
-            cursor: pointer;
-        }
-        
-        .upload-area.dragover {
-            border-color: #007bff !important;
-            background-color: #e3f2fd !important;
-        }
-        
-        /* Form Styles */
-        .rating-form {
-            transition: all 0.3s ease;
-        }
-        
-        .rating-form:hover {
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-        }
-        
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
-            transform: translateY(-1px);
-        }
-        
-        /* Image Preview Styles */
-        .preview-item {
-            transition: transform 0.2s ease;
-        }
-        
-        .preview-item:hover {
-            transform: scale(1.05);
-        }
-        
-        .remove-image:hover {
-            background-color: #c82333 !important;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .star-rating label {
-                font-size: 20px;
-                margin-right: 3px;
-            }
-            
-            .rating-form {
-                padding: 15px !important;
-            }
-            
-            .upload-area {
-                padding: 15px !important;
-            }
-        }
-    </style>
-    
 </body>
-</html>

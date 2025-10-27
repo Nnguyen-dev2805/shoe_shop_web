@@ -1,0 +1,990 @@
+<!doctype html>
+<html class="no-js" lang="">
+    
+<head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Chi Tiết Đơn Hàng || DeeG Shop</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <!-- favicon -->
+        <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+
+    <!-- Google Fonts -->
+        <link href='https://fonts.googleapis.com/css?family=Norican' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/css/owl.carousel.css">
+        <link rel="stylesheet" href="/css/owl.theme.css">
+        <link rel="stylesheet" href="/css/owl.transitions.css">
+        <link rel="stylesheet" href="/css/jquery-ui.css">
+        <link rel="stylesheet" href="/css/meanmenu.min.css">
+        <link rel="stylesheet" href="/lib/css/nivo-slider.css">
+        <link rel="stylesheet" href="/lib/css/preview.css">
+        <link rel="stylesheet" href="/css/animate.css">
+        <link rel="stylesheet" href="/css/magic.css">
+        <link rel="stylesheet" href="/css/normalize.css">
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="/style.css">
+        <link rel="stylesheet" href="/css/responsive.css">
+    
+    <!-- Custom CSS for Order Detail -->
+    <style>
+        /* Breadcrumb */
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
+        }
+        
+        /* Order Status Badge Colors */
+        .status-delivered {
+            background-color: #d4edda !important;
+            color: #155724 !important;
+            border: 1px solid #c3e6cb !important;
+        }
+        
+        .status-shipped {
+            background-color: #cce5ff !important;
+            color: #004085 !important;
+            border: 1px solid #b3d7ff !important;
+        }
+        
+        .status-in_stock {
+            background-color: #fff3cd !important;
+            color: #856404 !important;
+            border: 1px solid #ffeaa7 !important;
+        }
+        
+        .status-cancel {
+            background-color: #f8d7da !important;
+            color: #721c24 !important;
+            border: 1px solid #f5c6cb !important;
+        }
+        
+        .status-return {
+            background-color: #e2e3e5 !important;
+            color: #383d41 !important;
+            border: 1px solid #d6d8db !important;
+        }
+        
+        /* Order Detail Styling */
+        .order-detail-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .order-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .order-body {
+            padding: 20px;
+        }
+        
+        .product-item {
+            background: white;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .product-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .product-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        
+        .product-info h5 {
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .product-meta {
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+        
+        .product-price {
+            color: #ee4d2d;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .order-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        
+        .summary-row.total {
+            border-top: 1px solid #e5e5e5;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: 600;
+            font-size: 18px;
+            color: #ee4d2d;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .order-header > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .order-header > div > div:last-child {
+                text-align: left !important;
+                margin-top: 15px;
+            }
+            
+            .product-item > div {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            
+            .product-item > div > div:last-child {
+                margin-top: 15px;
+                text-align: left !important;
+            }
+        }
+    </style>
+    </head>
+
+    <body>
+        <!--[if lt IE 8]>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <!-- header area start -->
+    <div th:insert="~{fragments/user/header.html}"></div>
+        <!-- header area end -->
+        
+    <!-- Breadcrumb Area -->
+    <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/user/order/view" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại đơn hàng">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                    <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                    <span style="color: #ccc;">/</span>
+                    <a href="/user/order/view" class="breadcrumb-link" style="color: #666; text-decoration: none;">Đơn hàng</a>
+                    <span style="color: #ccc;">/</span>
+                    <span style="color: #333; font-weight: 500;">Chi tiết đơn hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- order detail area start -->
+    <div class="account-area">
+            <div class="container">
+            <div class="row" style="display: flex; justify-content: center; align-items: center;">
+                <div class="col-lg-10">
+                    <!-- Error Message -->
+                    <div th:if="${error}" class="alert alert-danger" style="margin-bottom: 20px;">
+                        <i class="fa fa-exclamation-triangle"></i> <span th:text="${error}"></span>
+                    </div>
+                    
+                    <!-- Order Detail -->
+                    <div th:if="${order != null}" class="order-detail-container">
+                        <!-- Order Header -->
+                        <div class="order-header">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 style="margin: 0; font-size: 20px; font-weight: 600; color: #333;">
+                                        Đơn hàng #<span th:text="${order.id}"></span>
+                                    </h3>
+                                    <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">
+                                        <i class="fa fa-calendar"></i> 
+                                        <span th:text="${#dates.format(order.createdDate, 'dd/MM/yyyy HH:mm')}"></span>
+                                    </p>
+                                </div>
+                                <div style="text-align: right;">
+                                    <span th:class="'status-badge status-' + ${order.status.name().toLowerCase()}" 
+                                          th:text="${order.status.name() == 'DELIVERED' ? 'Đã giao' : 
+                                                    order.status.name() == 'SHIPPED' ? 'Đang giao' :
+                                                    order.status.name() == 'IN_STOCK' ? 'Chờ xử lý' :
+                                                    order.status.name() == 'CANCEL' ? 'Đã hủy' :
+                                                    order.status.name() == 'RETURN' ? 'Trả hàng' : 'Không xác định'}"
+                                          style="padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; text-transform: uppercase; display: inline-block; margin-bottom: 10px;">
+                                    </span>
+                                    <p style="margin: 0; font-size: 18px; font-weight: 600; color: #ee4d2d;">
+                                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Body -->
+                        <div class="order-body">
+                            <!-- Payment Info -->
+                            <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 6px;">
+                                <h5 style="margin: 0 0 10px 0; color: #333;">
+                                    <i class="fa fa-credit-card"></i> Thông tin thanh toán
+                                </h5>
+                                <p style="margin: 0; color: #666;">
+                                    Phương thức: 
+                                    <span th:text="${order.payOption.name() == 'COD' ? 'Thanh toán khi nhận hàng' : 'Thanh toán PayOS'}"></span>
+                                </p>
+                            </div>
+                            
+                            <!-- Products List -->
+                            <div>
+                                <h5 style="margin: 0 0 20px 0; color: #333;">
+                                    <i class="fa fa-shopping-bag"></i> Sản phẩm đã đặt
+                                </h5>
+                                
+                                <div th:each="orderDetail : ${order.orderDetails}" class="product-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div style="display: flex; align-items: center;">
+                                            <!-- Product Image -->
+                                            <div style="margin-right: 15px;">
+                                                <img th:src="${orderDetail.productDetail.product.image}" 
+                                                     th:alt="${orderDetail.productDetail.product.title}"
+                                                     class="product-image"
+                                                     onerror="this.src='/img/product/1.png'">
+                                            </div>
+                                            
+                                            <!-- Product Info -->
+                                            <div class="product-info">
+                                                <h5 th:text="${orderDetail.productDetail.product.title}"></h5>
+                                                <div class="product-meta">
+                                                    <span th:if="${orderDetail.productDetail.product.brandName}" 
+                                                          th:text="'Thương hiệu: ' + ${orderDetail.productDetail.product.brandName}"></span>
+                                                    <span th:if="${orderDetail.productDetail.product.categoryName}" 
+                                                          th:text="' | Danh mục: ' + ${orderDetail.productDetail.product.categoryName}"></span>
+                                                </div>
+                                                <div class="product-meta">
+                                                    <span th:text="'Size: ' + ${orderDetail.productDetail.size}"></span>
+                                                    <span th:text="' | Số lượng: ' + ${orderDetail.quantity}"></span>
+                    </div>
+                                                <div class="product-meta" th:if="${orderDetail.productDetail.product.description}">
+                                                    <span th:text="${orderDetail.productDetail.product.description}"></span>
+                </div>
+            </div>
+        </div>
+                                        
+                                        <!-- Price -->
+                                        <div style="text-align: right;">
+                                            <div class="product-price">
+                                                <span th:text="${#numbers.formatDecimal(orderDetail.price, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                        </div>
+                                            <div style="color: #666; font-size: 13px; margin-top: 5px;">
+                                                <span th:text="${#numbers.formatDecimal(orderDetail.price * orderDetail.quantity, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                                    </div>
+                                        </div>
+                                    </div>
+                                    
+        <!-- Rating Form for DELIVERED orders -->
+        <div th:if="${order.status.name() == 'DELIVERED' && !orderDetail.hasRating}"
+             class="rating-form" 
+             th:data-order-detail-id="${orderDetail.id}"
+             style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px; border: 1px solid #e9ecef;">
+                                        
+                                        <div class="rating-header" style="margin-bottom: 15px;">
+                                            <h6 style="margin: 0; color: #333; font-size: 16px; font-weight: 600;">
+                                                <i class="fa fa-star" style="color: #ffc107;"></i> Đánh giá sản phẩm
+                                            </h6>
+                                            <p style="margin: 5px 0 0 0; color: #666; font-size: 13px;">
+                                                Chia sẻ trải nghiệm của bạn về sản phẩm này
+                                            </p>
+                                        </div>
+                                        
+                                        <!-- Star Rating -->
+                                        <div class="star-rating-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Đánh giá: <span style="color: red;">*</span>
+                                            </label>
+                                            <div class="star-rating" th:data-order-detail-id="${orderDetail.id}">
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="5" th:id="|star5_${orderDetail.id}|">
+                                                <label th:for="|star5_${orderDetail.id}|" title="Rất hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="4" th:id="|star4_${orderDetail.id}|">
+                                                <label th:for="|star4_${orderDetail.id}|" title="Hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="3" th:id="|star3_${orderDetail.id}|">
+                                                <label th:for="|star3_${orderDetail.id}|" title="Bình thường">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="2" th:id="|star2_${orderDetail.id}|">
+                                                <label th:for="|star2_${orderDetail.id}|" title="Không hài lòng">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                                <input type="radio" th:name="|rating_${orderDetail.id}|" value="1" th:id="|star1_${orderDetail.id}|">
+                                                <label th:for="|star1_${orderDetail.id}|" title="Rất tệ">
+                                                    <i class="fa fa-star"></i>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Comment -->
+                                        <div class="comment-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Bình luận: <span style="color: red;">*</span>
+                                            </label>
+                                            <textarea class="form-control" 
+                                                      th:id="'comment_' + ${orderDetail.id}" 
+                                                      th:name="'comment_' + ${orderDetail.id}"
+                                                      rows="4" 
+                                                      placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
+                                                      style="resize: vertical; border: 1px solid #ddd; border-radius: 4px; padding: 10px;"></textarea>
+                                        </div>
+                                        
+                                        <!-- Image Upload -->
+                                        <div class="image-upload-container" style="margin-bottom: 15px;">
+                                            <label style="display: block; margin-bottom: 8px; color: #333; font-weight: 500;">
+                                                Hình ảnh (tùy chọn):
+                                            </label>
+                                            <div class="upload-area" 
+                                                 style="border: 2px dashed #ddd; border-radius: 8px; padding: 20px; text-align: center; background: #fafafa; cursor: pointer; transition: all 0.3s ease;"
+                                                 th:data-order-detail-id="${orderDetail.id}">
+                                                <input type="file" 
+                                                       th:id="'image_' + ${orderDetail.id}" 
+                                                       th:name="'image_' + ${orderDetail.id}"
+                                                       accept="image/*" 
+                                                       style="display: none;"
+                                                       multiple>
+                                                <div class="upload-content">
+                                                    <i class="fa fa-cloud-upload" style="font-size: 24px; color: #666; margin-bottom: 10px;"></i>
+                                                    <p style="margin: 0; color: #666; font-size: 14px;">
+                                                        Nhấp để chọn hình ảnh hoặc kéo thả vào đây
+                                                    </p>
+                                                    <p style="margin: 5px 0 0 0; color: #999; font-size: 12px;">
+                                                        Hỗ trợ: JPG, PNG, GIF (tối đa 5MB mỗi ảnh)
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Image Preview -->
+                                            <div class="image-preview" th:id="'preview_' + ${orderDetail.id}" style="margin-top: 10px; display: none;">
+                                                <div class="preview-images" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Submit Button -->
+                                        <div class="submit-container" style="text-align: right;">
+                                            <button type="button" 
+                                                    class="btn btn-primary submit-rating" 
+                                                    th:data-order-detail-id="${orderDetail.id}"
+                                                    style="padding: 10px 20px; border-radius: 4px; font-weight: 500;">
+                                                <i class="fa fa-paper-plane"></i> Gửi đánh giá
+                                            </button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rating Status for DELIVERED orders that have been rated -->
+                                    <div th:if="${order.status.name() == 'DELIVERED' && orderDetail.hasRating}"
+                                         class="rating-status" 
+                                         th:data-order-detail-id="${orderDetail.id}"
+                                         style="margin-top: 20px; padding: 20px; background: #d4edda; border-radius: 8px; border: 1px solid #c3e6cb; display: none;">
+                                        <div style="text-align: center; color: #155724;">
+                                            <i class="fa fa-check-circle" style="font-size: 24px; margin-bottom: 10px;"></i>
+                                            <h6 style="margin: 0; font-weight: 600;">Đã đánh giá sản phẩm</h6>
+                                            <p style="margin: 5px 0 0 0; font-size: 14px;">Cảm ơn bạn đã chia sẻ trải nghiệm!</p>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                            
+                            <!-- Order Summary -->
+                            <div class="order-summary">
+                                <h5 style="margin: 0 0 15px 0; color: #333;">
+                                    <i class="fa fa-calculator"></i> Tổng kết đơn hàng
+                                </h5>
+                                
+                                <div class="summary-row">
+                                    <span>Tạm tính:</span>
+                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                        </div>
+                                
+                                <div class="summary-row">
+                                    <span>Phí vận chuyển:</span>
+                                    <span>Miễn phí</span>
+                    </div>
+                                
+                                <div class="summary-row total">
+                                    <span>Tổng cộng:</span>
+                                    <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')}"></span> ₫
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State -->
+                    <div th:if="${order == null and error == null}" style="text-align: center; padding: 60px 20px;">
+                        <i class="fa fa-shopping-cart" style="font-size: 64px; color: #ddd; margin-bottom: 20px;"></i>
+                        <h3 style="color: #999; margin-bottom: 10px;">Không tìm thấy đơn hàng</h3>
+                        <p style="color: #aaa; margin-bottom: 20px;">Đơn hàng không tồn tại hoặc bạn không có quyền xem.</p>
+                        <a href="/user/order/view" class="back-button">
+                            <i class="fa fa-arrow-left"></i> Quay lại danh sách đơn hàng
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- order detail area end -->
+
+        <!-- footer area start -->
+    <div th:insert="~{fragments/web/footer.html}"></div>
+        <!-- footer area end -->
+
+    <!-- jquery -->
+        <script src="/js/vendor/jquery-1.12.4.min.js"></script>
+    <!-- bootstrap JS -->
+        <script src="/js/bootstrap.min.js"></script>
+    <!-- wow JS -->
+        <script src="/js/wow.min.js"></script>
+    <!-- price-slider JS -->
+        <script src="/js/jquery-price-slider.js"></script>
+    <!-- nivoslider JS -->
+        <script src="/lib/js/jquery.nivo.slider.js"></script>
+        <script src="/lib/home.js"></script>
+    <!-- meanmenu JS -->
+        <script src="/js/jquery.meanmenu.js"></script>
+    <!-- owl.carousel JS -->
+        <script src="/js/owl.carousel.min.js"></script>
+    <!-- elevatezoom JS -->
+        <script src="/js/jquery.elevatezoom.js"></script>
+    <!-- scrollUp JS -->
+        <script src="/js/jquery.scrollUp.min.js"></script>
+    <!-- plugins JS -->
+        <script src="/js/plugins.js"></script>
+    <!-- main JS -->
+        <script src="/js/main.js"></script>
+    
+    <!-- Hidden input for orderId -->
+    <input type="hidden" id="orderId" th:value="${order.id}">
+    
+    <!-- Chat Widget -->
+    <div th:replace="fragments/user/chat-widget :: chat-widget"></div>
+    
+    <!-- Rating Form JavaScript -->
+    <script>
+        // File dialog function removed - using simple jQuery event handler instead
+        
+        $(document).ready(function() {
+            // Load rating status after page loads
+            loadRatingStatus();
+            
+            // FORCE REMOVE all existing event handlers
+            $('.upload-area').off('click');
+            $('.upload-content').off('click');
+            $('.upload-area *').off('click');
+            $(document).off('click', '.upload-area');
+            $(document).off('click', '.upload-content');
+            $(document).off('click', '.upload-area *');
+            
+            console.log('All upload event handlers removed');
+            
+            // Add ONE SIMPLE click handler for upload area
+            $('.upload-area').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const orderDetailId = $(this).data('order-detail-id');
+                console.log('Upload area clicked for order detail:', orderDetailId);
+                
+                const fileInput = document.getElementById('image_' + orderDetailId);
+                if (fileInput) {
+                    console.log('Opening file dialog...');
+                    fileInput.click();
+                } else {
+                    console.log('File input not found');
+                }
+            });
+            
+            // Handle star rating clicks
+            $('.star-rating label').on('click', function(e) {
+                e.preventDefault();
+                const input = $(this).prev('input');
+                if (input.length) {
+                    // Uncheck all other inputs in the same group
+                    const name = input.attr('name');
+                    $(`input[name="${name}"]`).prop('checked', false);
+                    
+                    // Check the clicked input
+                    input.prop('checked', true);
+                    console.log('Star clicked:', input.attr('name'), input.val());
+                    
+                    // Trigger change event
+                    input.trigger('change');
+                }
+            });
+            
+            // Also handle direct input clicks (fallback)
+            $('.star-rating input[type="radio"]').on('change', function() {
+                console.log('Radio input changed:', $(this).attr('name'), $(this).val(), $(this).is(':checked'));
+            });
+            
+            // File upload handlers removed - using onclick attribute only
+            
+            // Handle file selection
+            $(document).on('change', 'input[type="file"]', function() {
+                console.log('File input changed');
+                const files = this.files;
+                console.log('Files selected:', files.length);
+                const orderDetailId = $(this).attr('id').replace('image_', '');
+                console.log('Order Detail ID:', orderDetailId);
+                const previewContainer = $('#preview_' + orderDetailId);
+                const previewImages = previewContainer.find('.preview-images');
+                
+                // Clear previous previews
+                previewImages.empty();
+                
+                if (files.length > 0) {
+                    previewContainer.show();
+                    
+                    Array.from(files).forEach(function(file) {
+                        if (file.type.startsWith('image/')) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const imagePreview = $(`
+                                    <div class="preview-item" style="position: relative; display: inline-block;">
+                                        <img src="${e.target.result}" 
+                                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                                        <button type="button" class="remove-image" 
+                                                style="position: absolute; top: -5px; right: -5px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;">
+                                            ×
+                                        </button>
+                                    </div>
+                                `);
+                                previewImages.append(imagePreview);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+                } else {
+                    previewContainer.hide();
+                }
+            });
+            
+            // Handle remove image
+            $(document).on('click', '.remove-image', function() {
+                $(this).closest('.preview-item').remove();
+                const previewContainer = $(this).closest('.image-preview');
+                if (previewContainer.find('.preview-item').length === 0) {
+                    previewContainer.hide();
+                }
+            });
+            
+            // Handle drag and drop
+            $('.upload-area').on('dragover', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#007bff');
+                $(this).css('background-color', '#f0f8ff');
+            });
+            
+            $('.upload-area').on('dragleave', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#ddd');
+                $(this).css('background-color', '#fafafa');
+            });
+            
+            $('.upload-area').on('drop', function(e) {
+                e.preventDefault();
+                $(this).css('border-color', '#ddd');
+                $(this).css('background-color', '#fafafa');
+                
+                const files = e.originalEvent.dataTransfer.files;
+                const fileInput = $(this).find('input[type="file"]')[0];
+                fileInput.files = files;
+                $(fileInput).trigger('change');
+            });
+            
+            // Handle submit button click
+            $('.submit-rating').on('click', function() {
+                const orderDetailId = $(this).data('order-detail-id');
+                const button = $(this);
+                
+                console.log('Submit rating for order detail:', orderDetailId);
+                
+                // Get form data - try multiple approaches
+                let rating = $(`input[name="rating_${orderDetailId}"]:checked`).val();
+                console.log('Rating (method 1):', rating);
+                
+                // If not found, try finding within the same container
+                if (!rating) {
+                    const container = button.closest('.rating-form');
+                    rating = container.find('input[type="radio"]:checked').val();
+                    console.log('Rating (method 2):', rating);
+                }
+                
+                // If still not found, try with string conversion
+                if (!rating) {
+                    rating = $(`input[name="rating_${String(orderDetailId)}"]:checked`).val();
+                    console.log('Rating (method 3):', rating);
+                }
+                
+                const comment = $(`#comment_${orderDetailId}`).val();
+                const images = $(`#image_${orderDetailId}`)[0].files;
+                
+                console.log('Final Rating:', rating);
+                console.log('Comment:', comment);
+                console.log('Images:', images.length);
+                
+                // Debug: Check all rating inputs for this order detail
+                const allRatingInputs = $(`input[name="rating_${orderDetailId}"]`);
+                console.log('All rating inputs found:', allRatingInputs.length);
+                allRatingInputs.each(function() {
+                    console.log('Input:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
+                });
+                
+                // Debug: Check all radio inputs in the container
+                const container = button.closest('.rating-form');
+                const containerRadios = container.find('input[type="radio"]');
+                console.log('Radio inputs in container:', containerRadios.length);
+                containerRadios.each(function() {
+                    console.log('Container Radio:', $(this).attr('name'), 'Value:', $(this).val(), 'Checked:', $(this).is(':checked'));
+                });
+                
+                // Debug: Check any checked radio in the entire document
+                const anyCheckedRadio = $('input[type="radio"]:checked');
+                console.log('Any checked radio in document:', anyCheckedRadio.length);
+                anyCheckedRadio.each(function() {
+                    console.log('Any checked:', $(this).attr('name'), 'Value:', $(this).val());
+                });
+                
+                // Final attempt to get rating
+                if (!rating) {
+                    // Try to get from any checked radio in the container
+                    const container = button.closest('.rating-form');
+                    const checkedRadio = container.find('input[type="radio"]:checked');
+                    if (checkedRadio.length > 0) {
+                        rating = checkedRadio.val();
+                        console.log('Found rating from container:', rating);
+                    }
+                }
+                
+                // Validation
+                if (!rating) {
+                    alert('Vui lòng chọn số sao đánh giá!');
+                    return;
+                }
+                
+                if (!comment || comment.trim() === '') {
+                    alert('Vui lòng nhập bình luận!');
+                    return;
+                }
+                
+                // Get orderId from hidden input
+                const orderId = $('#orderId').val();
+                if (!orderId) {
+                    alert('Lỗi: Không tìm thấy ID đơn hàng!');
+                    return;
+                }
+                
+                // Show loading
+                const originalText = button.html();
+                button.html('<i class="fa fa-spinner fa-spin"></i> Đang gửi...').prop('disabled', true);
+                
+                // Check if there are images to upload
+                const selectedFiles = $(`#image_${orderDetailId}`)[0].files;
+                console.log('Images to upload:', selectedFiles.length);
+                
+                if (selectedFiles.length > 0) {
+                    // Upload images first, then submit rating
+                    uploadImagesAndSubmitRating(orderDetailId, rating, comment, selectedFiles, orderId, button, originalText);
+                } else {
+                    // No images, submit rating directly
+                    submitRatingDirectly(orderDetailId, rating, comment, null, orderId, button, originalText);
+                }
+            });
+        });
+        
+        // Function to upload images and submit rating
+        function uploadImagesAndSubmitRating(orderDetailId, rating, comment, files, orderId, button, originalText) {
+            console.log('Uploading images for rating...');
+            
+            const uploadPromises = [];
+            
+            // Upload each image
+            Array.from(files).forEach(function(file, index) {
+                console.log(`Uploading image ${index + 1}/${files.length}:`, file.name);
+                
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                const uploadPromise = $.ajax({
+                    url: '/user/api/upload/rating-image',
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                });
+                
+                uploadPromises.push(uploadPromise);
+            });
+            
+            // Wait for all uploads to complete
+            Promise.all(uploadPromises)
+                .then(function(responses) {
+                    console.log('All images uploaded successfully:', responses);
+                    
+                    // Extract image URLs
+                    const imageUrls = responses.map(response => response.imageUrl);
+                    const imageUrlsString = imageUrls.join(',');
+                    
+                    console.log('Image URLs:', imageUrlsString);
+                    
+                    // Submit rating with image URLs
+                    submitRatingDirectly(orderDetailId, rating, comment, imageUrlsString, orderId, button, originalText);
+                })
+                .catch(function(error) {
+                    console.error('Error uploading images:', error);
+                    
+                    let errorMessage = 'Lỗi khi upload ảnh!';
+                    if (error.responseJSON && error.responseJSON.message) {
+                        errorMessage = error.responseJSON.message;
+                    }
+                    
+                    alert(errorMessage);
+                    button.html(originalText).prop('disabled', false);
+                });
+        }
+        
+        // Function to submit rating directly
+        function submitRatingDirectly(orderDetailId, rating, comment, imageUrls, orderId, button, originalText) {
+            console.log('Submitting rating directly...');
+            
+            const requestData = {
+                orderId: parseInt(orderId),
+                ratings: [{
+                    orderDetailId: parseInt(orderDetailId),
+                    star: parseInt(rating),
+                    comment: comment.trim(),
+                    image: imageUrls // Now contains actual image URLs or null
+                }]
+            };
+            
+            console.log('Sending rating request:', requestData);
+            
+            $.ajax({
+                url: '/user/api/ratings',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: function(response) {
+                    console.log('Rating response received:', response);
+                    if (response && response.success) {
+                        alert('Cảm ơn bạn đã đánh giá!');
+                        // Hide the rating form after successful submission
+                        button.closest('.rating-form').html('<div style="color: #28a745; text-align: center; padding: 20px;"><i class="fa fa-check-circle" style="font-size: 24px;"></i><br><strong>Đã đánh giá thành công!</strong></div>');
+                    } else {
+                        const errorMsg = response && response.message ? response.message : 'Có lỗi xảy ra';
+                        alert('Có lỗi xảy ra: ' + errorMsg);
+                        button.html(originalText).prop('disabled', false);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error Details:');
+                    console.error('Status:', status);
+                    console.error('Error:', error);
+                    console.error('Response Text:', xhr.responseText);
+                    console.error('Status Code:', xhr.status);
+                    
+                    let errorMessage = 'Có lỗi xảy ra khi gửi đánh giá. Vui lòng thử lại!';
+                    
+                    if (xhr.status === 401) {
+                        errorMessage = 'Bạn cần đăng nhập để đánh giá!';
+                    } else if (xhr.status === 404) {
+                        errorMessage = 'Đơn hàng không tồn tại!';
+                    } else if (xhr.status === 400) {
+                        errorMessage = 'Đơn hàng chưa được giao, không thể đánh giá!';
+                    } else if (xhr.responseText) {
+                        try {
+                            const errorResponse = JSON.parse(xhr.responseText);
+                            if (errorResponse.message) {
+                                errorMessage = errorResponse.message;
+                            }
+                        } catch (e) {
+                            console.error('Could not parse error response:', e);
+                        }
+                    }
+                    
+                    alert(errorMessage);
+                    button.html(originalText).prop('disabled', false);
+                }
+            });
+        }
+        
+        // Function to load rating status via AJAX
+        function loadRatingStatus() {
+            const orderId = $('#orderId').val();
+            if (!orderId) return;
+            
+            $.ajax({
+                url: '/user/api/order/' + orderId + '/rating-status',
+                method: 'GET',
+                success: function(response) {
+                    if (response && response.success && response.ratingStatus) {
+                        // Update rating status for each order detail
+                        Object.keys(response.ratingStatus).forEach(function(orderDetailId) {
+                            const hasRating = response.ratingStatus[orderDetailId];
+                            const ratingForm = $('.rating-form[data-order-detail-id="' + orderDetailId + '"]');
+                            const ratingStatus = $('.rating-status[data-order-detail-id="' + orderDetailId + '"]');
+                            
+                            if (hasRating) {
+                                // Hide rating form and show status
+                                ratingForm.hide();
+                                ratingStatus.show();
+                            } else {
+                                // Show rating form and hide status
+                                ratingForm.show();
+                                ratingStatus.hide();
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log('Error loading rating status:', error);
+                    // Keep default behavior (show rating forms)
+                }
+            });
+        }
+    </script>
+    
+    <!-- Rating Form CSS -->
+    <style>
+        /* Star Rating Styles */
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-start;
+            margin: 10px 0;
+        }
+        
+        .star-rating input {
+            display: none !important;
+        }
+        
+        .star-rating label {
+            font-size: 24px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+            margin-right: 5px;
+            user-select: none;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: #ffc107;
+        }
+        
+        /* Upload Area Styles */
+        .upload-area {
+            cursor: pointer !important;
+            user-select: none;
+        }
+        
+        .upload-area:hover {
+            border-color: #007bff !important;
+            background-color: #f0f8ff !important;
+        }
+        
+        .upload-content {
+            cursor: pointer;
+        }
+        
+        .upload-content * {
+            cursor: pointer;
+        }
+        
+        .upload-area.dragover {
+            border-color: #007bff !important;
+            background-color: #e3f2fd !important;
+        }
+        
+        /* Form Styles */
+        .rating-form {
+            transition: all 0.3s ease;
+        }
+        
+        .rating-form:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+        }
+        
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            transform: translateY(-1px);
+        }
+        
+        /* Image Preview Styles */
+        .preview-item {
+            transition: transform 0.2s ease;
+        }
+        
+        .preview-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .remove-image:hover {
+            background-color: #c82333 !important;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .star-rating label {
+                font-size: 20px;
+                margin-right: 3px;
+            }
+            
+            .rating-form {
+                padding: 15px !important;
+            }
+            
+            .upload-area {
+                padding: 15px !important;
+            }
+        }
+    </style>
+    
+</body>
+</html>

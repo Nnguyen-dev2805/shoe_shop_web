@@ -3,20 +3,26 @@ package com.dev.shoeshop.converter;
 import com.dev.shoeshop.dto.OrderDTO;
 import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.UserDTO;
-import com.dev.shoeshop.entity.Order;
-import com.dev.shoeshop.entity.OrderDetail;
-import com.dev.shoeshop.entity.ProductDetail;
-import com.dev.shoeshop.entity.Product;
-import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.entity.*;
+import com.dev.shoeshop.repository.ShipmentRepository;
+import com.dev.shoeshop.repository.UserAddressRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Component
 public class OrderDTOConverter {
+    
+    @Autowired
+    private ShipmentRepository shipmentRepository;
+    
+    @Autowired
+    private UserAddressRepository userAddressRepository;
 
     public OrderDTO toOrderDTO(Order order) {
         // Manual mapping to avoid lazy loading issues with ModelMapper
@@ -28,6 +34,70 @@ public class OrderDTOConverter {
         dto.setCreatedDate(order.getCreatedDate());
         dto.setStatus(order.getStatus());
         dto.setPayOption(order.getPayOption());
+        
+        // Address (convert to simple DTO) + get recipient info from UserAddress
+        if (order.getAddress() != null && order.getUser() != null) {
+            OrderDTO.AddressDTO.AddressDTOBuilder addressBuilder = OrderDTO.AddressDTO.builder()
+                .id(order.getAddress().getId())
+                .addressLine(order.getAddress().getAddress_line())
+                .city(order.getAddress().getCity())
+                .country(order.getAddress().getCountry());
+            
+            // Query UserAddress để lấy recipientName và recipientPhone
+            try {
+                Optional<UserAddress> userAddress = userAddressRepository.findByUserIdAndAddressId(
+                    order.getUser().getId(), 
+                    order.getAddress().getId()
+                );
+                
+                if (userAddress.isPresent()) {
+                    addressBuilder
+                        .recipientName(userAddress.get().getRecipientName())
+                        .recipientPhone(userAddress.get().getRecipientPhone());
+                }
+            } catch (Exception e) {
+                // UserAddress not found, use default user info
+                addressBuilder
+                    .recipientName(order.getUser().getFullname())
+                    .recipientPhone(order.getUser().getPhone());
+            }
+            
+            dto.setAddress(addressBuilder.build());
+        }
+        
+        // Discount & Voucher (only essential data)
+        if (order.getAppliedDiscount() != null) {
+            dto.setDiscountName(order.getAppliedDiscount().getName());
+        }
+        dto.setDiscountAmount(order.getDiscountAmount());
+        
+        if (order.getShippingDiscount() != null) {
+            dto.setShippingDiscountName(order.getShippingDiscount().getName());
+        }
+        dto.setShippingFee(order.getShippingFee());
+        dto.setShippingDiscountAmount(order.getShippingDiscountAmount());
+        dto.setOriginalTotalPrice(order.getOriginalTotalPrice());
+        
+        // Payment
+        dto.setPaidAt(order.getPaidAt());
+        dto.setPaymentStatus(order.getPaymentStatus());
+        
+        // Loyalty Points
+        dto.setPointsRedeemed(order.getPointsRedeemed());
+        dto.setPointsEarned(order.getPointsEarned());
+        
+        // Shipment (only updatedDate, no entity)
+        try {
+            Shipment shipment = shipmentRepository.findByOrderId(order.getId());
+            if (shipment != null) {
+                dto.setShipmentUpdatedDate(shipment.getUpdatedDate());
+                dto.setShipmentStatus(shipment.getStatus());
+            }
+        } catch (Exception e) {
+            // Shipment chưa có
+            dto.setShipmentUpdatedDate(null);
+            dto.setShipmentStatus(null);
+        }
         
         // User mapping
         Users user = order.getUser();

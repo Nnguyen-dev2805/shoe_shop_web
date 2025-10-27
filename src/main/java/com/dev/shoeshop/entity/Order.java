@@ -67,6 +67,9 @@ public class Order {
     @JoinColumn(name = "shipping_discount_id")
     private Discount shippingDiscount; // Shipping voucher đã áp dụng
     
+    @Column(name = "shipping_fee")
+    private Double shippingFee; // Phí vận chuyển gốc
+    
     @Column(name = "shipping_discount_amount")
     private Double shippingDiscountAmount; // Số tiền được giảm từ shipping voucher
     
@@ -127,6 +130,15 @@ public class Order {
      */
     public boolean isFromFlashSale() {
         return appliedFlashSale != null;
+    }
+    
+    /**
+     * Tính phí ship cuối cùng sau giảm giá
+     */
+    public Double calculateFinalShippingFee() {
+        if (shippingFee == null) return 0.0;
+        if (shippingDiscountAmount == null) return shippingFee;
+        return Math.max(0, shippingFee - shippingDiscountAmount);
     }
     
     // ========== LOYALTY POINTS METHODS ==========
