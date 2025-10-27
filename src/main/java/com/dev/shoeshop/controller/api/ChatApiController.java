@@ -105,28 +105,6 @@ public class ChatApiController {
         }
     }
 
-    /**
-     * Lấy tất cả tin nhắn của conversation (không phân trang)
-     * GET /api/chat/messages/{conversationId}/all
-     */
-    @GetMapping("/messages/{conversationId}/all")
-    public ResponseEntity<Map<String, Object>> getAllMessages(@PathVariable Long conversationId) {
-        try {
-            List<ChatMessageDTO> messages = chatService.getMessageHistory(conversationId);
-
-            return ResponseEntity.ok(Map.of(
-                    "success", true,
-                    "data", messages
-            ));
-
-        } catch (Exception e) {
-            log.error("Error getting all messages: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).body(Map.of(
-                    "success", false,
-                    "message", "Failed to get messages: " + e.getMessage()
-            ));
-        }
-    }
 
     // ============= MANAGER ENDPOINTS =============
 
@@ -212,6 +190,91 @@ public class ChatApiController {
             return ResponseEntity.status(500).body(Map.of(
                     "success", false,
                     "message", "Failed to get unread count: " + e.getMessage()
+            ));
+        }
+    }
+
+    /**
+     * Đếm số tin nhắn chưa đọc cho user
+     * User endpoint: GET /api/chat/user/unread-count
+     */
+    @GetMapping("/user/unread-count")
+    public ResponseEntity<Map<String, Object>> getUserUnreadCount(@AuthenticationPrincipal Users user) {
+        try {
+            if (user == null) {
+                return ResponseEntity.status(401).body(Map.of(
+                        "success", false,
+                        "message", "User not authenticated"
+                ));
+            }
+
+            Long unreadCount = chatService.countUnreadMessagesForUser(user.getId());
+
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "count", unreadCount
+            ));
+
+        } catch (Exception e) {
+            log.error("Error getting user unread count: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "message", "Failed to get unread count: " + e.getMessage()
+            ));
+        }
+    }
+
+    /**
+     * Lấy tin nhắn của conversation
+     * Manager endpoint: GET /api/chat/conversation/{id}/messages
+     */
+    @GetMapping("/conversation/{id}/messages")
+    public ResponseEntity<Map<String, Object>> getConversationMessages(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "50") int size) {
+        try {
+            log.info("Loading messages for conversation: {}", id);
+            
+            List<ChatMessageDTO> messages = chatService.getMessageHistory(id);
+            
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "data", messages,
+                    "total", messages.size()
+            ));
+
+        } catch (Exception e) {
+            log.error("Error loading conversation messages: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "message", "Failed to load messages: " + e.getMessage()
+            ));
+        }
+    }
+
+    /**
+     * Lấy tin nhắn của conversation (User endpoint)
+     * User endpoint: GET /api/chat/messages/{id}/all
+     */
+    @GetMapping("/messages/{id}/all")
+    public ResponseEntity<Map<String, Object>> getUserConversationMessages(@PathVariable Long id) {
+        try {
+            log.info("Loading messages for user conversation: {}", id);
+            
+            List<ChatMessageDTO> messages = chatService.getMessageHistory(id);
+            
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "data", messages,
+                    "total", messages.size()
+            ));
+
+        } catch (Exception e) {
+            log.error("Error loading user conversation messages: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).body(Map.of(
+                    "success", false,
+                    "message", "Failed to load messages: " + e.getMessage()
             ));
         }
     }

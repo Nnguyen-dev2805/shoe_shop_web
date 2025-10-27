@@ -83,6 +83,12 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Long countUnreadMessagesForUser(Long userId) {
+        return messageRepository.countUnreadMessagesForUser(userId);
+    }
+
+    @Override
     public ChatMessageDTO sendMessageFromUser(Long userId, String content) {
         ChatConversation conversation = conversationRepository.findByUserId(userId)
                 .orElseGet(() -> {

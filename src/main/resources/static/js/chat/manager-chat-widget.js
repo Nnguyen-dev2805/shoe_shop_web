@@ -3,17 +3,17 @@
  * Hiển thị danh sách conversations và chat với users
  */
 
-let managerChat = {
+const managerChat = {
     stompClient: null,
     isConnected: false,
     isOpen: false,
-    selectedConversation: null,
     conversations: [],
-    unreadCount: 0,
-    replyingTo: null  // Message being replied to
+    selectedConversation: null,
+    replyingTo: null,
+    messagesCache: new Map(), // Cache messages by conversation ID
+    loadingConversations: new Set(), // Track loading conversations
+    unreadCount: 0
 };
-
-// ============= INITIALIZATION =============
 
 if (typeof jQuery !== 'undefined') {
     $(document).ready(function() {
@@ -337,23 +337,15 @@ function createManagerChatWidget() {
                 min-height: 0;
                 scroll-behavior: smooth;
                 position: relative;
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
             
             .chat-messages::-webkit-scrollbar {
-                width: 8px;
-            }
-            
-            .chat-messages::-webkit-scrollbar-track {
-                background: #f1f1f1;
-            }
-            
-            .chat-messages::-webkit-scrollbar-thumb {
-                background: linear-gradient(180deg, #1e3a8a 0%, #3b82f6 100%);
-                border-radius: 10px;
+                display: none;
             }
             
             .chat-message {
-                margin-bottom: 16px;
                 display: flex;
                 animation: messageSlide 0.3s ease;
                 position: relative;
@@ -833,34 +825,58 @@ function displayConversations(conversations) {
 
 function selectConversation(conversationId) {
     console.log('👤 Selected conversation:', conversationId);
+    console.log('📋 Available conversations:', managerChat.conversations);
     
     const conversation = managerChat.conversations.find(c => c.id === conversationId);
-    if (!conversation) return;
+    if (!conversation) {
+        console.error('❌ Conversation not found:', conversationId);
+        return;
+    }
     
+    console.log('✅ Found conversation:', conversation);
     managerChat.selectedConversation = conversation;
     
     // Update UI
     $('.conversation-item').removeClass('active');
     $(`.conversation-item[data-conversation-id="${conversationId}"]`).addClass('active');
+    console.log('🎨 Updated conversation item active state');
     
     // Show chat view
-    $('#conversationsList').hide();
-    $('#chatView').show();
+    console.log('📋 About to show chat view');
+    showChatView();
     
-    // Update chat header
-    $('#chatUserName').text(conversation.userName);
-    $('#chatUserEmail').text(conversation.userEmail || '');
+    // Update header
+    $('#chatUserName').text(conversation.userName || 'Unknown User');
+    $('#chatUserEmail').text(conversation.userEmail || 'No email');
+    console.log('📝 Updated chat header');
     
     // Load messages
-    loadConversationMessages(conversationId);
+    loadMessages(conversation.id);
     
-    // Mark as read
-    markConversationAsRead(conversationId);
+    // Mark conversation as read
+    markConversationAsRead(conversation.id);
 }
 
 window.selectConversation = selectConversation;
 
+function showChatView() {
+    console.log('📋 Showing chat view');
+    
+    const $conversationsList = $('#conversationsList');
+    const $chatView = $('#chatView');
+    
+    console.log('📋 conversationsList element:', $conversationsList.length);
+    console.log('📋 chatView element:', $chatView.length);
+    
+    $conversationsList.hide();
+    $chatView.show();
+    
+    console.log('📋 conversationsList visible:', $conversationsList.is(':visible'));
+    console.log('📋 chatView visible:', $chatView.is(':visible'));
+}
+
 function showConversationsList() {
+    console.log('📋 Showing conversations list');
     $('#chatView').hide();
     $('#conversationsList').show();
     managerChat.selectedConversation = null;
@@ -869,41 +885,195 @@ function showConversationsList() {
 
 window.showConversationsList = showConversationsList;
 
-function displayMessages(messages) {
+function loadMessages(conversationId, retryCount = 0, forceReload = false) {
+    console.log('📨 Loading messages for conversation:', conversationId, 'retry:', retryCount, 'forceReload:', forceReload);
+    
     const $container = $('#chatMessages');
-    $container.empty();
+    
+    // Check if already loading
+    if (managerChat.loadingConversations.has(conversationId)) {
+        console.log('⏳ Already loading conversation:', conversationId);
+        return;
+    }
+    
+    // Check cache first (unless force reload)
+    if (!forceReload && managerChat.messagesCache.has(conversationId)) {
+        console.log('💾 Using cached messages for conversation:', conversationId);
+        const cachedMessages = managerChat.messagesCache.get(conversationId);
+        displayMessages(cachedMessages);
+        return;
+    }
+    
+    // Mark as loading
+    managerChat.loadingConversations.add(conversationId);
+    
+    // Show loading immediately
+    $container.html(`
+        <div class="text-center py-4 text-muted">
+            <i class="fa fa-spinner fa-spin fa-2x mb-2"></i>
+            <p>Đang tải tin nhắn...</p>
+        </div>
+    `);
+    
+    // Call API to load messages with timeout
+    $.ajax({
+        url: `/api/chat/conversation/${conversationId}/messages`,
+        method: 'GET',
+        timeout: 8000, // 8 second timeout
+        cache: false
+    })
+    .done(function(response) {
+        console.log('📨 API Response:', response);
+        
+        // Remove from loading set
+        managerChat.loadingConversations.delete(conversationId);
+        
+        if (response.success && response.data) {
+            // Cache the messages
+            managerChat.messagesCache.set(conversationId, response.data);
+            
+            displayMessages(response.data);
+            console.log('✅ Messages loaded and cached:', response.data.length);
+            
+            // Scroll to bottom after loading
+            setTimeout(scrollToBottom, 100);
+        } else {
+            console.warn('⚠️ No messages in response');
+            // Cache empty array
+            managerChat.messagesCache.set(conversationId, []);
+            
+            $container.html(`
+                <div class="text-center py-4 text-muted">
+                    <i class="fa fa-comments fa-3x mb-2 opacity-25"></i>
+                    <p>Chưa có tin nhắn</p>
+                    <small class="text-muted">Hãy bắt đầu cuộc trò chuyện!</small>
+                </div>
+            `);
+        }
+    })
+    .fail(function(xhr, status, error) {
+        console.error('❌ Failed to load messages:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            error: error,
+            response: xhr.responseText
+        });
+        
+        // Remove from loading set
+        managerChat.loadingConversations.delete(conversationId);
+        
+        // Retry logic for network errors
+        if (retryCount < 2 && (xhr.status === 0 || xhr.status >= 500)) {
+            console.log('🔄 Retrying in 2 seconds...');
+            setTimeout(() => {
+                loadMessages(conversationId, retryCount + 1, forceReload);
+            }, 2000);
+            return;
+        }
+        
+        // Show error with retry button
+        $container.html(`
+            <div class="text-center py-4 text-danger">
+                <i class="fa fa-exclamation-triangle fa-2x mb-2"></i>
+                <p>Lỗi tải tin nhắn</p>
+                <small class="text-muted d-block mb-2">
+                    ${xhr.status === 0 ? 'Không thể kết nối server' : 
+                      xhr.status === 404 ? 'Cuộc trò chuyện không tồn tại' :
+                      xhr.status >= 500 ? 'Lỗi server' : 'Lỗi không xác định'}
+                </small>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadMessages(${conversationId}, 0, true)">
+                    <i class="fa fa-refresh"></i> Thử lại
+                </button>
+            </div>
+        `);
+    });
+}
+
+function displayMessages(messages) {
+    console.log('🎨 Displaying messages:', messages.length);
+    const $container = $('#chatMessages');
     
     if (!messages || messages.length === 0) {
         $container.html(`
             <div class="text-center py-4 text-muted">
                 <i class="fa fa-comments fa-3x mb-2 opacity-25"></i>
                 <p>Chưa có tin nhắn</p>
+                <small class="text-muted">Hãy bắt đầu cuộc trò chuyện!</small>
             </div>
         `);
         return;
     }
     
+    // Clear container
+    $container.empty();
+    
     // Sort by time
     messages.sort((a, b) => new Date(a.sentAt) - new Date(b.sentAt));
     
-    // Display with date separators
+    // Build HTML string for better performance
+    let htmlContent = '';
     let lastDate = null;
+    
     messages.forEach(msg => {
         const msgDate = new Date(msg.sentAt).toLocaleDateString('vi-VN');
         
+        // Add date separator if needed
         if (msgDate !== lastDate) {
-            $container.append(`
+            htmlContent += `
                 <div class="chat-date-separator">
                     <span>${msgDate}</span>
                 </div>
-            `);
+            `;
             lastDate = msgDate;
         }
         
-        appendMessage(msg, false);
+        // Build message HTML
+        const isManager = msg.senderType === 'MANAGER';
+        const messageClass = isManager ? 'manager' : 'user';
+        const time = formatTime(msg.sentAt);
+        const messageId = msg.id || Date.now();
+        
+        // Replied message indicator
+        let repliedHtml = '';
+        if (msg.replyTo) {
+            const replyToName = msg.replyTo.senderType === 'USER' ? 
+                managerChat.selectedConversation?.userName : 'Bạn';
+            repliedHtml = `
+                <div class="replied-message">
+                    <strong>↩ ${replyToName}</strong>
+                    <p>${escapeHtml(msg.replyTo.content)}</p>
+                </div>
+            `;
+        }
+        
+        // Message actions (only for user messages)
+        const actionsHtml = !isManager ? `
+            <div class="message-actions">
+                <button class="message-action-btn" onclick="replyToMessage(${messageId}, '${escapeHtml(msg.content).replace(/'/g, "\\'")}', '${msg.senderType}')" title="Trả lời">
+                    <i class="fa fa-reply"></i>
+                </button>
+            </div>
+        ` : '';
+        
+        htmlContent += `
+            <div class="chat-message ${messageClass}" data-message-id="${messageId}">
+                <div class="chat-message-content">
+                    ${repliedHtml}
+                    ${escapeHtml(msg.content)}
+                    <div class="chat-message-time">${time}</div>
+                </div>
+                ${actionsHtml}
+            </div>
+        `;
     });
     
-    setTimeout(scrollToBottom, 100);
+    // Set all HTML at once for better performance
+    $container.html(htmlContent);
+    
+    console.log('✅ Messages displayed successfully');
+    
+    // Scroll to bottom
+    setTimeout(scrollToBottom, 50);
 }
 
 function appendMessage(message, animate = true) {
@@ -1087,20 +1257,44 @@ function connectWebSocket() {
 }
 
 function handleManagerNotification(notification) {
-    console.log('📬 Manager notification:', notification.type);
+    console.log('📬 Manager notification received:', notification.type);
     
     if (notification.type === 'NEW_MESSAGE') {
         const message = notification.message;
+        console.log('💬 New message in conversation:', message.conversationId);
         
         // Update conversations list
         loadConversations();
         
-        // If viewing this conversation, append message
+        // Update unread badge if widget is closed or different conversation
+        if (!managerChat.isOpen || 
+            !managerChat.selectedConversation || 
+            managerChat.selectedConversation.id !== message.conversationId) {
+            
+            // Check unread count from server
+            checkUnreadConversations();
+        }
+        
+        // Update cache with new message
+        if (managerChat.messagesCache.has(message.conversationId)) {
+            const cachedMessages = managerChat.messagesCache.get(message.conversationId);
+            cachedMessages.push(message);
+            managerChat.messagesCache.set(message.conversationId, cachedMessages);
+        }
+        
+        // If this conversation is currently open, append message
         if (managerChat.selectedConversation && 
-            managerChat.selectedConversation.id === message.conversationId &&
-            message.senderType === 'USER') {
-            appendMessage(message, true);
-            markConversationAsRead(message.conversationId);
+            managerChat.selectedConversation.id === message.conversationId) {
+            
+            // Only append if message is from USER (manager messages already appended)
+            if (message.senderType === 'USER') {
+                appendMessage(message, true);
+                
+                // Mark as read if widget is open
+                if (managerChat.isOpen) {
+                    markConversationAsRead(message.conversationId);
+                }
+            }
         }
         
         // Update badge
@@ -1185,5 +1379,87 @@ function checkScrollPosition() {
 // Attach scroll listener
 $(document).on('scroll', '#chatMessages', checkScrollPosition);
 
+// ============= UNREAD BADGE MANAGEMENT =============
+
+// Update unread badge
+function updateUnreadBadge(count) {
+    const $badge = $('#manager-chat-unread-count');
+    
+    if (count > 0) {
+        $badge.text(count).css('display', 'flex');
+        console.log('📬 Manager unread badge shown:', count);
+    } else {
+        $badge.hide();
+        console.log('✅ Manager unread badge hidden');
+    }
+}
+
+// Check for unread conversations from server
+function checkUnreadConversations() {
+    $.get('/api/chat/manager/unread-count')
+        .done(function(response) {
+            if (response.success) {
+                const count = response.count || 0;
+                updateUnreadBadge(count);
+            }
+        })
+        .fail(function() {
+            console.warn('⚠️ Failed to check unread conversations');
+        });
+}
+
+// Mark conversation as read
+function markConversationAsRead(conversationId) {
+    if (managerChat.stompClient && managerChat.isConnected) {
+        managerChat.stompClient.send('/app/chat.markReadManager', {}, JSON.stringify(conversationId));
+        console.log('✅ Marked conversation as read:', conversationId);
+        
+        // Update badge after marking as read
+        setTimeout(checkUnreadConversations, 500);
+    }
+}
+
+// Initialize unread check on page load
+$(document).ready(function() {
+    if (typeof currentManagerId !== 'undefined' && currentManagerId > 0) {
+        // Check unread count after 1 second
+        setTimeout(checkUnreadConversations, 1000);
+        
+        // Check periodically every 30 seconds
+        setInterval(checkUnreadConversations, 30000);
+    }
+});
+
+// Clear messages cache for a conversation
+function clearMessagesCache(conversationId) {
+    if (conversationId) {
+        managerChat.messagesCache.delete(conversationId);
+        console.log('🗑️ Cleared cache for conversation:', conversationId);
+    } else {
+        managerChat.messagesCache.clear();
+        console.log('🗑️ Cleared all messages cache');
+    }
+}
+
+// Debug function to test elements
+window.debugManagerChat = function() {
+    console.log('🔍 Manager Chat Debug:');
+    console.log('- Widget:', $('#managerChatWidget').length);
+    console.log('- Conversations List:', $('#conversationsList').length);
+    console.log('- Chat View:', $('#chatView').length);
+    console.log('- Chat Messages:', $('#chatMessages').length);
+    console.log('- Chat User Name:', $('#chatUserName').length);
+    console.log('- Chat User Email:', $('#chatUserEmail').length);
+    console.log('- Manager Chat Object:', managerChat);
+    console.log('- Current conversations:', managerChat.conversations);
+    console.log('- Messages cache size:', managerChat.messagesCache.size);
+    console.log('- Loading conversations:', managerChat.loadingConversations);
+};
+
+// Expose functions for debugging
+window.clearMessagesCache = clearMessagesCache;
+window.loadMessages = loadMessages;
+
 console.log('✅ Manager Chat Widget loaded');
+console.log('🔧 Run debugManagerChat() in console to check elements');
 

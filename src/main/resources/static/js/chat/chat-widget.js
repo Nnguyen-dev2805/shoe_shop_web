@@ -5,56 +5,51 @@
 
 let chatWidget = {
     stompClient: null,
-    conversationId: null,
     isConnected: false,
     isOpen: false,
     unreadCount: 0,
     currentUserId: null,
     currentUserName: null,
-    replyingTo: null  // Message being replied to
+    replyingTo: null,  // Message being replied to
+    messagesCache: null, // Cache messages for current conversation
+    isLoadingMessages: false // Prevent duplicate loading
 };
 
 // ============= INITIALIZATION =============
 
-// Initialize when jQuery is ready
-if (typeof jQuery !== 'undefined') {
-    $(document).ready(function() {
-        console.log('📱 Chat Widget: jQuery loaded, initializing...');
-        console.log('🔍 Current user info:', {
-            userId: typeof currentUserId !== 'undefined' ? currentUserId : 'undefined',
-            userName: typeof currentUserName !== 'undefined' ? currentUserName : 'undefined'
-        });
-        
-        // Check if user is logged in
-        if (typeof currentUserId === 'undefined' || currentUserId === 0) {
-            console.log('⚠️ Chat Widget: User not logged in - disabled');
-            return;
-        }
-        
+// Initialize chat widget when DOM is ready
+$(document).ready(function() {
+    console.log('💬 Chat Widget: DOM ready, initializing...');
+    
+    if (typeof currentUserId !== 'undefined' && currentUserId > 0) {
         chatWidget.currentUserId = currentUserId;
-        chatWidget.currentUserName = currentUserName || 'User';
+        console.log('✅ Chat Widget: User ID set to', currentUserId);
         
-        console.log('🚀 Chat Widget: Initializing for user:', {
-            id: chatWidget.currentUserId,
-            name: chatWidget.currentUserName
-        });
+        initializeChatWidget();
         
-        // Create widget HTML
-        createChatWidget();
+        // Check for unread messages on page load (multiple attempts)
+        setTimeout(checkUnreadMessages, 1000);
+        setTimeout(checkUnreadMessages, 3000);
+        setTimeout(checkUnreadMessages, 5000);
         
-        // Connect WebSocket
-        connectWebSocket();
-        
-        // Setup event listeners
-        setupEventListeners();
-        
-        // Load conversation (will be called when widget is opened)
-        // loadConversation(); // Don't load immediately
-        
-        console.log('✅ Chat Widget: Initialization complete (waiting for user to open)');
-    });
-} else {
-    console.error('❌ Chat Widget: jQuery not found!');
+        // Check periodically every 30 seconds
+        setInterval(checkUnreadMessages, 30000);
+    } else {
+        console.warn('⚠️ Chat Widget: No valid user ID found');
+    }
+});
+
+// Initialize chat widget
+function initializeChatWidget() {
+    console.log('✅ Chat Widget: Initializing for user:', chatWidget.currentUserId);
+    
+    // Create widget HTML
+    createChatWidget();
+    
+    // Setup event listeners
+    setupEventListeners();
+    
+    console.log('✅ Chat Widget: Initialization complete (waiting for user to open)');
 }
 
 // ============= CREATE WIDGET UI =============
@@ -217,28 +212,20 @@ function createChatWidget() {
                 position: relative;
             }
             
-            /* Custom scrollbar */
+            /* Hide scrollbar */
             .chat-widget-messages::-webkit-scrollbar {
-                width: 8px;
+                display: none;
             }
             
-            .chat-widget-messages::-webkit-scrollbar-track {
-                background: #f1f1f1;
-                border-radius: 10px;
-            }
-            
-            .chat-widget-messages::-webkit-scrollbar-thumb {
-                background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
-                border-radius: 10px;
-            }
-            
-            .chat-widget-messages::-webkit-scrollbar-thumb:hover {
-                background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+            .chat-widget-messages {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
             
             .chat-message {
                 margin-bottom: 16px;
                 display: flex;
+{{ ... }}
                 animation: messageSlide 0.3s ease;
                 position: relative;
             }
@@ -597,6 +584,12 @@ function createChatWidget() {
 function toggleChatWidget() {
     console.log('💬 Chat Widget: Toggle called, isOpen:', chatWidget.isOpen);
     
+    // Check unread when user interacts with chat
+    if (!chatWidget.isOpen) {
+        console.log('🔍 Checking unread before opening widget...');
+        checkUnreadMessages();
+    }
+    
     const $widget = $('#chatWidget');
     
     if ($widget.length === 0) {
@@ -604,29 +597,33 @@ function toggleChatWidget() {
         return;
     }
     
-    if (chatWidget.isOpen) {
-        console.log('🔽 Chat Widget: Closing...');
+    if ($widget.is(':visible')) {
         $widget.fadeOut(200);
         chatWidget.isOpen = false;
+        console.log('💬 Chat widget closed');
+        
+        // Check unread count when closing widget
+        setTimeout(checkUnreadMessages, 500);
     } else {
-        console.log('🔼 Chat Widget: Opening...');
         $widget.fadeIn(200);
         chatWidget.isOpen = true;
+        console.log('💬 Chat widget opened');
         
-        // Load conversation if not loaded yet
-        if (!chatWidget.conversationId) {
-            console.log('📞 Chat Widget: First time opening, loading conversation...');
-            loadConversation();
-        } else {
-            console.log('📞 Chat Widget: Conversation already loaded:', chatWidget.conversationId);
-        }
-        
-        // Mark messages as read
+        // Mark messages as read when opening
         markMessagesAsRead();
         
-        // Reset unread count
-        chatWidget.unreadCount = 0;
-        updateUnreadBadge();
+        // Ensure conversation exists before loading messages
+        if (!chatWidget.conversationId) {
+            console.log('🔄 No conversation ID, creating conversation first...');
+            loadConversation();
+        } else if (!chatWidget.messagesLoaded) {
+            loadMessages();
+        }
+        
+        // Connect WebSocket if not connected
+        if (!chatWidget.isConnected) {
+            connectWebSocket();
+        }
         
         // Scroll to bottom
         setTimeout(scrollToBottom, 100);
@@ -635,7 +632,49 @@ function toggleChatWidget() {
 
 // Make toggleChatWidget available globally IMMEDIATELY
 window.toggleChatWidget = toggleChatWidget;
-console.log('✅ Chat Widget: toggleChatWidget function registered globally');
+// Debug function for user widget
+window.debugChatWidget = function() {
+    console.log('🔍 User Chat Widget Debug:');
+    console.log('- Widget:', $('#chatWidget').length);
+    console.log('- Messages container:', $('#chatWidgetMessages').length);
+    console.log('- Input:', $('#chatWidgetInput').length);
+    console.log('- Chat object:', chatWidget);
+    console.log('- Conversation ID:', chatWidget.conversationId);
+    console.log('- Messages loaded:', chatWidget.messagesLoaded);
+    console.log('- Messages cache:', chatWidget.messagesCache ? chatWidget.messagesCache.length : 'null');
+    console.log('- Is loading:', chatWidget.isLoadingMessages);
+};
+
+// Expose functions for debugging
+window.loadMessages = loadMessages;
+window.loadConversation = loadConversation;
+window.checkUnreadMessages = checkUnreadMessages;
+window.forceCheckUnread = function() {
+    console.log('🔄 Force checking unread messages...');
+    checkUnreadMessages();
+};
+
+window.testBadge = function(count = 5) {
+    console.log('🧪 Testing badge with count:', count);
+    chatWidget.unreadCount = count;
+    updateUnreadBadge();
+    
+    // Check if badge element exists
+    const $badge = $('#chat-unread-count');
+    console.log('Badge element:', {
+        exists: $badge.length > 0,
+        visible: $badge.is(':visible'),
+        text: $badge.text(),
+        css: {
+            display: $badge.css('display'),
+            position: $badge.css('position'),
+            zIndex: $badge.css('z-index')
+        }
+    });
+};
+
+console.log('✅ Chat Widget loaded');
+console.log('🔧 Run debugChatWidget() in console to check elements');
 
 // ============= WEBSOCKET CONNECTION =============
 
@@ -683,93 +722,194 @@ function updateConnectionStatus(connected) {
 
 // ============= API CALLS =============
 
-function loadConversation() {
-    console.log('🔄 Chat Widget: Loading conversation...');
+function loadConversation(retryCount = 0) {
+    console.log('🔄 Chat Widget: Loading conversation... retry:', retryCount);
+    
+    // Show loading state
+    const $container = $('#chatWidgetMessages');
+    $container.html(`
+        <div class="text-center py-4 text-muted">
+            <i class="fa fa-spinner fa-spin fa-2x mb-2"></i>
+            <p>Đang tạo cuộc trò chuyện...</p>
+        </div>
+    `);
     
     $.ajax({
         url: '/api/chat/conversation',
         method: 'GET',
         dataType: 'json',
-        success: function(response) {
-            console.log('📥 Conversation response:', response);
+        timeout: 10000, // 10 second timeout
+        cache: false
+    })
+    .done(function(response) {
+        console.log('📥 Conversation response:', response);
+        
+        if (response.success && response.data) {
+            chatWidget.conversationId = response.data.id;
+            console.log('✅ Conversation loaded:', chatWidget.conversationId);
             
-            if (response.success && response.data) {
-                chatWidget.conversationId = response.data.id;
-                console.log('✅ Conversation loaded:', chatWidget.conversationId);
-                loadMessages();
-            } else {
-                console.error('❌ Invalid conversation response:', response);
-                showError('Không thể tạo cuộc trò chuyện', 'Vui lòng thử lại sau');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('❌ Error loading conversation:', {
-                status: xhr.status,
-                statusText: xhr.statusText,
-                response: xhr.responseText,
-                error: error
-            });
-            
-            let errorMsg = 'Không thể kết nối';
-            if (xhr.status === 401) {
-                errorMsg = 'Vui lòng đăng nhập lại';
-            } else if (xhr.status === 500) {
-                errorMsg = 'Lỗi server';
-            }
-            
-            showError('Lỗi tải cuộc trò chuyện', errorMsg);
+            // Now load messages
+            loadMessages();
+        } else {
+            console.error('❌ Invalid conversation response:', response);
+            showConversationError('Không thể tạo cuộc trò chuyện', 'Dữ liệu không hợp lệ');
         }
+    })
+    .fail(function(xhr, status, error) {
+        console.error('❌ Error loading conversation:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            response: xhr.responseText,
+            error: error,
+            ajaxStatus: status
+        });
+        
+        // Retry logic for network/server errors
+        if (retryCount < 2 && (xhr.status === 0 || xhr.status >= 500 || status === 'timeout')) {
+            console.log('🔄 Retrying conversation load in 2 seconds...');
+            setTimeout(() => {
+                loadConversation(retryCount + 1);
+            }, 2000);
+            return;
+        }
+        
+        let errorMsg = 'Không thể kết nối';
+        if (status === 'timeout') {
+            errorMsg = 'Quá thời gian chờ - Server phản hồi chậm';
+        } else if (xhr.status === 401) {
+            errorMsg = 'Vui lòng đăng nhập lại';
+        } else if (xhr.status === 403) {
+            errorMsg = 'Không có quyền truy cập';
+        } else if (xhr.status >= 500) {
+            errorMsg = 'Lỗi server - Vui lòng thử lại sau';
+        }
+        
+        showConversationError('Lỗi tải cuộc trò chuyện', errorMsg);
     });
 }
 
-function loadMessages() {
+// Show conversation-specific error with retry
+function showConversationError(title, message) {
+    const $container = $('#chatWidgetMessages');
+    $container.html(`
+        <div class="text-center py-4 text-danger">
+            <i class="fa fa-exclamation-triangle fa-2x mb-2"></i>
+            <p>${title}</p>
+            <small class="text-muted d-block mb-2">${message}</small>
+            <button class="btn btn-sm btn-outline-primary" onclick="loadConversation(0)">
+                <i class="fa fa-refresh"></i> Thử lại
+            </button>
+        </div>
+    `);
+}
+
+function loadMessages(retryCount = 0, forceReload = false) {
     if (!chatWidget.conversationId) {
         console.log('⚠️ Chat Widget: No conversation ID, skipping message load');
         showError('Lỗi', 'Không có ID cuộc trò chuyện');
         return;
     }
     
-    console.log('📥 Chat Widget: Loading messages for conversation:', chatWidget.conversationId);
+    // Check if already loading
+    if (chatWidget.isLoadingMessages) {
+        console.log('⏳ Already loading messages');
+        return;
+    }
+    
+    // Check cache first (unless force reload)
+    if (!forceReload && chatWidget.messagesCache) {
+        console.log('💾 Using cached messages');
+        displayMessages(chatWidget.messagesCache);
+        return;
+    }
+    
+    console.log('📥 Chat Widget: Loading messages for conversation:', chatWidget.conversationId, 'retry:', retryCount);
+    
+    // Mark as loading
+    chatWidget.isLoadingMessages = true;
+    
+    // Show loading state
+    const $container = $('#chatWidgetMessages');
+    $container.html(`
+        <div class="text-center py-4 text-muted">
+            <i class="fa fa-spinner fa-spin fa-2x mb-2"></i>
+            <p>Đang tải tin nhắn...</p>
+        </div>
+    `);
     
     $.ajax({
         url: '/api/chat/messages/' + chatWidget.conversationId + '/all',
         method: 'GET',
         dataType: 'json',
-        timeout: 10000, // 10 second timeout
-        success: function(response) {
-            console.log('✅ Message response:', response);
+        timeout: 8000, // 8 second timeout
+        cache: false
+    })
+    .done(function(response) {
+        console.log('✅ Message response:', response);
+        
+        // Clear loading state
+        chatWidget.isLoadingMessages = false;
+        
+        if (response.success) {
+            const messages = response.data || [];
+            console.log('📝 Chat Widget: Messages loaded and cached:', messages.length);
             
-            if (response.success) {
-                const messages = response.data || [];
-                console.log('📝 Chat Widget: Messages loaded:', messages.length);
-                displayMessages(messages);
-            } else {
-                console.error('❌ Failed response:', response);
-                showError('Không thể tải tin nhắn', response.message || 'Lỗi không xác định');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('❌ Error loading messages:', {
-                status: xhr.status,
-                statusText: xhr.statusText,
-                response: xhr.responseText,
-                error: error,
-                ajaxStatus: status
-            });
+            // Cache the messages
+            chatWidget.messagesCache = messages;
             
-            let errorMsg = 'Vui lòng thử lại';
-            if (status === 'timeout') {
-                errorMsg = 'Quá thời gian chờ';
-            } else if (xhr.status === 401) {
-                errorMsg = 'Vui lòng đăng nhập lại';
-            } else if (xhr.status === 403) {
-                errorMsg = 'Không có quyền truy cập';
-            } else if (xhr.status === 404) {
-                errorMsg = 'Không tìm thấy cuộc trò chuyện';
-            }
-            
-            showError('Lỗi tải tin nhắn', errorMsg);
+            displayMessages(messages);
+            chatWidget.messagesLoaded = true;
+        } else {
+            console.error('❌ Failed response:', response);
+            showError('Không thể tải tin nhắn', response.message || 'Lỗi không xác định');
         }
+    })
+    .fail(function(xhr, status, error) {
+        console.error('❌ Error loading messages:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            response: xhr.responseText,
+            error: error,
+            ajaxStatus: status
+        });
+        
+        // Clear loading state
+        chatWidget.isLoadingMessages = false;
+        
+        // Retry logic for network errors
+        if (retryCount < 2 && (xhr.status === 0 || xhr.status >= 500 || status === 'timeout')) {
+            console.log('🔄 Retrying in 2 seconds...');
+            setTimeout(() => {
+                loadMessages(retryCount + 1, forceReload);
+            }, 2000);
+            return;
+        }
+        
+        let errorMsg = 'Vui lòng thử lại';
+        if (status === 'timeout') {
+            errorMsg = 'Quá thời gian chờ - Server phản hồi chậm';
+        } else if (xhr.status === 401) {
+            errorMsg = 'Vui lòng đăng nhập lại';
+        } else if (xhr.status === 403) {
+            errorMsg = 'Không có quyền truy cập';
+        } else if (xhr.status === 404) {
+            errorMsg = 'Không tìm thấy cuộc trò chuyện';
+        } else if (xhr.status >= 500) {
+            errorMsg = 'Lỗi server - Vui lòng thử lại sau';
+        }
+        
+        // Show error with retry button
+        const $container = $('#chatWidgetMessages');
+        $container.html(`
+            <div class="text-center py-4 text-danger">
+                <i class="fa fa-exclamation-triangle fa-2x mb-2"></i>
+                <p>Lỗi tải tin nhắn</p>
+                <small class="text-muted d-block mb-2">${errorMsg}</small>
+                <button class="btn btn-sm btn-outline-primary" onclick="loadMessages(0, true)">
+                    <i class="fa fa-refresh"></i> Thử lại
+                </button>
+            </div>
+        `);
     });
 }
 
@@ -895,22 +1035,49 @@ function handleNotification(notification) {
         
         // Only append MANAGER messages (user messages already appended)
         if (message.senderType === 'MANAGER') {
+            // Update cache with new message
+            if (chatWidget.messagesCache) {
+                chatWidget.messagesCache.push(message);
+            }
+            
             appendMessage(message, true);
             
-            // If widget is closed, increase unread count
+            // Update unread count based on widget state
             if (!chatWidget.isOpen) {
+                // Widget closed → Increment unread count
                 chatWidget.unreadCount++;
                 updateUnreadBadge();
-                
-                // Show browser notification
-                showBrowserNotification(message);
+                console.log('📬 New message while widget closed, unread count:', chatWidget.unreadCount);
             } else {
-                // Mark as read if widget is open
+                // Widget open → Mark as read immediately
+                console.log('📖 New message while widget open, marking as read');
                 markMessagesAsRead();
             }
             
             scrollToBottom();
         }
+    }
+}
+
+// Mark messages as read when widget is opened
+function markMessagesAsRead() {
+    console.log('📖 Marking messages as read, current unread:', chatWidget.unreadCount);
+    
+    if (chatWidget.unreadCount > 0 && chatWidget.conversationId) {
+        // Send mark as read via WebSocket
+        if (chatWidget.stompClient && chatWidget.isConnected) {
+            chatWidget.stompClient.send('/app/chat.markReadUser', {}, JSON.stringify(chatWidget.conversationId));
+            console.log('📤 Sent mark as read via WebSocket for conversation:', chatWidget.conversationId);
+        }
+        
+        // Reset local count
+        chatWidget.unreadCount = 0;
+        updateUnreadBadge();
+        
+        // Also check server state after marking as read
+        setTimeout(checkUnreadMessages, 1000);
+    } else {
+        console.log('📖 No unread messages to mark or no conversation ID');
     }
 }
 
@@ -1040,9 +1207,55 @@ function updateUnreadBadge() {
     
     if (chatWidget.unreadCount > 0) {
         $badge.text(chatWidget.unreadCount).css('display', 'flex');
+        console.log('📬 User unread badge shown:', chatWidget.unreadCount);
     } else {
         $badge.hide();
+        console.log('✅ User unread badge hidden');
     }
+}
+
+// Check for unread messages from server
+function checkUnreadMessages() {
+    if (!chatWidget.currentUserId) {
+        console.warn('⚠️ Cannot check unread messages: No user ID');
+        return;
+    }
+    
+    console.log('🔍 Checking unread messages for user:', chatWidget.currentUserId);
+    
+    // Call API to get user's unread count
+    $.ajax({
+        url: '/api/chat/user/unread-count',
+        method: 'GET',
+        timeout: 10000,
+        cache: false
+    })
+    .done(function(response) {
+        console.log('📊 Unread count response:', response);
+        
+        if (response.success) {
+            const newUnreadCount = response.count || 0;
+            console.log('📬 Server unread count:', newUnreadCount, 'Local count:', chatWidget.unreadCount);
+            
+            chatWidget.unreadCount = newUnreadCount;
+            updateUnreadBadge();
+        } else {
+            console.error('❌ Invalid unread count response:', response);
+        }
+    })
+    .fail(function(xhr, status, error) {
+        console.error('❌ Failed to check unread messages:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            error: error,
+            response: xhr.responseText
+        });
+        
+        // If 401, user might need to login again
+        if (xhr.status === 401) {
+            console.warn('🔑 User not authenticated, badge may not work');
+        }
+    });
 }
 
 function showBrowserNotification(message) {
