@@ -13,7 +13,8 @@ public class OrderDetailDTO {
     
     private Long id;
     private Integer quantity;
-    private Double price;
+    private Double price; // Giá đã mua (có flash sale)
+    private Double originalPrice; // ✅ Giá gốc (trước flash sale)
     private Double amount;
     private Integer size;
     private String product_name;

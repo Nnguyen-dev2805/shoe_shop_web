@@ -36,6 +36,11 @@
     
     <!-- Custom CSS for Order View -->
     <style>
+        /* Breadcrumb */
+        .breadcrumb-link:hover {
+            color: #ee4d2d !important;
+        }
+        
         /* Order Status Badge Colors */
         .status-delivered {
             background-color: #d4edda !important;
@@ -129,51 +134,125 @@
             background: #6c757d;
         }
         
-        /* Order Card Styling */
-        .order-card {
+        /* Order Card Styling - Shopee Style */
+        .order-card-shopee {
             background: white;
             border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            margin-bottom: 15px;
+            border-left: 4px solid #ee4d2d; /* ✅ Vertical line màu cam Shopee */
+            border-radius: 4px;
+            margin-bottom: 20px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08); /* ✅ Shadow mạnh hơn */
             transition: all 0.3s ease;
         }
         
-        .order-card:hover {
+        .order-card-shopee:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12); /* ✅ Shadow đậm khi hover */
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
-        .order-header {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e5e5;
+        .order-header-shopee {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f5f5f5;
         }
         
-        .order-body {
-            padding: 15px 20px;
+        .order-products-shopee {
+            background: white;
         }
         
-        .order-card a:hover {
-            background-color: #d73527 !important;
+        .product-item-shopee {
+            border-bottom: 1px solid #f5f5f5;
+        }
+        
+        .product-item-shopee:last-child {
+            border-bottom: none;
+        }
+        
+        .order-footer-shopee {
+            background: #fffefb;
+            border-top: 1px solid #f5f5f5;
+        }
+        
+        .status-badge-shopee {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        
+        .status-badge-shopee.status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-badge-shopee.status-shipped {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .status-badge-shopee.status-in_stock {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-badge-shopee.status-cancel {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status-badge-shopee.status-return {
+            background: #e2e3e5;
+            color: #383d41;
+        }
+        
+        /* Button Hover Effects */
+        .order-footer-shopee button:hover {
+            opacity: 0.9;
             transform: translateY(-1px);
         }
         
-        /* Cancel Button Styling */
+        .order-footer-shopee a:hover {
+            background: #f5f5f5 !important;
+            border-color: #ccc !important;
+        }
+        
+        .btn-reorder:hover {
+            background: #ee4d2d !important;
+            color: white !important;
+        }
+        
+        /* Cancel Button Styling - Shopee Style */
         .btn-cancel-order {
-            background: #dc3545 !important;
             transition: all 0.3s ease !important;
         }
         
         .btn-cancel-order:hover {
-            background: #c82333 !important;
-            transform: translateY(-1px);
+            background: #d73211 !important; /* ✅ Đỏ đậm hơn khi hover */
+            border-color: #d73211 !important;
+            box-shadow: 0 4px 8px rgba(215,50,17,0.3) !important; /* ✅ Shadow cam đỏ */
+            transform: translateY(-2px) !important;
+        }
+        
+        .btn-cancel-order:active {
+            transform: translateY(0) !important;
         }
         
         .btn-cancel-order:disabled {
             opacity: 0.6;
             cursor: not-allowed !important;
+            transform: none !important;
+        }
+        
+        /* Product Image Styling */
+        .product-item-shopee img {
+            transition: transform 0.3s ease;
+        }
+        
+        .product-item-shopee:hover img {
+            transform: scale(1.05);
         }
         
         /* Loading Animation */
@@ -189,35 +268,65 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .tab-list {
-                flex-direction: column;
+                flex-wrap: wrap;
             }
             
             .tab-item {
-                flex: none;
+                flex: 0 0 50%;
             }
             
             .tab-link {
-                padding: 12px 15px;
-                text-align: left;
+                padding: 12px 10px;
+                font-size: 13px;
             }
             
-            .order-header > div {
+            .tab-link .fa {
+                display: none;
+            }
+            
+            .order-header-shopee > div {
                 flex-direction: column !important;
                 align-items: flex-start !important;
+                gap: 8px !important;
             }
             
-            .order-header > div > div:last-child {
-                text-align: left !important;
-                margin-top: 10px;
+            .product-item-shopee > div {
+                flex-direction: column !important;
+                gap: 12px !important;
             }
             
-            .order-body > div {
+            .product-item-shopee img {
+                width: 100% !important;
+                height: auto !important;
+                max-width: 200px;
+            }
+            
+            .order-footer-shopee > div:first-child {
                 flex-direction: column !important;
                 align-items: flex-start !important;
+                gap: 8px !important;
             }
             
-            .order-body > div > div:last-child {
-                margin-top: 10px;
+            .order-footer-shopee > div:last-child {
+                flex-direction: column !important;
+                width: 100%;
+            }
+            
+            .order-footer-shopee button,
+            .order-footer-shopee a {
+                width: 100% !important;
+                text-align: center !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tab-item {
+                flex: 0 0 100%;
+            }
+            
+            .order-card-shopee {
+                margin: 0 -10px 16px -10px;
+                border-radius: 0;
             }
         }
         
@@ -260,20 +369,26 @@
     <!-- header area start -->
     <div th:include="~{fragments/user/header.html}"></div>
     <!-- header area end -->
+    
+    <!-- Breadcrumb Area -->
+    <div class="breadcrumb-area" style="background: #fff; padding: 15px 0; margin-bottom: 20px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+        <div class="container">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="javascript:history.back()" style="color: #ee4d2d; font-size: 18px; text-decoration: none;" title="Quay lại">
+                    <i class="fa fa-arrow-left"></i>
+                </a>
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 16px;">
+                    <a href="/" class="breadcrumb-link" style="color: #666; text-decoration: none;">Trang chủ</a>
+                    <span style="color: #ccc;">/</span>
+                    <span style="color: #333; font-weight: 500;">Đơn hàng</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- order view area start -->
     <div class="account-area">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="location">
-                        <ul>
-                            <li><a href="/user/shop" title="go to homepage">Trang Chủ<span>/</span></a></li>
-                            <li><strong>Đơn Hàng</strong></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
             <div class="row" style="display: flex; justify-content: center; align-items: center;">
                 <div class="col-lg-10">
                     <!-- Order Tabs -->

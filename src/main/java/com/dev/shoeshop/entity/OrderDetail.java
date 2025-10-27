@@ -33,7 +33,11 @@ public class OrderDetail {
 //    @NotNull(message = "Price cannot be null")
 //    @PositiveOrZero(message = "Total price must be greater than or equal to 0")
     // don gia tung san pham
-    private double price;
+    private double price; // Giá đã mua (có thể đã giảm từ flash sale)
+    
+    // ✅ NEW: Original price tracking for displaying strikethrough price
+    @Column(name = "original_price")
+    private Double originalPrice; // Giá gốc trước khi giảm (để hiển thị gạch bỏ)
     
     // ✅ NEW: Cost price tracking for profit calculation
     @Column(name = "cost_price_at_sale")

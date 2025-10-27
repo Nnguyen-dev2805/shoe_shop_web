@@ -16,6 +16,8 @@ import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+
+import com.dev.shoeshop.service.*;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
@@ -32,11 +34,6 @@ import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.repository.ShippingCompanyRepository;
 import com.dev.shoeshop.repository.UserRepository;
-import com.dev.shoeshop.service.EmailService;
-import com.dev.shoeshop.service.InventoryHistoryService;
-import com.dev.shoeshop.service.NotificationService;
-import com.dev.shoeshop.service.OrderService;
-import com.dev.shoeshop.service.RatingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,6 +93,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private FlashSaleRepository flashSaleRepository;
+
+    @Autowired
+    private MembershipService membershipService;
 
     @Autowired
     private DiscountUsedRepository discountUsedRepository;
@@ -208,6 +208,16 @@ public class OrderServiceImpl implements OrderService {
             System.out.println("🔥 Decreased Flash Sale totalSold by " + totalQuantity + " (Order CANCEL)");
         }
 
+        // 🪙 REFUND LOYALTY POINTS when order cancelled
+        try {
+            Users user = order.getUser();
+            membershipService.refundPointsFromCancelledOrder(user, order);
+            System.out.println("🪙 Refunded points for cancelled order " + orderId);
+        } catch (Exception e) {
+            System.err.println("❌ Error refunding points for cancelled order: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         order.setStatus(ShipmentStatus.CANCEL);
         orderRepository.save(order);
         System.out.println("Service save");
@@ -240,7 +250,8 @@ public class OrderServiceImpl implements OrderService {
                                         Long flashSaleId,
                                         java.util.List<Integer> selectedItemIds,
                                         java.util.Map<Integer, Integer> itemQuantities,
-                                        Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount) {
+                                        Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount,
+                                        Integer pointsRedeemed) {
         try {
             System.out.println("=== Processing checkout in service ===");
             System.out.println("Cart ID: " + cartId);
@@ -332,6 +343,9 @@ public class OrderServiceImpl implements OrderService {
             
             // ✅ TRACK DISCOUNT USAGE - Tạo DiscountUsed records
             trackDiscountUsage(savedOrder, orderDiscountId, shippingDiscountId);
+
+            // 🪙 HANDLE LOYALTY POINTS - Redeem points & update spending
+            handleLoyaltyPoints(savedOrder, userId, pointsRedeemed);
 
             // Handle payment processing
             // Return order result
@@ -455,27 +469,40 @@ public class OrderServiceImpl implements OrderService {
                 Integer quantity = itemQuantities != null && itemQuantities.containsKey(productDetailId) ? 
                                  itemQuantities.get(productDetailId) : 1;
                 
-                // Calculate price (base price + size fee)
-                Double unitPrice = productDetail.getProduct().getPrice() + productDetail.getPriceadd();
+                // Calculate original price (base price + size fee)
+                Double originalPrice = productDetail.getProduct().getPrice() + productDetail.getPriceadd();
+                
+                // ✅ Check if product has active flash sale
+                Double actualPrice = originalPrice; // Default to original
+                try {
+                    FlashSaleItem flashSaleItem = productDetail.getActiveFlashSaleItem();
+                    if (flashSaleItem != null && flashSaleItem.getFlashSale() != null && flashSaleItem.getFlashSale().isActive()) {
+                        actualPrice = flashSaleItem.getFlashSalePrice() + productDetail.getPriceadd();
+                        System.out.println("🔥 Applied Flash Sale price: " + actualPrice + " (original: " + originalPrice + ")");
+                    }
+                } catch (Exception e) {
+                    System.out.println("⚠️ Could not check flash sale: " + e.getMessage());
+                }
                 
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrder(order);
                 orderDetail.setProduct(productDetail);
                 orderDetail.setQuantity(quantity);
-                orderDetail.setPrice(unitPrice);
+                orderDetail.setPrice(actualPrice); // ✅ Giá thực tế (có flash sale)
+                orderDetail.setOriginalPrice(originalPrice); // ✅ Giá gốc
                 
                 // ⭐ Calculate cost price and profit
                 Double costPrice = inventoryHistoryService.getAverageCostPrice(productDetail);
                 if (costPrice != null) {
                     orderDetail.setCostPriceAtSale(costPrice);
-                    double revenue = unitPrice * quantity;
+                    double revenue = actualPrice * quantity;
                     double cost = costPrice * quantity;
                     orderDetail.setProfit(revenue - cost);
                 }
                 
                 orderDetails.add(orderDetail);
                 System.out.println("Added order detail (Buy Now): product=" + productDetail.getId() + 
-                                 ", quantity=" + quantity + ", price=" + unitPrice);
+                                 ", quantity=" + quantity + ", price=" + actualPrice + ", originalPrice=" + originalPrice);
             }
         }
         
@@ -566,11 +593,16 @@ public class OrderServiceImpl implements OrderService {
                         }
                     }
                 }
+                // ✅ Calculate original price (base + size fee)
+                ProductDetail productDetail = cartDetail.getProduct();
+                Double originalPrice = productDetail.getProduct().getPrice() + productDetail.getPriceadd();
+                
                 OrderDetail orderDetail = new OrderDetail();
                 orderDetail.setOrder(order);
                 orderDetail.setProduct(cartDetail.getProduct());
                 orderDetail.setQuantity(cartDetail.getQuantity());
-                orderDetail.setPrice(cartDetail.getPricePerUnit());
+                orderDetail.setPrice(cartDetail.getPricePerUnit()); // ✅ Giá thực (có flash sale từ cart)
+                orderDetail.setOriginalPrice(originalPrice); // ✅ Giá gốc
                 
                 // ⭐ Calculate cost price and profit
                 Double costPrice = inventoryHistoryService.getAverageCostPrice(cartDetail.getProduct());
@@ -989,6 +1021,36 @@ public class OrderServiceImpl implements OrderService {
             updateProductSoldQuantity(order, true);
             System.out.println("✅ Updated sold_quantity for delivered order ID: " + orderId);
         }
+        
+        // 🪙 EARN LOYALTY POINTS & UPDATE SPENDING when order delivered
+        if (oldStatus != ShipmentStatus.DELIVERED) {
+            try {
+                Users user = order.getUser();
+                
+                // 1. Update total spending (for tier upgrade)
+                double orderAmount = order.getTotalPrice() != null ? order.getTotalPrice() : 0.0;
+                boolean upgraded = membershipService.updateSpendingAndCheckUpgrade(user, orderAmount);
+                
+                if (upgraded) {
+                    System.out.println("⬆️ User " + user.getId() + " upgraded to tier: " + user.getMembershipTier());
+                }
+                
+                // 2. Earn points based on final order amount
+                int pointsEarned = membershipService.earnPointsFromOrder(user, order);
+                
+                if (pointsEarned > 0) {
+                    System.out.println("🪙 User " + user.getId() + " earned " + pointsEarned + " points from delivered order " + orderId);
+                }
+                
+                // 3. Save user (points added, spending updated, tier may have changed)
+                userRepository.save(user);
+                orderRepository.save(order);
+                
+            } catch (Exception e) {
+                System.err.println("❌ Error handling loyalty for delivered order: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
     
     @Override
@@ -1259,6 +1321,39 @@ public class OrderServiceImpl implements OrderService {
         }
 
         System.out.println("=== Discount Usage Tracking Complete ===");
+    }
+
+    /**
+     * Handle loyalty points - ONLY redeem points when creating order
+     * Earning points and updating spending happens when order is DELIVERED
+     */
+    private void handleLoyaltyPoints(Order order, Long userId, Integer pointsRedeemed) {
+        System.out.println("=== Handling Loyalty Points (Order Creation) ===");
+        
+        try {
+            // Get user
+            Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            // ONLY redeem points if user used points for discount
+            // Do NOT update totalSpending here - it will be updated when order is delivered
+            if (pointsRedeemed != null && pointsRedeemed > 0) {
+                membershipService.applyPointsToOrder(user, order, pointsRedeemed);
+                System.out.println("🪙 User " + userId + " redeemed " + pointsRedeemed + " points for order " + order.getId());
+                
+                // Save user (points deducted)
+                userRepository.save(user);
+            }
+            
+            System.out.println("✅ Points redeemed successfully (earning points will happen on delivery)");
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error handling loyalty points: " + e.getMessage());
+            e.printStackTrace();
+            // Don't throw - let order creation continue even if points fail
+        }
+        
+        System.out.println("=== Loyalty Points Handling Complete ===");
     }
 
     /**

@@ -26,13 +26,8 @@ $(document).ready(function() {
             return;
         }
         
-        if (!phone) {
-            showError('Vui lòng nhập số điện thoại.');
-            return;
-        }
-        
-        // Validate phone format
-        if (!/^0\d{9}$/.test(phone)) {
+        // Validate phone format only if provided
+        if (phone && !/^0\d{9}$/.test(phone)) {
             showError('Số điện thoại phải có 10 số và bắt đầu bằng 0.');
             return;
         }
@@ -143,10 +138,15 @@ $(document).ready(function() {
     
     // Real-time phone validation
     $('input[name="phone"]').on('keyup', function() {
-        const phone = $(this).val();
+        const phone = $(this).val().trim();
         
-        if (phone && !/^0\d{9}$/.test(phone)) {
-            $(this).css('border-color', '#dc3545');
+        // Only validate if phone is not empty
+        if (phone.length > 0) {
+            if (!/^0\d{9}$/.test(phone)) {
+                $(this).css('border-color', '#dc3545');
+            } else {
+                $(this).css('border-color', '#4caf50');
+            }
         } else {
             $(this).css('border-color', '');
         }
