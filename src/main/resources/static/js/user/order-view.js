@@ -109,6 +109,11 @@ function displayOrders(orders, currentStatus) {
     
     // Bind cancel order events after rendering
     bindCancelOrderEvents();
+    
+    // Add return buttons for DELIVERED orders (if within 7 days)
+    if (typeof window.addReturnButtonsToOrders === 'function') {
+        addReturnButtonsToDeliveredOrders(orders);
+    }
 }
 
 // Create order card HTML (Shopee Style)
@@ -139,7 +144,33 @@ function createOrderCard(order, currentStatus) {
             </button>
         `;
     } else if (order.status === 'DELIVERED') {
+        // Check if can return (within 7 days)
+        const canReturn = checkCanReturn(order);
+        const daysLeft = canReturn ? getDaysLeftToReturn(order) : 0;
+        
         actionButtons = `
+            ${canReturn ? `
+                <button class="btn-return-request" 
+                        onclick="openReturnRequestModal(${order.id})" 
+                        style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); 
+                               color: white; 
+                               border: none; 
+                               padding: 10px 20px; 
+                               border-radius: 4px; 
+                               font-size: 14px; 
+                               font-weight: 600; 
+                               cursor: pointer; 
+                               transition: all 0.3s; 
+                               box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3); 
+                               margin-right: 8px;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(243, 156, 18, 0.4)'" 
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(243, 156, 18, 0.3)'">
+                    <i class="fa fa-undo"></i> Yêu Cầu Trả Hàng
+                </button>
+                <div style="display: inline-block; font-size: 12px; color: #f39c12; margin-right: 12px;">
+                    <i class="fa fa-clock-o"></i> Còn ${daysLeft} ngày
+                </div>
+            ` : ''}
             <button class="btn-reorder" data-order-id="${order.id}" 
                     style="background: white; color: #ee4d2d; padding: 10px 24px; border: 1px solid #ee4d2d; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
                 <i class="fa fa-refresh"></i> Mua lại
@@ -148,7 +179,7 @@ function createOrderCard(order, currentStatus) {
     }
     
     return `
-        <div class="order-card-shopee" data-order-id="${order.id}" style="border-left-color: ${borderColor};">
+        <div class="order-card-shopee" data-order-id="${order.id}" data-status="${order.status}" style="border-left-color: ${borderColor};">
             <!-- Order Header -->
             <div class="order-header-shopee">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -399,4 +430,41 @@ function handleCancelOrder(orderId) {
             button.html(originalText);
         }
     });
+}
+
+// ========== CHECK IF ORDER CAN BE RETURNED ==========
+function checkCanReturn(order) {
+    if (order.status !== 'DELIVERED') {
+        return false;
+    }
+    
+    // DEMO: Giả sử delivered date = created date + 3 days
+    // Trong thực tế, sẽ lấy từ order.deliveredDate
+    const deliveredDate = order.deliveredDate ? new Date(order.deliveredDate) : new Date(order.createdDate);
+    deliveredDate.setDate(deliveredDate.getDate() + 3); // Giả lập delivered sau 3 ngày đặt
+    
+    const now = new Date();
+    const diffTime = now - deliveredDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Chỉ được trả trong vòng 7 ngày
+    return diffDays <= 7;
+}
+
+function getDaysLeftToReturn(order) {
+    const deliveredDate = order.deliveredDate ? new Date(order.deliveredDate) : new Date(order.createdDate);
+    deliveredDate.setDate(deliveredDate.getDate() + 3);
+    
+    const now = new Date();
+    const diffTime = now - deliveredDate;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return Math.max(0, 7 - diffDays);
+}
+
+// Helper function to add return buttons (compatibility with order-view.html)
+function addReturnButtonsToDeliveredOrders(orders) {
+    // This function is called after orders are rendered
+    // Return buttons are already added in createOrderCard function
+    console.log('✅ Return buttons added for eligible DELIVERED orders');
 }

@@ -45,6 +45,12 @@ public class Users {
     @Builder.Default
     private Boolean isActive = true;
 
+    // ========== DEEG XU (COINS) ==========
+    
+    @Column(name = "coins", nullable = false)
+    @Builder.Default
+    private Long coins = 0L;  // 1 xu = 1 VNĐ
+
     // ========== MEMBERSHIP & LOYALTY POINTS ==========
     
     @Enumerated(EnumType.STRING)

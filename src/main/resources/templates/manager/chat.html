@@ -376,8 +376,10 @@
     <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
     
     <script th:inline="javascript">
-        const currentManagerId = [[${#authentication.principal.id}]];
-        const currentManagerName = [[${#authentication.principal.fullname}]];
+        /*<![CDATA[*/
+        const currentManagerId = /*[[${#authentication.principal.id}]]*/ 0;
+        const currentManagerName = /*[[${#authentication.principal.fullname}]]*/ '';
+        /*]]>*/
     </script>
     
     <script th:src="@{/js/chat/manager-chat.js}"></script>

@@ -20,7 +20,7 @@
 
           menu: {
                size: "sm-hover-active",   // [ 'default', 'sm-hover-active', 'sm-hover-active', 'condensed', 'full']
-               color: "dark",            // ['light', 'dark']
+               color: "dark",            // ['light', 'dark'] - Force dark sidebar
           },
      };
 
@@ -38,6 +38,9 @@
      if (savedConfig !== null) {
           config = JSON.parse(savedConfig);
      }
+
+     // Force dark sidebar for consistency across all admin pages
+     config.menu.color = "dark";
 
      window.config = config;
 

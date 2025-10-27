@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <title>Chi tiết yêu cầu trả hàng | DeeG Shop Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        body { background: #f5f5f5; }
+        .detail-container { padding: 24px; max-width: 1400px; margin: 0 auto; }
+        .back-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: white; border: 1px solid #d9d9d9; border-radius: 4px; color: #333; text-decoration: none; margin-bottom: 20px; }
+        .back-button:hover { border-color: #ee4d2d; color: #ee4d2d; }
+        .detail-header { background: white; padding: 24px; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); margin-bottom: 20px; }
+        .detail-title { font-size: 24px; font-weight: 500; color: #333; margin: 0 0 8px 0; }
+        .status-badge { display: inline-block; padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; }
+        .status-badge.PENDING { background: #fff7e6; color: #ffa500; }
+        .status-badge.APPROVED { background: #f6ffed; color: #52c41a; }
+        .status-badge.REJECTED { background: #fff1f0; color: #f5222d; }
+        .status-badge.REFUNDED { background: #e6fffb; color: #13c2c2; }
+        .detail-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .detail-card { background: white; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); padding: 24px; }
+        .card-title { font-size: 18px; font-weight: 500; color: #333; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
+        .card-title i { color: #ee4d2d; font-size: 22px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #666; font-size: 14px; }
+        .info-value { color: #333; font-weight: 500; font-size: 14px; }
+        .product-info { display: flex; gap: 16px; padding: 16px; background: #fafafa; border-radius: 4px; margin-bottom: 20px; }
+        .product-image { width: 100px; height: 100px; object-fit: cover; border-radius: 4px; border: 1px solid #e0e0e0; }
+        .product-details { flex: 1; }
+        .product-name { font-size: 16px; font-weight: 500; color: #333; margin-bottom: 8px; }
+        .product-meta { font-size: 14px; color: #666; }
+        .description-box { padding: 16px; background: #fafafa; border-radius: 4px; border-left: 4px solid #ee4d2d; }
+        .image-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+        .gallery-image { width: 100%; height: 200px; object-fit: cover; border-radius: 4px; border: 1px solid #e0e0e0; cursor: pointer; }
+        .gallery-image:hover { opacity: 0.8; }
+        .action-buttons { display: flex; gap: 12px; margin-top: 20px; }
+        .btn { padding: 12px 24px; border-radius: 4px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; }
+        .btn-approve { background: #52c41a; color: white; }
+        .btn-approve:hover { background: #45a916; }
+        .btn-reject { background: #f5222d; color: white; }
+        .btn-reject:hover { background: #d91a1a; }
+        .btn-received { background: #1890ff; color: white; }
+        .btn-received:hover { background: #0d7edb; }
+        .btn-refund { background: #722ed1; color: white; }
+        .btn-refund:hover { background: #5f25ad; }
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline-item { position: relative; padding-bottom: 20px; }
+        .timeline-item:before { content: ''; position: absolute; left: -22px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #e0e0e0; }
+        .timeline-item.active:before { background: #52c41a; }
+        .timeline-date { font-size: 12px; color: #999; margin-bottom: 4px; }
+        .timeline-content { font-size: 14px; color: #333; }
+    </style>
+</head>
+
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragments/admin/panel_menu.html}"></div>
+    
+    <div class="page-content">
+        <div class="detail-container">
+            
+            <a href="/admin/returns" class="back-button">
+                <i class='bx bx-arrow-back'></i> Quay lại danh sách
+            </a>
+            
+            <div class="detail-header">
+                <h1 class="detail-title">
+                    Yêu cầu trả hàng #<span th:text="${returnRequest.id}">1</span>
+                </h1>
+                <span class="status-badge" th:classappend="${returnRequest.status}" th:text="${#strings.replace(returnRequest.status, '_', ' ')}">PENDING</span>
+            </div>
+            
+            <div class="detail-grid">
+                <div>
+                    <div class="detail-card">
+                        <h2 class="card-title"><i class='bx bx-package'></i> Thông tin sản phẩm</h2>
+                        <div class="product-info">
+                            <img th:src="${returnRequest.images}" alt="Product" class="product-image" onerror="this.src='/img/product/default.jpg'">
+                            <div class="product-details">
+                                <div class="product-name" th:text="${returnRequest.order.orderDetailSet.?[#this != null][0]?.product?.product?.title ?: 'Sản phẩm'}">Nike Air Max</div>
+                                <div class="product-meta">
+                                    Size: <strong th:text="${returnRequest.order.orderDetailSet.?[#this != null][0]?.product?.size ?: 'N/A'}">39</strong> | 
+                                    Số lượng: <strong th:text="${returnRequest.order.orderDetailSet.?[#this != null][0]?.quantity ?: 1}">1</strong> | 
+                                    Giá: <strong th:text="${#numbers.formatDecimal(returnRequest.order.orderDetailSet.?[#this != null][0]?.price ?: 0, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,890,000 đ</strong>
+                                </div>
+                                <div class="product-meta" style="margin-top: 8px;">
+                                    Đơn hàng: <strong>#<span th:text="${returnRequest.order.id}">17</span></strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-error-circle'></i> Lý do & Mô tả</h2>
+                        <div class="info-row">
+                            <span class="info-label">Lý do:</span>
+                            <span class="info-value" th:text="${#strings.replace(returnRequest.reason, '_', ' ')}">WRONG_SIZE</span>
+                        </div>
+                        <div class="description-box" style="margin-top: 16px;">
+                            <strong style="display: block; margin-bottom: 8px; color: #666;">Mô tả chi tiết:</strong>
+                            <p style="margin: 0; color: #333;" th:text="${returnRequest.description}">Size quá nhỏ, không vừa chân...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-image'></i> Hình ảnh</h2>
+                        <div class="image-gallery">
+                            <img th:src="${returnRequest.images}" alt="Return Image" class="gallery-image" th:onclick="'window.open(\'' + ${returnRequest.images} + '\', \'_blank\')'">
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'PENDING'}">
+                        <h2 class="card-title"><i class='bx bx-cog'></i> Hành động</h2>
+                        <div class="action-buttons">
+                            <button class="btn btn-approve" th:onclick="'approveReturn(' + ${returnRequest.id} + ')'">
+                                <i class='bx bx-check'></i> Chấp nhận
+                            </button>
+                            <button class="btn btn-reject" th:onclick="'rejectReturn(' + ${returnRequest.id} + ')'">
+                                <i class='bx bx-x'></i> Từ chối
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'APPROVED' or returnRequest.status.name() == 'SHIPPING'}">
+                        <h2 class="card-title"><i class='bx bx-check-circle'></i> Xác nhận nhận hàng</h2>
+                        <button class="btn btn-received" th:onclick="'markReceived(' + ${returnRequest.id} + ')'">
+                            <i class='bx bx-package'></i> Đã nhận hàng từ khách
+                        </button>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'RECEIVED'}">
+                        <h2 class="card-title"><i class='bx bx-money'></i> Hoàn xu</h2>
+                        <div class="info-row">
+                            <span class="info-label">Số tiền cần hoàn:</span>
+                            <span class="info-value" th:text="${#numbers.formatDecimal(returnRequest.order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,890,000 đ</span>
+                        </div>
+                        <button class="btn btn-refund" th:onclick="'processRefund(' + ${returnRequest.id} + ', ' + ${returnRequest.order.total} + ')'" style="margin-top: 16px;">
+                            <i class='bx bx-money'></i> Hoàn xu cho khách hàng
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="detail-card">
+                        <h2 class="card-title"><i class='bx bx-user'></i> Thông tin khách hàng</h2>
+                        <div class="info-row">
+                            <span class="info-label">Tên:</span>
+                            <span class="info-value" th:text="${returnRequest.user.fullname}">Nguyễn Văn A</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" th:text="${returnRequest.user.email}">user@example.com</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">SĐT:</span>
+                            <span class="info-value" th:text="${returnRequest.user.phone}">0123456789</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-time-five'></i> Thời gian</h2>
+                        <div class="timeline">
+                            <div class="timeline-item active">
+                                <div class="timeline-date" th:text="${#temporals.format(returnRequest.createdDate, 'dd/MM/yyyy HH:mm')}">27/10/2025 20:00</div>
+                                <div class="timeline-content">Tạo yêu cầu trả hàng</div>
+                            </div>
+                            <div class="timeline-item" th:if="${returnRequest.approvedDate != null}" th:classappend="${returnRequest.approvedDate != null ? 'active' : ''}">
+                                <div class="timeline-date" th:text="${returnRequest.approvedDate != null ? #temporals.format(returnRequest.approvedDate, 'dd/MM/yyyy HH:mm') : '---'}">---</div>
+                                <div class="timeline-content">Admin chấp nhận</div>
+                            </div>
+                            <div class="timeline-item" th:if="${returnRequest.receivedDate != null}" th:classappend="${returnRequest.receivedDate != null ? 'active' : ''}">
+                                <div class="timeline-date" th:text="${returnRequest.receivedDate != null ? #temporals.format(returnRequest.receivedDate, 'dd/MM/yyyy HH:mm') : '---'}">---</div>
+                                <div class="timeline-content">Shop nhận hàng</div>
+                            </div>
+                            <div class="timeline-item" th:if="${returnRequest.completedDate != null}" th:classappend="${returnRequest.completedDate != null ? 'active' : ''}">
+                                <div class="timeline-date" th:text="${returnRequest.completedDate != null ? #temporals.format(returnRequest.completedDate, 'dd/MM/yyyy HH:mm') : '---'}">---</div>
+                                <div class="timeline-content">Hoàn xu thành công</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/vendor.js"></script>
+<script src="/assets/js/app.js"></script>
+
+<script>
+function approveReturn(id) {
+    if (!confirm('Chấp nhận yêu cầu trả hàng này?')) return;
+    $.ajax({
+        url: `/admin/returns/${id}/approve`,
+        type: 'POST',
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+
+function rejectReturn(id) {
+    const note = prompt('Lý do từ chối:');
+    if (note === null) return;
+    $.ajax({
+        url: `/admin/returns/${id}/reject`,
+        type: 'POST',
+        data: { adminNote: note },
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+
+function markReceived(id) {
+    if (!confirm('Xác nhận đã nhận hàng từ khách?')) return;
+    $.ajax({
+        url: `/admin/returns/${id}/received`,
+        type: 'POST',
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+
+function processRefund(id, amount) {
+    if (!confirm(`Hoàn ${amount.toLocaleString('vi-VN')} xu cho khách hàng?`)) return;
+    $.ajax({
+        url: `/admin/returns/${id}/refund`,
+        type: 'POST',
+        data: { refundAmount: amount },
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+</script>
+
+</body>
+</html>

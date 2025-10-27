@@ -20,6 +20,7 @@ public class CloudinaryService {
     public static final String PRODUCT_FOLDER = "shoe_shop/products";
     public static final String RATING_FOLDER = "shoe_shop/ratings";
     public static final String AVATAR_FOLDER = "shoe_shop/avatars";
+    public static final String RETURN_FOLDER = "shoe_shop/returns";
 
     /**
      * Upload image to Cloudinary

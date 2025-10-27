@@ -795,8 +795,9 @@ class ThemeLayout {
      }
 
      changeMenuColor(color) {
-          this.config.menu.color = color;
-          this.html.setAttribute('data-menu-color', color);
+          // Force dark sidebar for all admin pages
+          this.config.menu.color = "dark";
+          this.html.setAttribute('data-menu-color', "dark");
           this.setSwitchFromConfig();
      }
 
