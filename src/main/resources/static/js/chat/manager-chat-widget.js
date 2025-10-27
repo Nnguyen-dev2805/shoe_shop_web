@@ -1364,7 +1364,11 @@ function handleManagerNotification(notification) {
     
     if (notification.type === 'NEW_MESSAGE') {
         const message = notification.message;
-        console.log('💬 New message in conversation:', message.conversationId);
+        console.log('💬 New message:', message);
+        console.log('💬 Conversation:', message.conversationId);
+        console.log('💬 Sender type:', message.senderType);
+        console.log('💬 Sender ID:', message.senderId);
+        console.log('💬 Current manager ID:', currentManagerId);
         
         // Update conversations list
         loadConversations();
@@ -1389,18 +1393,26 @@ function handleManagerNotification(notification) {
         if (managerChat.selectedConversation && 
             managerChat.selectedConversation.id === message.conversationId) {
             
-            // Only append if message is from USER (manager messages already appended)
-            if (message.senderType === 'USER') {
+            // Append message if:
+            // 1. Message from USER (always show)
+            // 2. Message from OTHER manager/admin (not current user)
+            const isFromCurrentManager = message.senderType === 'MANAGER' && 
+                                        message.senderId === currentManagerId;
+            
+            if (message.senderType === 'USER' || !isFromCurrentManager) {
+                console.log('✅ Appending message to chat view');
                 appendMessage(message, true);
                 
-                // Mark as read if widget is open
-                if (managerChat.isOpen) {
+                // Mark as read if widget is open and message from user
+                if (managerChat.isOpen && message.senderType === 'USER') {
                     markConversationAsRead(message.conversationId);
                 }
+            } else {
+                console.log('⏭️ Skipping append (message from current manager)');
             }
         }
         
-        // Update badge
+        // Update badge only for USER messages
         if (message.senderType === 'USER') {
             managerChat.unreadCount++;
             updateBadge();
