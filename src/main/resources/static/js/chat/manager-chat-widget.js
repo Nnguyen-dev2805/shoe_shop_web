@@ -129,55 +129,95 @@ function createManagerChatWidget() {
         <style>
             .manager-chat-widget {
                 position: absolute;
-                top: calc(100% + 10px);
+                top: calc(100% + 12px);
                 right: 0;
-                width: 480px;
-                height: 650px;
+                width: 420px;
+                max-width: 95vw;
+                height: 680px;
+                max-height: 85vh;
                 background: white;
-                border-radius: 16px;
-                box-shadow: 0 10px 50px rgba(0,0,0,0.15), 0 4px 20px rgba(0,0,0,0.1);
+                border-radius: 24px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 25px rgba(0,0,0,0.1);
                 display: flex;
                 flex-direction: column;
                 z-index: 9999;
-                animation: slideDown 0.3s ease;
+                animation: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
                 overflow: hidden;
+                border: 1px solid rgba(0,0,0,0.06);
             }
             
             @keyframes slideDown {
                 from {
                     opacity: 0;
+                    transform: translateY(-30px) scale(0.9);
                 }
                 to {
                     opacity: 1;
+                    transform: translateY(0) scale(1);
                 }
             }
             
             .manager-chat-header {
-                background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+                background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
                 color: white;
-                padding: 18px 20px;
+                padding: 20px 24px;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+                border-radius: 24px 24px 0 0;
+                position: relative;
+            }
+            
+            .manager-chat-header::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2) 50%, transparent);
             }
             
             .manager-chat-header strong {
-                font-size: 16px;
+                font-size: 17px;
+                font-weight: 700;
+                letter-spacing: -0.2px;
+            }
+            
+            .manager-chat-header i {
+                font-size: 20px;
+                opacity: 0.95;
+            }
+            
+            .manager-chat-header .small {
+                font-size: 12px;
+                opacity: 0.9;
+                font-weight: 500;
             }
             
             .btn-close-chat {
-                background: transparent;
+                background: rgba(255,255,255,0.1);
                 border: none;
                 color: white;
                 cursor: pointer;
-                padding: 4px 8px;
-                border-radius: 4px;
-                transition: background 0.2s;
+                width: 36px;
+                height: 36px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                backdrop-filter: blur(10px);
             }
             
             .btn-close-chat:hover {
-                background: rgba(255,255,255,0.2);
+                background: rgba(255,255,255,0.25);
+                transform: rotate(90deg);
+            }
+            
+            .btn-close-chat:active {
+                transform: rotate(90deg) scale(0.9);
             }
             
             .manager-chat-content {
@@ -196,15 +236,34 @@ function createManagerChatWidget() {
             }
             
             .search-box {
-                padding: 15px;
+                padding: 16px 18px;
                 border-bottom: 1px solid #e5e7eb;
+                background: #fafbfc;
             }
             
             .search-box input {
-                border-radius: 20px;
+                border-radius: 12px;
                 border: 2px solid #e5e7eb;
-                padding: 8px 16px;
+                padding: 11px 16px 11px 40px;
                 font-size: 14px;
+                background: white;
+                transition: all 0.2s;
+                width: 100%;
+            }
+            
+            .search-box {
+                position: relative;
+            }
+            
+            .search-box::before {
+                content: '🔍';
+                position: absolute;
+                left: 32px;
+                top: 50%;
+                transform: translateY(-50%);
+                font-size: 14px;
+                opacity: 0.5;
+                pointer-events: none;
             }
             
             .search-box input:focus {
@@ -219,12 +278,13 @@ function createManagerChatWidget() {
             }
             
             .conversation-item {
-                padding: 16px;
+                padding: 14px 18px;
                 border-bottom: 1px solid #f3f4f6;
                 cursor: pointer;
-                transition: background 0.2s;
+                transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
                 display: flex;
-                gap: 12px;
+                gap: 14px;
+                position: relative;
             }
             
             .conversation-item:hover {
@@ -237,17 +297,18 @@ function createManagerChatWidget() {
             }
             
             .conversation-avatar {
-                width: 48px;
-                height: 48px;
+                width: 46px;
+                height: 46px;
                 border-radius: 50%;
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: white;
-                font-weight: 600;
-                font-size: 18px;
+                font-weight: 700;
+                font-size: 17px;
                 flex-shrink: 0;
+                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
             }
             
             .conversation-info {
@@ -374,13 +435,14 @@ function createManagerChatWidget() {
             }
             
             .chat-message-content {
-                max-width: 75%;
+                max-width: 72%;
                 padding: 12px 16px;
-                border-radius: 18px;
-                font-size: 14.5px;
-                line-height: 1.5;
+                border-radius: 16px;
+                font-size: 14px;
+                line-height: 1.6;
                 word-wrap: break-word;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                position: relative;
             }
             
             .chat-message.user .chat-message-content {
@@ -674,14 +736,17 @@ function toggleManagerChat() {
     if (managerChat.isOpen) {
         $widget.fadeOut(200);
         managerChat.isOpen = false;
+        console.log('💬 Manager chat closed');
     } else {
         $widget.fadeIn(200);
         managerChat.isOpen = true;
+        console.log('💬 Manager chat opened');
         
-        // Load conversations on first open
-        if (!managerChat.selectedConversation) {
+        // ALWAYS load conversations when opening widget
+        console.log('📥 Triggering loadConversations...');
+        setTimeout(function() {
             loadConversations();
-        }
+        }, 100); // Small delay to ensure widget is visible
     }
 }
 
@@ -736,23 +801,44 @@ function setupEventListeners() {
 
 function loadConversations() {
     console.log('📥 Loading conversations...');
+    console.log('📍 API URL:', '/api/chat/manager/conversations');
     
     $.ajax({
         url: '/api/chat/manager/conversations',
         method: 'GET',
         success: function(response) {
-            if (response.success) {
+            console.log('📦 API Response:', response);
+            console.log('📦 Response.success:', response.success);
+            console.log('📦 Response.data:', response.data);
+            console.log('📦 Data length:', response.data ? response.data.length : 0);
+            
+            if (response.success && response.data) {
                 managerChat.conversations = response.data;
+                console.log('💾 Saved to managerChat.conversations');
+                
                 displayConversations(response.data);
                 console.log('✅ Loaded', response.data.length, 'conversations');
+            } else {
+                console.error('❌ Invalid response structure:', response);
+                $('#conversationsContainer').html(`
+                    <div class="text-center py-4 text-warning">
+                        <i class="fa fa-inbox fa-2x mb-2"></i>
+                        <p>Chưa có cuộc trò chuyện</p>
+                    </div>
+                `);
             }
         },
-        error: function(xhr) {
-            console.error('❌ Error loading conversations:', xhr.responseText);
+        error: function(xhr, status, error) {
+            console.error('❌ Error loading conversations');
+            console.error('❌ Status:', xhr.status);
+            console.error('❌ Response:', xhr.responseText);
+            console.error('❌ Error:', error);
+            
             $('#conversationsContainer').html(`
                 <div class="text-center py-4 text-danger">
                     <i class="fa fa-exclamation-triangle fa-2x mb-2"></i>
                     <p>Không thể tải tin nhắn</p>
+                    <small class="text-muted">Error ${xhr.status}</small>
                 </div>
             `);
         }
@@ -780,46 +866,63 @@ function loadConversationMessages(conversationId) {
 // ============= UI UPDATES =============
 
 function displayConversations(conversations) {
+    console.log('🎨 displayConversations called with:', conversations);
+    console.log('🎨 Conversations length:', conversations ? conversations.length : 0);
+    
     const $container = $('#conversationsContainer');
+    console.log('🎨 Container element found:', $container.length);
+    
+    if ($container.length === 0) {
+        console.error('❌ Container #conversationsContainer not found in DOM!');
+        return;
+    }
+    
     $container.empty();
+    console.log('🎨 Container cleared');
     
     if (!conversations || conversations.length === 0) {
+        console.log('⚠️ No conversations to display');
         $container.html(`
             <div class="text-center py-5 text-muted">
                 <i class="fa fa-inbox fa-3x mb-3 opacity-25"></i>
                 <p>Chưa có cuộc trò chuyện nào</p>
             </div>
         `);
-        $('#conversationCount').text('0 cuộc trò chuyện');
         return;
     }
+    
+    console.log('🎨 Rendering', conversations.length, 'conversations...');
     
     // Sort by last message time
     conversations.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     
-    conversations.forEach(conv => {
+    conversations.forEach((conv, index) => {
+        console.log(`🎨 Rendering conversation ${index}:`, conv.userName);
+        
         const initials = getInitials(conv.userName);
         const time = formatTimeAgo(conv.updatedAt);
         const preview = conv.lastMessage || 'Chưa có tin nhắn';
-        const unreadBadge = conv.unreadCount > 0 ? `<span class="conversation-unread">${conv.unreadCount}</span>` : '';
+        const unreadBadge = conv.unreadCount > 0 ? 
+            `<div class="conversation-unread">${conv.unreadCount}</div>` : '';
         
         const html = `
-            <div class="conversation-item" data-conversation-id="${conv.id}" onclick="selectConversation(${conv.id})">
+            <div class="conversation-item" data-id="${conv.id}" onclick="selectConversation(${conv.id})">
                 <div class="conversation-avatar">${initials}</div>
                 <div class="conversation-info">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <div class="conversation-name">${escapeHtml(conv.userName)}</div>
-                        <div class="conversation-time">${time}</div>
-                    </div>
-                    <div class="conversation-preview">${escapeHtml(preview)}</div>
+                    <div class="conversation-name">${conv.userName}</div>
+                    <div class="conversation-preview">${preview}</div>
                 </div>
-                ${unreadBadge}
+                <div>
+                    <div class="conversation-time">${time}</div>
+                    ${unreadBadge}
+                </div>
             </div>
         `;
         
         $container.append(html);
     });
     
+    console.log('✅ All conversations rendered successfully');
     $('#conversationCount').text(`${conversations.length} cuộc trò chuyện`);
 }
 
@@ -1261,7 +1364,11 @@ function handleManagerNotification(notification) {
     
     if (notification.type === 'NEW_MESSAGE') {
         const message = notification.message;
-        console.log('💬 New message in conversation:', message.conversationId);
+        console.log('💬 New message:', message);
+        console.log('💬 Conversation:', message.conversationId);
+        console.log('💬 Sender type:', message.senderType);
+        console.log('💬 Sender ID:', message.senderId);
+        console.log('💬 Current manager ID:', currentManagerId);
         
         // Update conversations list
         loadConversations();
@@ -1286,18 +1393,26 @@ function handleManagerNotification(notification) {
         if (managerChat.selectedConversation && 
             managerChat.selectedConversation.id === message.conversationId) {
             
-            // Only append if message is from USER (manager messages already appended)
-            if (message.senderType === 'USER') {
+            // Append message if:
+            // 1. Message from USER (always show)
+            // 2. Message from OTHER manager/admin (not current user)
+            const isFromCurrentManager = message.senderType === 'MANAGER' && 
+                                        message.senderId === currentManagerId;
+            
+            if (message.senderType === 'USER' || !isFromCurrentManager) {
+                console.log('✅ Appending message to chat view');
                 appendMessage(message, true);
                 
-                // Mark as read if widget is open
-                if (managerChat.isOpen) {
+                // Mark as read if widget is open and message from user
+                if (managerChat.isOpen && message.senderType === 'USER') {
                     markConversationAsRead(message.conversationId);
                 }
+            } else {
+                console.log('⏭️ Skipping append (message from current manager)');
             }
         }
         
-        // Update badge
+        // Update badge only for USER messages
         if (message.senderType === 'USER') {
             managerChat.unreadCount++;
             updateBadge();
