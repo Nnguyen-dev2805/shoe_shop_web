@@ -7,7 +7,7 @@
 <head>
     <!-- Title Meta -->
     <meta charset="utf-8" />
-    <title>Order Details | Larkon - Responsive Admin Dashboard Template</title>
+    <title>Chi tiết đơn hàng | Larkon - Responsive Admin Dashboard Template</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="A fully responsive premium admin dashboard template" />
     <meta name="author" content="Techzaa" />
@@ -56,13 +56,13 @@
                                     <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
                                         <div>
                                             <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
-                                                <span>Order id:</span>
+                                                <span>Mã đơn hàng:</span>
                                                 <span id="orderId"></span>
                                                 <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" ></span>
                                                 <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" ></span>
                                             </h4>
-                                            <p class="mb-0">Created date: <span id="orderCreatedDate"></span></p>
-                                            <p class="mb-0">Pay Option: <span id="orderPayOption"></span></p>
+                                            <p class="mb-0">Ngày tạo: <span id="orderCreatedDate"></span></p>
+                                            <p class="mb-0">Phương thức thanh toán: <span id="orderPayOption"></span></p>
 
                                     </div>
 
@@ -70,17 +70,17 @@
                                 <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
                                     <p class="border rounded mb-0 px-2 py-1 bg-body">
                                         <i class='bx bx-arrow-from-left align-middle fs-16'>
-                                        </i> Status: <span class="text-dark fw-medium" id="orderStatus"></span>
+                                        </i> Trạng thái: <span class="text-dark fw-medium" id="orderStatus"></span>
                                 </div>
                                     <a id = "cancelBtn"
-                                       class="btn btn-primary" style="margin-right: 100%">Cancel</a>
+                                       class="btn btn-primary" style="margin-right: 100%">Hủy đơn</a>
                                     <!-- Order cancel fragment-->
                                     <div th:include="~{fragments/order/order_cancel.html}"></div>
 <!--                                    <div ></div>-->
                                     </p>
                                     <div  style="display: flex; justify-content: flex-end;">
                                         <button id="makeReadyShipBtn" onclick="turnOnSearch()" href="#!" class="btn btn-primary"
-                                        >Make as ready ship
+                                        >Giao cho vận chuyển
                                         </button>
                                     </div>
 
@@ -109,7 +109,7 @@
                                                                     "<td>" + user.id + "</td>\n" +
                                                                     "<td>" + user.fullname + "</td>\n" +
                                                                     "<td><a class=\"btn btn-primary\" href='/admin/order/shipping?orderid="
-                                                                    + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +
+                                                                    + orderid + "&userid=" + user.id + "'>Giao hàng</a></td>" +
                                                                     "</tr>");
                                                         });
                                                     } else {
@@ -128,18 +128,18 @@
                                 <div class="card-body">
                                     <!-- App Search-->
                                     <div class="position-relative">
-                                        <input id="searchInput" type="search" class="form-control" placeholder="Search..." autocomplete="off" value="">
+                                        <input id="searchInput" type="search" class="form-control" placeholder="Tìm kiếm shipper..." autocomplete="off" value="">
                                         <!--                                                            <iconify-icon icon="solar:magnifer-linear" class="search-widget-icon"></iconify-icon>-->
-                                        <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Search</button>
+                                        <button id="searchButton" class="btn btn-outline-secondary" style="margin-left: 50%">Tìm</button>
                                     </div>
                                     <!-- search result -->
                                     <div class="table-responsive" >
                                         <table id="resultSearch" class="table align-middle mb-0 table-hover table-centered">
                                             <thead class="bg-light-subtle border-bottom">
                                             <tr>
-                                                <th>ID</th>
-                                                <th>Name</th>
-                                                <th>Action</th>
+                                                <th>Mã</th>
+                                                <th>Tên</th>
+                                                <th>Hành động</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -178,7 +178,7 @@
                                                                             "<td>" + user.id + "</td>\n" +
                                                                             "<td>" + user.fullname + "</td>\n" +
                                                                             "<td><a class=\"btn btn-primary\" href='/admin/order/shipping?orderid="
-                                                                            + orderid + "&userid=" + user.id + "'>Shipping</a></td>" +
+                                                                            + orderid + "&userid=" + user.id + "'>Giao hàng</a></td>" +
                                                                             "</tr>");
                                                                 });
                                                             } else {
@@ -214,17 +214,17 @@
                             </div>
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Product</h4>
+                                    <h4 class="card-title">Sản phẩm</h4>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
                                         <table class="table align-middle mb-0 table-hover table-centered" id = "orderDetailTable">
                                             <thead class="bg-light-subtle border-bottom">
                                             <tr>
-                                                <th>Product Name & Size</th>
-                                                <th>Quantity</th>
-                                                <th>Price</th>
-                                                <th>Amount</th>
+                                                <th>Tên sản phẩm & Size</th>
+                                                <th>Số lượng</th>
+                                                <th>Giá</th>
+                                                <th>Thành tiền</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -236,24 +236,24 @@
                             </div>
                             <div class="card">
                                 <div class="card-header">
-                                    <h4 class="card-title">Shipping detail</h4>
+                                    <h4 class="card-title">Chi tiết vận chuyển</h4>
                                 </div>
                                 <div class="card-body" >
                                     <div class="position-relative ms-2">
                                         <div>
                                             <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
-                                            <h5 class="">Shipper ID:</h5>
+                                            <h5 class="">Mã shipper:</h5>
                                             <p class="mb-1" id = "shipperId"></p>
-                                            <h5 class="">Shipper name:</h5>
+                                            <h5 class="">Tên shipper:</h5>
                                             <p class="mb-1" id ="shipperName" ></p>
-                                            <h5 class="">Shipper note</h5>
+                                            <h5 class="">Ghi chú shipper</h5>
                                             <p class="mb-1" id = "shipperNote"></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-body" >
                                     <div class="position-relative ms-2">
-                                        <p class="mb-1" >Need shipper for this order</p>
+                                        <p class="mb-1" >Cần shipper cho đơn hàng này</p>
                                     </div>
                                 </div>
                             </div>
@@ -263,7 +263,7 @@
                 <div class="col-xl-3 col-lg-4">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Order Summary</h4>
+                            <h4 class="card-title">Tóm tắt đơn hàng</h4>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -272,7 +272,7 @@
                                     <tr>
                                         <td class="px-0">
                                             <p class="d-flex mb-0 align-items-center gap-1">
-                                                <iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total :
+                                                <iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Tạm tính:
                                             </p>
                                         </td>
                                         <td class="text-end text-dark fw-medium px-0" id="subtotal"></td>
@@ -280,7 +280,7 @@
                                     <tr>
                                         <td class="px-0">
                                             <p class="d-flex mb-0 align-items-center gap-1">
-                                                <iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount :
+                                                <iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Giảm giá:
                                             </p>
                                         </td>
                                         <td class="text-end text-dark fw-medium px-0" id="discount"></td>
@@ -292,7 +292,7 @@
                         </div>
                         <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
                             <div>
-                                <p class="fw-medium text-dark mb-0">Total Amount</p>
+                                <p class="fw-medium text-dark mb-0">Tổng cộng</p>
                             </div>
                             <div>
                                 <p class="fw-medium text-dark mb-0"  id="total"></p>
@@ -303,7 +303,7 @@
 
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title">Customer Details</h4>
+                            <h4 class="card-title">Thông tin khách hàng</h4>
                         </div>
                         <div class="card-body">
                             <div class="d-flex align-items-center gap-2">
@@ -314,7 +314,7 @@
                                 </div>
                             </div>
                             <div class="d-flex justify-content-between mt-3">
-                                <h5 class="">Contact Number</h5>
+                                <h5 class="">Số điện thoại</h5>
                                 <div>
                                     <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
                                 </div>
@@ -322,7 +322,7 @@
                             <p class="mb-1" id="customerPhone">0968543251</p>
 
                             <div class="d-flex justify-content-between mt-3">
-                                <h5 class="">Shipping Address</h5>
+                                <h5 class="">Địa chỉ giao hàng</h5>
                                 <div>
                                     <a href="#!"><i class='bx bx-edit-alt fs-18'></i></a>
                                 </div>
@@ -365,6 +365,28 @@
 <script src="/assets/js/vendor.js"></script>
 
 <script>
+    // Function format giá VNĐ
+    function formatVND(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
+    }
+    
+    // Function chuyển đổi status sang tiếng Việt
+    function getStatusInVietnamese(status) {
+        const statusMap = {
+            'IN_STOCK': 'Đang chờ duyệt',
+            'SHIPPED': 'Đang giao hàng',
+            'DELIVERED': 'Đã giao hàng',
+            'CANCELLED': 'Đã hủy',
+            'PENDING': 'Chờ xử lý',
+            'PROCESSING': 'Đang xử lý',
+            'READY_TO_SHIP': 'Sẵn sàng giao hàng'
+        };
+        return statusMap[status] || status;
+    }
+
     $(document).ready(function () {
         // Lấy orderId từ URL
         var currentUrl = window.location.pathname;
@@ -386,15 +408,15 @@
                             "<tr>" +
                             "<td><img src='" + item.image + "' width='50' class='me-2'/> " + item.product_name + " (Size " + item.size + ")</td>" +
                             "<td>" + item.quantity + "</td>" +
-                            "<td>$" + item.price.toFixed(2) + "</td>" +
-                            "<td>$" + item.amount.toFixed(2) + "</td>" +
+                            "<td>" + formatVND(item.price) + "</td>" +
+                            "<td>" + formatVND(item.amount) + "</td>" +
                             "</tr>"
                         );
                     });
 
-                    document.querySelector("#subtotal").textContent = response.orderPayment.subtotal;
-                    document.querySelector("#discount").textContent = response.orderPayment.discount;
-                    document.querySelector("#total").textContent = response.orderPayment.totalpay;
+                    document.querySelector("#subtotal").textContent = formatVND(response.orderPayment.subtotal);
+                    document.querySelector("#discount").textContent = formatVND(response.orderPayment.discount);
+                    document.querySelector("#total").textContent = formatVND(response.orderPayment.totalpay);
 
                     // Fill du lieu Customer Detail
                     var order = response.order;
@@ -404,7 +426,7 @@
 
                     if (order) {
                         $("#orderId").text(order.id || "");
-                        $("#orderStatus").text(order.status || "");
+                        $("#orderStatus").text(getStatusInVietnamese(order.status) || "");
                         $("#orderPayOption").text(order.payOption || "");
                         $("#orderCreatedDate").text(order.createdDate ? new Date(order.createdDate).toLocaleString() : "");
                         $("#orderUpdatedDate").text(order.updatedDate ? new Date(order.updatedDate).toLocaleString() : "");
