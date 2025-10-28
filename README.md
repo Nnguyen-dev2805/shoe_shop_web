@@ -1,7 +1,9 @@
+<div align="center">
+
 # DeeG Shoe Shop - Website Bán Giày Trực Tuyến
 
-<div align="center">
-  <img src="src/main/resources/static/img/logo-1.png" alt="DeeG Shoe Shop Logo" width="200"/>
+<img src="src/main/resources/static/img/logo-1.png" alt="DeeG Shoe Shop Logo" width="200"/>
+
 </div>
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
@@ -30,10 +32,21 @@ DeeG Shoe Shop là website bán và quản lý cửa hàng giày dép trực tuy
 - [Cấu Trúc Dự Án](#cấu-trúc-dự-án)
 - [Database Schema](#database-schema)
 - [Hướng Dẫn Cài Đặt](#hướng-dẫn-cài-đặt)
-- [API Documentation](#api-documentation)
-- [Deployment](#deployment)
-- [Contributors](#contributors)
-- [License](#license)
+- [Triển Khai Với Docker](#triển-khai-với-docker)
+- [Triển Khai Lên Render](#triển-khai-lên-render)
+- [Tài Liệu API](#tài-liệu-api)
+- [Phân Quyền Hệ Thống](#phân-quyền-hệ-thống)
+- [Kiểm Thử](#kiểm-thử)
+- [Hiệu Suất & Tối Ưu Hóa](#hiệu-suất--tối-ưu-hóa)
+- [Khắc Phục Sự Cố](#khắc-phục-sự-cố)
+- [Giao Diện Website](#giao-diện-website)
+- [Video Demo](#video-demo)
+- [Tài Liệu Tham Khảo](#tài-liệu-tham-khảo)
+- [Tác Giả](#tác-giả)
+- [Đóng Góp](#đóng-góp)
+- [Liên Hệ & Hỗ Trợ](#liên-hệ--hỗ-trợ)
+- [Giấy Phép](#giấy-phép)
+- [Thống Kê Dự Án](#thống-kê-dự-án)
 
 ---
 
@@ -835,7 +848,7 @@ mvn test -Dtest=ServiceTest
 
 ---
 
-## Hiệu Suất & Tối Ư u Hóa
+## Hiệu Suất & Tối Ưu Hóa
 
 - **Lazy Loading**: Entity relationships sử dụng `LAZY` fetch
 - **Connection Pooling**: HikariCP (mặc định của Spring Boot)
@@ -868,54 +881,39 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## Giao Diện Website
 
-### Screenshots
+### Trang Chủ
+![Trang chủ](database/images/trang-chu.jpg)
 
-**Trang Khách Hàng:**
+### Đăng Nhập
+![Đăng nhập](database/images/login.jpg)
 
-#### Trang Chủ
-<!-- ![Trang chủ](docs/images/homepage.png) -->
+### Danh Sách Sản Phẩm
+![Danh sách sản phẩm](database/images/san-pham.jpg)
 
-#### Danh Sách Sản Phẩm
-<!-- ![Cửa hàng](docs/images/shop.png) -->
+### Chi Tiết Sản Phẩm
+![Chi tiết sản phẩm](database/images/chi-tiet-san-pham.jpg)
 
-#### Chi Tiết Sản Phẩm
-<!-- ![Chi tiết sản phẩm](docs/images/product-detail.png) -->
+### Giỏ Hàng
+![Giỏ hàng](database/images/gio-hang.jpg)
 
-#### Giỏ Hàng
-<!-- ![Giỏ hàng](docs/images/cart.png) -->
+### Thanh Toán
+![Thanh toán](database/images/thanh-toan.jpg)
 
-#### Thanh Toán
-<!-- ![Thanh toán](docs/images/checkout.png) -->
+### Flash Sale
+![Flash Sale](database/images/flash-sale.jpg)
 
-#### Flash Sale
-<!-- ![Flash Sale](docs/images/flashsale.png) -->
+### Trang Quản Trị
+![Dashboard Admin](database/images/admin.jpg)
 
-#### Kho Voucher
-<!-- ![Kho voucher](docs/images/voucher.png) -->
+### Trang Manager
+![Dashboard Manager](database/images/manager.jpg)
 
-#### AI Chatbot
-<!-- ![AI Chatbot](docs/images/chatbot.png) -->
+### Trang Shipper
+![Dashboard Shipper](database/images/shipper.jpg)
 
-**Trang Quản Trị:**
+---
 
-#### Dashboard Admin
-<!-- ![Dashboard Admin](docs/images/admin-dashboard.png) -->
-
-#### Quản Lý Sản Phẩm
-<!-- ![Quản lý sản phẩm](docs/images/admin-products.png) -->
-
-#### Quản Lý Đơn Hàng
-<!-- ![Quản lý đơn hàng](docs/images/admin-orders.png) -->
-
-#### Quản Lý Flash Sale
-<!-- ![Quản lý Flash Sale](docs/images/admin-flashsale.png) -->
-
-**Trang Shipper:**
-
-#### Danh Sách Đơn Giao
-<!-- ![Danh sách đơn shipper](docs/images/shipper-orders.png) -->
-
-### Video Demo
+## Video Demo
 
 **Link YouTube:**
 
@@ -955,9 +953,9 @@ Dự án được phát triển bởi nhóm sinh viên:
 Chúng tôi rất hoan nghênh mọi đóng góp! Nếu bạn muốn đóng góp:
 
 1. Fork repository này
-2. Tạo branch mới (`git checkout -b feature/TinhNangMoi`)
-3. Commit thay đổi (`git commit -m 'Thêm tính năng mới'`)
-4. Push lên branch (`git push origin feature/TinhNangMoi`)
+2. Tạo branch mới (`git checkout -b feature/newfeature`)
+3. Commit thay đổi (`git commit -m 'add new feature'`)
+4. Push lên branch (`git push origin feature/newfeature`)
 5. Tạo Pull Request
 
 ---
