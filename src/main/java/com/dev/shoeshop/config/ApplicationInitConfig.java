@@ -78,7 +78,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         initProducts();
 
         // 5. Tạo Inventory (tồn kho)
-        // initInventory();
+        initInventory();
 
         // 6. Tạo Users
         initUsers();
@@ -179,7 +179,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Product 4-6: Sneakers
         Product p4 = createProduct("Sneaker Street Style Đỏ", 
-            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sneaker-1_ibssp8.jpg");
+            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638308/giay-21_sbvuog.jpg");
         createProductDetails(p4);
 
         Product p5 = createProduct("Sneaker Low-Top Trắng", 
@@ -231,23 +231,23 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Product 16-21: Giày Cao Gót (Category 6)
         Product p16 = createProduct("Giày Cao Gót Công Sở",
-            "Giày cao gót thanh lịch cho công sở", 6L, 1L, 890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+            "Giày cao gót thanh lịch cho công sở", 6L, 1L, 890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638301/giay-1_pazzqv.jpg");
         createProductDetails(p16);
 
         Product p17 = createProduct("Giày Cao Gót Đi Tiệc",
-            "Giày cao gót sang trọng cho dự tiệc", 6L, 2L, 1290000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+            "Giày cao gót sang trọng cho dự tiệc", 6L, 2L, 1290000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-4_b1irsx.jpg");
         createProductDetails(p17);
 
         Product p18 = createProduct("Giày Cao Gót Quai Mảnh",
-            "Thiết kế quai mảnh quyến rũ", 6L, 3L, 950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+            "Thiết kế quai mảnh quyến rũ", 6L, 3L, 950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-8_vs95cq.jpg");
         createProductDetails(p18);
 
         Product p19 = createProduct("Giày Cao Gót Mũi Nhọn",
-            "Mũi nhọn thời trang, tôn dáng", 6L, 4L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+            "Mũi nhọn thời trang, tôn dáng", 6L, 4L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-3_csufqn.jpg");
         createProductDetails(p19);
 
         Product p20 = createProduct("Giày Cao Gót Nữ Đẹp",
-            "Giày cao gót nữ thiết kế đẹp", 6L, 5L, 990000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+            "Giày cao gót nữ thiết kế đẹp", 6L, 5L, 990000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638303/giay-6_rxzop5.jpg");
         createProductDetails(p20);
 
         Product p21 = createProduct("Giày Cao Gót Gót Nhọn",
@@ -492,7 +492,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Admin
         Users admin = new Users();
-        admin.setEmail("admin@admin");
+        admin.setEmail("admin@gmail.com");
         admin.setPassword(encodedPassword);
         admin.setFullname("Admin");
         admin.setPhone("0901234567");
@@ -503,7 +503,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Manager
         Users manager = new Users();
-        manager.setEmail("manager@manager");
+        manager.setEmail("manager@gmail.com");
         manager.setPassword(encodedPassword);
         manager.setFullname("Manager");
         manager.setPhone("0902345678");
@@ -514,7 +514,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // User
         Users user = new Users();
-        user.setEmail("user@user");
+        user.setEmail("user@gmail.com");
         user.setPassword(encodedPassword);
         user.setFullname("User");
         user.setPhone("0903456789");
@@ -525,7 +525,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Shipper
         Users shipper = new Users();
-        shipper.setEmail("shipper@shipper");
+        shipper.setEmail("shipper@gmail.com");
         shipper.setPassword(encodedPassword);
         shipper.setFullname("Shipper");
         shipper.setPhone("0904567890");
@@ -534,9 +534,9 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shipper.setProvider("LOCAL");
         userRepository.save(shipper);
 
-        // ⭐ Thêm 5 customers mới để test
+        // ⭐ Thêm 15 customers để test
         Users customer1 = new Users();
-        customer1.setEmail("customer1@test.com");
+        customer1.setEmail("customer1@gmail.com");
         customer1.setPassword(encodedPassword);
         customer1.setFullname("Nguyễn Văn An");
         customer1.setPhone("0905234567");
@@ -546,7 +546,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(customer1);
 
         Users customer2 = new Users();
-        customer2.setEmail("customer2@test.com");
+        customer2.setEmail("customer2@gmail.com");
         customer2.setPassword(encodedPassword);
         customer2.setFullname("Trần Thị Bình");
         customer2.setPhone("0906345678");
@@ -556,7 +556,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(customer2);
 
         Users customer3 = new Users();
-        customer3.setEmail("customer3@test.com");
+        customer3.setEmail("customer3@gmail.com");
         customer3.setPassword(encodedPassword);
         customer3.setFullname("Lê Văn Cường");
         customer3.setPhone("0907456789");
@@ -566,7 +566,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(customer3);
 
         Users customer4 = new Users();
-        customer4.setEmail("customer4@test.com");
+        customer4.setEmail("customer4@gmail.com");
         customer4.setPassword(encodedPassword);
         customer4.setFullname("Phạm Thị Dung");
         customer4.setPhone("0908567890");
@@ -576,7 +576,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(customer4);
 
         Users customer5 = new Users();
-        customer5.setEmail("customer5@test.com");
+        customer5.setEmail("customer5@gmail.com");
         customer5.setPassword(encodedPassword);
         customer5.setFullname("Hoàng Văn Em");
         customer5.setPhone("0909678901");
@@ -585,9 +585,109 @@ public class ApplicationInitConfig implements ApplicationRunner {
         customer5.setProvider("LOCAL");
         userRepository.save(customer5);
 
+        Users customer6 = new Users();
+        customer6.setEmail("customer6@gmail.com");
+        customer6.setPassword(encodedPassword);
+        customer6.setFullname("Võ Thị Phương");
+        customer6.setPhone("0912901234");
+        customer6.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer6.setIsActive(true);
+        customer6.setProvider("LOCAL");
+        userRepository.save(customer6);
+
+        Users customer7 = new Users();
+        customer7.setEmail("customer7@gmail.com");
+        customer7.setPassword(encodedPassword);
+        customer7.setFullname("Đặng Văn Giang");
+        customer7.setPhone("0913012345");
+        customer7.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer7.setIsActive(true);
+        customer7.setProvider("LOCAL");
+        userRepository.save(customer7);
+
+        Users customer8 = new Users();
+        customer8.setEmail("customer8@gmail.com");
+        customer8.setPassword(encodedPassword);
+        customer8.setFullname("Bùi Thị Hoa");
+        customer8.setPhone("0914123456");
+        customer8.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer8.setIsActive(true);
+        customer8.setProvider("LOCAL");
+        userRepository.save(customer8);
+
+        Users customer9 = new Users();
+        customer9.setEmail("customer9@gmail.com");
+        customer9.setPassword(encodedPassword);
+        customer9.setFullname("Ngô Văn Inh");
+        customer9.setPhone("0915234567");
+        customer9.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer9.setIsActive(true);
+        customer9.setProvider("LOCAL");
+        userRepository.save(customer9);
+
+        Users customer10 = new Users();
+        customer10.setEmail("customer10@gmail.com");
+        customer10.setPassword(encodedPassword);
+        customer10.setFullname("Đinh Thị Khanh");
+        customer10.setPhone("0916345678");
+        customer10.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer10.setIsActive(true);
+        customer10.setProvider("LOCAL");
+        userRepository.save(customer10);
+
+        Users customer11 = new Users();
+        customer11.setEmail("customer11@gmail.com");
+        customer11.setPassword(encodedPassword);
+        customer11.setFullname("Dương Văn Long");
+        customer11.setPhone("0917456789");
+        customer11.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer11.setIsActive(true);
+        customer11.setProvider("LOCAL");
+        userRepository.save(customer11);
+
+        Users customer12 = new Users();
+        customer12.setEmail("customer12@gmail.com");
+        customer12.setPassword(encodedPassword);
+        customer12.setFullname("Lý Thị Mai");
+        customer12.setPhone("0918567890");
+        customer12.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer12.setIsActive(true);
+        customer12.setProvider("LOCAL");
+        userRepository.save(customer12);
+
+        Users customer13 = new Users();
+        customer13.setEmail("customer13@gmail.com");
+        customer13.setPassword(encodedPassword);
+        customer13.setFullname("Trương Văn Nam");
+        customer13.setPhone("0919678901");
+        customer13.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer13.setIsActive(true);
+        customer13.setProvider("LOCAL");
+        userRepository.save(customer13);
+
+        Users customer14 = new Users();
+        customer14.setEmail("customer14@gmail.com");
+        customer14.setPassword(encodedPassword);
+        customer14.setFullname("Phan Thị Oanh");
+        customer14.setPhone("0920789012");
+        customer14.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer14.setIsActive(true);
+        customer14.setProvider("LOCAL");
+        userRepository.save(customer14);
+
+        Users customer15 = new Users();
+        customer15.setEmail("customer15@gmail.com");
+        customer15.setPassword(encodedPassword);
+        customer15.setFullname("Hồ Văn Phúc");
+        customer15.setPhone("0921890123");
+        customer15.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer15.setIsActive(true);
+        customer15.setProvider("LOCAL");
+        userRepository.save(customer15);
+
         // ⭐ Thêm 2 shippers nữa
         Users shipper2 = new Users();
-        shipper2.setEmail("shipper2@test.com");
+        shipper2.setEmail("shipper2@gmail.com");
         shipper2.setPassword(encodedPassword);
         shipper2.setFullname("Nguyễn Văn Ship");
         shipper2.setPhone("0910789012");
@@ -597,7 +697,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
         userRepository.save(shipper2);
 
         Users shipper3 = new Users();
-        shipper3.setEmail("shipper3@test.com");
+        shipper3.setEmail("shipper3@gmail.com");
         shipper3.setPassword(encodedPassword);
         shipper3.setFullname("Trần Thị Giao");
         shipper3.setPhone("0911890123");
@@ -606,11 +706,11 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shipper3.setProvider("LOCAL");
         userRepository.save(shipper3);
 
-        System.out.println("  → Đã tạo 11 users: 1 admin, 1 manager, 6 customers, 3 shippers (password: 123456)");
+        System.out.println("  → Đã tạo 21 users: 1 admin, 1 manager, 16 customers, 3 shippers (password: 123456, email: @gmail.com)");
     }
 
     private void initTestAddresses() {
-        // Tạo 1 địa chỉ chung để test cho users 3-8 (6 customers)
+        // Tạo 1 địa chỉ chung để test cho users 3-18 (16 customers)
         Address sharedAddress = new Address();
         sharedAddress.setAddress_line("38 Hẻm 268 Nguyễn Văn Quá, Đông Hưng Thuận, Quận 12");
         sharedAddress.setCity("Hồ Chí Minh");
@@ -620,10 +720,10 @@ public class ApplicationInitConfig implements ApplicationRunner {
         sharedAddress.setAddressType("HOME");
         addressRepository.save(sharedAddress);
 
-        // Liên kết địa chỉ với users 3-8
-        // User 3: user@user
-        // User 4-8: customer1-5
-        for (int userId = 3; userId <= 8; userId++) {
+        // Liên kết địa chỉ với users 3-18
+        // User 3: user@gmail.com
+        // User 4-18: customer1-15@gmail.com
+        for (int userId = 3; userId <= 18; userId++) {
             Users user = userRepository.findById((long) userId).orElse(null);
             if (user != null) {
                 UserAddress userAddress = new UserAddress();
@@ -639,7 +739,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
             }
         }
 
-        System.out.println("  → Đã tạo 1 địa chỉ chung và liên kết với 6 users (ID 3-8)");
+        System.out.println("  → Đã tạo 1 địa chỉ chung và liên kết với 16 users (ID 3-18: user + customer1-15)");
     }
 
     private void initShippingCompanies() {
