@@ -915,9 +915,10 @@ spring.jpa.hibernate.ddl-auto=update
 
 ## Video Demo
 
-**Link YouTube:**
+## Video Demo
 
-[![Video Demo](https://img.youtube.com/vi/mL09KQxL06U/maxresdefault.jpg)](https://www.youtube.com/watch?v=mL09KQxL06U)
+**Link YouTube:**  
+[Video Demo](https://www.youtube.com/watch?v=mL09KQxL06U)
 
 ---
 
