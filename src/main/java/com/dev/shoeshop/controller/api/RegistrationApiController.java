@@ -3,6 +3,13 @@ package com.dev.shoeshop.controller.api;
 import com.dev.shoeshop.dto.RegisterRequestDTO;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +27,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/register")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Registration", description = "User registration APIs - Send verification code and register new account")
 public class RegistrationApiController {
 
     private final UserService userService;
@@ -27,6 +35,33 @@ public class RegistrationApiController {
     /**
      * API gửi mã xác nhận đến email
      */
+    @Operation(
+        summary = "Send Verification Code",
+        description = "Send a 6-digit verification code to user's email for registration confirmation"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Verification code sent successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = Map.class),
+                examples = @ExampleObject(value = "{\"success\": true, \"message\": \"Mã xác nhận đã được gửi đến email của bạn\"}")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Email already exists or invalid",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = "{\"success\": false, \"message\": \"Email đã được đăng ký\"}")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error"
+        )
+    })
     @PostMapping("/send-verification-code")
     public ResponseEntity<Map<String, Object>> sendVerificationCode(
             @RequestBody Map<String, String> request,
@@ -76,6 +111,32 @@ public class RegistrationApiController {
     /**
      * API đăng ký tài khoản mới
      */
+    @Operation(
+        summary = "Register New User",
+        description = "Register a new user account with email verification. Requires verification code sent via email."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Registration successful",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = "{\"success\": true, \"message\": \"Đăng ký thành công!\", \"redirectUrl\": \"/login\"}")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Validation error or invalid verification code",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(value = "{\"success\": false, \"message\": \"Mã xác nhận không hợp lệ\"}")
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "Internal server error"
+        )
+    })
     @PostMapping("/submit")
     public ResponseEntity<Map<String, Object>> registerUser(
             @Valid @RequestBody RegisterRequestDTO registerRequest,
