@@ -1,10 +1,4 @@
-<div align="center">
-
-# 👟 DeeG Shoe Shop
-### Hệ Thống Quản Lý Cửa Hàng Giày Dép Trực Tuyến
-
-<!-- Thêm logo/banner ở đây -->
-![DeeG Shoe Shop Banner](./docs/images/banner.png)
+# DeeG Shoe Shop - E-commerce Platform
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://openjdk.org/)
@@ -12,252 +6,612 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-[🎥 Demo Video](#-demo-video) • [✨ Tính Năng](#-tính-năng-nổi-bật) • [🚀 Cài Đặt](#-hướng-dẫn-cài-đặt) • [📸 Screenshots](#-screenshots) • [📚 API Docs](#-api-documentation)
+## Giới Thiệu
 
-</div>
+DeeG Shoe Shop là hệ thống quản lý và bán hàng giày dép trực tuyến toàn diện, được phát triển bằng Spring Boot 3.5.6 và Java 21. Đây là nền tảng e-commerce đầy đủ tính năng với tích hợp thanh toán trực tuyến, AI chatbot, flash sale, hệ thống voucher phức tạp, và tính phí vận chuyển tự động dựa trên GPS.
 
----
+### Mục Tiêu Dự Án
 
-## 📋 Mục Lục
+- Xây dựng nền tảng thương mại điện tử hoàn chỉnh cho ngành bán lẻ giày dép
+- Tích hợp các công nghệ hiện đại: AI, Payment Gateway, Cloud Storage, Real-time Communication
+- Hỗ trợ đa vai trò người dùng với phân quyền chi tiết (Admin, Manager, Shipper, User)
+- Tối ưu trải nghiệm mua sắm với giao diện responsive và UX thân thiện
+- Sẵn sàng triển khai production với Docker, CI/CD và Cloud Platform
 
-- [📝 Giới Thiệu](#-giới-thiệu)
-- [🎥 Demo Video](#-demo-video)
-- [📸 Screenshots](#-screenshots)
-- [✨ Tính Năng Nổi Bật](#-tính-năng-nổi-bật)
-- [🛠 Công Nghệ Sử Dụng](#-công-nghệ-sử-dụng)
-- [📦 Cấu Trúc Dự Án](#-cấu-trúc-dự-án)
-- [🗄 Database Schema](#-database-schema)
-- [🚀 Hướng Dẫn Cài Đặt](#-hướng-dẫn-cài-đặt)
-- [🐳 Deploy với Docker](#-deploy-với-docker)
-- [☁️ Deploy lên Cloud](#️-deploy-lên-render)
-- [📚 API Documentation](#-api-documentation)
-- [🔐 Phân Quyền](#-phân-quyền-roles)
-- [👥 Tác Giả](#-tác-giả)
-- [📄 License](#-license)
+## Mục Lục
 
----
-
-## 📝 Giới Thiệu
-
-**DeeG Shoe Shop** là hệ thống website bán hàng và quản lý cửa hàng giày dép toàn diện, được xây dựng bằng **Spring Boot 3.5.6** và các công nghệ hiện đại. Hệ thống cung cấp đầy đủ tính năng từ quản lý sản phẩm, đặt hàng, thanh toán trực tuyến, đến các tính năng nâng cao như **Flash Sale**, **Voucher System**, **AI Chatbot** (Gemini AI), và tích hợp **Goong Maps** để tính phí ship tự động.
-
-### 🎯 Mục Tiêu Dự Án
-
-- ✅ Xây dựng hệ thống e-commerce hoàn chỉnh với đầy đủ tính năng mua sắm trực tuyến
-- ✅ Tích hợp các công nghệ hiện đại: AI Chatbot, Payment Gateway, Cloud Storage
-- ✅ Hỗ trợ đa vai trò: Admin, Manager, Shipper, User
-- ✅ Tối ưu trải nghiệm người dùng với UI/UX thân thiện
-- ✅ Sẵn sàng deploy production với Docker và Cloud Platform
+- [Giới Thiệu](#giới-thiệu)
+- [Công Nghệ Sử Dụng](#công-nghệ-sử-dụng)
+- [Tính Năng Nổi Bật](#tính-năng-nổi-bật)
+- [Cấu Trúc Dự Án](#cấu-trúc-dự-án)
+- [Database Schema](#database-schema)
+- [Hướng Dẫn Cài Đặt](#hướng-dẫn-cài-đặt)
+- [API Documentation](#api-documentation)
+- [Deployment](#deployment)
+- [Contributors](#contributors)
+- [License](#license)
 
 ---
 
-## 🎥 Demo Video
+## Công Nghệ Sử Dụng
 
-<!-- Thêm link YouTube demo video ở đây -->
-<div align="center">
+### Backend Framework & Core Technologies
 
-[![Demo Video](./docs/images/video-thumbnail.png)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+**Spring Framework Ecosystem:**
+- Spring Boot 3.5.6 - Application framework
+- Spring Data JPA - ORM và database operations
+- Spring Security 6 - Authentication và authorization
+- Spring Security OAuth2 Client - Google OAuth2 integration
+- Spring Boot Actuator - Health monitoring và metrics
+- Spring WebSocket - Real-time bidirectional communication
+- Spring Scheduler - Automated background tasks
+- Spring Boot Starter Mail - Email service
+- Spring Boot DevTools - Development productivity
 
-**[▶️ Xem Video Demo Đầy Đủ Trên YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
+**Database & Persistence:**
+- MySQL 8.0 - Relational database
+- Hibernate ORM - JPA implementation
+- HikariCP - High-performance connection pooling (default)
+- Spring Data JPA Repositories - Data access layer
 
-*Video demo hướng dẫn sử dụng hệ thống từ góc nhìn User, Admin, Manager và Shipper*
+**Security & Authentication:**
+- BCrypt Password Encoder - Secure password hashing
+- Google OAuth2 - Social login integration
+- Session-based Authentication - Stateful authentication
+- Role-based Access Control (RBAC) - Authorization
 
-</div>
+**Validation & Data Processing:**
+- Jakarta Validation API 3.0.2 - Bean validation
+- Hibernate Validator 8.0.2.Final - Validation implementation
+- ModelMapper 3.2.0 - Object mapping (Entity ↔ DTO)
+
+### Third-party Integrations & APIs
+
+**Payment Gateway:**
+- PayOS Java SDK 2.0.1 - Vietnamese payment gateway
+  - QR Code payment
+  - Bank transfer
+  - Payment verification
+  - Webhook handling
+
+**Cloud Services:**
+- Cloudinary HTTP44 1.36.0 - Cloud image management
+  - Image upload và storage
+  - Image optimization
+  - CDN delivery
+  - Transformation APIs
+
+**Artificial Intelligence:**
+- Google Gemini AI 1.21.0 - AI-powered chatbot
+  - Natural language processing
+  - Context-aware responses
+  - Product queries
+  - Order tracking assistance
+
+**Maps & Geolocation:**
+- Goong Maps API - Vietnamese maps service
+  - Distance calculation (GPS-based)
+  - Geocoding và reverse geocoding
+  - Shipping fee estimation
+  - Address validation
+
+**Email Service:**
+- Gmail SMTP với Spring Mail
+  - User registration verification
+  - Password reset emails
+  - Order confirmation
+  - Promotional emails
+
+**File Processing:**
+- Apache POI 5.2.5 - Excel manipulation
+- Apache POI OOXML 5.2.5 - Modern Excel format (.xlsx)
+  - Order report export
+  - Product import/export
+  - Statistics reports
+
+### API Documentation:**
+- SpringDoc OpenAPI 2.3.0 - OpenAPI 3.0 specification
+  - Swagger UI integration
+  - Interactive API testing
+  - Auto-generated documentation
+
+### Frontend Technologies
+
+**Template Engine:**
+- Thymeleaf - Server-side Java template engine
+- Thymeleaf Extras Spring Security - Security tags và utilities
+
+**UI Framework & Styling:**
+- Bootstrap 5 - Responsive CSS framework
+- Custom CSS - Brand-specific styling
+- Font Awesome - Icon library
+- Lucide Icons - Modern icon set
+
+**JavaScript & Client-side:**
+- Vanilla JavaScript - Core scripting
+- AJAX (XMLHttpRequest/Fetch API) - Asynchronous requests
+- WebSocket Client (STOMP.js) - Real-time communication
+- jQuery - DOM manipulation và AJAX
+
+### Development & Build Tools
+
+**Build Tool:**
+- Apache Maven 3.9+ - Dependency management và build automation
+- Maven Compiler Plugin - Java compilation
+- Spring Boot Maven Plugin - Executable JAR packaging
+
+**Code Quality:**
+- Lombok - Boilerplate code reduction
+  - @Data, @Builder, @NoArgsConstructor, @AllArgsConstructor
+  - @Getter, @Setter annotations
+- Spring Boot Configuration Processor - Metadata generation
+
+### DevOps & Deployment
+
+**Containerization:**
+- Docker - Container platform
+- Multi-stage Dockerfile - Optimized image building
+- Docker Compose (optional) - Multi-container orchestration
+
+**Cloud Platform:**
+- Render.com - PaaS deployment
+  - Auto-scaling
+  - Zero-downtime deployment
+  - Health checks
+  - Environment variables management
+
+**CI/CD:**
+- GitHub Actions - Automated workflows
+  - Automated testing
+  - Build và deployment pipeline
+  - Code quality checks
+
+**Monitoring:**
+- Spring Boot Actuator endpoints
+  - /actuator/health - Health check
+  - /actuator/metrics - Application metrics
+  - /actuator/info - Application info
 
 ---
 
-## 📸 Screenshots
+## Tính Năng Nổi Bật
 
-### 🏠 Trang Người Dùng
+### Tính Năng Người Dùng (User Features)
 
-#### Homepage & Shop
-<div align="center">
-  
-![Homepage](./docs/images/homepage.png)
-*Trang chủ với banner, sản phẩm nổi bật và Flash Sale*
+**1. Quản Lý Tài Khoản & Xác Thực**
+- Đăng ký tài khoản local với email verification
+- Đăng nhập local với username/password (BCrypt hashing)
+- Đăng nhập Google OAuth2 (one-click login)
+- Quên mật khẩu với reset token qua email
+- Quản lý thông tin cá nhân (tên, số điện thoại, avatar)
+- Hệ thống membership tiers: SILVER, GOLD, PLATINUM, DIAMOND
+- DeeG Xu (loyalty coins): Earn và redeem (1 xu = 1 VND)
+- Loyalty points accumulation (1 point per 10,000 VND spent)
 
-![Shop Page](./docs/images/shop.png)
-*Trang danh sách sản phẩm với bộ lọc thông minh*
+**2. Quản Lý Địa Chỉ Giao Hàng**
+- Thêm/sửa/xóa nhiều địa chỉ giao hàng
+- Đặt địa chỉ mặc định
+- Tích hợp Goong Maps để pick location
+- Tự động điền địa chỉ từ coordinates
+- Hiển thị map preview cho địa chỉ
+- Tính toán khoảng cách từ warehouse đến địa chỉ
 
-</div>
+**3. Catalog & Product Browsing**
+- Trang chủ với featured products và flash sale banner
+- Product listing với pagination (configurable items per page)
+- Multi-criteria filtering:
+  - Category (danh mục sản phẩm)
+  - Brand (thương hiệu)
+  - Price range (khoảng giá min-max)
+  - Size (35-45)
+  - Availability (còn hàng/hết hàng)
+- Full-text search (tìm kiếm theo tên, mô tả)
+- Sort options: Newest, Price (Low-High), Price (High-Low), Best Selling
+- Product detail page:
+  - Image gallery với zoom
+  - Product description và specifications
+  - Size chart
+  - Stock availability per size
+  - Customer reviews và ratings
+  - Related products suggestions
 
-#### Chi Tiết Sản Phẩm & Giỏ Hàng
-<div align="center">
+**4. Shopping Cart**
+- Add to cart với size selection
+- Update quantity (real-time stock validation)
+- Remove items
+- Multiple item selection (checkbox)
+- Calculate subtotal
+- Apply flash sale prices automatically
+- Save cart state (persisted in database)
+- Cart count badge (real-time update)
+- Empty cart warning
 
-![Product Detail](./docs/images/product-detail.png)
-*Chi tiết sản phẩm với hình ảnh, mô tả, size và đánh giá*
+**5. Wishlist**
+- Add/remove products to wishlist
+- View wishlist với product details
+- Move to cart functionality
+- Stock notification when available
+- Share wishlist (optional)
 
-![Shopping Cart](./docs/images/cart.png)
-*Giỏ hàng với chọn nhiều sản phẩm và áp dụng voucher*
+**6. Checkout & Payment**
+- Multi-step checkout process
+- Address selection với add new address inline
+- Shipping company selection
+- Automatic shipping fee calculation based on GPS distance
+- Apply order discount voucher
+- Apply shipping discount voucher
+- Redeem loyalty points
+- Use DeeG Xu (coins) for discount
+- Order summary preview
+- Payment methods:
+  - COD (Cash on Delivery)
+  - PayOS Online Payment (QR Code, Bank Transfer)
+- Payment verification và confirmation
+- Order tracking page
 
-</div>
+**7. Flash Sale System**
+- Active flash sale display với countdown timer
+- Upcoming flash sale preview
+- Real-time stock tracking (AJAX polling every 3-5 seconds)
+- Progress bar: sold percentage
+- Flash sale price highlight
+- Purchase button với stock validation
+- Pessimistic locking để prevent overselling
+- Flash sale history
+- Notification khi flash sale starts
 
-#### Checkout & Thanh Toán
-<div align="center">
+**8. Voucher & Discount System**
+- Voucher collection page
+- Two types:
+  - Order vouchers (giảm giá đơn hàng)
+  - Shipping vouchers (giảm phí vận chuyển)
+- Voucher details:
+  - Discount type: Percentage or Fixed Amount
+  - Minimum order value requirement
+  - User tier requirement (SILVER, GOLD, etc.)
+  - Usage limit per user
+  - Total quantity limit
+  - Validity period (start date - end date)
+- Collect voucher (claim)
+- Apply voucher at checkout
+- Voucher validation real-time
+- Stack multiple vouchers (order + shipping)
 
-![Checkout](./docs/images/checkout.png)
-*Trang thanh toán với chọn địa chỉ và phương thức thanh toán*
+**9. Order Management**
+- Order history với filters:
+  - Status filter (IN_STOCK, SHIPPED, DELIVERED, CANCEL, RETURN)
+  - Date range filter
+  - Search by order ID
+- Order details page:
+  - Order items với images
+  - Pricing breakdown (subtotal, shipping, discount, total)
+  - Delivery address
+  - Payment method
+  - Order timeline (status history)
+- Order tracking real-time
+- Reorder functionality (one-click re-purchase)
+- Cancel order (khi còn IN_STOCK)
+- Return request (cho đơn đã DELIVERED)
 
-![PayOS Payment](./docs/images/payment.png)
-*Thanh toán qua PayOS với QR Code*
+**10. Product Reviews & Ratings**
+- Rate products (1-5 stars)
+- Write text review
+- Upload review images (optional)
+- Edit/delete own reviews
+- Filter reviews:
+  - By star rating (5-star, 4-star, etc.)
+  - Reviews with comments only
+  - Reviews with images only
+- Sort reviews (Most Recent, Most Helpful)
+- Helpful vote (upvote reviews)
 
-</div>
+**11. AI Chatbot Support**
+- Powered by Google Gemini 2.5 Flash AI
+- 24/7 availability
+- Natural language understanding
+- Context-aware conversations
+- Features:
+  - Product information queries
+  - Order status checking
+  - FAQ responses
+  - Store policies
+  - Shipping information
+- Chat history per session
+- Conversation persistence
 
-#### Flash Sale & Voucher
-<div align="center">
+**12. Real-time Notifications**
+- WebSocket-based push notifications
+- Notification types:
+  - Order status updates
+  - Flash sale starts
+  - New promotions
+  - Chat messages
+  - Low stock alerts
+- Notification badge với unread count
+- Notification center
+- Mark as read functionality
 
-![Flash Sale](./docs/images/flashsale.png)
-*Trang Flash Sale với countdown timer và stock realtime*
+### Tính Năng Quản Trị (Admin Features)
 
-![Voucher Collection](./docs/images/voucher.png)
-*Kho voucher giảm giá đơn hàng và phí ship*
+**1. Admin Dashboard & Analytics**
+- Real-time statistics:
+  - Total revenue (today, this month, this year)
+  - Total orders by status
+  - New customers count
+  - Total products và low stock alerts
+- Revenue charts:
+  - Line chart: Revenue over time
+  - Bar chart: Revenue by category
+  - Pie chart: Order status distribution
+- Top selling products (with images và sold count)
+- Recent orders list
+- Quick actions: Add Product, Create Flash Sale, View Reports
 
-</div>
+**2. Product Management**
+- Product listing với pagination và search
+- CRUD operations:
+  - Create product với multiple sizes
+  - Edit product information
+  - Delete product (soft delete)
+  - Activate/deactivate product
+- Bulk operations:
+  - Bulk price update
+  - Bulk category assignment
+  - Bulk delete
+- Product variant management (sizes):
+  - Add/remove sizes
+  - Set price per size
+  - Set stock per size
+- Image management:
+  - Upload multiple images to Cloudinary
+  - Set primary image
+  - Delete images
+  - Image CDN optimization
+- Product import/export (Excel)
 
-#### AI Chatbot & Thông Báo
-<div align="center">
+**3. Category & Brand Management**
+- Category CRUD:
+  - Create/edit/delete categories
+  - Category hierarchy (parent-child)
+  - Category image upload
+  - SEO settings (slug, meta description)
+- Brand CRUD:
+  - Add/edit/delete brands
+  - Brand logo upload
+  - Brand description
 
-![AI Chatbot](./docs/images/chatbot.png)
-*AI Chatbot hỗ trợ 24/7 powered by Gemini AI*
+**4. Order Management**
+- Order listing với advanced filters:
+  - Status (IN_STOCK, SHIPPED, DELIVERED, CANCEL, RETURN)
+  - Payment method (COD, PayOS)
+  - Date range
+  - Customer search
+  - Order ID search
+- Order details view:
+  - Customer information
+  - Order items với pricing
+  - Delivery address
+  - Payment status
+  - Timeline history
+- Order operations:
+  - Update order status
+  - Assign shipper
+  - Print invoice
+  - Cancel order (with reason)
+  - Process refund
+- Order export to Excel:
+  - Custom date range
+  - Filter by status
+  - Include order details
+- Bulk operations:
+  - Bulk status update
+  - Bulk shipper assignment
 
-![User Profile](./docs/images/profile.png)
-*Trang quản lý tài khoản và đơn hàng*
+**5. Flash Sale Management**
+- Flash sale creation wizard:
+  - Set name, description
+  - Upload banner image
+  - Set time range (start - end)
+  - Select products to include
+- Add products to flash sale:
+  - Search và select products
+  - Set discount percentage per product
+  - Set stock limit per product
+- Flash sale listing:
+  - Active flash sales
+  - Scheduled flash sales
+  - Ended flash sales
+- Flash sale operations:
+  - Edit flash sale details
+  - Add/remove products
+  - End flash sale early
+  - Clone flash sale
+  - Delete flash sale
+- Real-time monitoring:
+  - Total items sold
+  - Revenue generated
+  - Stock remaining
+  - User participation
 
-</div>
+**6. Discount/Voucher Management**
+- Voucher creation form:
+  - Voucher name và code
+  - Discount type (ORDER or SHIPPING)
+  - Value type (PERCENTAGE or FIXED_AMOUNT)
+  - Discount value
+  - Minimum order value requirement
+  - User tier requirement
+  - Usage limit per user
+  - Total quantity
+  - Validity period (start - end date)
+  - Status (ACTIVE, INACTIVE, EXPIRED)
+- Voucher listing với filters
+- Voucher operations:
+  - Edit voucher details
+  - Activate/deactivate
+  - Delete voucher
+  - Extend validity period
+- Usage statistics:
+  - Total uses
+  - Total discount amount given
+  - Users who used
+  - Revenue impact analysis
 
----
+**7. Inventory & Warehouse Management**
+- Warehouse configuration:
+  - Add/edit warehouses
+  - Set GPS coordinates
+  - Set operating hours
+- Stock level monitoring:
+  - Current stock per product detail
+  - Low stock alerts (<10 items)
+  - Out of stock products
+- Inventory operations:
+  - Stock adjustment (increase/decrease)
+  - Stock import (receiving)
+  - Stock transfer between warehouses
+- Inventory history:
+  - Movement logs
+  - Import/export records
+  - Adjustment reasons
+  - Performed by user tracking
+- Stock reports:
+  - Current stock levels
+  - Stock movement history
+  - Low stock report
 
-### 👨‍💼 Trang Quản Trị
+**8. Shipping Management**
+- Shipping company configuration:
+  - Add/edit shipping providers
+  - Upload company logo
+  - Set base rates
+  - Set per-km rates
+  - Define distance tiers với different rates
+- Shipping rate calculator:
+  - Test distance calculation
+  - Verify pricing
+- Shipper assignment:
+  - Assign orders to shippers
+  - Shipper performance tracking
+  - Delivery completion rates
 
-#### Admin Dashboard
-<div align="center">
+**9. User Management**
+- User listing với search và filters:
+  - Role filter
+  - Registration date
+  - Membership tier
+  - Active/inactive status
+- User operations:
+  - View user profile
+  - Edit user information
+  - Change user role
+  - Activate/deactivate account
+  - View user orders
+  - View user activity log
+- Membership management:
+  - Upgrade/downgrade tier
+  - Adjust loyalty points
+  - Adjust DeeG Xu balance
+- Bulk operations:
+  - Send email to users
+  - Export user list
 
-![Admin Dashboard](./docs/images/admin-dashboard.png)
-*Dashboard với thống kê doanh thu, đơn hàng và biểu đồ*
+**10. Return Request Management**
+- Return request listing
+- Return request details:
+  - Order information
+  - Return reason
+  - Return images
+  - Customer notes
+- Return operations:
+  - Approve return
+  - Reject return (with reason)
+  - Process refund
+  - Arrange return shipment
+- Return statistics:
+  - Total returns
+  - Return rate
+  - Common return reasons
 
-![Product Management](./docs/images/admin-products.png)
-*Quản lý sản phẩm với CRUD và upload ảnh*
+**11. Permission & Role Management**
+- Role-based access control (RBAC)
+- Four main roles:
+  - ADMIN: Full system access
+  - MANAGER: Product, order, report access
+  - SHIPPER: Delivery management only
+  - USER: Customer features only
+- Permission assignment per role
+- Custom permission creation (optional)
 
-</div>
+**12. System Configuration**
+- General settings:
+  - Site name, logo, favicon
+  - Contact information
+  - Social media links
+- Email templates:
+  - Order confirmation
+  - Shipping notification
+  - Password reset
+- Payment gateway settings:
+  - PayOS credentials
+  - Test/production mode
+- API key management:
+  - Cloudinary
+  - Goong Maps
+  - Gemini AI
 
-#### Quản Lý Đơn Hàng & Flash Sale
-<div align="center">
+### Tính Năng Shipper (Shipper Features)
 
-![Order Management](./docs/images/admin-orders.png)
-*Quản lý đơn hàng với lọc trạng thái và xuất Excel*
+**1. Shipper Dashboard**
+- Today's delivery statistics:
+  - Total assigned orders
+  - Completed deliveries
+  - Pending deliveries
+  - Failed deliveries
+- Performance metrics:
+  - Success rate
+  - Average delivery time
+  - Customer ratings
 
-![Flash Sale Management](./docs/images/admin-flashsale.png)
-*Tạo và quản lý Flash Sale với thêm sản phẩm*
+**2. Order Assignment & Management**
+- Assigned orders listing với filters:
+  - Status (SHIPPED, DELIVERED)
+  - Delivery date
+  - Area/district
+- Order details:
+  - Customer information
+  - Phone number (call directly)
+  - Delivery address với map
+  - Order items
+  - Payment method (COD amount)
+  - Delivery notes
+- Map integration:
+  - View delivery location on map
+  - Get directions (Goong Maps)
+  - Optimal route planning (optional)
 
-</div>
+**3. Delivery Operations**
+- Update delivery status:
+  - Mark as SHIPPED (picked up)
+  - Mark as DELIVERED (with confirmation)
+  - Mark as FAILED (with reason)
+- Failed delivery reasons:
+  - Customer not available
+  - Wrong address
+  - Customer refused
+  - Other (custom reason)
+- COD collection:
+  - Confirm cash received
+  - Record payment
+- Delivery proof:
+  - Upload delivery photo
+  - Customer signature (optional)
 
-#### Quản Lý Voucher & Kho Hàng
-<div align="center">
-
-![Voucher Management](./docs/images/admin-voucher.png)
-*Quản lý voucher với điều kiện và giới hạn sử dụng*
-
-![Inventory Management](./docs/images/admin-inventory.png)
-*Quản lý tồn kho và nhập xuất hàng*
-
-</div>
-
----
-
-### 🚚 Trang Shipper
-
-<div align="center">
-
-![Shipper Orders](./docs/images/shipper-orders.png)
-*Danh sách đơn hàng cần giao với bộ lọc trạng thái*
-
-![Shipper Order Detail](./docs/images/shipper-detail.png)
-*Chi tiết đơn hàng với thông tin người nhận và cập nhật trạng thái*
-
-</div>
-
----
-
-### 📱 Responsive Design
-
-<div align="center">
-
-![Mobile Responsive](./docs/images/mobile-responsive.png)
-*Giao diện responsive hoàn hảo trên mọi thiết bị*
-
-</div>
-
----
-
-### ✨ Tính Năng Nổi Bật
-
-#### 🛒 Tính Năng Người Dùng
-- **Quản lý tài khoản**: Đăng ký, đăng nhập (Local + Google OAuth2), quên mật khẩu qua email
-- **Mua sắm thông minh**:
-  - Tìm kiếm và lọc sản phẩm theo thương hiệu, danh mục, giá, size
-  - Xem chi tiết sản phẩm với hình ảnh, mô tả, đánh giá
-  - Giỏ hàng với tính năng chọn nhiều sản phẩm
-  - Wishlist (danh sách yêu thích)
-- **Đặt hàng & Thanh toán**:
-  - Quản lý nhiều địa chỉ giao hàng với tích hợp Goong Maps
-  - Tính phí ship tự động dựa trên khoảng cách GPS
-  - Thanh toán COD hoặc trực tuyến qua PayOS
-  - Theo dõi trạng thái đơn hàng realtime
-- **Flash Sale & Voucher**:
-  - Flash Sale với countdown timer
-  - Voucher giảm giá đơn hàng & phí ship
-  - Hệ thống voucher phân loại (% hoặc số tiền cố định)
-- **Đánh giá & Tương tác**:
-  - Đánh giá sản phẩm với sao và nội dung
-  - AI Chatbot hỗ trợ 24/7 (Gemini AI)
-  - Thông báo realtime qua WebSocket
-
-#### 👨‍💼 Tính Năng Quản Trị
-- **Admin Dashboard**: Thống kê doanh thu, đơn hàng, sản phẩm bán chạy
-- **Quản lý sản phẩm**: CRUD sản phẩm với upload ảnh lên Cloudinary
-- **Quản lý đơn hàng**: Xem, cập nhật trạng thái, xuất báo cáo Excel
-- **Quản lý Flash Sale**: Tạo, sửa, xóa flash sale và thêm sản phẩm
-- **Quản lý Voucher/Discount**: Tạo voucher với điều kiện và giới hạn
-- **Quản lý kho**: Theo dõi tồn kho, nhập xuất hàng
-- **Quản lý vận chuyển**: Cấu hình công ty vận chuyển và phí ship theo khoảng cách
-- **Phân quyền**: Hệ thống multi-role (Admin, Manager, Shipper, User)
-
-#### 🚚 Tính Năng Shipper
-- Xem danh sách đơn hàng cần giao
-- Cập nhật trạng thái giao hàng
-- Xác nhận hoàn thành đơn
-
-### 🛠 Công Nghệ Sử Dụng
-
-#### Backend
-- **Framework**: Spring Boot 3.5.6 (Java 21)
-- **Security**: Spring Security 6 + OAuth2 Client (Google Login)
-- **Database**: MySQL 8.0 + Spring Data JPA + Hibernate
-- **Validation**: Jakarta Validation API 3.0 + Hibernate Validator 8.0
-- **Mapping**: ModelMapper 3.2
-- **Realtime**: WebSocket + STOMP
-- **Task Scheduling**: Spring Scheduler (Auto update Flash Sale status)
-
-#### Integration & Services
-- **Payment Gateway**: PayOS (Thanh toán QR, chuyển khoản)
-- **Cloud Storage**: Cloudinary (Lưu trữ hình ảnh)
-- **Email Service**: Gmail SMTP (Gửi email xác thực, reset password)
-- **AI Chatbot**: Google Gemini 2.5 Flash API
-- **Maps & Geolocation**: Goong Maps API (Tính khoảng cách, phí ship)
-- **Export**: Apache POI (Xuất báo cáo Excel)
-
-#### Frontend
-- **Template Engine**: Thymeleaf + Thymeleaf Extras Spring Security
-- **UI Framework**: Bootstrap 5, Custom CSS
-- **JavaScript**: Vanilla JS + AJAX, WebSocket Client
-- **Icons**: Font Awesome, Lucide Icons
-
-#### DevOps & Deployment
-- **Build Tool**: Maven 3.9
-- **Containerization**: Docker (Multi-stage build)
-- **Cloud Platform**: Render (Production deployment)
-- **CI/CD**: GitHub Actions (Auto deploy)
-- **Monitoring**: Spring Boot Actuator (Health check)
+**4. Performance Tracking**
+- Delivery history
+- Customer feedback
+- Rating và reviews from customers
+- Earnings tracking (if commission-based)
 
 ### 📦 Cấu Trúc Dự Án
 
