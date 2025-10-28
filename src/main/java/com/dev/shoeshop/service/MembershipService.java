@@ -194,6 +194,10 @@ public class MembershipService {
     /**
      * Apply điểm vào order và trừ điểm từ user
      * Gọi method này SAU KHI tạo order, TRƯỚC KHI save
+     * 
+     * NOTE: Frontend đã tính finalTotalPrice (bao gồm trừ điểm), 
+     * nên backend CHỈ cần trừ điểm từ user và lưu pointsRedeemed.
+     * KHÔNG ghi đè order.totalPrice để tránh trừ 2 lần!
      */
     @Transactional
     public void applyPointsToOrder(Users user, Order order, int points) {
@@ -201,25 +205,19 @@ public class MembershipService {
             return;
         }
 
-        // Validate
-        PointsRedeemRequest request = new PointsRedeemRequest(points, order.getTotalPrice());
-        PointsRedeemResponse response = validateRedeemPoints(user, request);
-
-        if (!response.isCanRedeem()) {
-            throw new RuntimeException(response.getMessage());
+        // Check if user has enough points
+        if (user.getLoyaltyPoints() < points) {
+            throw new RuntimeException("Không đủ điểm (có " + user.getLoyaltyPoints() + " điểm)");
         }
 
         // Trừ điểm từ user
         user.deductPoints(points);
 
-        // Lưu vào order
+        // Lưu vào order (CHỈ lưu số điểm, KHÔNG thay đổi totalPrice)
         order.setPointsRedeemed(points);
         
-        // Update totalPrice của order
-        order.setTotalPrice(response.getFinalOrderAmount());
-
-        log.info("User {} redeemed {} points for order {} (discount: {})", 
-                 user.getId(), points, order.getId(), response.getDiscountAmount());
+        log.info("User {} redeemed {} points for order {} (totalPrice unchanged: {})", 
+                 user.getId(), points, order.getId(), order.getTotalPrice());
     }
 
     // ==================== REFUND ====================

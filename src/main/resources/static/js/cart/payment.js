@@ -937,10 +937,26 @@ function calculatePrices() {
     $('#final-total-price').text(formatPrice(finalTotal));
     
     // Show/hide discount row
-    if (discountPercent > 0) {
+    if (discountPercent > 0 || discountAmount > 0) {
         $('#discount-row').show();
     } else {
         $('#discount-row').hide();
+    }
+    
+    // Show/hide points discount row
+    if (pointsDiscount > 0) {
+        $('#points-discount-summary').text(formatPrice(pointsDiscount));
+        $('#points-discount-row').show();
+    } else {
+        $('#points-discount-row').hide();
+    }
+    
+    // Show/hide coins discount row
+    if (coinsDiscount > 0) {
+        $('#coins-discount-summary').text(formatPrice(coinsDiscount));
+        $('#coins-discount-row').show();
+    } else {
+        $('#coins-discount-row').hide();
     }
 }
 
@@ -1648,10 +1664,10 @@ function handlePayment() {
         return;
     }
     
-    // Calculate final total correctly with shipping discount and points
+    // Calculate final total correctly with shipping discount, points and coins
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;
-    const finalTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount;
+    const finalTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount - coinsDiscount;
     
     // Collect selected item IDs and quantities
     const selectedItemIds = selectedItems.map(item => item.id);
