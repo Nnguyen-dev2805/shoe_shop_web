@@ -32,8 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 
-ersHuyOneDriveDesktopWEB FINALshoe_shop_web*
-
 # Environment variables (NEVER commit)
 .env
 .env.local
@@ -42,4 +40,43 @@ ersHuyOneDriveDesktopWEB FINALshoe_shop_web*
 # Application specific
 uploads/
 *.log
+logs/
+*.log.*
+
+# Database files
+*.db
+*.h2.db
+*.sql.gz
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*~.nib
+
+# OS specific files
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE_BIN/
+
+# Linux
+*~
+.nfs*
+
+# Maven
+dependency-reduced-pom.xml
+
+# Sensitive files (API Keys, Credentials)
+*-credentials.json
+*.pem
+*.key
+*.p12
 
