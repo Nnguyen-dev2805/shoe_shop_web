@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu cầu trả hàng đã được chấp nhận</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #ee4d2d 0%, #ff6b3d 100%); padding: 30px 40px; text-align: center;">
+                            <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 600;">
+                                <span style="font-size: 36px;">✅</span><br/>
+                                Yêu cầu trả hàng đã được chấp nhận
+                            </h1>
+                        </td>
+                    </tr>
+                    
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px;">
+                            <p style="margin: 0 0 20px 0; font-size: 16px; color: #333; line-height: 1.6;">
+                                Xin chào <strong th:text="${userName}">Khách hàng</strong>,
+                            </p>
+                            
+                            <p style="margin: 0 0 30px 0; font-size: 16px; color: #333; line-height: 1.6;">
+                                Yêu cầu trả hàng <strong>#<span th:text="${returnRequestId}">1</span></strong> của bạn đã được chúng tôi xem xét và <span style="color: #52c41a; font-weight: 600;">chấp nhận</span>.
+                            </p>
+                            
+                            <!-- Order Info Box -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fafafa; border-radius: 8px; margin-bottom: 30px; border: 1px solid #e8e8e8;">
+                                <tr>
+                                    <td style="padding: 24px;">
+                                        <h3 style="margin: 0 0 16px 0; color: #ee4d2d; font-size: 18px; font-weight: 600;">
+                                            📦 Thông tin đơn hàng
+                                        </h3>
+                                        
+                                        <table width="100%" cellpadding="8" cellspacing="0">
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px; width: 40%;">Mã đơn hàng:</td>
+                                                <td style="color: #333; font-size: 14px; font-weight: 600;">
+                                                    #<span th:text="${orderId}">17</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px;">Sản phẩm:</td>
+                                                <td style="color: #333; font-size: 14px; font-weight: 600;" th:text="${productName}">
+                                                    Giày Thể Thao Nam
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px;">Số tiền hoàn:</td>
+                                                <td style="color: #ee4d2d; font-size: 16px; font-weight: 700;">
+                                                    <span th:text="${#numbers.formatDecimal(refundAmount, 0, 'COMMA', 0, 'POINT')}">1,890,000</span>đ
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="color: #666; font-size: 14px;">Lý do trả hàng:</td>
+                                                <td style="color: #333; font-size: 14px;" th:text="${returnReason}">
+                                                    Size không đúng
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Next Steps -->
+                            <div style="background-color: #fff7e6; border-left: 4px solid #ffa500; padding: 20px; border-radius: 4px; margin-bottom: 30px;">
+                                <h3 style="margin: 0 0 12px 0; color: #ffa500; font-size: 16px; font-weight: 600;">
+                                    🚚 Bước tiếp theo
+                                </h3>
+                                <ul style="margin: 0; padding-left: 20px; color: #666; line-height: 1.8;">
+                                    <li>Đơn vị vận chuyển sẽ đến <strong>lấy hàng trong vòng 24-48h</strong></li>
+                                    <li>Vui lòng <strong>đóng gói sản phẩm cẩn thận</strong> và giữ nguyên tem, nhãn mác</li>
+                                    <li>Sau khi shop nhận và kiểm tra hàng, chúng tôi sẽ <strong>hoàn xu vào ví</strong> của bạn</li>
+                                    <li>Thời gian hoàn xu: <strong>1-3 ngày làm việc</strong></li>
+                                </ul>
+                            </div>
+                            
+                            <!-- Pickup Address -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f6ffed; border-radius: 8px; margin-bottom: 30px; border: 1px solid #b7eb8f;">
+                                <tr>
+                                    <td style="padding: 20px;">
+                                        <h3 style="margin: 0 0 12px 0; color: #52c41a; font-size: 16px; font-weight: 600;">
+                                            📍 Địa chỉ lấy hàng
+                                        </h3>
+                                        <p style="margin: 0; color: #333; font-size: 14px; line-height: 1.6;">
+                                            <strong th:text="${userName}">Nguyễn Văn A</strong><br/>
+                                            <span th:text="${userPhone}">0123456789</span><br/>
+                                            <span th:text="${userAddress}">123 Đường ABC, Quận 1, TP.HCM</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- CTA Button -->
+                            <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td align="center">
+                                        <a th:href="${trackingUrl}" style="display: inline-block; background: linear-gradient(135deg, #ee4d2d 0%, #ff6b3d 100%); color: #ffffff; text-decoration: none; padding: 14px 40px; border-radius: 4px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 12px rgba(238, 77, 45, 0.3);">
+                                            Theo dõi trả hàng
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Support Info -->
+                            <div style="background-color: #f0f0f0; padding: 16px; border-radius: 4px; text-align: center;">
+                                <p style="margin: 0; color: #666; font-size: 13px;">
+                                    Cần hỗ trợ? Liên hệ <strong style="color: #ee4d2d;">1900-xxxx</strong> hoặc email 
+                                    <a href="mailto:support@deegshop.com" style="color: #ee4d2d; text-decoration: none;">support@deegshop.com</a>
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #fafafa; padding: 30px 40px; text-align: center; border-top: 1px solid #e8e8e8;">
+                            <p style="margin: 0 0 10px 0; color: #999; font-size: 13px;">
+                                Cảm ơn bạn đã mua sắm tại <strong style="color: #ee4d2d;">DeeG Shop</strong>
+                            </p>
+                            <p style="margin: 0; color: #999; font-size: 12px;">
+                                © 2025 DeeG Shop. All rights reserved.
+                            </p>
+                            <div style="margin-top: 16px;">
+                                <a href="#" style="color: #999; text-decoration: none; margin: 0 8px; font-size: 12px;">Chính sách đổi trả</a>
+                                <span style="color: #ccc;">|</span>
+                                <a href="#" style="color: #999; text-decoration: none; margin: 0 8px; font-size: 12px;">Điều khoản sử dụng</a>
+                                <span style="color: #ccc;">|</span>
+                                <a href="#" style="color: #999; text-decoration: none; margin: 0 8px; font-size: 12px;">Liên hệ</a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

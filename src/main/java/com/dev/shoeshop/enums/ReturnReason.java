@@ -4,12 +4,15 @@ package com.dev.shoeshop.enums;
  * Lý do trả hàng
  */
 public enum ReturnReason {
-    WRONG_SIZE("Sai size"),
+    WRONG_SIZE("Size không đúng"),
     DEFECTIVE("Lỗi sản phẩm"),
     NOT_AS_DESCRIBED("Không đúng mô tả"),
     WRONG_ITEM("Gửi nhầm hàng"),
-    DAMAGED("Hàng bị hư hỏng"),
-    CHANGE_MIND("Đổi ý không muốn mua");
+    DAMAGED("Hàng bị hỏng"),
+    WRONG_PRODUCT("Sai sản phẩm"),
+    QUALITY_ISSUE("Vấn đề chất lượng"),
+    CHANGE_MIND("Đổi ý"),
+    OTHER("Lý do khác");
     
     private final String description;
     

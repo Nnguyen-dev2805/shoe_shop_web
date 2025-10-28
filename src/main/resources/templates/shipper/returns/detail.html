@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" data-menu-color="dark">
+<head>
+    <meta charset="utf-8" />
+    <title>Chi tiết Return Pickup | DeeG Shop Shipper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        body { background: #f5f5f5; }
+        .detail-container { padding: 24px; max-width: 1200px; margin: 0 auto; }
+        .back-button { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: white; border: 1px solid #d9d9d9; border-radius: 4px; color: #333; text-decoration: none; margin-bottom: 20px; }
+        .back-button:hover { border-color: #667eea; color: #667eea; }
+        
+        .header-card { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 8px; color: white; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header-title { font-size: 24px; font-weight: 600; margin: 0 0 8px 0; }
+        .status-badge { padding: 8px 16px; border-radius: 4px; font-size: 14px; font-weight: 500; display: inline-block; margin-top: 8px; }
+        .status-badge.PENDING { background: rgba(255,165,0,0.2); color: #ffa500; border: 2px solid #ffa500; }
+        .status-badge.PICKED_UP { background: rgba(24,144,255,0.2); color: #1890ff; border: 2px solid #1890ff; }
+        .status-badge.DELIVERED_TO_WAREHOUSE { background: rgba(82,196,26,0.2); color: #52c41a; border: 2px solid #52c41a; }
+        
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .detail-card { background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .card-title { font-size: 18px; font-weight: 600; color: #333; margin: 0 0 20px 0; display: flex; align-items: center; gap: 8px; }
+        .card-title i { color: #667eea; font-size: 22px; }
+        
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #f0f0f0; }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: #666; font-size: 14px; }
+        .info-value { color: #333; font-weight: 500; font-size: 14px; }
+        
+        .address-box { background: #f6f7fb; padding: 16px; border-radius: 6px; border-left: 4px solid #667eea; margin-bottom: 16px; }
+        .address-box strong { display: block; color: #333; margin-bottom: 8px; }
+        .address-text { font-size: 14px; color: #666; line-height: 1.8; }
+        
+        .map-link { display: inline-flex; align-items: center; gap: 6px; color: #667eea; text-decoration: none; font-size: 14px; margin-top: 8px; }
+        .map-link:hover { text-decoration: underline; }
+        
+        .action-buttons { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+        .btn { padding: 12px 24px; border-radius: 6px; border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-success { background: #52c41a; color: white; }
+        .btn-success:hover { background: #45a916; }
+        .btn-primary { background: #667eea; color: white; }
+        .btn-primary:hover { background: #5568d3; }
+        .btn:disabled { background: #d9d9d9; color: #999; cursor: not-allowed; }
+        
+        .timeline { position: relative; padding-left: 30px; }
+        .timeline-item { position: relative; padding-bottom: 20px; }
+        .timeline-item:before { content: ''; position: absolute; left: -22px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: #e0e0e0; }
+        .timeline-item.active:before { background: #52c41a; }
+        .timeline-date { font-size: 12px; color: #999; margin-bottom: 4px; }
+        .timeline-content { font-size: 14px; color: #333; }
+        
+        .product-info { display: flex; gap: 16px; padding: 16px; background: #fafafa; border-radius: 6px; }
+        .product-image { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid #e0e0e0; }
+        .product-details { flex: 1; }
+        .product-name { font-size: 15px; font-weight: 500; color: #333; margin-bottom: 6px; }
+        .product-meta { font-size: 13px; color: #666; }
+    </style>
+</head>
+
+<body>
+<div class="wrapper">
+    <div th:insert="~{fragments/shipper/menu_app.html :: menu}"></div>
+    
+    <div class="page-content">
+        <div class="detail-container">
+            
+            <a href="/shipper/returns" class="back-button">
+                <i class='bx bx-arrow-back'></i> Quay lại Dashboard
+            </a>
+            
+            <!-- Header -->
+            <div class="header-card">
+                <h1 class="header-title">
+                    <i class='bx bx-package'></i> Yêu Cầu Trả Hàng #<span th:text="${returnShipment.returnRequest.id}">1</span>
+                </h1>
+                <span class="status-badge" th:classappend="${returnShipment.status}">
+                    <span th:switch="${returnShipment.status}">
+                        <span th:case="'PENDING'">Chờ lấy hàng</span>
+                        <span th:case="'PICKED_UP'">Đã lấy hàng</span>
+                        <span th:case="'DELIVERED_TO_WAREHOUSE'">Đã giao về kho</span>
+                        <span th:case="*" th:text="${returnShipment.status}">Unknown</span>
+                    </span>
+                </span>
+            </div>
+            
+            <div class="detail-grid">
+                <!-- Left Column -->
+                <div>
+                    <!-- Customer Info -->
+                    <div class="detail-card">
+                        <h2 class="card-title"><i class='bx bx-user'></i> Thông tin khách hàng</h2>
+                        <div class="info-row">
+                            <span class="info-label">Tên người nhận:</span>
+                            <span class="info-value" th:text="${recipientName ?: returnShipment.returnRequest.user.fullname}">Nguyễn Văn A</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">SĐT:</span>
+                            <span class="info-value" th:text="${recipientPhone ?: returnShipment.returnRequest.user.phone ?: 'Chưa có'}">0123456789</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" th:text="${returnShipment.returnRequest.user.email}">user@example.com</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Pickup Address -->
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-map'></i> Địa chỉ lấy hàng</h2>
+                        <div class="address-box">
+                            <strong><i class='bx bx-location-plus'></i> Chi tiết:</strong>
+                            <div class="address-text">
+                                <div th:text="${returnShipment.pickupAddress.address_line}">123 Đường ABC, Phường X</div>
+                                <div th:text="${returnShipment.pickupAddress.city + ', ' + (returnShipment.pickupAddress.country ?: 'Việt Nam')}">TP.HCM, Việt Nam</div>
+                            </div>
+                            <a th:if="${returnShipment.pickupAddress.latitude != null and returnShipment.pickupAddress.longitude != null}" 
+                               th:href="'https://www.google.com/maps?q=' + ${returnShipment.pickupAddress.latitude} + ',' + ${returnShipment.pickupAddress.longitude}"
+                               target="_blank" 
+                               class="map-link">
+                                <i class='bx bx-map'></i> Xem trên Google Maps
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Product Info -->
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-package'></i> Thông tin sản phẩm</h2>
+                        <div class="product-info">
+                            <img th:src="${returnShipment.returnRequest.images}" alt="Product" class="product-image" onerror="this.src='/img/product/default.jpg'">
+                            <div class="product-details">
+                                <div class="product-name" th:text="${returnShipment.returnRequest.order.orderDetailSet.?[#this != null][0]?.product?.product?.title ?: 'Sản phẩm'}">Nike Air Max</div>
+                                <div class="product-meta">
+                                    Size: <strong th:text="${returnShipment.returnRequest.order.orderDetailSet.?[#this != null][0]?.product?.size ?: 'N/A'}">39</strong> | 
+                                    Số lượng: <strong th:text="${returnShipment.returnRequest.order.orderDetailSet.?[#this != null][0]?.quantity ?: 1}">1</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div>
+                    <!-- Timeline -->
+                    <div class="detail-card">
+                        <h2 class="card-title"><i class='bx bx-time-five'></i> Tiến Trình</h2>
+                        <div class="timeline">
+                            <div class="timeline-item active">
+                                <div class="timeline-date" th:text="${returnShipment.createdDate != null ? #dates.format(returnShipment.createdDate, 'dd/MM/yyyy HH:mm') : '---'}">27/10/2025 20:00</div>
+                                <div class="timeline-content">Được gán nhiệm vụ</div>
+                            </div>
+                            <div class="timeline-item" th:if="${returnShipment.pickupDate != null}" th:classappend="${returnShipment.pickupDate != null ? 'active' : ''}">
+                                <div class="timeline-date" th:text="${returnShipment.pickupDate != null ? #dates.format(returnShipment.pickupDate, 'dd/MM/yyyy HH:mm') : '---'}">---</div>
+                                <div class="timeline-content">Đã lấy hàng từ khách</div>
+                            </div>
+                            <div class="timeline-item" th:if="${returnShipment.deliveryDate != null}" th:classappend="${returnShipment.deliveryDate != null ? 'active' : ''}">
+                                <div class="timeline-date" th:text="${returnShipment.deliveryDate != null ? #dates.format(returnShipment.deliveryDate, 'dd/MM/yyyy HH:mm') : '---'}">---</div>
+                                <div class="timeline-content">Đã giao về kho</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-cog'></i> Hành động</h2>
+                        
+                        <div class="action-buttons" th:if="${returnShipment.status == 'PENDING'}">
+                            <button class="btn btn-success" th:data-id="${returnShipment.id}" onclick="confirmPickup(this.getAttribute('data-id'))">
+                                <i class='bx bx-check'></i> Xác nhận đã lấy hàng
+                            </button>
+                        </div>
+                        
+                        <div class="action-buttons" th:if="${returnShipment.status == 'PICKED_UP'}">
+                            <button class="btn btn-primary" th:data-id="${returnShipment.id}" onclick="confirmDelivery(this.getAttribute('data-id'))">
+                                <i class='bx bx-home-smile'></i> Xác nhận đã giao về kho
+                            </button>
+                        </div>
+                        
+                        <div th:if="${returnShipment.status == 'DELIVERED_TO_WAREHOUSE'}" style="padding: 16px; background: #f6ffed; border-radius: 6px; color: #52c41a; text-align: center;">
+                            <i class='bx bx-check-circle' style="font-size: 48px;"></i>
+                            <p style="margin: 8px 0 0 0; font-weight: 500;">Đã hoàn thành nhiệm vụ!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Return Reason -->
+                    <div class="detail-card" style="margin-top: 20px;">
+                        <h2 class="card-title"><i class='bx bx-error-circle'></i> Lý do trả hàng</h2>
+                        <div class="info-row">
+                            <span class="info-label">Lý do:</span>
+                            <span class="info-value">
+                                <span th:switch="${returnShipment.returnRequest.reason.name()}">
+                                    <span th:case="'WRONG_SIZE'">Size không đúng</span>
+                                    <span th:case="'DAMAGED'">Hàng bị hỏng</span>
+                                    <span th:case="'WRONG_PRODUCT'">Sai sản phẩm</span>
+                                    <span th:case="'NOT_AS_DESCRIBED'">Không giống mô tả</span>
+                                    <span th:case="'QUALITY_ISSUE'">Vấn đề chất lượng</span>
+                                    <span th:case="'CHANGE_MIND'">Đổi ý</span>
+                                    <span th:case="'OTHER'">Lý do khác</span>
+                                    <span th:case="*" th:text="${returnShipment.returnRequest.reason}">Unknown</span>
+                                </span>
+                            </span>
+                        </div>
+                        <div style="margin-top: 12px; padding: 12px; background: #fafafa; border-radius: 4px;">
+                            <strong style="display: block; margin-bottom: 8px; color: #666; font-size: 13px;">Mô tả:</strong>
+                            <p style="margin: 0; color: #333; font-size: 14px;" th:text="${returnShipment.returnRequest.description}">Mô tả chi tiết...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/vendor.js"></script>
+<script src="/assets/js/app.js"></script>
+
+<script>
+function confirmPickup(id) {
+    if (!confirm('Xác nhận bạn đã lấy hàng từ khách hàng?')) return;
+    
+    $.ajax({
+        url: `/shipper/returns/${id}/pickup`,
+        type: 'POST',
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+
+function confirmDelivery(id) {
+    if (!confirm('Xác nhận bạn đã giao hàng về kho?')) return;
+    
+    $.ajax({
+        url: `/shipper/returns/${id}/deliver`,
+        type: 'POST',
+        success: function(res) {
+            alert(res.message);
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi!');
+        }
+    });
+}
+</script>
+
+</body>
+</html>

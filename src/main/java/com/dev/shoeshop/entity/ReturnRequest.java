@@ -34,7 +34,7 @@ public class ReturnRequest {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Users user;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "reason", nullable = false, length = 50)
     private ReturnReason reason;

@@ -351,6 +351,10 @@ public class ApiCartController {
             // 🪙 Get loyalty points redeemed
             Integer pointsRedeemed = request.get("pointsRedeemed") != null && !request.get("pointsRedeemed").toString().isEmpty() ? 
                 Integer.valueOf(request.get("pointsRedeemed").toString()) : null;
+            
+            // 🪙 Get DeeG Xu used
+            Long coinsUsed = request.get("coinsUsed") != null && !request.get("coinsUsed").toString().isEmpty() ? 
+                Long.valueOf(request.get("coinsUsed").toString()) : null;
 
             // Get selected item IDs (only items user selected to purchase)
             @SuppressWarnings("unchecked")
@@ -432,6 +436,7 @@ public class ApiCartController {
                         .orderDiscountAmount(orderDiscountAmount)
                         .shippingDiscountAmount(shippingDiscountAmount)
                         .pointsRedeemed(pointsRedeemed) // 🪙 Add points
+                        .coinsUsed(coinsUsed) // 🪙 Add coins
                         .selectedItemIds(selectedItemIds)
                         .itemQuantities(itemQuantities)
                         .build();
@@ -472,7 +477,7 @@ public class ApiCartController {
                 payOption, shippingCompanyId, orderDiscountId, shippingDiscountId, 
                 flashSaleId, selectedItemIds, itemQuantities,
                 subtotal, shippingFee, orderDiscountAmount, shippingDiscountAmount,
-                pointsRedeemed
+                pointsRedeemed, coinsUsed
             );
             
             Map<String, Object> response = new HashMap<>();

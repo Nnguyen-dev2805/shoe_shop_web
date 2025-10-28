@@ -1340,6 +1340,80 @@
                     </div>
                 </div>
                 
+                <!-- ========== DEEG XU SECTION ========== -->
+                <div class="payment-card" id="coins-section">
+                    <div class="section-title">
+                        <i class="fa fa-credit-card"></i>
+                        DeeG Xu
+                    </div>
+                    
+                    <!-- Coins Balance Card (Shopee Orange Style) -->
+                    <div style="background: linear-gradient(135deg, #fff9e6, #ffe8cc); border: 1px solid #ffa726; border-radius: 4px; padding: 14px 16px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 400;">Xu hiện có</div>
+                                <div style="font-weight: 700; font-size: 20px; color: #ff9800;">
+                                    <span id="user-coins-balance">0 xu</span>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 11px; color: #888; font-weight: 400;"><i class="fa fa-coins" style="color: #ffa726;"></i> <span style="font-weight: 500; color: #ffa726;">1 xu = 1đ</span></div>
+                                <div style="font-size: 11px; color: #888; margin-top: 2px; font-weight: 400;">Giá trị <span id="coins-value" style="font-weight: 500; color: #ffa726;">0đ</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Use Coins Section -->
+                    <div style="margin-bottom: 12px;">
+                        <div style="background: #fafafa; padding: 10px 12px; border: 1px solid #e0e0e0; border-bottom: none; border-radius: 4px 4px 0 0;">
+                            <div style="font-size: 14px; font-weight: 400; color: #333;">
+                                Sử dụng xu
+                            </div>
+                        </div>
+                        
+                        <div style="padding: 12px; border: 1px solid #e0e0e0; border-top: none; border-radius: 0 0 4px 4px;">
+                            <input type="number" 
+                                   id="coins-to-use-input" 
+                                   placeholder="Nhập số xu" 
+                                   min="0" 
+                                   style="width: 100%; padding: 8px 12px; border: 1px solid #d0d0d0; border-radius: 2px; font-size: 14px; outline: none; font-weight: 400; color: #333; margin-bottom: 12px;">
+                            
+                            <div style="font-size: 12px; color: #888; margin-bottom: 12px; line-height: 1.5; font-weight: 400;">
+                                <i class="fa fa-info-circle" style="color: #ffa726; font-size: 11px;"></i> Quy đổi: 1 xu = 1đ | Tối đa 100% giá trị đơn
+                            </div>
+                            
+                            <div class="voucher-footer-inline">
+                                <div class="voucher-footer-info">
+                                    <span id="coins-selected-count">0</span> Xu được chọn
+                                </div>
+                                <button type="button" class="voucher-confirm-btn-inline" id="btn-apply-coins">
+                                    Áp dụng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Applied Coins Display (Shopee Style) -->
+                    <div id="coins-redeemed-row" style="background: #fff3e0; border-left: 3px solid #ff9800; border-radius: 3px; padding: 10px 12px; display: none;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 13px; color: #e65100; font-weight: 400;">
+                                <i class="fa fa-check-circle" style="margin-right: 5px;"></i>
+                                Đã dùng <strong style="font-weight: 600;"><span id="coins-applied-amount">0 xu</span></strong>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <strong style="color: #e65100; font-size: 14px; font-weight: 600;">-<span id="coins-discount-value">0đ</span></strong>
+                                <button type="button" 
+                                        id="btn-clear-coins" 
+                                        style="background: transparent; color: #f44336; border: none; padding: 4px 8px; border-radius: 3px; font-size: 18px; cursor: pointer; line-height: 1; transition: all 0.2s;"
+                                        onmouseover="this.style.background='#ffebee'"
+                                        onmouseout="this.style.background='transparent'">
+                                    <i class="fa fa-times-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Payment Method Section -->
                 <div class="payment-card">
                     <div class="section-title">

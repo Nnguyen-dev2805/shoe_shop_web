@@ -31,6 +31,7 @@ public class PendingPaymentDTO {
     private Double orderDiscountAmount; // Order discount amount applied
     private Double shippingDiscountAmount; // Shipping discount amount applied
     private Integer pointsRedeemed; // 🪙 Loyalty points redeemed
+    private Long coinsUsed; // 🪙 DeeG Xu used
     private List<Integer> selectedItemIds;
     private Map<Integer, Integer> itemQuantities;
     private Long createdAt; // Timestamp để expire pending payments

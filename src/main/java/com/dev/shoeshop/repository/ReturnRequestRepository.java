@@ -47,15 +47,16 @@ public interface ReturnRequestRepository extends JpaRepository<ReturnRequest, Lo
     Page<ReturnRequest> findAllOrderByCreatedDateDesc(Pageable pageable);
     
     /**
-     * Đếm số lượng return request theo status
-     */
-    long countByStatus(ReturnStatus status);
-    
-    /**
      * Đếm pending return requests
      */
     @Query("SELECT COUNT(r) FROM ReturnRequest r WHERE r.status = 'PENDING'")
     long countPendingRequests();
+    
+    /**
+     * Đếm return requests theo status
+     */
+    @Query("SELECT COUNT(r) FROM ReturnRequest r WHERE r.status = :status")
+    long countByStatus(@Param("status") ReturnStatus status);
     
     /**
      * Tìm return request cần xử lý (PENDING, quá 24h)

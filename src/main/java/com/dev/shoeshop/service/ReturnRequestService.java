@@ -74,6 +74,16 @@ public interface ReturnRequestService {
     long countPendingRequests();
     
     /**
+     * Đếm số lượng return request theo status
+     */
+    long countByStatus(ReturnStatus status);
+
+    /**
+     * Gán shipper để lấy hàng trả về
+     */
+    ReturnRequest assignShipper(Long returnRequestId, Long shipperId);
+
+    /**
      * Kiểm tra order có thể tạo return request không
      */
     boolean canCreateReturnRequest(Long orderId, Long userId);

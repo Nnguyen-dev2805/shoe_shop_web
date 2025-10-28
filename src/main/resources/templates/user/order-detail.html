@@ -586,6 +586,97 @@
                                               order.status.name() == 'RETURN' ? 'Đơn hàng đã trả lại' : 'Đơn hàng đang chờ xác nhận'}"></p>
         </div>
         
+        <!-- ========== RETURN REQUEST STATUS ========== -->
+        <div th:if="${returnRequest != null}" class="white-card" style="margin-top: 16px; border-left: 4px solid #17a2b8;">
+            <div style="display: flex; align-items: flex-start; gap: 16px;">
+                <!-- Icon Section -->
+                <div th:style="${returnRequest.status.name() == 'REJECTED' ? 'width: 40px; height: 40px; background: #f8d7da; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;' :
+                                 returnRequest.status.name() == 'REFUNDED' ? 'width: 40px; height: 40px; background: #d4edda; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;' :
+                                 'width: 40px; height: 40px; background: #d1ecf1; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;'}">
+                    <i th:class="${returnRequest.status.name() == 'REJECTED' ? 'fa fa-times-circle' :
+                                   returnRequest.status.name() == 'REFUNDED' ? 'fa fa-check-circle' :
+                                   returnRequest.status.name() == 'APPROVED' ? 'fa fa-check' :
+                                   returnRequest.status.name() == 'SHIPPING' ? 'fa fa-truck' :
+                                   returnRequest.status.name() == 'RECEIVED' ? 'fa fa-archive' :
+                                   'fa fa-clock-o'}"
+                       th:style="${returnRequest.status.name() == 'REJECTED' ? 'color: #dc3545; font-size: 20px;' :
+                                   returnRequest.status.name() == 'REFUNDED' ? 'color: #28a745; font-size: 20px;' :
+                                   'color: #17a2b8; font-size: 20px;'}"></i>
+                </div>
+                
+                <!-- Content Section -->
+                <div style="flex: 1;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <h4 style="margin: 0; font-size: 16px; color: #333; font-weight: 600;">Trạng thái trả hàng</h4>
+                        <span th:class="'return-status-badge ' + ${returnRequest.status.name()}"
+                              th:text="${returnRequest.status.name() == 'PENDING' ? '⏳ Chờ duyệt' :
+                                        returnRequest.status.name() == 'APPROVED' ? '✅ Đã duyệt' :
+                                        returnRequest.status.name() == 'REJECTED' ? '❌ Từ chối' :
+                                        returnRequest.status.name() == 'SHIPPING' ? '🚚 Đang giao' :
+                                        returnRequest.status.name() == 'RECEIVED' ? '📦 Đã nhận' :
+                                        returnRequest.status.name() == 'REFUNDED' ? '💰 Đã hoàn tiền' :
+                                        returnRequest.status.name()}"></span>
+                    </div>
+                    
+                    <!-- Status Description -->
+                    <p style="margin: 0 0 12px 0; font-size: 14px; color: #666; line-height: 1.6;"
+                       th:text="${returnRequest.status.name() == 'PENDING' ? 'Yêu cầu trả hàng của bạn đang chờ shop xét duyệt. Chúng tôi sẽ phản hồi trong vòng 24 giờ.' :
+                                 returnRequest.status.name() == 'APPROVED' ? 'Yêu cầu trả hàng đã được chấp nhận. Shipper sẽ liên hệ để lấy hàng trong thời gian sớm nhất.' :
+                                 returnRequest.status.name() == 'REJECTED' ? 'Yêu cầu trả hàng không được chấp nhận. Vui lòng xem lý do bên dưới.' :
+                                 returnRequest.status.name() == 'SHIPPING' ? 'Shipper đang trên đường tới lấy hàng. Vui lòng chuẩn bị sản phẩm.' :
+                                 returnRequest.status.name() == 'RECEIVED' ? 'Hàng đã về kho và đang được kiểm tra. Chúng tôi sẽ xử lý hoàn tiền sớm nhất.' :
+                                 returnRequest.status.name() == 'REFUNDED' ? 'Đã hoàn tiền vào tài khoản DeeG Xu của bạn.' :
+                                 'Đang xử lý yêu cầu trả hàng...'}"></p>
+                    
+                    <!-- Additional Info based on status -->
+                    <div th:if="${returnRequest.status.name() == 'REJECTED' && returnRequest.adminNote != null}" 
+                         style="background: #fff5f5; border-left: 3px solid #dc3545; padding: 12px; border-radius: 4px; margin-top: 12px;">
+                        <div style="font-size: 13px; font-weight: 600; color: #721c24; margin-bottom: 6px;">
+                            <i class="fa fa-exclamation-circle"></i> Lý do từ chối:
+                        </div>
+                        <div style="font-size: 14px; color: #721c24;" th:text="${returnRequest.adminNote}"></div>
+                    </div>
+                    
+                    <div th:if="${returnRequest.status.name() == 'REFUNDED' && returnRequest.refundAmount != null}" 
+                         style="background: #f0fff4; border-left: 3px solid #28a745; padding: 12px; border-radius: 4px; margin-top: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-size: 13px; color: #155724; margin-bottom: 4px;">Số tiền đã hoàn:</div>
+                                <div style="font-size: 20px; font-weight: 700; color: #28a745;">
+                                    <span th:text="${#numbers.formatDecimal(returnRequest.refundAmount, 0, 'COMMA', 0, 'POINT')}">0</span> xu
+                                </div>
+                            </div>
+                            <a href="/user/my_account" style="background: #28a745; color: white; padding: 8px 16px; border-radius: 4px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                                Xem ví xu <i class="fa fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Return Request Details -->
+                    <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f0f0f0;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 13px;">
+                            <div>
+                                <span style="color: #999;">Mã yêu cầu:</span>
+                                <span style="color: #333; font-weight: 500; margin-left: 8px;">#<span th:text="${returnRequest.id}">1</span></span>
+                            </div>
+                            <div>
+                                <span style="color: #999;">Ngày tạo:</span>
+                                <span style="color: #333; margin-left: 8px;" th:text="${#temporals.format(returnRequest.createdDate, 'dd/MM/yyyy HH:mm')}">27/10/2025</span>
+                            </div>
+                            <div th:if="${returnRequest.reason != null}">
+                                <span style="color: #999;">Lý do:</span>
+                                <span style="color: #333; margin-left: 8px;" th:text="${returnRequest.reason.description}">Lý do trả hàng</span>
+                            </div>
+                            <div th:if="${returnRequest.completedDate != null}">
+                                <span style="color: #999;">Hoàn tất:</span>
+                                <span style="color: #333; margin-left: 8px;" th:text="${#temporals.format(returnRequest.completedDate, 'dd/MM/yyyy HH:mm')}">28/10/2025</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Shipping & Address Info -->
         <div class="white-card">
             <!-- Shipping Info -->
@@ -895,19 +986,21 @@
                 </div>
                 
                 <!-- Thời gian thanh toán -->
-                <div class="timeline-item" th:if="${order.payOption.name() == 'PAYOS' && order.paidAt != null}">
+                <div class="timeline-item" th:if="${order.payOption != null && order.payOption.name() == 'PAYOS' && order.paidAt != null}">
                     <span class="timeline-label">Thời gian thanh toán (PayOS)</span>
                     <span class="timeline-value" th:text="${#dates.format(order.paidAt, 'dd-MM-yyyy HH:mm')}"></span>
                 </div>
-                <div class="timeline-item" th:if="${order.payOption.name() == 'COD' && order.status.name() == 'DELIVERED' && order.shipmentUpdatedDate != null}">
+                <div class="timeline-item" th:if="${order.payOption != null && order.payOption.name() == 'COD'}">
                     <span class="timeline-label">Thời gian thanh toán (COD)</span>
-                    <span class="timeline-value" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    <span class="timeline-value" th:if="${order.shipmentUpdatedDate != null}" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    <span class="timeline-value" th:if="${order.shipmentUpdatedDate == null}" style="color: #999;">Chưa thanh toán</span>
                 </div>
                 
                 <!-- Thời gian hoàn thành đơn -->
-                <div class="timeline-item" th:if="${order.status.name() == 'DELIVERED' && order.shipmentUpdatedDate != null}">
+                <div class="timeline-item" th:if="${order.status != null && (order.status.name() == 'DELIVERED' || order.status.name() == 'RETURN')}">
                     <span class="timeline-label">Thời gian hoàn thành đơn</span>
-                    <span class="timeline-value" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    <span class="timeline-value" th:if="${order.shipmentUpdatedDate != null}" th:text="${#dates.format(order.shipmentUpdatedDate, 'dd-MM-yyyy HH:mm')}"></span>
+                    <span class="timeline-value" th:if="${order.shipmentUpdatedDate == null && order.createdDate != null}" th:text="${#dates.format(order.createdDate, 'dd-MM-yyyy HH:mm')}"></span>
                 </div>
             </div>
             

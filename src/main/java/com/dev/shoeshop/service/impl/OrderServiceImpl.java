@@ -12,28 +12,18 @@ import com.dev.shoeshop.dto.OrderResultDTO;
 import com.dev.shoeshop.dto.OrderStaticDTO;
 import com.dev.shoeshop.dto.SoldQuantityUpdateDTO;
 import com.dev.shoeshop.entity.*;
+import com.dev.shoeshop.enums.CoinTransactionType;
 import com.dev.shoeshop.enums.PayOption;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import com.dev.shoeshop.repository.*;
 import com.dev.shoeshop.service.*;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
 import vn.payos.model.v2.paymentRequests.PaymentLinkItem;
-import com.dev.shoeshop.repository.AddressRepository;
-import com.dev.shoeshop.repository.CartDetailRepository;
-import com.dev.shoeshop.repository.CartRepository;
-import com.dev.shoeshop.repository.DiscountRepository;
-import com.dev.shoeshop.repository.DiscountUsedRepository;
-import com.dev.shoeshop.repository.FlashSaleRepository;
-import com.dev.shoeshop.repository.InventoryRepository;
-import com.dev.shoeshop.repository.OrderRepository;
-import com.dev.shoeshop.repository.ProductDetailRepository;
-import com.dev.shoeshop.repository.ProductRepository;
-import com.dev.shoeshop.repository.ShippingCompanyRepository;
-import com.dev.shoeshop.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -102,6 +92,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private EmailService emailService;
+    
+    @Autowired
+    private CoinTransactionRepository coinTransactionRepository;
 
     @Override
     public OrderStaticDTO getStatic() {
@@ -217,6 +210,16 @@ public class OrderServiceImpl implements OrderService {
             System.err.println("❌ Error refunding points for cancelled order: " + e.getMessage());
             e.printStackTrace();
         }
+        
+        // 🪙 REFUND COINS when order cancelled
+        try {
+            Users user = order.getUser();
+            refundCoinsForCancelledOrder(user, order);
+            System.out.println("🪙 Refunded coins for cancelled order " + orderId);
+        } catch (Exception e) {
+            System.err.println("❌ Error refunding coins for cancelled order: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         order.setStatus(ShipmentStatus.CANCEL);
         orderRepository.save(order);
@@ -251,7 +254,7 @@ public class OrderServiceImpl implements OrderService {
                                         java.util.List<Integer> selectedItemIds,
                                         java.util.Map<Integer, Integer> itemQuantities,
                                         Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount,
-                                        Integer pointsRedeemed) {
+                                        Integer pointsRedeemed, Long coinsUsed) {
         try {
             System.out.println("=== Processing checkout in service ===");
             System.out.println("Cart ID: " + cartId);
@@ -346,6 +349,9 @@ public class OrderServiceImpl implements OrderService {
 
             // 🪙 HANDLE LOYALTY POINTS - Redeem points & update spending
             handleLoyaltyPoints(savedOrder, userId, pointsRedeemed);
+            
+            // 🪙 HANDLE COINS PAYMENT - Deduct coins & create transaction
+            handleCoinsPayment(savedOrder, userId, coinsUsed);
 
             // Handle payment processing
             // Return order result
@@ -1367,6 +1373,111 @@ public class OrderServiceImpl implements OrderService {
         }
         
         System.out.println("=== Loyalty Points Handling Complete ===");
+    }
+    
+    /**
+     * Handle DeeG Xu payment - ONLY deduct coins when creating order
+     * Creating CoinTransaction record for tracking
+     */
+    private void handleCoinsPayment(Order order, Long userId, Long coinsUsed) {
+        System.out.println("=== Handling DeeG Xu Payment (Order Creation) ===");
+        
+        if (coinsUsed == null || coinsUsed <= 0) {
+            System.out.println("⚠️ No coins used for this order");
+            return;
+        }
+        
+        try {
+            Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+            
+            // Validate user has enough coins
+            Long currentCoins = user.getCoins() != null ? user.getCoins() : 0L;
+            if (currentCoins < coinsUsed) {
+                throw new RuntimeException("Insufficient coins balance. Current: " + currentCoins + ", Required: " + coinsUsed);
+            }
+            
+            // Deduct coins from user
+            Long newBalance = currentCoins - coinsUsed;
+            user.setCoins(newBalance);
+            userRepository.save(user);
+            
+            System.out.println("🪙 Deducted " + coinsUsed + " coins from user " + userId + ", new balance: " + newBalance);
+            
+            // Create CoinTransaction record (SPENT)
+            CoinTransaction coinTransaction = CoinTransaction.builder()
+                    .user(user)
+                    .transactionType(CoinTransactionType.SPENT)
+                    .amount(-coinsUsed)  // Negative for spending
+                    .balanceAfter(newBalance)
+                    .referenceType("ORDER")
+                    .referenceId(order.getId())
+                    .description("Sử dụng xu thanh toán đơn #" + order.getId())
+                    .build();
+            coinTransactionRepository.save(coinTransaction);
+            
+            System.out.println("✅ Created CoinTransaction record for order #" + order.getId());
+            
+            // Update order.coinsUsed field
+            order.setCoinsUsed(coinsUsed);
+            orderRepository.save(order);
+            
+            System.out.println("✅ Coins payment handled successfully");
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error handling coins payment: " + e.getMessage());
+            e.printStackTrace();
+            // Throw exception to rollback transaction
+            throw new RuntimeException("Failed to process coins payment: " + e.getMessage());
+        }
+        
+        System.out.println("=== DeeG Xu Payment Handling Complete ===");
+    }
+    
+    /**
+     * Refund coins when order is cancelled
+     */
+    private void refundCoinsForCancelledOrder(Users user, Order order) {
+        if (user == null || order == null) {
+            throw new IllegalArgumentException("User and Order cannot be null");
+        }
+        
+        // Check if user used coins for this order
+        if (order.getCoinsUsed() == null || order.getCoinsUsed() <= 0) {
+            System.out.println("⚠️ No coins to refund for order #" + order.getId());
+            return;
+        }
+        
+        try {
+            Long coinsToRefund = order.getCoinsUsed();
+            Long currentCoins = user.getCoins() != null ? user.getCoins() : 0L;
+            Long newBalance = currentCoins + coinsToRefund;
+            
+            // Refund coins to user
+            user.setCoins(newBalance);
+            userRepository.save(user);
+            
+            System.out.println("🪙 Refunded " + coinsToRefund + " coins to user " + user.getId() + ", new balance: " + newBalance);
+            
+            // Create CoinTransaction record (EARNED - refund)
+            CoinTransaction coinTransaction = CoinTransaction.builder()
+                    .user(user)
+                    .transactionType(CoinTransactionType.EARNED)
+                    .amount(coinsToRefund)  // Positive for refund
+                    .balanceAfter(newBalance)
+                    .referenceType("ORDER_CANCEL")
+                    .referenceId(order.getId())
+                    .description("Hoàn xu từ hủy đơn #" + order.getId())
+                    .build();
+            coinTransactionRepository.save(coinTransaction);
+            
+            System.out.println("✅ Created CoinTransaction record for refund on order #" + order.getId());
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error refunding coins: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Failed to refund coins: " + e.getMessage());
+        }
     }
 
     /**

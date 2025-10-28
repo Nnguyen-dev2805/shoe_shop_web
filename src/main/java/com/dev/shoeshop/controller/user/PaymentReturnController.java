@@ -72,7 +72,8 @@ public class PaymentReturnController {
                 pendingPayment.getShippingFee(),
                 pendingPayment.getOrderDiscountAmount(),
                 pendingPayment.getShippingDiscountAmount(),
-                pendingPayment.getPointsRedeemed() // 🪙 Add points
+                pendingPayment.getPointsRedeemed(), // 🪙 Add points
+                pendingPayment.getCoinsUsed() // 🪙 Add coins
             );
             
             System.out.println("✅ Order created successfully with ID: " + orderResult.getOrderId());

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" data-menu-color="dark">
 <head>
     <meta charset="utf-8" />
     <title>Chi tiết yêu cầu trả hàng | DeeG Shop Admin</title>
@@ -74,7 +74,17 @@
                 <h1 class="detail-title">
                     Yêu cầu trả hàng #<span th:text="${returnRequest.id}">1</span>
                 </h1>
-                <span class="status-badge" th:classappend="${returnRequest.status}" th:text="${#strings.replace(returnRequest.status, '_', ' ')}">PENDING</span>
+                <span class="status-badge" th:classappend="${returnRequest.status}">
+                    <span th:switch="${returnRequest.status.name()}">
+                        <span th:case="'PENDING'">Chờ duyệt</span>
+                        <span th:case="'APPROVED'">Đã chấp nhận</span>
+                        <span th:case="'SHIPPING'">Đang gửi về</span>
+                        <span th:case="'RECEIVED'">Đã nhận hàng</span>
+                        <span th:case="'REFUNDED'">Đã hoàn xu</span>
+                        <span th:case="'REJECTED'">Đã từ chối</span>
+                        <span th:case="*">[[${returnRequest.status}]]</span>
+                    </span>
+                </span>
             </div>
             
             <div class="detail-grid">
@@ -101,7 +111,7 @@
                         <h2 class="card-title"><i class='bx bx-error-circle'></i> Lý do & Mô tả</h2>
                         <div class="info-row">
                             <span class="info-label">Lý do:</span>
-                            <span class="info-value" th:text="${#strings.replace(returnRequest.reason, '_', ' ')}">WRONG_SIZE</span>
+                            <span class="info-value" th:text="${returnRequest.reason.description}">Lý do trả hàng</span>
                         </div>
                         <div class="description-box" style="margin-top: 16px;">
                             <strong style="display: block; margin-bottom: 8px; color: #666;">Mô tả chi tiết:</strong>
@@ -112,25 +122,36 @@
                     <div class="detail-card" style="margin-top: 20px;">
                         <h2 class="card-title"><i class='bx bx-image'></i> Hình ảnh</h2>
                         <div class="image-gallery">
-                            <img th:src="${returnRequest.images}" alt="Return Image" class="gallery-image" th:onclick="'window.open(\'' + ${returnRequest.images} + '\', \'_blank\')'">
+                            <img th:src="${returnRequest.images}" alt="Return Image" class="gallery-image" th:data-image="${returnRequest.images}" onclick="window.open(this.getAttribute('data-image'), '_blank')">
                         </div>
                     </div>
                     
                     <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'PENDING'}">
                         <h2 class="card-title"><i class='bx bx-cog'></i> Hành động</h2>
                         <div class="action-buttons">
-                            <button class="btn btn-approve" th:onclick="'approveReturn(' + ${returnRequest.id} + ')'">
+                            <button class="btn btn-approve" th:data-id="${returnRequest.id}" onclick="approveReturn(this.getAttribute('data-id'))">
                                 <i class='bx bx-check'></i> Chấp nhận
                             </button>
-                            <button class="btn btn-reject" th:onclick="'rejectReturn(' + ${returnRequest.id} + ')'">
+                            <button class="btn btn-reject" th:data-id="${returnRequest.id}" onclick="rejectReturn(this.getAttribute('data-id'))">
                                 <i class='bx bx-x'></i> Từ chối
                             </button>
                         </div>
                     </div>
                     
+                    <!-- Assign Shipper Section -->
+                    <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'APPROVED'}">
+                        <h2 class="card-title"><i class='bx bx-user-check'></i> Gán Shipper</h2>
+                        <p style="color: #666; font-size: 14px; margin-bottom: 16px;">
+                            Chọn shipper để đến lấy hàng từ khách hàng
+                        </p>
+                        <button class="btn btn-approve" th:data-id="${returnRequest.id}" onclick="showShipperModal(this.getAttribute('data-id'))">
+                            <i class='bx bx-user-plus'></i> Chọn Shipper
+                        </button>
+                    </div>
+                    
                     <div class="detail-card" style="margin-top: 20px;" th:if="${returnRequest.status.name() == 'APPROVED' or returnRequest.status.name() == 'SHIPPING'}">
                         <h2 class="card-title"><i class='bx bx-check-circle'></i> Xác nhận nhận hàng</h2>
-                        <button class="btn btn-received" th:onclick="'markReceived(' + ${returnRequest.id} + ')'">
+                        <button class="btn btn-received" th:data-id="${returnRequest.id}" onclick="markReceived(this.getAttribute('data-id'))">
                             <i class='bx bx-package'></i> Đã nhận hàng từ khách
                         </button>
                     </div>
@@ -139,9 +160,9 @@
                         <h2 class="card-title"><i class='bx bx-money'></i> Hoàn xu</h2>
                         <div class="info-row">
                             <span class="info-label">Số tiền cần hoàn:</span>
-                            <span class="info-value" th:text="${#numbers.formatDecimal(returnRequest.order.total, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,890,000 đ</span>
+                            <span class="info-value" th:text="${#numbers.formatDecimal(returnRequest.order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,890,000 đ</span>
                         </div>
-                        <button class="btn btn-refund" th:onclick="'processRefund(' + ${returnRequest.id} + ', ' + ${returnRequest.order.total} + ')'" style="margin-top: 16px;">
+                        <button class="btn btn-refund" th:data-id="${returnRequest.id}" th:data-amount="${returnRequest.order.totalPrice}" onclick="processRefund(this.getAttribute('data-id'), this.getAttribute('data-amount'))" style="margin-top: 16px;">
                             <i class='bx bx-money'></i> Hoàn xu cho khách hàng
                         </button>
                     </div>
@@ -151,8 +172,8 @@
                     <div class="detail-card">
                         <h2 class="card-title"><i class='bx bx-user'></i> Thông tin khách hàng</h2>
                         <div class="info-row">
-                            <span class="info-label">Tên:</span>
-                            <span class="info-value" th:text="${returnRequest.user.fullname}">Nguyễn Văn A</span>
+                            <span class="info-label">Tên người nhận:</span>
+                            <span class="info-value" th:text="${recipientName ?: returnRequest.user.fullname}">Nguyễn Văn A</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">Email:</span>
@@ -160,7 +181,42 @@
                         </div>
                         <div class="info-row">
                             <span class="info-label">SĐT:</span>
-                            <span class="info-value" th:text="${returnRequest.user.phone}">0123456789</span>
+                            <span class="info-value" th:text="${recipientPhone ?: returnRequest.user.phone ?: 'Chưa có'}">0123456789</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Địa chỉ lấy hàng:</span>
+                            <span class="info-value" th:if="${returnRequest.order.address != null}">
+                                <div style="line-height: 1.6;">
+                                    <div th:text="${returnRequest.order.address.address_line}">233 Đại Lộ Hùng Vương, Phường 5</div>
+                                    <div th:text="${returnRequest.order.address.city + ', ' + (returnRequest.order.address.country ?: 'Việt Nam')}">Phú Yên, Việt Nam</div>
+                                </div>
+                            </span>
+                            <span class="info-value" th:unless="${returnRequest.order.address != null}">Chưa có địa chỉ</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipper Info Card -->
+                    <div class="detail-card" style="margin-top: 20px;" th:if="${returnShipment != null}">
+                        <h2 class="card-title"><i class='bx bx-user-check'></i> Thông tin Shipper</h2>
+                        <div class="info-row">
+                            <span class="info-label">Tên Shipper:</span>
+                            <span class="info-value" th:text="${returnShipment.shipper.fullname}">Trần Văn B</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">SĐT Shipper:</span>
+                            <span class="info-value" th:text="${returnShipment.shipper.phone ?: 'Chưa có'}">0987654321</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email Shipper:</span>
+                            <span class="info-value" th:text="${returnShipment.shipper.email}">shipper@example.com</span>
+                        </div>
+                        <div class="info-row" th:if="${returnShipment.pickupDate != null}">
+                            <span class="info-label">Ngày lấy hàng:</span>
+                            <span class="info-value" th:text="${#dates.format(returnShipment.pickupDate, 'dd/MM/yyyy HH:mm')}">27/10/2025 15:30</span>
+                        </div>
+                        <div class="info-row" th:if="${returnShipment.deliveryDate != null}">
+                            <span class="info-label">Ngày giao về kho:</span>
+                            <span class="info-value" th:text="${#dates.format(returnShipment.deliveryDate, 'dd/MM/yyyy HH:mm')}">28/10/2025 10:00</span>
                         </div>
                     </div>
                     
@@ -244,11 +300,13 @@ function markReceived(id) {
 }
 
 function processRefund(id, amount) {
-    if (!confirm(`Hoàn ${amount.toLocaleString('vi-VN')} xu cho khách hàng?`)) return;
+    // Parse amount to number
+    const refundAmount = parseFloat(amount);
+    if (!confirm(`Hoàn ${refundAmount.toLocaleString('vi-VN')} xu cho khách hàng?`)) return;
     $.ajax({
         url: `/admin/returns/${id}/refund`,
         type: 'POST',
-        data: { refundAmount: amount },
+        data: { refundAmount: refundAmount },
         success: function(res) {
             alert(res.message);
             location.reload();
@@ -257,6 +315,119 @@ function processRefund(id, amount) {
             alert(xhr.responseJSON?.message || 'Lỗi!');
         }
     });
+}
+
+// Show shipper selection modal
+function showShipperModal(returnId) {
+    // Load shippers
+    $.ajax({
+        url: '/admin/returns/api/shippers',
+        type: 'GET',
+        success: function(res) {
+            if (res.success && res.shippers.length > 0) {
+                displayShipperModal(returnId, res.shippers);
+            } else {
+                alert('Không có shipper nào khả dụng!');
+            }
+        },
+        error: function() {
+            alert('Lỗi khi tải danh sách shipper!');
+        }
+    });
+}
+
+// Display shipper modal
+function displayShipperModal(returnId, shippers) {
+    let html = `
+        <div id="shipperModal" style="
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999;">
+            <div style="
+                background: white; 
+                padding: 30px; 
+                border-radius: 8px; 
+                max-width: 500px; 
+                width: 90%;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                <h3 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">
+                    <i class='bx bx-user-check'></i> Chọn Shipper
+                </h3>
+                <div style="max-height: 400px; overflow-y: auto;">`;
+    
+    shippers.forEach(shipper => {
+        html += `
+            <div onclick="selectShipper(${returnId}, ${shipper.id}, '${shipper.name}')" style="
+                padding: 16px;
+                border: 2px solid #e8e8e8;
+                border-radius: 6px;
+                margin-bottom: 12px;
+                cursor: pointer;
+                transition: all 0.2s;
+                background: #fafafa;"
+                onmouseover="this.style.borderColor='#ee4d2d'; this.style.background='#fff7e6';"
+                onmouseout="this.style.borderColor='#e8e8e8'; this.style.background='#fafafa';">
+                <div style="font-weight: 600; color: #333; margin-bottom: 6px; font-size: 16px;">
+                    <i class='bx bx-user'></i> ${shipper.name}
+                </div>
+                <div style="font-size: 13px; color: #666;">
+                    <i class='bx bx-phone'></i> ${shipper.phone || 'N/A'} | 
+                    <i class='bx bx-envelope'></i> ${shipper.email || 'N/A'}
+                </div>
+            </div>`;
+    });
+    
+    html += `
+                </div>
+                <button onclick="closeShipperModal()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: #f0f0f0;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 14px;
+                    margin-top: 16px;
+                    transition: background 0.2s;"
+                    onmouseover="this.style.background='#e0e0e0';"
+                    onmouseout="this.style.background='#f0f0f0';">
+                    Hủy
+                </button>
+            </div>
+        </div>`;
+    
+    $('body').append(html);
+}
+
+// Select shipper and assign
+function selectShipper(returnId, shipperId, shipperName) {
+    if (!confirm(`Gán shipper "${shipperName}" để lấy hàng?`)) return;
+    
+    $.ajax({
+        url: `/admin/returns/${returnId}/assign-shipper`,
+        type: 'POST',
+        data: { shipperId: shipperId },
+        success: function(res) {
+            alert(res.message);
+            closeShipperModal();
+            location.reload();
+        },
+        error: function(xhr) {
+            alert(xhr.responseJSON?.message || 'Lỗi khi gán shipper!');
+        }
+    });
+}
+
+// Close modal
+function closeShipperModal() {
+    $('#shipperModal').remove();
 }
 </script>
 

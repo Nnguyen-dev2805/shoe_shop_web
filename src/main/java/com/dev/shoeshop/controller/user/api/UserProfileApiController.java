@@ -21,7 +21,7 @@ import java.util.Map;
  * Location: controller/user/api/ (User Module)
  */
 @RestController
-@RequestMapping("/api/user/profile")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Slf4j
 public class UserProfileApiController {
@@ -33,7 +33,7 @@ public class UserProfileApiController {
      * Update user profile information (fullname, phone)
      * POST /api/user/profile/update
      */
-    @PostMapping("/update")
+    @PostMapping("/profile/update")
     public ResponseEntity<Map<String, Object>> updateProfile(
             @RequestBody Map<String, String> request,
             HttpSession session) {
@@ -111,7 +111,7 @@ public class UserProfileApiController {
      * Get current user profile information
      * GET /api/user/profile
      */
-    @GetMapping
+    @GetMapping("/profile")
     public ResponseEntity<Map<String, Object>> getProfile(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
@@ -152,7 +152,7 @@ public class UserProfileApiController {
      * Get current user profile with avatar
      * GET /api/user/profile/avatar
      */
-    @GetMapping("/avatar")
+    @GetMapping("/profile/avatar")
     public ResponseEntity<Map<String, Object>> getProfileWithAvatar(HttpSession session) {
         Map<String, Object> response = new HashMap<>();
         
@@ -200,7 +200,7 @@ public class UserProfileApiController {
      * Upload avatar to Cloudinary
      * POST /api/user/profile/upload-avatar
      */
-    @PostMapping("/upload-avatar")
+    @PostMapping("/profile/upload-avatar")
     public ResponseEntity<Map<String, Object>> uploadAvatar(
             @RequestParam("avatar") MultipartFile file,
             HttpSession session) {
@@ -278,6 +278,47 @@ public class UserProfileApiController {
             log.error("❌ Error uploading avatar to Cloudinary", e);
             response.put("success", false);
             response.put("message", "Có lỗi khi upload ảnh. Vui lòng thử lại.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
+    /**
+     * Get user DeeG Xu balance
+     * GET /api/user/coins/balance
+     */
+    @GetMapping("/coins/balance")
+    public ResponseEntity<Map<String, Object>> getCoinsBalance(HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                response.put("success", false);
+                response.put("message", "Bạn cần đăng nhập.");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+            }
+            
+            // Get fresh data from database to ensure up-to-date coins
+            Users dbUser = userRepository.findByEmail(user.getEmail());
+            if (dbUser == null) {
+                response.put("success", false);
+                response.put("message", "Không tìm thấy người dùng.");
+                return ResponseEntity.badRequest().body(response);
+            }
+            
+            Long coins = dbUser.getCoins() != null ? dbUser.getCoins() : 0L;
+            
+            response.put("success", true);
+            response.put("coins", coins);
+            response.put("coinsFormatted", String.format("%,d xu", coins));
+            
+            log.info("🪙 Coins balance loaded for user {}: {} xu", user.getEmail(), coins);
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            log.error("❌ Error getting coins balance", e);
+            response.put("success", false);
+            response.put("message", "Có lỗi xảy ra khi tải số xu.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
