@@ -10,6 +10,13 @@ import com.dev.shoeshop.dto.shippingcompany.ShippingCompanyResponse;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.*;
 import com.dev.shoeshop.utils.Constant;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import vn.payos.PayOS;
@@ -30,6 +37,7 @@ import java.util.Map;
  * API Cart Controller - Handles RESTful API endpoints for cart operations
  * Provides JSON responses for AJAX calls from frontend
  */
+@Tag(name = "Cart Management", description = "APIs for shopping cart, checkout, and payment operations")
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -53,6 +61,14 @@ public class ApiCartController {
      * Get cart item count for current user
      * GET /api/cart/count
      */
+    @Operation(
+        summary = "Get cart item count",
+        description = "Returns the number of items in the current user's shopping cart"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved cart count"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/cart/count")
     public ResponseEntity<?> getCartCount(HttpSession session) {
         try {
@@ -92,6 +108,15 @@ public class ApiCartController {
      * Get current cart data
      * GET /api/cart/current
      */
+    @Operation(
+        summary = "Get current cart",
+        description = "Retrieves all items in the current user's shopping cart with details"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved cart data"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/cart/current")
     public ResponseEntity<?> getCurrentCart(HttpSession session) {
         try {
@@ -166,8 +191,18 @@ public class ApiCartController {
      * Update item quantity
      * PUT /api/cart/update-quantity/{id}
      */
+    @Operation(
+        summary = "Update cart item quantity",
+        description = "Updates the quantity of a specific item in the cart"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Quantity updated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid quantity or item not found"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated")
+    })
     @PutMapping("/cart/update-quantity/{id}")
-    public ResponseEntity<?> updateQuantity(@PathVariable Long id, 
+    public ResponseEntity<?> updateQuantity(
+            @Parameter(description = "Cart item ID", required = true) @PathVariable Long id, 
                                           @RequestBody Map<String, Object> request,
                                           HttpSession session) {
         try {
@@ -244,8 +279,19 @@ public class ApiCartController {
      * Remove cart item
      * DELETE /api/cart/delete/{id}
      */
+    @Operation(
+        summary = "Remove item from cart",
+        description = "Deletes a specific item from the user's shopping cart"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Item removed successfully"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @DeleteMapping("/cart/delete/{id}")
-    public ResponseEntity<?> removeCartItem(@PathVariable Long id, HttpSession session) {
+    public ResponseEntity<?> removeCartItem(
+            @Parameter(description = "Cart item ID", required = true) @PathVariable Long id, 
+            HttpSession session) {
         try {
             Users user = (Users) session.getAttribute(Constant.SESSION_USER);
             if (user == null) {
@@ -271,8 +317,18 @@ public class ApiCartController {
      * Verify PayOS payment status
      * GET /api/order/verify-payos-payment?orderCode=xxx
      */
+    @Operation(
+        summary = "Verify PayOS payment status",
+        description = "Checks the payment status from PayOS payment gateway"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Payment status retrieved"),
+        @ApiResponse(responseCode = "500", description = "Unable to verify payment status")
+    })
     @GetMapping("/order/verify-payos-payment")
-    public ResponseEntity<?> verifyPayOSPayment(@RequestParam Long orderCode) {
+    public ResponseEntity<?> verifyPayOSPayment(
+            @Parameter(description = "PayOS order code", required = true, example = "1735389000") 
+            @RequestParam Long orderCode) {
         try {
             // Get payment info from PayOS
             var paymentInfo = payOS.paymentRequests().get(orderCode);
@@ -313,6 +369,16 @@ public class ApiCartController {
      * Process checkout
      * POST /api/order/pay
      */
+    @Operation(
+        summary = "Process checkout and payment",
+        description = "Handles checkout process for COD or PayOS payment methods. For PayOS, returns payment URL. For COD, creates order immediately."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Checkout processed successfully"),
+        @ApiResponse(responseCode = "400", description = "Missing required fields or invalid data"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/order/pay")
     public ResponseEntity<?> processCheckout(@RequestBody Map<String, Object> request,
                                            HttpSession session) {
@@ -497,6 +563,16 @@ public class ApiCartController {
      * Add product to cart
      * POST /api/cart/add
      */
+    @Operation(
+        summary = "Add product to cart",
+        description = "Adds a product with specified quantity and price to the user's shopping cart"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Product added successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid request data"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/cart/add")
     public ResponseEntity<?> addToCart(@RequestBody Map<String, Object> request,
                                       HttpSession session) {
@@ -545,6 +621,15 @@ public class ApiCartController {
      * POST /api/cart/check-flash-sale
      * Body: {"productDetailIds": [1, 2, 3]}
      */
+    @Operation(
+        summary = "Check flash sale for cart items",
+        description = "Checks if any cart items are currently in an active flash sale"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Flash sale info retrieved"),
+        @ApiResponse(responseCode = "400", description = "Product detail IDs required"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/cart/check-flash-sale")
     public ResponseEntity<?> checkFlashSaleForCartItems(@RequestBody Map<String, Object> request) {
         try {

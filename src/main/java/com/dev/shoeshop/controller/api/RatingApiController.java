@@ -2,6 +2,11 @@ package com.dev.shoeshop.controller.api;
 
 import com.dev.shoeshop.dto.RatingResponseDTO;
 import com.dev.shoeshop.service.RatingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name = "Product Ratings", description = "APIs for managing product reviews and ratings")
 @RestController
 @RequestMapping("/api/ratings")
 @RequiredArgsConstructor
@@ -20,11 +26,23 @@ public class RatingApiController {
     /**
      * Get all ratings for a specific product
      */
+    @Operation(
+        summary = "Get product ratings",
+        description = "Retrieves all ratings for a product with optional filters (star rating, has comment, has image)"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved ratings"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/product/{productId}")
     public ResponseEntity<Map<String, Object>> getRatingsByProduct(
+            @Parameter(description = "Product ID", required = true, example = "1") 
             @PathVariable Long productId,
+            @Parameter(description = "Filter by star rating (1-5)", example = "5") 
             @RequestParam(required = false) Integer star,
+            @Parameter(description = "Filter ratings with comments") 
             @RequestParam(required = false) Boolean hasComment,
+            @Parameter(description = "Filter ratings with images") 
             @RequestParam(required = false) Boolean hasImage) {
         Map<String, Object> response = new HashMap<>();
         
@@ -63,6 +81,14 @@ public class RatingApiController {
     /**
      * Update rating statistics for all products (Admin endpoint)
      */
+    @Operation(
+        summary = "Update rating statistics",
+        description = "Recalculates and updates rating statistics for all products (Admin only)"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Statistics updated successfully"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/update-statistics")
     public ResponseEntity<Map<String, Object>> updateAllRatingStatistics() {
         Map<String, Object> response = new HashMap<>();

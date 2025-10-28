@@ -7,6 +7,13 @@ import com.dev.shoeshop.dto.flashsale.response.StockResponse;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.service.FlashSaleService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +38,7 @@ import java.util.Map;
  * - GET /item/{itemId}/stock - Lấy stock real-time (AJAX polling)
  * - POST /purchase - Mua flash sale item
  */
+@Tag(name = "Flash Sale", description = "Flash sale management APIs for time-limited special offers")
 @RestController
 @RequestMapping("/api/flash-sale")
 @RequiredArgsConstructor
@@ -66,6 +74,15 @@ public class FlashSaleApiController {
      *   }
      * });
      */
+    @Operation(
+        summary = "Get active flash sale",
+        description = "Retrieves the currently active flash sale with all items and time information"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Active flash sale found", 
+            content = @Content(schema = @Schema(implementation = FlashSaleResponse.class))),
+        @ApiResponse(responseCode = "204", description = "No active flash sale")
+    })
     @GetMapping("/active")
     public ResponseEntity<FlashSaleResponse> getActiveFlashSale() {
         log.info("API: Getting active flash sale");
@@ -108,6 +125,15 @@ public class FlashSaleApiController {
      *   }
      * });
      */
+    @Operation(
+        summary = "Get upcoming flash sale",
+        description = "Retrieves the next scheduled flash sale that hasn't started yet"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Upcoming flash sale found",
+            content = @Content(schema = @Schema(implementation = FlashSaleResponse.class))),
+        @ApiResponse(responseCode = "204", description = "No upcoming flash sale")
+    })
     @GetMapping("/upcoming")
     public ResponseEntity<FlashSaleResponse> getUpcomingFlashSale() {
         log.info("API: Getting upcoming flash sale");
@@ -148,8 +174,16 @@ public class FlashSaleApiController {
      *   }
      * });
      */
+    @Operation(
+        summary = "Get flash sale items",
+        description = "Retrieves all products included in a specific flash sale"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved flash sale items")
+    })
     @GetMapping("/{flashSaleId}/items")
     public ResponseEntity<List<FlashSaleItemResponse>> getFlashSaleItems(
+            @Parameter(description = "Flash Sale ID", required = true, example = "1") 
             @PathVariable Long flashSaleId) {
         
         log.info("API: Getting items for flash sale {}", flashSaleId);
@@ -192,8 +226,18 @@ public class FlashSaleApiController {
      *   });
      * }, 3000); // 3 giây
      */
+    @Operation(
+        summary = "Get real-time stock info",
+        description = "Returns current stock status for a flash sale item (for AJAX polling every 3-5 seconds)"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Stock info retrieved",
+            content = @Content(schema = @Schema(implementation = StockResponse.class)))
+    })
     @GetMapping("/item/{itemId}/stock")
-    public ResponseEntity<StockResponse> getStockInfo(@PathVariable Long itemId) {
+    public ResponseEntity<StockResponse> getStockInfo(
+            @Parameter(description = "Flash Sale Item ID", required = true, example = "123") 
+            @PathVariable Long itemId) {
         log.debug("API: Getting stock info for item {}", itemId);
         
         StockResponse stock = flashSaleService.getStockInfo(itemId);
@@ -250,6 +294,15 @@ public class FlashSaleApiController {
      * - Validate user không null
      * - FlashSaleService sẽ check stock, timeout, inventory
      */
+    @Operation(
+        summary = "Purchase flash sale item",
+        description = "Process flash sale purchase. Validates stock, creates order. Requires authentication."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Purchase successful"),
+        @ApiResponse(responseCode = "400", description = "Out of stock or invalid request"),
+        @ApiResponse(responseCode = "401", description = "User not authenticated")
+    })
     @PostMapping("/purchase")
     public ResponseEntity<Map<String, Object>> purchaseFlashSaleItem(
             @Valid @RequestBody PurchaseFlashSaleRequest request,
@@ -314,6 +367,13 @@ public class FlashSaleApiController {
      *   }
      * });
      */
+    @Operation(
+        summary = "Check flash sale status",
+        description = "Quick check to see if there are any active or upcoming flash sales"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Status retrieved successfully")
+    })
     @GetMapping("/status")
     public ResponseEntity<Map<String, Boolean>> getFlashSaleStatus() {
         log.debug("API: Checking flash sale status");

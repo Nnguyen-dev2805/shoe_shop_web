@@ -2,6 +2,13 @@ package com.dev.shoeshop.controller.api;
 
 import com.dev.shoeshop.dto.discount.DiscountResponse;
 import com.dev.shoeshop.service.DiscountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +21,7 @@ import java.util.Map;
 /**
  * API Controller cho voucher system (Order & Shipping vouchers)
  */
+@Tag(name = "Voucher & Discount", description = "APIs for managing order and shipping vouchers/discounts")
 @Slf4j
 @RestController
 @RequestMapping("/api/vouchers")
@@ -26,6 +34,14 @@ public class VoucherController {
      * Get all active order vouchers (giảm giá đơn hàng)
      * GET /api/vouchers/order
      */
+    @Operation(
+        summary = "Get order vouchers",
+        description = "Retrieves all active vouchers that can be applied to reduce order total"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved order vouchers"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/order")
     public ResponseEntity<Map<String, Object>> getOrderVouchers() {
         log.info("API: Getting active order vouchers");
@@ -57,6 +73,14 @@ public class VoucherController {
      * Get all active shipping vouchers (giảm phí vận chuyển)
      * GET /api/vouchers/shipping
      */
+    @Operation(
+        summary = "Get shipping vouchers",
+        description = "Retrieves all active vouchers that can be applied to reduce shipping fees"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully retrieved shipping vouchers"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/shipping")
     public ResponseEntity<Map<String, Object>> getShippingVouchers() {
         log.info("API: Getting active shipping vouchers");
@@ -95,8 +119,18 @@ public class VoucherController {
      *   "orderValue": 1700000
      * }
      */
+    @Operation(
+        summary = "Calculate shipping discount",
+        description = "Calculates the discount amount for a shipping voucher based on order value and shipping fee"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Discount calculated successfully"),
+        @ApiResponse(responseCode = "400", description = "Invalid voucher or does not meet requirements"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/shipping/calculate")
     public ResponseEntity<Map<String, Object>> calculateShippingDiscount(
+            @Parameter(description = "Request containing voucherId, shippingFee, and orderValue")
             @RequestBody Map<String, Object> request) {
         
         try {
@@ -155,8 +189,17 @@ public class VoucherController {
      *   "shippingFee": 35000
      * }
      */
+    @Operation(
+        summary = "Validate shipping voucher",
+        description = "Checks if a shipping voucher is valid and can be applied to the current order"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Validation completed"),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @PostMapping("/shipping/validate")
     public ResponseEntity<Map<String, Object>> validateShippingVoucher(
+            @Parameter(description = "Request containing voucherId, orderValue, and shippingFee")
             @RequestBody Map<String, Object> request) {
         
         try {
