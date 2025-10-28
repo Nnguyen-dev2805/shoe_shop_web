@@ -1,4 +1,4 @@
-# DeeG Shoe Shop - E-commerce Platform
+# DeeG Shoe Shop - Website Bán Giày Trực Tuyến
 
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://openjdk.org/)
@@ -8,15 +8,15 @@
 
 ## Giới Thiệu
 
-DeeG Shoe Shop là hệ thống quản lý và bán hàng giày dép trực tuyến toàn diện, được phát triển bằng Spring Boot 3.5.6 và Java 21. Đây là nền tảng e-commerce đầy đủ tính năng với tích hợp thanh toán trực tuyến, AI chatbot, flash sale, hệ thống voucher phức tạp, và tính phí vận chuyển tự động dựa trên GPS.
+DeeG Shoe Shop là website bán và quản lý cửa hàng giày dép trực tuyến, được phát triển bằng Spring Boot 3.5.6 và Java 21. Website cung cấp đầy đủ tính năng mua sắm trực tuyến với tích hợp thanh toán online, AI chatbot hỗ trợ khách hàng, chương trình Flash Sale, hệ thống voucher giảm giá, và tự động tính phí vận chuyển dựa trên khoảng cách GPS.
 
 ### Mục Tiêu Dự Án
 
-- Xây dựng nền tảng thương mại điện tử hoàn chỉnh cho ngành bán lẻ giày dép
-- Tích hợp các công nghệ hiện đại: AI, Payment Gateway, Cloud Storage, Real-time Communication
-- Hỗ trợ đa vai trò người dùng với phân quyền chi tiết (Admin, Manager, Shipper, User)
-- Tối ưu trải nghiệm mua sắm với giao diện responsive và UX thân thiện
-- Sẵn sàng triển khai production với Docker, CI/CD và Cloud Platform
+- Xây dựng website bán hàng giày dép trực tuyến đầy đủ tính năng
+- Tích hợp các công nghệ hiện đại: AI, cổng thanh toán, lưu trữ đám mây, giao tiếp realtime
+- Hỗ trợ đa vai trò người dùng với phân quyền chi tiết (Quản trị viên, Quản lý, Shipper, Khách hàng)
+- Tối ưu trải nghiệm mua sắm với giao diện responsive và thân thiện
+- Sẵn sàng triển khai production với Docker, CI/CD
 
 ## Mục Lục
 
@@ -35,301 +35,301 @@ DeeG Shoe Shop là hệ thống quản lý và bán hàng giày dép trực tuy�
 
 ## Công Nghệ Sử Dụng
 
-### Backend Framework & Core Technologies
+### Backend Framework & Công Nghệ Nền Tảng
 
-**Spring Framework Ecosystem:**
-- Spring Boot 3.5.6 - Application framework
-- Spring Data JPA - ORM và database operations
-- Spring Security 6 - Authentication và authorization
-- Spring Security OAuth2 Client - Google OAuth2 integration
-- Spring Boot Actuator - Health monitoring và metrics
-- Spring WebSocket - Real-time bidirectional communication
-- Spring Scheduler - Automated background tasks
-- Spring Boot Starter Mail - Email service
-- Spring Boot DevTools - Development productivity
+**Hệ sinh thái Spring Framework:**
+- Spring Boot 3.5.6 - Framework ứng dụng chính
+- Spring Data JPA - Thao tác cơ sở dữ liệu và ORM
+- Spring Security 6 - Xác thực và phân quyền
+- Spring Security OAuth2 Client - Tích hợp đăng nhập Google OAuth2
+- Spring Boot Actuator - Giám sát sức khỏe hệ thống và metrics
+- Spring WebSocket - Giao tiếp hai chiều realtime
+- Spring Scheduler - Tác vụ tự động chạy nền
+- Spring Boot Starter Mail - Dịch vụ gửi email
+- Spring Boot DevTools - Hỗ trợ phát triển (hot reload)
 
-**Database & Persistence:**
-- MySQL 8.0 - Relational database
-- Hibernate ORM - JPA implementation
-- HikariCP - High-performance connection pooling (default)
-- Spring Data JPA Repositories - Data access layer
+**Cơ Sở Dữ Liệu & Persistence:**
+- MySQL 8.0 - Hệ quản trị cơ sở dữ liệu quan hệ
+- Hibernate ORM - Triển khai JPA
+- HikariCP - Connection pooling hiệu năng cao (mặc định)
+- Spring Data JPA Repositories - Tầng truy cập dữ liệu
 
-**Security & Authentication:**
-- BCrypt Password Encoder - Secure password hashing
-- Google OAuth2 - Social login integration
-- Session-based Authentication - Stateful authentication
-- Role-based Access Control (RBAC) - Authorization
+**Bảo Mật & Xác Thực:**
+- BCrypt Password Encoder - Mã hóa mật khẩu an toàn
+- Google OAuth2 - Đăng nhập mạng xã hội
+- Session-based Authentication - Xác thực dựa trên session
+- Role-based Access Control (RBAC) - Phân quyền theo vai trò
 
-**Validation & Data Processing:**
-- Jakarta Validation API 3.0.2 - Bean validation
-- Hibernate Validator 8.0.2.Final - Validation implementation
-- ModelMapper 3.2.0 - Object mapping (Entity ↔ DTO)
+**Validation & Xử Lý Dữ Liệu:**
+- Jakarta Validation API 3.0.2 - Kiểm tra dữ liệu Bean
+- Hibernate Validator 8.0.2.Final - Triển khai validation
+- ModelMapper 3.2.0 - Chuyển đổi đối tượng (Entity ↔ DTO)
 
-### Third-party Integrations & APIs
+### Tích Hợp Bên Thứ Ba & APIs
 
-**Payment Gateway:**
-- PayOS Java SDK 2.0.1 - Vietnamese payment gateway
-  - QR Code payment
-  - Bank transfer
-  - Payment verification
-  - Webhook handling
+**Cổng Thanh Toán:**
+- PayOS Java SDK 2.0.1 - Cổng thanh toán Việt Nam
+  - Thanh toán QR Code
+  - Chuyển khoản ngân hàng
+  - Xác minh thanh toán
+  - Xử lý webhook
 
-**Cloud Services:**
-- Cloudinary HTTP44 1.36.0 - Cloud image management
-  - Image upload và storage
-  - Image optimization
-  - CDN delivery
-  - Transformation APIs
+**Dịch Vụ Đám Mây:**
+- Cloudinary HTTP44 1.36.0 - Quản lý ảnh trên cloud
+  - Upload và lưu trữ ảnh
+  - Tối ưu hóa ảnh tự động
+  - Phân phối qua CDN
+  - APIs biến đổi ảnh
 
-**Artificial Intelligence:**
-- Google Gemini AI 1.21.0 - AI-powered chatbot
-  - Natural language processing
-  - Context-aware responses
-  - Product queries
-  - Order tracking assistance
+**Trí Tuệ Nhân Tạo:**
+- Google Gemini AI 1.21.0 - AI chatbot
+  - Xử lý ngôn ngữ tự nhiên
+  - Phản hồi theo ngữ cảnh
+  - Tra cứu thông tin sản phẩm
+  - Hỗ trợ theo dõi đơn hàng
 
-**Maps & Geolocation:**
-- Goong Maps API - Vietnamese maps service
-  - Distance calculation (GPS-based)
+**Bản Đồ & Định Vị:**
+- Goong Maps API - Dịch vụ bản đồ Việt Nam
+  - Tính khoảng cách (dựa trên GPS)
   - Geocoding và reverse geocoding
-  - Shipping fee estimation
-  - Address validation
+  - Ước tính phí vận chuyển
+  - Xác thực địa chỉ
 
-**Email Service:**
+**Dịch Vụ Email:**
 - Gmail SMTP với Spring Mail
-  - User registration verification
-  - Password reset emails
-  - Order confirmation
-  - Promotional emails
+  - Xác minh đăng ký tài khoản
+  - Email đặt lại mật khẩu
+  - Xác nhận đơn hàng
+  - Email khuyến mãi
 
-**File Processing:**
-- Apache POI 5.2.5 - Excel manipulation
-- Apache POI OOXML 5.2.5 - Modern Excel format (.xlsx)
-  - Order report export
-  - Product import/export
-  - Statistics reports
+**Xử Lý File:**
+- Apache POI 5.2.5 - Thao tác file Excel
+- Apache POI OOXML 5.2.5 - Định dạng Excel hiện đại (.xlsx)
+  - Xuất báo cáo đơn hàng
+  - Import/Export sản phẩm
+  - Báo cáo thống kê
 
-### API Documentation:**
-- SpringDoc OpenAPI 2.3.0 - OpenAPI 3.0 specification
-  - Swagger UI integration
-  - Interactive API testing
-  - Auto-generated documentation
+**Tài Liệu API:**
+- SpringDoc OpenAPI 2.3.0 - Đặc tả OpenAPI 3.0
+  - Tích hợp Swagger UI
+  - Test API tương tác
+  - Tự động sinh tài liệu
 
-### Frontend Technologies
+### Công Nghệ Frontend
 
 **Template Engine:**
-- Thymeleaf - Server-side Java template engine
-- Thymeleaf Extras Spring Security - Security tags và utilities
+- Thymeleaf - Template engine Java phía server
+- Thymeleaf Extras Spring Security - Thẻ bảo mật và tiện ích
 
 **UI Framework & Styling:**
-- Bootstrap 5 - Responsive CSS framework
-- Custom CSS - Brand-specific styling
-- Font Awesome - Icon library
-- Lucide Icons - Modern icon set
+- Bootstrap 5 - Framework CSS responsive
+- Custom CSS - Styling riêng theo thương hiệu
+- Font Awesome - Thư viện icon
+- Lucide Icons - Bộ icon hiện đại
 
 **JavaScript & Client-side:**
-- Vanilla JavaScript - Core scripting
-- AJAX (XMLHttpRequest/Fetch API) - Asynchronous requests
-- WebSocket Client (STOMP.js) - Real-time communication
-- jQuery - DOM manipulation và AJAX
+- Vanilla JavaScript - Ngôn ngữ kịch bản cốt lõi
+- AJAX (XMLHttpRequest/Fetch API) - Yêu cầu bất đồng bộ
+- WebSocket Client (STOMP.js) - Giao tiếp realtime
+- jQuery - Thao tác DOM và AJAX
 
-### Development & Build Tools
+### Công Cụ Phát Triển & Build
 
 **Build Tool:**
-- Apache Maven 3.9+ - Dependency management và build automation
-- Maven Compiler Plugin - Java compilation
-- Spring Boot Maven Plugin - Executable JAR packaging
+- Apache Maven 3.9+ - Quản lý dependencies và build tự động
+- Maven Compiler Plugin - Biên dịch Java
+- Spring Boot Maven Plugin - Đóng gói JAR thực thi
 
-**Code Quality:**
-- Lombok - Boilerplate code reduction
+**Chất Lượng Code:**
+- Lombok - Giảm code lặp lại
   - @Data, @Builder, @NoArgsConstructor, @AllArgsConstructor
   - @Getter, @Setter annotations
-- Spring Boot Configuration Processor - Metadata generation
+- Spring Boot Configuration Processor - Tạo metadata cấu hình
 
-### DevOps & Deployment
+### DevOps & Triển Khai
 
 **Containerization:**
-- Docker - Container platform
-- Multi-stage Dockerfile - Optimized image building
-- Docker Compose (optional) - Multi-container orchestration
+- Docker - Nền tảng container
+- Multi-stage Dockerfile - Build image tối ưu
+- Docker Compose (tùy chọn) - Điều phối nhiều container
 
 **Cloud Platform:**
-- Render.com - PaaS deployment
-  - Auto-scaling
-  - Zero-downtime deployment
-  - Health checks
-  - Environment variables management
+- Render.com - Triển khai PaaS
+  - Tự động scale
+  - Triển khai không downtime
+  - Kiểm tra sức khỏe
+  - Quản lý biến môi trường
 
 **CI/CD:**
-- GitHub Actions - Automated workflows
-  - Automated testing
-  - Build và deployment pipeline
-  - Code quality checks
+- GitHub Actions - Luồng tự động hóa
+  - Test tự động
+  - Pipeline build và deploy
+  - Kiểm tra chất lượng code
 
-**Monitoring:**
+**Giám Sát:**
 - Spring Boot Actuator endpoints
-  - /actuator/health - Health check
-  - /actuator/metrics - Application metrics
-  - /actuator/info - Application info
+  - /actuator/health - Kiểm tra sức khỏe
+  - /actuator/metrics - Số liệu ứng dụng
+  - /actuator/info - Thông tin ứng dụng
 
 ---
 
 ## Tính Năng Nổi Bật
 
-### Tính Năng Người Dùng (User Features)
+### Tính Năng Khách Hàng
 
 **1. Quản Lý Tài Khoản & Xác Thực**
-- Đăng ký tài khoản local với email verification
-- Đăng nhập local với username/password (BCrypt hashing)
-- Đăng nhập Google OAuth2 (one-click login)
-- Quên mật khẩu với reset token qua email
-- Quản lý thông tin cá nhân (tên, số điện thoại, avatar)
-- Hệ thống membership tiers: SILVER, GOLD, PLATINUM, DIAMOND
-- DeeG Xu (loyalty coins): Earn và redeem (1 xu = 1 VND)
-- Loyalty points accumulation (1 point per 10,000 VND spent)
+- Đăng ký tài khoản với xác minh email
+- Đăng nhập bằng tên đăng nhập/mật khẩu (mã hóa BCrypt)
+- Đăng nhập Google OAuth2 (đăng nhập 1 cú nhấp)
+- Quên mật khẩu với token đặt lại qua email
+- Quản lý thông tin cá nhân (tên, số điện thoại, ảnh đại diện)
+- Hệ thống hạng thành viên: BẠC, VÀNG, BẠCH KIM, KIM CƯƠNG
+- DeeG Xu (xu tích lũy): Kiếm và đổi xu (1 xu = 1 VND)
+- Tích điểm thành viên (1 điểm cho mỗi 10,000 VND chi tiêu)
 
 **2. Quản Lý Địa Chỉ Giao Hàng**
 - Thêm/sửa/xóa nhiều địa chỉ giao hàng
 - Đặt địa chỉ mặc định
-- Tích hợp Goong Maps để pick location
-- Tự động điền địa chỉ từ coordinates
-- Hiển thị map preview cho địa chỉ
-- Tính toán khoảng cách từ warehouse đến địa chỉ
+- Tích hợp Goong Maps để chọn vị trí
+- Tự động điền địa chỉ từ tọa độ
+- Hiển thị bản đồ xem trước cho địa chỉ
+- Tính toán khoảng cách từ kho hàng đến địa chỉ
 
-**3. Catalog & Product Browsing**
-- Trang chủ với featured products và flash sale banner
-- Product listing với pagination (configurable items per page)
-- Multi-criteria filtering:
-  - Category (danh mục sản phẩm)
-  - Brand (thương hiệu)
-  - Price range (khoảng giá min-max)
+**3. Danh Mục & Xem Sản Phẩm**
+- Trang chủ với sản phẩm nổi bật và banner Flash Sale
+- Danh sách sản phẩm với phân trang (có thể tùy chỉnh số lượng mỗi trang)
+- Lọc đa tiêu chí:
+  - Danh mục sản phẩm
+  - Thương hiệu
+  - Khoảng giá (min-max)
   - Size (35-45)
-  - Availability (còn hàng/hết hàng)
-- Full-text search (tìm kiếm theo tên, mô tả)
-- Sort options: Newest, Price (Low-High), Price (High-Low), Best Selling
-- Product detail page:
-  - Image gallery với zoom
-  - Product description và specifications
-  - Size chart
-  - Stock availability per size
-  - Customer reviews và ratings
-  - Related products suggestions
+  - Tình trạng (còn hàng/hết hàng)
+- Tìm kiếm toàn văn (theo tên, mô tả)
+- Sắp xếp: Mới nhất, Giá (Thấp-Cao), Giá (Cao-Thấp), Bán chạy
+- Trang chi tiết sản phẩm:
+  - Thư viện ảnh với zoom
+  - Mô tả và thông số sản phẩm
+  - Bảng size
+  - Tình trạng tồn kho theo size
+  - Đánh giá của khách hàng
+  - Sản phẩm liên quan gợi ý
 
-**4. Shopping Cart**
-- Add to cart với size selection
-- Update quantity (real-time stock validation)
-- Remove items
-- Multiple item selection (checkbox)
-- Calculate subtotal
-- Apply flash sale prices automatically
-- Save cart state (persisted in database)
-- Cart count badge (real-time update)
-- Empty cart warning
+**4. Giỏ Hàng**
+- Thêm vào giỏ với lựa chọn size
+- Cập nhật số lượng (kiểm tra tồn kho realtime)
+- Xóa sản phẩm
+- Chọn nhiều sản phẩm (checkbox)
+- Tính tổng tiền tạm
+- Áp dụng giá Flash Sale tự động
+- Lưu trạng thái giỏ hàng (trong database)
+- Badge đếm số lượng giỏ hàng (cập nhật realtime)
+- Cảnh báo giỏ hàng trống
 
-**5. Wishlist**
-- Add/remove products to wishlist
-- View wishlist với product details
-- Move to cart functionality
-- Stock notification when available
-- Share wishlist (optional)
+**5. Danh Sách Yêu Thích**
+- Thêm/xóa sản phẩm vào danh sách yêu thích
+- Xem danh sách với chi tiết sản phẩm
+- Chuyển sang giỏ hàng
+- Thông báo khi có hàng trở lại
+- Chia sẻ danh sách (tùy chọn)
 
-**6. Checkout & Payment**
-- Multi-step checkout process
-- Address selection với add new address inline
-- Shipping company selection
-- Automatic shipping fee calculation based on GPS distance
-- Apply order discount voucher
-- Apply shipping discount voucher
-- Redeem loyalty points
-- Use DeeG Xu (coins) for discount
-- Order summary preview
-- Payment methods:
-  - COD (Cash on Delivery)
-  - PayOS Online Payment (QR Code, Bank Transfer)
-- Payment verification và confirmation
-- Order tracking page
+**6. Thanh Toán & Đặt Hàng**
+- Quy trình thanh toán nhiều bước
+- Chọn địa chỉ với thêm địa chỉ mới inline
+- Lựa chọn đơn vị vận chuyển
+- Tự động tính phí vận chuyển dựa trên khoảng cách GPS
+- Áp dụng voucher giảm giá đơn hàng
+- Áp dụng voucher giảm phí vận chuyển
+- Đổi điểm thành viên
+- Sử dụng DeeG Xu (xu) để giảm giá
+- Xem trước tóm tắt đơn hàng
+- Phương thức thanh toán:
+  - COD (Thanh toán khi nhận hàng)
+  - PayOS (Thanh toán online QR Code, chuyển khoản)
+- Xác minh và xác nhận thanh toán
+- Trang theo dõi đơn hàng
 
-**7. Flash Sale System**
-- Active flash sale display với countdown timer
-- Upcoming flash sale preview
-- Real-time stock tracking (AJAX polling every 3-5 seconds)
-- Progress bar: sold percentage
-- Flash sale price highlight
-- Purchase button với stock validation
-- Pessimistic locking để prevent overselling
-- Flash sale history
-- Notification khi flash sale starts
+**7. Hệ Thống Flash Sale**
+- Hiển thị Flash Sale đang diễn ra với đếm ngược thời gian
+- Xem trước Flash Sale sắp tới
+- Theo dõi tồn kho realtime (AJAX polling mỗi 3-5 giây)
+- Thanh tiến trình: phần trăm đã bán
+- Làm nổi bật giá Flash Sale
+- Nút mua hàng với kiểm tra tồn kho
+- Pessimistic locking để tránh bán quá hàng
+- Lịch sử Flash Sale
+- Thông báo khi Flash Sale bắt đầu
 
-**8. Voucher & Discount System**
-- Voucher collection page
-- Two types:
-  - Order vouchers (giảm giá đơn hàng)
-  - Shipping vouchers (giảm phí vận chuyển)
-- Voucher details:
-  - Discount type: Percentage or Fixed Amount
-  - Minimum order value requirement
-  - User tier requirement (SILVER, GOLD, etc.)
-  - Usage limit per user
-  - Total quantity limit
-  - Validity period (start date - end date)
-- Collect voucher (claim)
-- Apply voucher at checkout
-- Voucher validation real-time
-- Stack multiple vouchers (order + shipping)
+**8. Hệ Thống Voucher & Giảm Giá**
+- Trang kho voucher
+- Hai loại:
+  - Voucher đơn hàng (giảm giá đơn hàng)
+  - Voucher vận chuyển (giảm phí ship)
+- Chi tiết voucher:
+  - Loại giảm giá: Phần trăm hoặc Số tiền cố định
+  - Yêu cầu giá trị đơn hàng tối thiểu
+  - Yêu cầu hạng thành viên (BẠC, VÀNG, v.v.)
+  - Giới hạn sử dụng mỗi người
+  - Giới hạn tổng số lượng
+  - Thời hạn sử dụng (ngày bắt đầu - kết thúc)
+- Thu thập voucher (claim)
+- Áp dụng voucher khi thanh toán
+- Kiểm tra voucher realtime
+- Xếp chồng nhiều voucher (đơn hàng + vận chuyển)
 
-**9. Order Management**
-- Order history với filters:
-  - Status filter (IN_STOCK, SHIPPED, DELIVERED, CANCEL, RETURN)
-  - Date range filter
-  - Search by order ID
-- Order details page:
-  - Order items với images
-  - Pricing breakdown (subtotal, shipping, discount, total)
-  - Delivery address
-  - Payment method
-  - Order timeline (status history)
-- Order tracking real-time
-- Reorder functionality (one-click re-purchase)
-- Cancel order (khi còn IN_STOCK)
-- Return request (cho đơn đã DELIVERED)
+**9. Quản Lý Đơn Hàng**
+- Lịch sử đơn hàng với bộ lọc:
+  - Lọc trạng thái (Chờ xử lý, Đang giao, Đã giao, Hủy, Trả hàng)
+  - Lọc khoảng thời gian
+  - Tìm kiếm theo mã đơn hàng
+- Trang chi tiết đơn hàng:
+  - Sản phẩm trong đơn với hình ảnh
+  - Chi tiết giá (tạm tính, phí ship, giảm giá, tổng)
+  - Địa chỉ giao hàng
+  - Phương thức thanh toán
+  - Dòng thời gian đơn hàng (lịch sử trạng thái)
+- Theo dõi đơn hàng realtime
+- Đặt lại đơn hàng (mua lại 1 cú nhấp)
+- Hủy đơn hàng (khi còn chờ xử lý)
+- Yêu cầu trả hàng (cho đơn đã giao)
 
-**10. Product Reviews & Ratings**
-- Rate products (1-5 stars)
-- Write text review
-- Upload review images (optional)
-- Edit/delete own reviews
-- Filter reviews:
-  - By star rating (5-star, 4-star, etc.)
-  - Reviews with comments only
-  - Reviews with images only
-- Sort reviews (Most Recent, Most Helpful)
-- Helpful vote (upvote reviews)
+**10. Đánh Giá & Nhận Xét Sản Phẩm**
+- Đánh giá sản phẩm (1-5 sao)
+- Viết nhận xét bằng văn bản
+- Upload hình ảnh đánh giá (tùy chọn)
+- Sửa/xóa đánh giá của mình
+- Lọc đánh giá:
+  - Theo số sao (5 sao, 4 sao, v.v.)
+  - Chỉ đánh giá có bình luận
+  - Chỉ đánh giá có hình ảnh
+- Sắp xếp đánh giá (Mới nhất, Hữu ích nhất)
+- Vote hữu ích (upvote đánh giá)
 
-**11. AI Chatbot Support**
-- Powered by Google Gemini 2.5 Flash AI
-- 24/7 availability
-- Natural language understanding
-- Context-aware conversations
-- Features:
-  - Product information queries
-  - Order status checking
-  - FAQ responses
-  - Store policies
-  - Shipping information
-- Chat history per session
-- Conversation persistence
+**11. Hỗ Trợ AI Chatbot**
+- Sử dụng Google Gemini 2.5 Flash AI
+- Hoạt động 24/7
+- Hiểu ngôn ngữ tự nhiên
+- Trò chuyện theo ngữ cảnh
+- Tính năng:
+  - Tra cứu thông tin sản phẩm
+  - Kiểm tra trạng thái đơn hàng
+  - Trả lời câu hỏi thường gặp
+  - Chính sách cửa hàng
+  - Thông tin vận chuyển
+- Lịch sử chat theo phiên
+- Lưu trữ cuộc trò chuyện
 
-**12. Real-time Notifications**
-- WebSocket-based push notifications
-- Notification types:
-  - Order status updates
-  - Flash sale starts
-  - New promotions
-  - Chat messages
-  - Low stock alerts
-- Notification badge với unread count
-- Notification center
-- Mark as read functionality
+**12. Thông Báo Realtime**
+- Push notification dựa trên WebSocket
+- Các loại thông báo:
+  - Cập nhật trạng thái đơn hàng
+  - Flash Sale bắt đầu
+  - Chương trình khuyến mãi mới
+  - Tin nhắn chat
+  - Cảnh báo sắp hết hàng
+- Badge thông báo với số lượng chưa đọc
+- Trung tâm thông báo
+- Đánh dấu đã đọc
 
 ### Tính Năng Quản Trị (Admin Features)
 
