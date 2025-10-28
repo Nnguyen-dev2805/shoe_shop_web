@@ -19,6 +19,8 @@ import com.dev.shoeshop.service.MembershipService;
 import com.dev.shoeshop.service.ReturnRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,10 +44,14 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
     private final EmailService emailService;
     private final MembershipService membershipService;
     
+    /**
+     * 🗑️ CACHE EVICT: Clear return request cache when creating
+     */
     @Override
+    @CacheEvict(value = "returnRequests", allEntries = true)
     public ReturnRequest createReturnRequest(Long orderId, Long userId, ReturnReason reason, 
                                             String description, String images) {
-        log.info("Creating return request for order: {} by user: {}", orderId, userId);
+        log.info("➕ Creating return request for order: {} by user: {}, clearing cache", orderId, userId);
         
         // 1. Validate order exists
         Order order = orderRepository.findById(orderId)
@@ -103,9 +109,13 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         return saved;
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear return request cache when approving
+     */
     @Override
+    @CacheEvict(value = "returnRequests", allEntries = true)
     public ReturnRequest approveReturnRequest(Long returnId, String adminNote) {
-        log.info("Approving return request: {}", returnId);
+        log.info("✅ Approving return request: {}, clearing cache", returnId);
         
         ReturnRequest returnRequest = getReturnRequestById(returnId);
         
@@ -125,9 +135,13 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         return saved;
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear return request cache when rejecting
+     */
     @Override
+    @CacheEvict(value = "returnRequests", allEntries = true)
     public ReturnRequest rejectReturnRequest(Long returnId, String adminNote) {
-        log.info("Rejecting return request: {}", returnId);
+        log.info("❌ Rejecting return request: {}, clearing cache", returnId);
         
         ReturnRequest returnRequest = getReturnRequestById(returnId);
         
@@ -280,9 +294,14 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         return saved;
     }
     
+    /**
+     * ⚡ CACHED: Get return request by ID
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "returnRequests", key = "'detail:' + #id")
     public ReturnRequest getReturnRequestById(Long id) {
+        log.info("📦 Loading return request {} from database", id);
         return returnRequestRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Return request not found: " + id));
     }
@@ -299,9 +318,17 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         return returnRequestRepository.findByOrderId(orderId);
     }
     
+    /**
+     * ⚡ CACHED: Get all return requests with pagination
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "returnRequests", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<ReturnRequest> getAllReturnRequests(Pageable pageable) {
+        log.info("📦 Loading return requests (page: {}, size: {})", 
+                 pageable.getPageNumber(), pageable.getPageSize());
         return returnRequestRepository.findAllOrderByCreatedDateDesc(pageable);
     }
     

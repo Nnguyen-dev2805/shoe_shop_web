@@ -938,20 +938,29 @@
             
             // Previous button
             var prevClass = currentPage === 0 ? 'disabled' : '';
-            var prevClick = currentPage === 0 ? 'javascript:void(0);' : `loadPermissions(${currentPage - 1}, '${role}')`;
-            pagination.append(`<li class="page-item ${prevClass}"><a class="page-link" href="${prevClick}">Trước</a></li>`);
+            if (currentPage === 0) {
+                pagination.append(`<li class="page-item ${prevClass}"><a class="page-link" href="javascript:void(0);">Trước</a></li>`);
+            } else {
+                pagination.append(`<li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="loadPermissions(${currentPage - 1}, '${role}')">Trước</a></li>`);
+            }
             
             // Page numbers
             for (var i = 0; i < totalPages; i++) {
                 var activeClass = i === currentPage ? 'active' : '';
-                var pageClick = i === currentPage ? 'javascript:void(0);' : `loadPermissions(${i}, '${role}')`;
-                pagination.append(`<li class="page-item ${activeClass}"><a class="page-link" href="${pageClick}">${i + 1}</a></li>`);
+                if (i === currentPage) {
+                    pagination.append(`<li class="page-item ${activeClass}"><a class="page-link" href="javascript:void(0);">${i + 1}</a></li>`);
+                } else {
+                    pagination.append(`<li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="loadPermissions(${i}, '${role}')">${i + 1}</a></li>`);
+                }
             }
             
             // Next button
             var nextClass = currentPage === totalPages - 1 ? 'disabled' : '';
-            var nextClick = currentPage === totalPages - 1 ? 'javascript:void(0);' : `loadPermissions(${currentPage + 1}, '${role}')`;
-            pagination.append(`<li class="page-item ${nextClass}"><a class="page-link" href="${nextClick}">Tiếp</a></li>`);
+            if (currentPage === totalPages - 1) {
+                pagination.append(`<li class="page-item ${nextClass}"><a class="page-link" href="javascript:void(0);">Tiếp</a></li>`);
+            } else {
+                pagination.append(`<li class="page-item"><a class="page-link" href="javascript:void(0);" onclick="loadPermissions(${currentPage + 1}, '${role}')">Tiếp</a></li>`);
+            }
         }
         
         // Make loadPermissions globally accessible

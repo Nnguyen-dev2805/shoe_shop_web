@@ -44,4 +44,17 @@ public interface DashboardService {
      * @return byte array của file Excel
      */
     byte[] exportToExcel(String type, Date startDate, Date endDate, String username) throws Exception;
+    
+    /**
+     * 🗑️ Clear all dashboard caches
+     * Call this when orders/inventory change
+     */
+    void clearDashboardCache();
+    
+    /**
+     * 🗑️ Clear specific caches (optional, for granular control)
+     */
+    void clearStatsCache();
+    void clearProductsCache();
+    void clearCustomersCache();
 }

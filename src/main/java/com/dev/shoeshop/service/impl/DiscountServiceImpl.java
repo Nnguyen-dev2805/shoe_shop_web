@@ -9,6 +9,8 @@ import com.dev.shoeshop.repository.DiscountRepository;
 import com.dev.shoeshop.service.DiscountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,9 +29,13 @@ public class DiscountServiceImpl implements DiscountService {
     private final DiscountRepository discountRepository;
     private final DiscountMapper discountMapper;
 
+    /**
+     * 🗑️ CACHE EVICT: Clear discount cache when saving
+     */
     @Override
+    @CacheEvict(value = "discounts", allEntries = true)
     public Discount saveDiscount(Discount discount) {
-        log.info("Saving discount: {}", discount.getName());
+        log.info("💾 Saving discount: {}, clearing cache", discount.getName());
         
         // Tự động cập nhật status dựa trên ngày tháng
         discount.preUpdate();
@@ -38,12 +44,14 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     /**
+     * 🗑️ CACHE EVICT: Clear discount cache when creating
      * Tạo discount mới từ DiscountCreateRequest
      */
     @Override
     @Transactional
+    @CacheEvict(value = "discounts", allEntries = true)
     public Discount createDiscount(DiscountCreateRequest request, Long createdBy) {
-        log.info("Creating new discount: {}", request.getName());
+        log.info("➕ Creating new discount: {}, clearing cache", request.getName());
         
         // Kiểm tra tên discount đã tồn tại chưa
         if (discountRepository.existsByNameIgnoreCase(request.getName())) {
@@ -63,10 +71,14 @@ public class DiscountServiceImpl implements DiscountService {
     /**
      * Cập nhật discount từ DiscountUpdateRequest
      */
+    /**
+     * 🗑️ CACHE EVICT: Clear discount cache when updating
+     */
     @Override
     @Transactional
+    @CacheEvict(value = "discounts", allEntries = true)
     public Discount updateDiscount(Long id, DiscountUpdateRequest request, Long updatedBy) {
-        log.info("Updating discount: {} with ID: {}", request.getName(), id);
+        log.info("✏️ Updating discount {} with ID: {}, clearing cache", request.getName(), id);
         
         // Lấy discount hiện tại
         Discount existingDiscount = getDiscountById(id);
@@ -90,19 +102,29 @@ public class DiscountServiceImpl implements DiscountService {
         return discountRepository.save(existingDiscount);
     }
 
+    /**
+     * ⚡ CACHED: Get all discounts with pagination
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "discounts", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<DiscountResponse> getAllDiscounts(Pageable pageable) {
-        log.info("Getting all discounts with pagination: page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
+        log.info("📦 Loading discounts (page: {}, size: {})", pageable.getPageNumber(), pageable.getPageSize());
         
         Page<Discount> discounts = discountRepository.findByIsDeleteFalse(pageable);
         return discounts.map(discountMapper::toResponse);
     }
 
+    /**
+     * ⚡ CACHED: Get all discounts without pagination
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "discounts", key = "'all'")
     public List<DiscountResponse> getAllDiscounts() {
-        log.info("Getting all discounts without pagination");
+        log.info("📦 Loading all discounts from database");
         
         return discountRepository.findByIsDeleteFalse()
                 .stream()
@@ -110,10 +132,14 @@ public class DiscountServiceImpl implements DiscountService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * ⚡ CACHED: Get discount by ID
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "discounts", key = "'detail:' + #id")
     public Discount getDiscountById(Long id) {
-        log.info("Getting discount by id: {}", id);
+        log.info("📦 Loading discount {} from database", id);
         
         return discountRepository.findById(id)
                 .filter(discount -> !discount.getIsDelete())
@@ -233,9 +259,13 @@ public class DiscountServiceImpl implements DiscountService {
         return savedDiscount;
     }
 
+    /**
+     * 🗑️ CACHE EVICT: Clear discount cache when deleting
+     */
     @Override
+    @CacheEvict(value = "discounts", allEntries = true)
     public void deleteDiscount(Long id) {
-        log.info("Soft deleting discount with id: {}", id);
+        log.info("🗑️ Soft deleting discount {}, clearing cache", id);
         
         Discount discount = getDiscountById(id);
         if (discount == null) {

@@ -12,6 +12,9 @@ import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.repository.ProductRepository;
 import com.dev.shoeshop.service.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
@@ -43,9 +47,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductDetailRepository productDetailRepository;
 
 
+    /**
+     * 🗑️ CACHE EVICT: Clear product caches when saving new product
+     */
     @Transactional
     @Override
+    @CacheEvict(value = {"products", "productDetails"}, allEntries = true)
     public void saveProduct(ProductRequest request, MultipartFile image) {
+        log.info("➕ Creating new product, clearing products cache");
+        
         Product product = new Product();
         product.setTitle(request.getTitle());
         product.setDescription(request.getDescription());
@@ -75,8 +85,18 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
+    /**
+     * ⚡ CACHED: Get products with pagination, search, and category filter
+     * Cache key includes: page, size, search, categoryId
+     */
     @Override
+    @Cacheable(value = "products", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + (#search != null ? #search : 'none') + ':' + (#categoryId != null ? #categoryId : 'none')",
+               unless = "#result == null")
     public Page<ProductResponse> getAllProducts(Pageable pageable, String search, Long categoryId) {
+        log.info("📦 Loading products (page: {}, search: {}, category: {})", 
+                 pageable.getPageNumber(), search, categoryId);
+        
         Page<Product> productPage;
         
         // ✅ SOFT DELETE + EAGER LOADING: Lấy sản phẩm chưa xóa với Flash Sale info
@@ -121,8 +141,14 @@ public class ProductServiceImpl implements ProductService {
         return new PageImpl<>(responses, pageable, productPage.getTotalElements());
     }
 
+    /**
+     * ⚡ CACHED: Get all products list (for dropdowns/quick access)
+     */
     @Override
+    @Cacheable(value = "products", key = "'all'")
     public List<ProductResponse> getAllProductsList() {
+        log.info("📦 Loading all products list from database");
+        
         // ✅ SOFT DELETE: Chỉ lấy sản phẩm chưa xóa (isDelete = false)
         List<Product> products = productRepository.findByIsDeleteFalse();
         return products.stream()
@@ -147,8 +173,14 @@ public class ProductServiceImpl implements ProductService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * ⚡ CACHED: Get product detail by ID
+     */
     @Override
+    @Cacheable(value = "productDetails", key = "'detail:' + #id")
     public ProductDetailResponse getProductById(Long id) {
+        log.info("📦 Loading product detail {} from database", id);
+        
         // Use custom query to eagerly fetch details and inventories
         Product product = productRepository.findByIdWithDetailsAndInventories(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
@@ -312,6 +344,7 @@ public class ProductServiceImpl implements ProductService {
     }
     
     /**
+     * 🗑️ CACHE EVICT: Clear product caches when updating product
      * UPDATE PRODUCT - RESTful API
      * 
      * @param id Product ID
@@ -320,7 +353,9 @@ public class ProductServiceImpl implements ProductService {
      */
     @Override
     @Transactional
+    @CacheEvict(value = {"products", "productDetails"}, allEntries = true)
     public void updateProduct(Long id, ProductRequest request, MultipartFile image) {
+        log.info("✏️ Updating product {}, clearing products cache", id);
         // Find existing product
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
@@ -379,9 +414,15 @@ public class ProductServiceImpl implements ProductService {
      * 
      * @param id Product ID
      */
+    /**
+     * 🗑️ CACHE EVICT: Clear product caches when deleting product
+     */
     @Override
     @Transactional
+    @CacheEvict(value = {"products", "productDetails"}, allEntries = true)
     public void deleteProduct(Long id) {
+        log.info("🗑️ Deleting product {}, clearing products cache", id);
+        
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm với ID: " + id));
         
