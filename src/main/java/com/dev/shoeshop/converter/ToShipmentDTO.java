@@ -17,10 +17,15 @@ public class ToShipmentDTO {
         // Map cơ bản
         ShipmentDTO dto = modelMapper.map(shipment, ShipmentDTO.class);
 
-        // Custom mapping: shipperName
+        // Custom mapping: shipper information
         if (shipment.getShipper() != null) {
             dto.setShipperName(shipment.getShipper().getFullname());
             dto.setShipperId(shipment.getShipper().getId());
+            dto.setShipperPhone(shipment.getShipper().getPhone());
+            dto.setShipperEmail(shipment.getShipper().getEmail());
+            // Note: Users entity doesn't have direct address field
+            // Address is handled through UserAddress relationship
+            dto.setShipperAddress("N/A");
         } else {
             dto.setShipperName("Unknown");
         }

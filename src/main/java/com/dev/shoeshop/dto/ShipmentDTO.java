@@ -21,7 +21,11 @@ public class ShipmentDTO {
     private String payOption;
     private String deliveryAddress; // gộp từ addressEntity
     private String shipperName;
-    private Long ShipperId;
+    private Long shipperId; // Fixed: lowercase 's'
+    private String shipperPhone;  // Thêm phone
+    private String shipperEmail;  // Thêm email
+    private String shipperAddress; // Thêm address
     private Date updatedDate;
     private String shipmentStatus;
+    private String note; // Ghi chú từ shipper
 }

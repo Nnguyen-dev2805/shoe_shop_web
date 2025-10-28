@@ -1,473 +1,292 @@
 <!DOCTYPE html>
 <html lang="vi" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-    <!-- Title Meta -->
     <meta charset="utf-8" />
-    <title>Chi Tiết Đơn Hàng | Deeg Manager</title>
+    <title>Chi tiết đơn hàng | DeeG Manager</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Quản lý chi tiết đơn hàng" />
-    <meta name="author" content="Deeg" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
     <!-- App favicon -->
     <link rel="shortcut icon" href="/assets/images/favicon.ico">
-
-    <!-- Vendor css (Require in all Page) -->
-    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- Icons css (Require in all Page) -->
-    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- App css (Require in all Page) -->
-    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
-
-    <!-- Theme Config js (Require in all Page) -->
-    <script src="/assets/js/config.js"></script>
     
-    <!-- Iconify -->
-    <script src="https://code.iconify.design/3/3.1.1/iconify.min.js"></script>
+    <!-- Vendor css -->
+    <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Icons css -->
+    <link href="/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- App css -->
+    <link href="/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Shopee Manager Order Detail CSS -->
+    <link href="/css/admin-order-detail-shopee.css" rel="stylesheet" type="text/css" />
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Theme Config js -->
+    <script src="/assets/js/config.js"></script>
 </head>
 
 <body>
 
 <!-- START Wrapper -->
 <div class="wrapper">
-
     <!-- ========== Topbar Start ========== -->
     <div th:include="~{fragments/manager/header.html}"></div>
     <!-- ========== Topbar End ========== -->
-
+    
     <!-- ========== App Menu Start ========== -->
     <div th:include="~{fragments/manager/menu_app.html}"></div>
     <!-- ========== App Menu End ========== -->
 
-    <!-- ==================================================== -->
-    <!-- Start right Content here -->
-    <!-- ==================================================== -->
-
+    <!-- Start Page Content -->
     <div class="page-content">
-
-        <!-- Start Container -->
-        <div class="container-xxl">
-
-            <div class="row">
-                <div class="col-xl-9 col-lg-8">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div class="order-detail-container">
+        
+            <!-- Status Banner (Full Width) -->
+            <div id="statusBanner" class="status-banner IN_STOCK shopee-card">
+                <p class="status-text" id="statusText">Đơn hàng đang chờ xử lý</p>
+            </div>
+            
+            <!-- 2-Column Layout -->
+            <div class="order-layout">
+            
+                <!-- ========== MAIN CONTENT (LEFT) ========== -->
+                <div class="main-content">
+                
+                    <!-- Order Info Card -->
+                    <div class="shopee-card">
+                        <div class="card-padding">
+                            <h3 class="section-title">
+                                <i class='bx bx-receipt'></i> Thông tin đơn hàng #<span id="orderId">...</span>
+                            </h3>
+                            
+                            <div class="info-row">
+                                <span class="info-label"><i class='bx bx-calendar'></i> Ngày tạo</span>
+                                <span class="info-value" id="orderCreatedDate">...</span>
+                            </div>
+                            
+                            <div class="info-row">
+                                <span class="info-label"><i class='bx bx-credit-card'></i> Phương thức thanh toán</span>
+                                <span class="info-value" id="orderPayOption">...</span>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="action-buttons" style="margin-top: 16px;">
+                                <button id="cancelBtn" class="btn-cancel" style="display: none;">
+                                    <i class='bx bx-x-circle'></i> Hủy đơn
+                                </button>
+                                <button id="makeReadyShipBtn" class="btn-shopee">
+                                    <i class='bx bx-package'></i> Giao cho vận chuyển
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Search Shipper Box (Hidden by default) -->
+                    <div class="shopee-card" id="searchBox" style="display: none;">
+                        <div class="search-box">
+                            <h4 class="section-title">
+                                <i class='bx bx-search'></i> Tìm kiếm Shipper
+                            </h4>
+                            
+                            <div class="search-input-group">
+                                <input type="text" id="searchInput" placeholder="Nhập tên shipper..." />
+                                <button id="searchButton" class="btn-shopee">
+                                    <i class='bx bx-search'></i> Tìm kiếm
+                                </button>
+                            </div>
+                            
+                            <table class="table-shopee" id="resultSearch">
+                                <thead>
+                                    <tr>
+                                        <th>Mã</th>
+                                        <th>Tên</th>
+                                        <th style="text-align: center;">Hành động</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Results will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Products Card -->
+                    <div class="shopee-card">
+                        <div class="card-padding" style="padding-bottom: 0;">
+                            <h3 class="section-title">
+                                <i class='bx bx-shopping-bag'></i> Sản phẩm (<span id="productCount">0</span>)
+                            </h3>
+                        </div>
+                        <div class="product-list" id="productList">
+                            <!-- Products will be loaded here via AJAX -->
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Info Card -->
+                    <div class="shopee-card">
+                        <div class="card-padding">
+                            <h3 class="section-title">
+                                <i class='bx bx-package'></i> Thông tin vận chuyển
+                            </h3>
+                            
+                            <!-- Shipper Info (shown when shipper assigned) -->
+                            <div id="shipperInfoBox" style="display: none;">
+                                <div class="shipper-box">
+                                    <div class="shipper-header">
+                                        <div class="shipper-icon-circle">
+                                            <i class='bx bx-user'></i>
+                                        </div>
                                         <div>
-                                            <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
-                                                <span>Mã đơn hàng:</span>
-                                                <span id="orderId"></span>
-                                                <span class="badge bg-success-subtle text-success  px-2 py-1 fs-13" ></span>
-                                                <span class="border border-warning text-warning fs-13 px-2 py-1 rounded" ></span>
-                                            </h4>
-                                            <p class="mb-0">Ngày tạo: <span id="orderCreatedDate"></span></p>
-                                            <p class="mb-0">Thanh toán: <span id="orderPayOption"></span></p>
-
-                                    </div>
-
-                                </div>
-                                <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
-                                    <p class="border rounded mb-0 px-2 py-1 bg-body">
-                                        <i class='bx bx-arrow-from-left align-middle fs-16'>
-                                        </i> Trạng thái: <span class="text-dark fw-medium" id="orderStatus"></span>
-                                </div>
-                                    <a id = "cancelBtn"
-                                       class="btn btn-danger" style="margin-right: 100%">
-                                        <iconify-icon icon="solar:trash-bin-minimalistic-2-broken" class="me-1"></iconify-icon>
-                                        Hủy đơn
-                                    </a>
-                                    <!-- Order cancel fragment - Manager Version-->
-                                    <div th:include="~{fragments/order/manager_order_cancel.html}"></div>
-                                    </p>
-                                    <div  style="display: flex; justify-content: flex-end;">
-                                        <button id="makeReadyShipBtn" onclick="turnOnSearch()" href="#!" class="btn btn-primary">
-                                            <iconify-icon icon="solar:delivery-bold-duotone" class="me-2"></iconify-icon>
-                                            Giao cho Shipper
-                                        </button>
-                                    </div>
-
-                                    <script>
-                                        function turnOnSearch(){
-                                            const myDiv = document.getElementById('searchBox')
-                                            myDiv.style.display='block'
-                                            // lay tat ca danh sach shipper truoc
-                                            loadAllShippers()
-                                        }
-                                        function loadAllShippers() {
-                                            var currentUrl = window.location.pathname;
-                                            var orderid = currentUrl.split('/')[currentUrl.split('/').length - 1];
-
-                                            $.ajax({
-                                                url: "/user/shipper/all",   // API trả về tất cả shipper
-                                                type: "GET",
-                                                success: function(response) {
-                                                    $("#resultSearch tbody").empty();
-                                                    let listShipper = response.listShipper;
-
-                                                    if (listShipper.length > 0) {
-                                                        listShipper.forEach(function(user) {
-                                                            $("#resultSearch tbody")
-                                                                .append("<tr>\n" +
-                                                                    "<td>" + user.id + "</td>\n" +
-                                                                    "<td>" + user.fullname + "</td>\n" +
-                                                                    "<td><a class=\"btn btn-success btn-sm\" href='/manager/order/shipping?orderid="
-                                                                    + orderid + "&userid=" + user.id + "'>" +
-                                                                    "<iconify-icon icon='solar:delivery-bold-duotone' class='me-1'></iconify-icon>Giao hàng</a></td>" +
-                                                                    "</tr>");
-                                                        });
-                                                    } else {
-                                                        $("#resultSearch tbody").append("<tr><td colspan='3'>Không có shipper nào.</td></tr>");
-                                                    }
-                                                },
-                                                error: function(error) {
-                                                    console.error("Lỗi khi gọi API", error);
-                                                }
-                                            });
-                                        }
-                                    </script>
-                                </div>
-                            </div>
-                            
-                            <!-- Search Shipper Card -->
-                            <div class="card" style="display: none" id="searchBox">
-                                <div class="card-header bg-primary text-white">
-                                    <h5 class="card-title mb-0 text-white">
-                                        <iconify-icon icon="solar:user-check-bold-duotone" class="me-2"></iconify-icon>
-                                        Tìm Kiếm Shipper
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <!-- App Search-->
-                                    <div class="input-group mb-3">
-                                        <span class="input-group-text">
-                                            <iconify-icon icon="solar:magnifer-linear"></iconify-icon>
-                                        </span>
-                                        <input id="searchInput" type="search" class="form-control" placeholder="Nhập tên shipper..." autocomplete="off">
-                                        <button id="searchButton" class="btn btn-primary" type="button">
-                                            <iconify-icon icon="solar:magnifer-bold-duotone" class="me-1"></iconify-icon>
-                                            Tìm Kiếm
-                                        </button>
-                                    </div>
-                                    <!-- search result -->
-                                    <div class="table-responsive" >
-                                        <table id="resultSearch" class="table table-hover align-middle mb-0">
-                                            <thead class="table-light">
-                                            <tr>
-                                                <th>ID</th>
-                                                <th>Tên Shipper</th>
-                                                <th class="text-center">Hành Động</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td colspan="3" class="text-center text-muted">
-                                                        Nhập tên shipper và nhấn tìm kiếm
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <!--  script get api-->
-                                    <script>
-                                        $(document).ready(function() {
-                                            // Khi người dùng nhấn nút Tìm kiếm
-                                            var currentUrl = window.location.pathname;  // Lấy đường dẫn hiện tại
-                                            var orderid = currentUrl.split('/')[currentUrl.split('/').length - 1];
-                                            $("#searchButton").click(function() {
-                                                // Lấy giá trị nhập vào ô tìm kiếm
-                                                var fullname = $("#searchInput").val();
-
-                                                // Kiểm tra nếu ô tìm kiếm không rỗng
-                                                if (fullname.trim() !== "") {
-                                                    // Gửi yêu cầu AJAX tới API của Spring Boot
-                                                    $.ajax({
-                                                        url: "/user/shipper/search",   // Đường dẫn tới API
-                                                        type: "GET",               // Phương thức HTTP là GET
-                                                        data: {
-                                                            name: fullname    // Gửi tham số fullname qua API
-                                                        },
-                                                        success: function(response) {   // Hàm xử lý khi API trả về dữ liệu thành công
-                                                            // Làm sạch kết quả cũ mỗi lần người dùng tìm kiếm
-                                                            $("#resultSearch tbody").empty();
-                                                            let listShipper = response.listShipper;
-                                                            // Kiểm tra nếu có kết quả trả về
-                                                            if (listShipper.length > 0) {
-                                                                listShipper.forEach(function(user) {
-                                                                    $("#resultSearch tbody")
-                                                                        .append("<tr>\n" +
-                                                                            "<td>" + user.id + "</td>\n" +
-                                                                            "<td>" + user.fullname + "</td>\n" +
-                                                                            "<td class='text-center'><a class=\"btn btn-success btn-sm\" href='/manager/order/shipping?orderid="
-                                                                            + orderid + "&userid=" + user.id + "'>" +
-                                                                            "<iconify-icon icon='solar:delivery-bold-duotone' class='me-1'></iconify-icon>Giao hàng</a></td>" +
-                                                                            "</tr>");
-                                                                });
-                                                            } else {
-                                                                // Nếu không có người dùng nào, hiển thị thông báo không tìm thấy
-                                                                $("#resultSearch tbody").append("<tr><td colspan='3' class='text-center text-muted'>Không tìm thấy shipper nào.</td></tr>");
-                                                            }
-                                                        },
-                                                        error: function(error) {    // Hàm xử lý khi có lỗi xảy ra khi gọi API
-                                                            console.error("Lỗi khi gọi API", error);
-                                                            $("#resultSearch tbody").empty();
-                                                            $("#resultSearch tbody").append("<tr><td colspan='3' class='text-center text-danger'>Có lỗi xảy ra khi tìm kiếm.</td></tr>");
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        });
-                                    </script>
-                                </div>
-                            </div>
-                            
-                            <!-- Product Table -->
-                            <div class="card">
-                                <div class="card-header bg-light">
-                                    <h4 class="card-title mb-0">
-                                        <iconify-icon icon="solar:box-bold-duotone" class="me-2"></iconify-icon>
-                                        Chi Tiết Sản Phẩm
-                                    </h4>
-                                </div>
-                                <div class="card-body">
-                                    <div class="table-responsive">
-                                        <table class="table table-hover align-middle mb-0" id = "orderDetailTable">
-                                            <thead class="table-light">
-                                            <tr>
-                                                <th>Sản Phẩm & Size</th>
-                                                <th>Số Lượng</th>
-                                                <th class="text-end">Đơn Giá</th>
-                                                <th class="text-end">Thành Tiền</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                                <!-- se lay duoc bang Ajax-->
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Shipping Details -->
-                            <div class="card">
-                                <div class="card-header bg-light">
-                                    <h4 class="card-title mb-0">
-                                        <iconify-icon icon="solar:delivery-bold-duotone" class="me-2"></iconify-icon>
-                                        Chi Tiết Giao Hàng
-                                    </h4>
-                                </div>
-                                <div class="card-body" >
-                                    <div class="position-relative ms-2">
-                                        <div>
-                                            <span class="position-absolute start-0  top-0 border border-dashed h-100"></span>
-                                            <h6 class="text-muted">Shipper ID:</h6>
-                                            <p class="mb-3 fw-medium" id = "shipperId"></p>
-                                            <h6 class="text-muted">Tên Shipper:</h6>
-                                            <p class="mb-3 fw-medium" id ="shipperName" ></p>
-                                            <h6 class="text-muted">Ghi Chú:</h6>
-                                            <p class="mb-1" id = "shipperNote"></p>
+                                            <p class="shipper-name" id="shipperName">...</p>
+                                            <p class="shipper-id">Mã: <span id="shipperId">...</span></p>
                                         </div>
                                     </div>
+                                    
+                                    <div class="shipper-info-grid">
+                                        <div class="shipper-info-item">
+                                            <div class="shipper-info-label"><i class='bx bx-phone'></i> Số điện thoại</div>
+                                            <div class="shipper-info-value" id="shipperPhone">...</div>
+                                        </div>
+                                        <div class="shipper-info-item">
+                                            <div class="shipper-info-label"><i class='bx bx-envelope'></i> Email</div>
+                                            <div class="shipper-info-value" id="shipperEmail">...</div>
+                                        </div>
+                                        <div class="shipper-info-item">
+                                            <div class="shipper-info-label"><i class='bx bx-map'></i> Địa chỉ</div>
+                                            <div class="shipper-info-value" id="shipperAddress">...</div>
+                                        </div>
+                                        <div class="shipper-info-item">
+                                            <div class="shipper-info-label"><i class='bx bx-time-five'></i> Ngày giao</div>
+                                            <div class="shipper-info-value" id="shipmentDate">...</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="shipperNoteSection" style="display: none; margin-top: 12px; padding-top: 12px; border-top: 1px solid #dee2e6;">
+                                        <div class="shipper-info-label"><i class='bx bx-note'></i> Ghi chú</div>
+                                        <div class="shipper-info-value" id="shipperNote" style="margin-top: 8px; padding: 8px; background: white; border-radius: 4px;">...</div>
+                                    </div>
                                 </div>
-                                <div class="card-body" >
-                                    <div class="position-relative ms-2">
-                                        <p class="mb-1 text-warning">
-                                            <iconify-icon icon="solar:info-circle-bold-duotone" class="me-2"></iconify-icon>
-                                            Đơn hàng này cần được giao cho shipper
-                                        </p>
+                            </div>
+                            
+                            <!-- Need Shipper (shown when no shipper assigned) -->
+                            <div id="needShipperBox" class="need-shipper-box">
+                                <i class='bx bx-error-circle need-shipper-icon'></i>
+                                <p class="need-shipper-text">Đơn hàng này chưa có shipper</p>
+                                <p style="font-size: 12px; color: #999; margin: 8px 0 0 0;">Vui lòng giao đơn hàng cho shipper để bắt đầu vận chuyển</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- End Main Content -->
+                
+                <!-- ========== SIDEBAR (RIGHT) ========== -->
+                <div class="sidebar">
+                
+                    <!-- Payment Summary Card (Sticky) - Shopee Style -->
+                    <div class="shopee-card">
+                        <div class="card-padding">
+                            <!-- Total Header (Collapsible) -->
+                            <div class="payment-summary-header" onclick="togglePaymentDetails()">
+                                <span class="payment-label">Thành tiền:</span>
+                                <div class="payment-total">
+                                    <span class="payment-value" id="total">0đ</span>
+                                    <i class='bx bx-chevron-down payment-collapse-icon' id="paymentChevron"></i>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Details (Collapsible) -->
+                            <div class="payment-details" id="paymentDetails">
+                                <!-- Tổng tiền hàng -->
+                                <div class="payment-row">
+                                    <span class="payment-label">Tổng tiền hàng</span>
+                                    <span class="payment-value highlight" id="subtotal">0đ</span>
+                                </div>
+                                
+                                <!-- Phí vận chuyển -->
+                                <div class="payment-row">
+                                    <span class="payment-label">Phí vận chuyển</span>
+                                    <span class="payment-value" id="shippingFee">0đ</span>
+                                </div>
+                                
+                                <!-- Ưu đãi phí vận chuyển -->
+                                <div class="payment-row" style="display: none;">
+                                    <span class="payment-label">
+                                        Ưu đãi phí vận chuyển
+                                        <i class='bx bx-info-circle info-icon' title="Miễn phí vận chuyển cho đơn > 300k"></i>
+                                    </span>
+                                    <span class="payment-value discount" id="shippingDiscount">0đ</span>
+                                </div>
+                                
+                                <!-- Voucher giảm giá -->
+                                <div class="payment-row" style="display: none;">
+                                    <span class="payment-label">Voucher giảm giá</span>
+                                    <span class="payment-value discount" id="voucherDiscount">0đ</span>
+                                </div>
+                                
+                                <!-- Divider -->
+                                <div class="payment-divider"></div>
+                                
+                                <!-- Điểm tích lũy -->
+                                <div class="payment-points" style="display: none;">
+                                    <div class="payment-row">
+                                        <span class="payment-label">
+                                            <i class='bx bx-gift'></i> Điểm tích lũy
+                                        </span>
+                                        <span class="payment-value" id="pointsEarned">0 điểm</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Right Sidebar -->
-                <div class="col-xl-3 col-lg-4">
-                    <!-- Order Summary -->
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="card-title mb-0">
-                                <iconify-icon icon="solar:bill-list-bold-duotone" class="me-2"></iconify-icon>
-                                Tổng Đơn Hàng
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table mb-0">
-                                    <tbody>
-                                    <tr>
-                                        <td class="px-0">
-                                            <p class="d-flex mb-0 align-items-center gap-1">
-                                                <iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Tạm tính:
-                                            </p>
-                                        </td>
-                                        <td class="text-end text-dark fw-medium px-0" id="subtotal"></td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-0">
-                                            <p class="d-flex mb-0 align-items-center gap-1">
-                                                <iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Giảm giá:
-                                            </p>
-                                        </td>
-                                        <td class="text-end text-dark fw-medium px-0" id="discount"></td>
-                                    </tr>
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
-                            <div>
-                                <p class="fw-bold text-dark mb-0">Tổng Cộng</p>
-                            </div>
-                            <div>
-                                <p class="fw-bold text-primary mb-0"  id="total"></p>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <!-- Customer Details -->
-                    <div class="card">
-                        <div class="card-header bg-light">
-                            <h5 class="card-title mb-0">
-                                <iconify-icon icon="solar:user-bold-duotone" class="me-2"></iconify-icon>
-                                Thông Tin Khách Hàng
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center gap-2">
-                                <img src="/assets/images/users/avatar-1.jpg" alt="" class="avatar rounded-3 border border-light border-3">
+                    
+                    <!-- Customer Info Card -->
+                    <div class="shopee-card">
+                        <div class="card-padding">
+                            <h3 class="section-title">
+                                <i class='bx bx-user'></i> Thông tin khách hàng
+                            </h3>
+                            
+                            <div class="customer-info">
+                                <img src="/assets/images/users/avatar-1.jpg" alt="Customer" class="customer-avatar" id="customerAvatar">
                                 <div>
-                                    <p class="mb-1 fw-medium" id="customerName"></p>
-                                    <a href="#!" class="link-primary fw-medium"></a>
+                                    <p class="customer-name" id="customerName">...</p>
+                                    <p class="customer-meta"><i class='bx bx-phone'></i> <span id="customerPhone">...</span></p>
                                 </div>
                             </div>
-                            <div class="d-flex justify-content-between mt-3">
-                                <h6 class="text-muted">Số Điện Thoại</h6>
-                            </div>
-                            <p class="mb-1 fw-medium" id="customerPhone"></p>
-
-                            <div class="d-flex justify-content-between mt-3">
-                                <h6 class="text-muted">Địa Chỉ Giao Hàng</h6>
-                            </div>
-
-                            <div>
-                                <p class="mb-1" id="customerAddress"></p>
+                            
+                            <div class="address-box">
+                                <p class="address-text">
+                                    <i class='bx bx-map' style="color: #ee4d2d;"></i>
+                                    <strong>Địa chỉ giao hàng:</strong><br>
+                                    <span id="customerAddress">...</span>
+                                </p>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
+                <!-- End Sidebar -->
+                
             </div>
+            <!-- End 2-Column Layout -->
+            
         </div>
-
+        <!-- End Container -->
     </div>
-    <!-- End Container Fluid -->
+    <!-- End Page Content -->
 
-</div>
-<!-- ==================================================== -->
-<!-- End Page Content -->
-<!-- ==================================================== -->
+    <!-- Order cancel fragment -->
+    <div th:insert="~{fragments/order/manager_order_cancel.html}"></div>
 
 </div>
 <!-- END Wrapper -->
 
-<!-- Vendor Javascript (Require in all Page) -->
+<!-- Vendor Javascript -->
 <script src="/assets/js/vendor.js"></script>
-
-<script>
-    $(document).ready(function () {
-        // Lấy orderId từ URL
-        var currentUrl = window.location.pathname;
-        var orderId = currentUrl.split('/')[currentUrl.split('/').length - 1];
-
-        $.ajax({
-            url: "/manager/order/detail/" + orderId,
-            type: "GET",
-            dataType : "json",
-            success: function (response) {
-                var list = response.listOrderDetail;
-
-                // clear bảng cũ
-                $("#orderDetailTable tbody").empty();
-
-                if (list && list.length > 0) {
-                    list.forEach(function (item) {
-                        $("#orderDetailTable tbody").append(
-                            "<tr>" +
-                            "<td><img src='" + item.image + "' width='50' class='me-2 rounded'/> " + item.product_name + " (Size " + item.size + ")</td>" +
-                            "<td>" + item.quantity + "</td>" +
-                            "<td class='text-end'>" + item.price.toLocaleString('vi-VN') + " ₫</td>" +
-                            "<td class='text-end fw-medium'>" + item.amount.toLocaleString('vi-VN') + " ₫</td>" +
-                            "</tr>"
-                        );
-                    });
-
-                    document.querySelector("#subtotal").textContent = Number(response.orderPayment.subtotal).toLocaleString('vi-VN') + " ₫";
-                    document.querySelector("#discount").textContent = Number(response.orderPayment.discount).toLocaleString('vi-VN') + " ₫";
-                    document.querySelector("#total").textContent = Number(response.orderPayment.totalpay).toLocaleString('vi-VN') + " ₫";
-
-                    // Fill du lieu Customer Detail
-                    var order = response.order;
-
-                    if (order) {
-                        $("#orderId").text(order.id || "");
-                        $("#orderStatus").text(order.status || "");
-                        $("#orderPayOption").text(order.payOption || "");
-                        $("#orderCreatedDate").text(order.createdDate ? new Date(order.createdDate).toLocaleString('vi-VN') : "");
-                        $("#orderUpdatedDate").text(order.updatedDate ? new Date(order.updatedDate).toLocaleString('vi-VN') : "");
-
-                        // Gắn sự kiện Cancel
-                        $("#cancelBtn").off("click").on("click", function() {
-                            popUpClick(order.id);
-                        });
-                        
-                        // Ẩn nút Cancel nếu đơn hàng không phải IN_STOCK
-                        if (order.status !== "IN_STOCK") {
-                            $("#cancelBtn").hide();
-                        } else {
-                            $("#cancelBtn").show();
-                        }
-
-                        // Fill Customer Detail
-                        if (order.user) {
-                            $("#customerName").text(order.user.fullname || "");
-                            $("#customerPhone").text(order.user.phone || "");
-                            $("#customerAddress").text(order.user.address || "");
-
-                            if (order.user.avatar) {
-                                $("#customerAvatar").attr("src", order.user.avatar);
-                            }
-                        }
-                        if (order.status !== "IN_STOCK") {
-                            $("#makeReadyShipBtn").prop("disabled", true);
-                        }
-
-                    }
-                    if (response.shipment) {
-                        $("#shipperId").text(response.shipment.shipperId || "Chưa có");
-                        $("#shipperName").text(response.shipment.shipperName || "Chưa có");
-                        $("#shipperNote").text(response.shipment.note || "Chưa có ghi chú");
-                    }
-
-                } else {
-                    $(".table tbody").append("<tr><td colspan='4' class='text-center text-muted'>Không có chi tiết đơn hàng</td></tr>");
-                }
-            },
-            error: function (xhr, status, error) {
-                console.error("Error loading order details:", error);
-                $("#orderDetailTable tbody").html("<tr><td colspan='4' class='text-center text-danger'>Lỗi tải dữ liệu đơn hàng</td></tr>");
-            }
-        });
-    });
-</script>
-
-<!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
 
 <!-- WebSocket Libraries for Real-time Notifications -->
@@ -476,6 +295,19 @@
 
 <!-- Manager Order Notifications WebSocket Handler -->
 <script th:src="@{/js/manager/manager-order-notifications.js}"></script>
+
+<!-- Shopee Manager Order Detail JS -->
+<script src="/js/manager/manager-order-detail-shopee.js"></script>
+
+<!-- Debug Script -->
+<script>
+    console.log("=== MANAGER ORDER DETAIL DEBUG ===");
+    console.log("jQuery loaded:", typeof jQuery !== 'undefined');
+    console.log("$ loaded:", typeof $ !== 'undefined');
+    console.log("Document ready:", document.readyState);
+    console.log("Current URL:", window.location.href);
+    console.log("Pathname:", window.location.pathname);
+</script>
 
 </body>
 </html>
