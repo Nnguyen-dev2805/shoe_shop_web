@@ -128,7 +128,7 @@ public class ShipperController {
             // Shipment not found, ignore
         }
 
-        model.addAttribute("title", "Order Detail #" + orderId);
+        model.addAttribute("title", "Chi Tiết Đơn Hàng #" + orderId);
         model.addAttribute("order", order);
         model.addAttribute("list", orderDetails);
         model.addAttribute("payment", payment);

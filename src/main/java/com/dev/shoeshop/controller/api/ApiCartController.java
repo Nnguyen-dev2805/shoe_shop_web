@@ -582,6 +582,115 @@ public class ApiCartController {
     }
     
     /**
+     * Reorder - Add all items from a previous order to cart
+     * @param orderId - ID of the order to reorder
+     * @return Response with success status
+     */
+    @PostMapping("/cart/reorder/{orderId}")
+    public ResponseEntity<?> reorderFromOrder(@PathVariable Long orderId, HttpSession session) {
+        try {
+            // Get logged in user
+            Users user = (Users) session.getAttribute(Constant.SESSION_USER);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(createErrorResponse("Vui lòng đăng nhập để thực hiện chức năng này!"));
+            }
+            
+            // Get order
+            var order = orderService.findById(orderId);
+            if (order == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(createErrorResponse("Không tìm thấy đơn hàng!"));
+            }
+            
+            // Check if order belongs to user
+            if (!order.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(createErrorResponse("Bạn không có quyền mua lại đơn hàng này!"));
+            }
+            
+            // Get all order details
+            var orderDetails = orderDetailService.findAllOrderDetailById(orderId);
+            if (orderDetails == null || orderDetails.isEmpty()) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Đơn hàng không có sản phẩm nào!"));
+            }
+            
+            // Get cart
+            var cart = orderService.getCartByUserId(user.getId());
+            if (cart == null) {
+                return ResponseEntity.badRequest()
+                    .body(createErrorResponse("Không tìm thấy giỏ hàng!"));
+            }
+            
+            int addedCount = 0;
+            int failedCount = 0;
+            StringBuilder failedProducts = new StringBuilder();
+            
+            // Add each product to cart
+            for (var detail : orderDetails) {
+                try {
+                    // Get product detail ID from order detail
+                    Long productDetailId = null;
+                    if (detail.getProductDetail() != null && detail.getProductDetail().getId() != null) {
+                        productDetailId = detail.getProductDetail().getId();
+                    }
+                    
+                    Integer quantity = detail.getQuantity();
+                    Double pricePerUnit = detail.getPrice() != null ? detail.getPrice() : 
+                                          (detail.getOriginalPrice() != null ? detail.getOriginalPrice() : 0.0);
+                    
+                    if (productDetailId != null && quantity != null && quantity > 0) {
+                        // Add to cart using orderService
+                        orderService.addToCart(user.getId(), productDetailId, quantity, pricePerUnit);
+                        addedCount++;
+                    } else {
+                        // Sản phẩm không có đủ thông tin
+                        failedCount++;
+                        String productName = detail.getProduct_name() != null ? detail.getProduct_name() : "Sản phẩm";
+                        failedProducts.append(productName).append(" (không có thông tin chi tiết), ");
+                    }
+                } catch (Exception e) {
+                    failedCount++;
+                    String productName = detail.getProduct_name() != null ? detail.getProduct_name() : "Sản phẩm";
+                    failedProducts.append(productName).append(", ");
+                    System.err.println("❌ Failed to add product to cart: " + e.getMessage());
+                }
+            }
+            
+            // Build response
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            
+            if (failedCount > 0) {
+                String failedList = failedProducts.substring(0, failedProducts.length() - 2);
+                response.put("message", String.format(
+                    "Đã thêm %d/%d sản phẩm vào giỏ hàng. Một số sản phẩm không thể thêm: %s",
+                    addedCount, orderDetails.size(), failedList
+                ));
+                response.put("partial", true);
+            } else {
+                response.put("message", String.format(
+                    "✅ Đã thêm %d sản phẩm vào giỏ hàng thành công!",
+                    addedCount
+                ));
+                response.put("partial", false);
+            }
+            
+            response.put("addedCount", addedCount);
+            response.put("failedCount", failedCount);
+            
+            return ResponseEntity.ok(response);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Reorder error: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(createErrorResponse("Có lỗi xảy ra: " + e.getMessage()));
+        }
+    }
+    
+    /**
      * Helper method to create error response
      */
     private Map<String, Object> createErrorResponse(String message) {

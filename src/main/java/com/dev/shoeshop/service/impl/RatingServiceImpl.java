@@ -286,6 +286,32 @@ public class RatingServiceImpl implements RatingService {
         return updatedCount;
     }
     
+    @Override
+    public List<RatingResponseDTO> getRandomRatingsForHomepage() {
+        // Get all ratings with 4 or 5 stars and has comment
+        List<Rating> allGoodRatings = ratingRepository.findAll().stream()
+                .filter(r -> r.getStar() >= 4 && r.getComment() != null && !r.getComment().trim().isEmpty())
+                .sorted((r1, r2) -> r2.getCreatedDate().compareTo(r1.getCreatedDate())) // Newest first
+                .collect(java.util.stream.Collectors.toList());
+        
+        List<RatingResponseDTO> result = new java.util.ArrayList<>();
+        
+        if (allGoodRatings.isEmpty()) {
+            // No ratings - return empty list (frontend will show default)
+            return result;
+        }
+        
+        // If less than 6 ratings, repeat them to make 6
+        while (result.size() < 6) {
+            for (Rating rating : allGoodRatings) {
+                if (result.size() >= 6) break;
+                result.add(convertToDTO(rating));
+            }
+        }
+        
+        return result;
+    }
+    
     private RatingResponseDTO convertToDTO(Rating rating) {
         return RatingResponseDTO.builder()
                 .id(rating.getId())

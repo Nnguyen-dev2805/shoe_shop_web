@@ -75,11 +75,18 @@
                color: #d32f2f !important;
                border: 1px solid #ffcdd2 !important;
           }
+          
+          .badge-payment-payos {
+               background-color: #f0f4ff !important;
+               color: #4a5fdb !important;
+               border: 1px solid #c7d2fe !important;
+          }
      </style>
 
      <!-- Theme Config js (Require in all Page) -->
      <script src="/assets/js/config.js"></script>
      
+{{ ... }}
      <!-- jQuery -->
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
      
@@ -307,12 +314,12 @@
                                                        </td>
                                                        <td>
                                                             <span th:data-payment="${order.payOption}" 
-                                                                  th:text="${order.payOption == 'COD' ? 'Tiền mặt' : (order.payOption == 'BANKING' ? 'Banking' : (order.payOption == 'VNPAY' ? 'VNPay' : order.payOption))}" 
+                                                                  th:text="${order.payOption == 'COD' ? 'Tiền mặt' : (order.payOption == 'BANKING' ? 'Chuyển khoản' : (order.payOption == 'PAYOS' ? 'PayOS' : (order.payOption == 'VNPAY' ? 'VNPay' : order.payOption)))}" 
                                                                   class="badge payment-badge px-2 py-1 fs-13">
                                                             </span>
                                                        </td>
                                                        <td>
-                                                            <th:block th:switch="${order.status}">
+                                                            <th:block th:switch="${order.status.name()}">
                                                                  <span th:case="'DELIVERED'" class="badge badge-status-delivered px-2 py-1 fs-13">Đã Giao</span>
                                                                  <span th:case="'SHIPPED'" class="badge badge-status-shipped px-2 py-1 fs-13">Đang Giao</span>
                                                                  <span th:case="'IN_STOCK'" class="badge badge-status-in-stock px-2 py-1 fs-13">Trong Kho</span>
@@ -369,14 +376,13 @@
                     <div class="container-fluid">
                          <div class="row">
                               <div class="col-12 text-center">
-                                   <script>document.write(new Date().getFullYear())</script> &copy; DeeGShop. Crafted by <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
-                                      href="https://1.envato.market/techzaa" class="fw-bold footer-text" target="_blank">DevPro</a>
+                                   <script>document.write(new Date().getFullYear())</script> &copy; DeeGShop. Được phát triển bởi <iconify-icon icon="iconamoon:heart-duotone" class="fs-18 align-middle text-danger"></iconify-icon> <a
+                                      href="https://www.facebook.com/DeeGTeam/" class="fw-bold footer-text" target="_blank">DeeG Team</a>
                               </div>
                          </div>
                     </div>
                </footer>
                <!-- ========== Footer End ========== -->
-
           </div>
           <!-- ==================================================== -->
           <!-- End Page Content -->
@@ -403,6 +409,7 @@ $(document).ready(function() {
         const paymentMap = {
             'COD': 'badge-payment-cod',
             'BANKING': 'badge-payment-banking',
+            'PAYOS': 'badge-payment-payos',
             'VNPAY': 'badge-payment-vnpay'
         };
         const badgeClass = paymentMap[payment];

@@ -61,6 +61,18 @@
         <!-- modernizr JS
         ============================================ -->
         <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+        
+        <!-- Chat Widget Authentication -->
+        <th:block th:if="${session.user != null}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            var currentUserId = /*[[${session.user.id}]]*/ null;
+            var currentUserName = /*[[${session.user.fullname}]]*/ '';
+            console.log('🔑 User Auth: ID =', currentUserId, ', Name =', currentUserName);
+            /*]]>*/
+        </script>
+        <script src="/js/chat/chat-widget.js"></script>
+    </th:block>
     </head>
     <body>
         <!--[if lt IE 8]>

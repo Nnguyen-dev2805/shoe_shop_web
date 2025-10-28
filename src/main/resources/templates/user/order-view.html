@@ -330,12 +330,19 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .tab-list {
-                flex-wrap: wrap;
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
             }
-            
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
             .tab-item {
                 flex: 0 0 50%;
             }

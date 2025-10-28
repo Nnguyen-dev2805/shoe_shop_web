@@ -6,7 +6,45 @@ $(document).ready(function() {
     loadCartData();
     loadAddresses();
     bindEventHandlers();
+    
+    // Check if this is a reorder with auto-submit
+    checkAutoSubmit();
 });
+
+/**
+ * Check URL parameters for auto-submit after reorder
+ */
+function checkAutoSubmit() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const reorder = urlParams.get('reorder');
+    const autoSubmit = urlParams.get('autoSubmit');
+    
+    if (reorder === 'true' && autoSubmit === 'true') {
+        console.log('🔄 Reorder detected - Auto-submitting after data loads...');
+        
+        // Wait for cart data to load, then auto-submit
+        setTimeout(function() {
+            // Check all items are loaded
+            const checkboxes = $('.item-checkbox');
+            if (checkboxes.length > 0) {
+                console.log('✅ Cart loaded with', checkboxes.length, 'items - Auto-proceeding to payment');
+                
+                // Make sure all items are checked
+                checkboxes.prop('checked', true);
+                
+                // Update total
+                updateTotalPrice();
+                
+                // Auto-click continue button after short delay
+                setTimeout(function() {
+                    $('#btn-continue-checkout').click();
+                }, 500);
+            } else {
+                console.warn('⚠️ No items in cart for reorder');
+            }
+        }, 1500); // Wait 1.5s for data to load
+    }
+}
 
 /**
  * Load cart data from API

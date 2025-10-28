@@ -161,20 +161,15 @@ function createOrderCard(order, currentStatus) {
                                font-weight: 600; 
                                cursor: pointer; 
                                transition: all 0.3s; 
-                               box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3); 
-                               margin-right: 8px;"
+                               box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);"
                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(243, 156, 18, 0.4)'" 
                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(243, 156, 18, 0.3)'">
                     <i class="fa fa-undo"></i> Yêu Cầu Trả Hàng
                 </button>
-                <div style="display: inline-block; font-size: 12px; color: #f39c12; margin-right: 12px;">
+                <div style="display: inline-block; font-size: 12px; color: #f39c12;">
                     <i class="fa fa-clock-o"></i> Còn ${daysLeft} ngày
                 </div>
             ` : ''}
-            <button class="btn-reorder" data-order-id="${order.id}" 
-                    style="background: white; color: #ee4d2d; padding: 10px 24px; border: 1px solid #ee4d2d; border-radius: 4px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease;">
-                <i class="fa fa-refresh"></i> Mua lại
-            </button>
         `;
     }
     
@@ -384,6 +379,14 @@ function bindCancelOrderEvents() {
     });
 }
 
+// Bind reorder events
+function bindReorderEvents() {
+    $('.btn-reorder').off('click').on('click', function() {
+        const orderId = $(this).data('order-id');
+        handleReorder(orderId);
+    });
+}
+
 // Handle cancel order
 function handleCancelOrder(orderId) {
     // Xác nhận trước khi hủy
@@ -467,4 +470,72 @@ function addReturnButtonsToDeliveredOrders(orders) {
     // This function is called after orders are rendered
     // Return buttons are already added in createOrderCard function
     console.log('✅ Return buttons added for eligible DELIVERED orders');
+}
+
+// Handle reorder (Mua lại)
+function handleReorder(orderId) {
+    console.log('🔄 Reordering order #' + orderId);
+    
+    // Disable button và hiển thị loading
+    const button = $(`.btn-reorder[data-order-id="${orderId}"]`);
+    const originalText = button.html();
+    button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang xử lý...');
+    
+    // Call API to reorder
+    $.ajax({
+        url: `/api/cart/reorder/${orderId}`,
+        method: 'POST',
+        success: function(response) {
+            console.log('✅ Reorder success:', response);
+            
+            // Show success message
+            showNotification('success', '✅ Đã thêm sản phẩm! Đang chuyển đến thanh toán...');
+            
+            // Redirect to select-items page with auto-select flag
+            setTimeout(function() {
+                // Redirect to select-items with flag to auto-select all and auto-submit
+                window.location.href = '/user/select-items?reorder=true&autoSubmit=true';
+            }, 800);
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Reorder failed:', error);
+            
+            let errorMsg = 'Có lỗi xảy ra khi mua lại đơn hàng!';
+            if (xhr.responseJSON && xhr.responseJSON.message) {
+                errorMsg = xhr.responseJSON.message;
+            }
+            
+            showNotification('error', '❌ ' + errorMsg);
+            
+            // Restore button
+            button.prop('disabled', false).html(originalText);
+        }
+    });
+}
+
+// Show notification helper
+function showNotification(type, message) {
+    const bgColor = type === 'success' ? '#4caf50' : '#f44336';
+    const notification = $(`
+        <div style="position: fixed; 
+                    top: 20px; 
+                    right: 20px; 
+                    background: ${bgColor}; 
+                    color: white; 
+                    padding: 16px 24px; 
+                    border-radius: 8px; 
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                    z-index: 9999;
+                    animation: slideInRight 0.3s ease-out;">
+            ${message}
+        </div>
+    `);
+    
+    $('body').append(notification);
+    
+    setTimeout(function() {
+        notification.fadeOut(300, function() {
+            $(this).remove();
+        });
+    }, 3000);
 }

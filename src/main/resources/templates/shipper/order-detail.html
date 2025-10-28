@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 
 
 <!-- Mirrored from techzaa.in/larkon/admin/order-detail.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 20 Nov 2024 14:46:46 GMT -->
@@ -9,8 +8,8 @@
      <meta charset="utf-8" />
      <title>Chi Tiết Đơn Hàng</title>
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta name="description" content="A fully responsive premium admin dashboard template" />
-     <meta name="author" content="Techzaa" />
+     <meta name="description" content="Hệ thống quản lý giao hàng DeeG" />
+     <meta name="author" content="DeeG" />
      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
      <!-- App favicon -->
@@ -60,8 +59,15 @@
                                                   <div>
                                                        <h4 class="fw-medium text-dark d-flex align-items-center gap-2">
                                                             <span th:text="${order.id}"></span>
-                                                            <span class="badge bg-success-subtle text-success px-2 py-1 fs-13" th:text="${order.payOption}"></span>
-                                                            <span id="status" class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
+                                                            <span class="badge bg-success-subtle text-success px-2 py-1 fs-13" th:text="${order.payOption == 'COD' ? 'Tiền mặt' : (order.payOption == 'BANKING' ? 'Chuyển khoản' : (order.payOption == 'PAYOS' ? 'PayOS' : order.payOption))}"></span>
+                                                            <th:block th:switch="${order.status.name()}">
+                                                                 <span th:case="'DELIVERED'" id="status" class="border border-success text-success fs-13 px-2 py-1 rounded">Đã Giao</span>
+                                                                 <span th:case="'SHIPPED'" id="status" class="border border-warning text-warning fs-13 px-2 py-1 rounded">Đang Giao</span>
+                                                                 <span th:case="'IN_STOCK'" id="status" class="border border-info text-info fs-13 px-2 py-1 rounded">Trong Kho</span>
+                                                                 <span th:case="'CANCEL'" id="status" class="border border-danger text-danger fs-13 px-2 py-1 rounded">Đã Hủy</span>
+                                                                 <span th:case="'RETURN'" id="status" class="border border-secondary text-secondary fs-13 px-2 py-1 rounded">Hoàn Trả</span>
+                                                                 <span th:case="*" id="status" class="border border-warning text-warning fs-13 px-2 py-1 rounded" th:text="${order.status}"></span>
+                                                            </th:block>
                                                        </h4>
                                                        <p class="mb-0 text-muted">
                                                             <i class='bx bx-calendar'></i> Ngày tạo: 
@@ -71,22 +77,22 @@
 
                                              </div>
                                              <div class="card-footer d-flex flex-wrap align-items-center justify-content-between bg-light-subtle gap-2">
-                                                  <p class="border rounded mb-0 px-2 py-1 bg-body"><i class='bx bx-arrow-from-left align-middle fs-16'></i> Last updated date: <span class="text-dark fw-medium" th:text="${#dates.format(shipper.updatedDate, 'MMM dd, yyyy')}"></span></p>
+                                                  <p class="border rounded mb-0 px-2 py-1 bg-body"><i class='bx bx-arrow-from-left align-middle fs-16'></i> Cập nhật lần cuối: <span class="text-dark fw-medium" th:text="${#dates.format(shipper.updatedDate, 'dd/MM/yyyy HH:mm')}"></span></p>
                                              </div>
                                         </div>
                                         <div class="card">
                                              <div class="card-header">
-                                                  <h4 class="card-title">Product</h4>
+                                                  <h4 class="card-title">Sản Phẩm</h4>
                                              </div>
                                              <div class="card-body">
                                                   <div class="table-responsive">
                                                        <table class="table align-middle mb-0 table-hover table-centered">
                                                             <thead class="bg-light-subtle border-bottom">
                                                             <tr>
-                                                                 <th>Product Name & Size</th>
-                                                                 <th>Quantity</th>
-                                                                 <th>Price</th>
-                                                                 <th>Amount</th>
+                                                                 <th>Tên Sản Phẩm & Size</th>
+                                                                 <th>Số Lượng</th>
+                                                                 <th>Đơn Giá</th>
+                                                                 <th>Thành Tiền</th>
                                                             </tr>
                                                             </thead>
                                                             <tbody>
@@ -103,7 +109,7 @@
                                         </div>
                                         <div class="card">
                               <div class="card-header">
-                                   <h4 class="card-title">Shipping Detail</h4>
+                                   <h4 class="card-title">Chi Tiết Giao Hàng</h4>
                               </div>
                               <div class="card-body">
                                    <!-- Ghi chú -->
@@ -218,7 +224,7 @@
                          <div class="col-xl-3 col-lg-4">
                               <div class="card">
                                    <div class="card-header">
-                                        <h4 class="card-title">Order Summary</h4>
+                                        <h4 class="card-title">Tóm Tắt Đơn Hàng</h4>
                                    </div>
                                    <div class="card-body">
                                         <div class="table-responsive">
@@ -226,13 +232,13 @@
                                                   <tbody>
                                                        <tr>
                                                             <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Sub Total : </p>
+                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:clipboard-text-broken"></iconify-icon> Tạm Tính : </p>
                                                             </td>
                                                             <td th:text="${payment.subtotal}" class="text-end text-dark fw-medium px-0"></td>
                                                        </tr>
                                                        <tr>
                                                             <td class="px-0">
-                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Discount : </p>
+                                                                 <p class="d-flex mb-0 align-items-center gap-1"><iconify-icon icon="solar:ticket-broken" class="align-middle"></iconify-icon> Giảm Giá : </p>
                                                             </td>
                                                             <td th:text="${payment.discount}" class="text-end text-dark fw-medium px-0"></td>
                                                        </tr>
@@ -243,7 +249,7 @@
                                    </div>
                                    <div class="card-footer d-flex align-items-center justify-content-between bg-light-subtle">
                                         <div>
-                                             <p class="fw-medium text-dark mb-0">Total Amount</p>
+                                             <p class="fw-medium text-dark mb-0">Tổng Thanh Toán</p>
                                         </div>
                                         <div>
                                              <p class="fw-medium text-dark mb-0" th:text="${payment.totalpay}"></p>
@@ -254,12 +260,12 @@
 
                               <div class="card">
                                    <div class="card-header">
-                                        <h4 class="card-title">Customer Details</h4>
+                                        <h4 class="card-title">Thông Tin Khách Hàng</h4>
                                    </div>
                                    <div class="card-body">
                                         <div class="d-flex align-items-center gap-2">
                                              <img th:src="${user.profilePicture != null ? user.profilePicture : '/assets/images/users/avatar-1.jpg'}" 
-                                                  alt="Customer Avatar" 
+                                                  alt="Avatar Khách Hàng" 
                                                   class="avatar rounded-3 border border-light border-3">
                                              <div>
                                                   <p th:text="${user.fullname}" class="mb-1"></p>
@@ -267,7 +273,7 @@
                                              </div>
                                         </div>
                                         <div class="d-flex justify-content-between mt-3">
-                                             <h5 class="">Contact Number</h5>
+                                             <h5 class="">Số Điện Thoại</h5>
                                         </div>
                                         <p class="mb-1">
                                              <span th:if="${user.phone != null}" th:text="${user.phone}"></span>
@@ -275,7 +281,7 @@
                                         </p>
 
                                         <div class="d-flex justify-content-between mt-3">
-                                             <h5 class="">Shipping Address</h5>
+                                             <h5 class="">Địa Chỉ Giao Hàng</h5>
                                         </div>
 
                                         <div>

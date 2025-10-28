@@ -188,7 +188,7 @@
                                             <div>
                                                 <span class="info-label">Địa chỉ:</span>
                                                 <span class="info-value" th:if="${user?.userAddresses != null and !user.userAddresses.empty}" 
-                                                      th:text="${user.userAddresses[0].address.addressLine + ', ' + user.userAddresses[0].address.district + ', ' + user.userAddresses[0].address.city}">
+                                                      th:text="${user.userAddresses[0].address.address_line + ', ' + user.userAddresses[0].address.city}">
                                                 </span>
                                                 <span class="info-value text-muted" th:unless="${user?.userAddresses != null and !user.userAddresses.empty}">Chưa cập nhật</span>
                                             </div>
@@ -298,7 +298,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <script>document.write(new Date().getFullYear())</script> © Deeg Shipper. Design by <b>Coderthemes</b>
+                        <script>document.write(new Date().getFullYear())</script> © DeeG Shipper. Được phát triển bởi <b>DeeG Team</b>
                     </div>
                 </div>
             </div>

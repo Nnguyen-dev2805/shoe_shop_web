@@ -21,232 +21,38 @@
         
         <!-- Testimonials Grid -->
         <div class="row testimonials-grid">
-            <!-- Testimonial 1 -->
-            <div class="col-lg-4 col-md-6 mb-4">
+            <!-- Loop through testimonials from database -->
+            <div class="col-lg-4 col-md-6 mb-4" th:each="testimonial : ${testimonials}">
                 <div class="testimonial-card">
                     <div class="testimonial-header">
                         <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Nguyễn Văn A">
+                            <img th:src="${testimonial.userAvatar != null && testimonial.userAvatar != '' ? testimonial.userAvatar : '/img/avatar-default.svg'}" 
+                                 th:alt="${testimonial.userName}"
+                                 onerror="this.onerror=null; this.src='/img/avatar-default.svg';">
                         </div>
                         <div class="customer-info">
-                            <h4>Nguyễn Văn A</h4>
+                            <h4 th:text="${testimonial.userName}">Khách hàng</h4>
                             <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> Hà Nội
+                                <i class="fa fa-map-marker"></i> Việt Nam
                             </p>
                         </div>
                     </div>
                     
                     <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <span class="rating-text">5.0</span>
+                        <!-- Display stars based on rating -->
+                        <th:block th:each="i : ${#numbers.sequence(1, 5)}">
+                            <i th:class="${i <= testimonial.star ? 'fa fa-star' : (i - 0.5 <= testimonial.star ? 'fa fa-star-half-o' : 'fa fa-star-o')}"></i>
+                        </th:block>
+                        <span class="rating-text" th:text="${testimonial.star + '.0'}">5.0</span>
                     </div>
                     
                     <div class="testimonial-content">
-                        <p>"Giày chất lượng tuyệt vời, đúng như mô tả. Giao hàng nhanh chóng, đóng gói cẩn thận. Tôi đã mua 3 đôi và rất hài lòng!"</p>
+                        <p th:text="'&quot;' + ${testimonial.comment} + '&quot;'">"Rất hài lòng với sản phẩm!"</p>
                     </div>
                     
                     <div class="testimonial-footer">
                         <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> Nike Air Max 270
-                        </span>
-                        <span class="verified-badge">
-                            <i class="fa fa-check-circle"></i> Đã mua hàng
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Testimonial 2 -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Trần Thị B">
-                        </div>
-                        <div class="customer-info">
-                            <h4>Trần Thị B</h4>
-                            <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> TP. Hồ Chí Minh
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <span class="rating-text">5.0</span>
-                    </div>
-                    
-                    <div class="testimonial-content">
-                        <p>"Shop uy tín, giá cả hợp lý. Nhân viên tư vấn nhiệt tình. Mình sẽ giới thiệu cho bạn bè. Rất đáng để mua!"</p>
-                    </div>
-                    
-                    <div class="testimonial-footer">
-                        <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> Adidas Ultra Boost
-                        </span>
-                        <span class="verified-badge">
-                            <i class="fa fa-check-circle"></i> Đã mua hàng
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Testimonial 3 -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Lê Văn C">
-                        </div>
-                        <div class="customer-info">
-                            <h4>Lê Văn C</h4>
-                            <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> Đà Nẵng
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star-half-o"></i>
-                        <span class="rating-text">4.5</span>
-                    </div>
-                    
-                    <div class="testimonial-content">
-                        <p>"Sản phẩm đẹp, êm chân. Ship hơi lâu nhưng không sao. Giá so với chất lượng thì quá ổn. Sẽ ủng hộ shop lâu dài!"</p>
-                    </div>
-                    
-                    <div class="testimonial-footer">
-                        <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> Puma RS-X
-                        </span>
-                        <span class="verified-badge">
-                            <i class="fa fa-check-circle"></i> Đã mua hàng
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Testimonial 4 -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Phạm Thị D">
-                        </div>
-                        <div class="customer-info">
-                            <h4>Phạm Thị D</h4>
-                            <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> Cần Thơ
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <span class="rating-text">5.0</span>
-                    </div>
-                    
-                    <div class="testimonial-content">
-                        <p>"Lần đầu mua online giày mà vừa vặn như vậy. Shop tư vấn size rất chi tiết. Chất lượng như hàng chính hãng. 5 sao!"</p>
-                    </div>
-                    
-                    <div class="testimonial-footer">
-                        <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> New Balance 574
-                        </span>
-                        <span class="verified-badge">
-                            <i class="fa fa-check-circle"></i> Đã mua hàng
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Testimonial 5 -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Hoàng Văn E">
-                        </div>
-                        <div class="customer-info">
-                            <h4>Hoàng Văn E</h4>
-                            <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> Hải Phòng
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <span class="rating-text">5.0</span>
-                    </div>
-                    
-                    <div class="testimonial-content">
-                        <p>"Giày đẹp, form chuẩn. Mình đi chạy bộ rất thoải mái. Dịch vụ chăm sóc khách hàng chu đáo. Sẽ quay lại ủng hộ!"</p>
-                    </div>
-                    
-                    <div class="testimonial-footer">
-                        <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> Nike React Infinity
-                        </span>
-                        <span class="verified-badge">
-                            <i class="fa fa-check-circle"></i> Đã mua hàng
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Testimonial 6 -->
-            <div class="col-lg-4 col-md-6 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-header">
-                        <div class="customer-avatar">
-                            <img src="https://www.shutterstock.com/image-vector/cool-capybara-character-wearing-pixelated-600nw-2655397713.jpg" alt="Vũ Thị F">
-                        </div>
-                        <div class="customer-info">
-                            <h4>Vũ Thị F</h4>
-                            <p class="customer-location">
-                                <i class="fa fa-map-marker"></i> Nha Trang
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="testimonial-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star-half-o"></i>
-                        <span class="rating-text">4.5</span>
-                    </div>
-                    
-                    <div class="testimonial-content">
-                        <p>"Mua làm quà tặng bạn, bạn rất thích. Đóng gói đẹp, có túi shop sang trọng. Giá tốt hơn nhiều nơi khác. Recommend!"</p>
-                    </div>
-                    
-                    <div class="testimonial-footer">
-                        <span class="product-purchased">
-                            <i class="fa fa-shopping-bag"></i> Vans Old Skool
+                            <i class="fa fa-shopping-bag"></i> <span th:text="${testimonial.productName}">Sản phẩm</span>
                         </span>
                         <span class="verified-badge">
                             <i class="fa fa-check-circle"></i> Đã mua hàng
@@ -259,7 +65,7 @@
         <!-- View All Button -->
         <div class="row">
             <div class="col-md-12 text-center">
-                <a href="/reviews" class="btn-view-all-reviews">
+                <a href="#" class="btn-view-all-reviews">
                     Xem Tất Cả Đánh Giá
                     <i class="fa fa-arrow-right"></i>
                 </a>

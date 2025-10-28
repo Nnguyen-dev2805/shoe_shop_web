@@ -156,8 +156,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-end">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="mdi mdi-content-save me-1"></i> Lưu
+                                        <button type="submit" class="btn btn-primary btn-lg px-4">
+                                            <i class="mdi mdi-content-save me-2"></i>
+                                            <span class="fw-semibold">Lưu Thay Đổi</span>
                                         </button>
                                     </div>
                                 </div>
@@ -206,26 +207,30 @@
                                                 <span th:text="${r.description}"></span>
                                             </td>
                                             <td>
-                                                <span th:if="${r.isActive}" class="badge bg-success">
-                                                    <i class="mdi mdi-check"></i> Đang áp dụng
+                                                <span th:if="${r.isActive}" class="badge bg-success fs-12 px-3 py-2">
+                                                    <i class="mdi mdi-check-circle me-1"></i>Đang áp dụng
                                                 </span>
-                                                <span th:if="${!r.isActive}" class="badge bg-secondary">
-                                                    <i class="mdi mdi-pause"></i> Tạm dừng
+                                                <span th:if="${!r.isActive}" class="badge bg-secondary fs-12 px-3 py-2">
+                                                    <i class="mdi mdi-clock-outline me-1"></i>Tạm dừng
                                                 </span>
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-2">
                                                     <form th:action="@{/admin/shipping-rates/toggle-active/{id}(id=${r.id})}" 
                                                           method="post" style="display: inline;">
-                                                        <button type="submit" class="btn btn-sm btn-soft-warning">
-                                                            <i class="mdi mdi-sync"></i>
+                                                        <button type="submit" class="btn btn-sm btn-warning text-white" 
+                                                                data-bs-toggle="tooltip" title="Bật/Tắt trạng thái">
+                                                            <i class="mdi mdi-swap-horizontal fs-16 me-1"></i>
+                                                            <span class="d-none d-md-inline">Chuyển</span>
                                                         </button>
                                                     </form>
                                                     <form th:action="@{/admin/shipping-rates/delete/{id}(id=${r.id})}" 
                                                           method="post" style="display: inline;"
                                                           onsubmit="return confirm('Bạn có chắc muốn xóa mức phí này?');">
-                                                        <button type="submit" class="btn btn-sm btn-soft-danger">
-                                                            <i class="mdi mdi-delete"></i>
+                                                        <button type="submit" class="btn btn-sm btn-danger" 
+                                                                data-bs-toggle="tooltip" title="Xóa mức phí này">
+                                                            <i class="mdi mdi-trash-can fs-16 me-1"></i>
+                                                            <span class="d-none d-md-inline">Xóa</span>
                                                         </button>
                                                     </form>
                                                 </div>
@@ -251,6 +256,17 @@
 
 <!-- App Javascript (Require in all Page) -->
 <script src="/assets/js/app.js"></script>
+
+<!-- Initialize Tooltips -->
+<script>
+    // Initialize Bootstrap tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>
 
 </body>
 </html>
