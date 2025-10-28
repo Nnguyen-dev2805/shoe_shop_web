@@ -8,25 +8,57 @@ let ordersByStatusChart = null;
 let ordersTimeSeriesChart = null;
 let revenueTimeSeriesChart = null;
 
+// ✅ Debounce utility to prevent multiple rapid calls
+let debounceTimer;
+function debounce(func, delay = 500) {
+    return function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(func, delay);
+    };
+}
+
 $(document).ready(function() {
     // Load data on page load
     loadDashboardData();
     
+    // ✅ Debounced filter function
+    const debouncedFilter = debounce(function() {
+        // Show loading state
+        showLoadingState();
+        loadDashboardData();
+    }, 800); // Wait 800ms after user stops typing
+    
     // Filter button click handler
     $('#filterBtn').on('click', function() {
+        $(this).prop('disabled', true); // Prevent multiple clicks
+        showLoadingState();
         loadDashboardData();
+        setTimeout(() => {
+            $(this).prop('disabled', false);
+        }, 1500);
     });
     
     // Reset button click handler
     $('#resetBtn').on('click', function() {
         $('#startDate').val('');
         $('#endDate').val('');
+        $(this).prop('disabled', true);
+        showLoadingState();
         loadDashboardData();
+        setTimeout(() => {
+            $(this).prop('disabled', false);
+        }, 1500);
+    });
+    
+    // ✅ Auto-filter on date change with debounce
+    $('#startDate, #endDate').on('change', function() {
+        debouncedFilter();
     });
     
     // Enter key handler for date inputs
     $('#startDate, #endDate').on('keypress', function(e) {
         if (e.which === 13) {
+            showLoadingState();
             loadDashboardData();
         }
     });
@@ -72,6 +104,7 @@ $(document).ready(function() {
 
 /**
  * Load all dashboard data from API with optional date range
+ * ✅ OPTIMIZED: Use existing API but with debounce and progressive rendering
  */
 function loadDashboardData() {
     const startDate = $('#startDate').val();
@@ -86,30 +119,40 @@ function loadDashboardData() {
         params.endDate = endDate;
     }
     
+    // ✅ Use existing unified API endpoint
     $.ajax({
         url: '/api/admin/dashboard/stats',
         type: 'GET',
         data: params,
         dataType: 'json',
         success: function(data) {
-            console.log('Dashboard data loaded:', data);
+            console.log('✅ Dashboard data loaded:', data);
             
-            // Update stat cards
+            // ✅ Progressive rendering: Update stat cards immediately
             updateStatCards(data);
             
-            // Render charts (destroy old ones first)
-            renderOrdersByStatusChart(data.ordersByStatus);
-            renderOrdersTimeSeriesChart(data.orderTimeSeries);
-            renderRevenueTimeSeriesChart(data.revenueTimeSeries);
+            // ✅ Render charts with slight delays to prevent blocking
+            setTimeout(() => {
+                renderOrdersByStatusChart(data.ordersByStatus);
+            }, 100);
             
-            // Update top products table
-            updateTopProductsTable(data.topProducts);
+            setTimeout(() => {
+                renderOrdersTimeSeriesChart(data.orderTimeSeries);
+            }, 250);
+            
+            setTimeout(() => {
+                renderRevenueTimeSeriesChart(data.revenueTimeSeries);
+            }, 400);
+            
+            setTimeout(() => {
+                updateTopProductsTable(data.topProducts);
+            }, 550);
             
             // Update date range display in modals
             updateModalDateRanges();
         },
         error: function(xhr, status, error) {
-            console.error('Error loading dashboard data:', error);
+            console.error('❌ Error loading dashboard data:', error);
             showErrorMessage();
         }
     });
@@ -752,4 +795,35 @@ function showNotification(message, type = 'success') {
             $(this).remove();
         });
     }, 3000);
+}
+
+/**
+ * ✅ NEW: Show loading state for all stat cards
+ */
+function showLoadingState() {
+    // Stat cards loading
+    $('#totalOrders').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalRevenue').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalProductsSold').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalCustomers').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalInventoryValue').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalProfit').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#totalCOGS').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    $('#avgROI').html('<span class="spinner-border spinner-border-sm" role="status"></span>');
+    
+    // Charts loading placeholders
+    $('#ordersByStatusChart').html('<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>');
+    $('#ordersTimeSeriesChart').html('<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>');
+    $('#revenueTimeSeriesChart').html('<div class="loading-spinner"><div class="spinner-border text-primary" role="status"></div></div>');
+    
+    // Top products table loading
+    $('#topProductsTableBody').html(`
+        <tr>
+            <td colspan="5" class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </td>
+        </tr>
+    `);
 }

@@ -17,8 +17,8 @@
     <link th:href="@{/assets/css/icons.min.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{/assets/css/app.min.css}" rel="stylesheet" type="text/css"/>
     
-    <!-- ApexCharts CSS -->
-    <link th:href="@{/assets/vendor/apexcharts/apexcharts.css}" rel="stylesheet" type="text/css"/>
+    <!-- ✅ ApexCharts CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.css" rel="stylesheet" type="text/css"/>
 
     <style>
         /* Ensure consistent background color with other pages */
@@ -538,12 +538,24 @@
 </div>
 <!-- END Wrapper -->
 
+<!-- ✅ Fix: Define window.config before app.js loads -->
+<script>
+    window.config = {
+        menu: {
+            color: "dark"
+        },
+        sidebar: {
+            size: "default"
+        }
+    };
+</script>
+
 <!-- Vendor Javascript -->
 <script th:src="@{/assets/js/vendor.js}"></script>
 <script th:src="@{/assets/js/app.js}"></script>
 
-<!-- ApexCharts -->
-<script th:src="@{/assets/vendor/apexcharts/apexcharts.min.js}"></script>
+<!-- ✅ ApexCharts from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.1/dist/apexcharts.min.js"></script>
 
 <!-- Dashboard JS -->
 <script th:src="@{/js/admin/dashboard.js}"></script>
