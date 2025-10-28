@@ -38,6 +38,15 @@ public class WebSecurityConfig {
             "/verifycode", "/resetPassword", "/api/**", "/test-reset", "/reset-password-test", "/payment/**", "/order/**"};
     private final String[] PUBLIC_CSS = {"/assets/**", "/css/**", "/fonts/**", "/img/**", "/js/**", "/lib/**",
             "/style.css", "/uploads/**", "/images/**"};
+    
+    // ✅ Swagger/OpenAPI Documentation Endpoints
+    private final String[] SWAGGER_ENDPOINTS = {
+            "/swagger-ui/**", 
+            "/v3/api-docs/**", 
+            "/swagger-ui.html",
+            "/swagger-resources/**",
+            "/webjars/**"
+    };
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -48,6 +57,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/shipper/**").hasRole("shipper")
                         .requestMatchers(PUBLIC_ENDPOINT).permitAll()
                         .requestMatchers(PUBLIC_CSS).permitAll()
+                        .requestMatchers(SWAGGER_ENDPOINTS).permitAll() // ✅ Allow Swagger UI
                         .anyRequest().authenticated()
                 )
                 .formLogin(formLogin ->
