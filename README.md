@@ -1,5 +1,9 @@
 # DeeG Shoe Shop - Website Bán Giày Trực Tuyến
 
+<div align="center">
+  <img src="src/main/resources/static/img/logo-1.png" alt="DeeG Shoe Shop Logo" width="200"/>
+</div>
+
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
 [![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://openjdk.org/)
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql)](https://www.mysql.com/)
@@ -795,41 +799,16 @@ docker run -d \
 
 ## Tài Liệu API
 
-### REST APIs
+Hệ thống cung cấp tài liệu API đầy đủ thông qua **Swagger UI**:
 
-**Voucher APIs:**
-```
-GET  /api/vouchers/order              # Lấy voucher đơn hàng
-GET  /api/vouchers/shipping           # Lấy voucher ship
-POST /api/vouchers/shipping/calculate # Tính giảm giá ship
-POST /api/vouchers/shipping/validate  # Validate voucher ship
-```
+- **Swagger UI**: `http://localhost:8081/swagger-ui/index.html`
+- **API Docs JSON**: `http://localhost:8081/v3/api-docs`
 
-**Flash Sale APIs:**
-```
-GET  /api/flash-sale/active           # Flash sale đang diễn ra
-GET  /api/flash-sale/upcoming         # Flash sale sắp diễn
-GET  /api/flash-sale/{id}/items       # Sản phẩm trong flash sale
-GET  /api/flash-sale/item/{id}/stock  # Lấy stock realtime
-```
-
-**Cart APIs:**
-```
-POST /api/cart/add                    # Thêm vào giỏ
-PUT  /api/cart/update                 # Cập nhật số lượng
-POST /api/cart/remove                 # Xóa khỏi giỏ
-```
-
-**Shipping APIs:**
-```
-POST /api/shipping/calculate-fee      # Tính phí ship
-```
-
-**Address APIs:**
-```
-GET  /api/address/user/{userId}       # Danh sách địa chỉ
-POST /api/address/add                 # Thêm địa chỉ mới
-```
+Swagger UI cung cấp:
+- Danh sách đầy đủ các REST API endpoints
+- Mô tả chi tiết tham số và response
+- Tính năng test API trực tiếp trên trình duyệt
+- Ví dụ request/response cho từng endpoint
 
 ---
 
@@ -887,6 +866,65 @@ spring.jpa.hibernate.ddl-auto=update
 
 ---
 
+## Giao Diện Website
+
+### Screenshots
+
+**Trang Khách Hàng:**
+
+#### Trang Chủ
+<!-- ![Trang chủ](docs/images/homepage.png) -->
+
+#### Danh Sách Sản Phẩm
+<!-- ![Cửa hàng](docs/images/shop.png) -->
+
+#### Chi Tiết Sản Phẩm
+<!-- ![Chi tiết sản phẩm](docs/images/product-detail.png) -->
+
+#### Giỏ Hàng
+<!-- ![Giỏ hàng](docs/images/cart.png) -->
+
+#### Thanh Toán
+<!-- ![Thanh toán](docs/images/checkout.png) -->
+
+#### Flash Sale
+<!-- ![Flash Sale](docs/images/flashsale.png) -->
+
+#### Kho Voucher
+<!-- ![Kho voucher](docs/images/voucher.png) -->
+
+#### AI Chatbot
+<!-- ![AI Chatbot](docs/images/chatbot.png) -->
+
+**Trang Quản Trị:**
+
+#### Dashboard Admin
+<!-- ![Dashboard Admin](docs/images/admin-dashboard.png) -->
+
+#### Quản Lý Sản Phẩm
+<!-- ![Quản lý sản phẩm](docs/images/admin-products.png) -->
+
+#### Quản Lý Đơn Hàng
+<!-- ![Quản lý đơn hàng](docs/images/admin-orders.png) -->
+
+#### Quản Lý Flash Sale
+<!-- ![Quản lý Flash Sale](docs/images/admin-flashsale.png) -->
+
+**Trang Shipper:**
+
+#### Danh Sách Đơn Giao
+<!-- ![Danh sách đơn shipper](docs/images/shipper-orders.png) -->
+
+### Video Demo
+
+**Link YouTube:**
+
+<!-- [![Video Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID) -->
+
+> **Cách thêm video**: Thay `YOUR_VIDEO_ID` bằng ID video YouTube của bạn
+
+---
+
 ## Tài Liệu Tham Khảo
 
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
@@ -907,51 +945,8 @@ Dự án được phát triển bởi nhóm sinh viên:
 - **Nguyễn Tấn Yên** - 23110369
 
 **Trường**: Trường Đại học Sư phạm Kỹ thuật TP. Hồ Chí Minh (HCMUTE)  
-**Môn học**: Công nghệ Web  
+**Môn học**: Lập trình Web  
 **Năm học**: 2024-2025
-
----
-
-## Hướng Dẫn Thêm Screenshots
-
-Để thêm ảnh demo vào README, tạo cấu trúc thư mục sau:
-
-```bash
-mkdir -p docs/images
-```
-
-Sau đó thêm các file ảnh với tên tương ứng:
-
-**Trang User:**
-- `banner.png` - Banner/Logo project
-- `video-thumbnail.png` - Thumbnail video demo
-- `homepage.png` - Trang chủ
-- `shop.png` - Trang danh sách sản phẩm
-- `product-detail.png` - Chi tiết sản phẩm
-- `cart.png` - Giỏ hàng
-- `checkout.png` - Trang thanh toán
-- `payment.png` - Màn hình thanh toán PayOS
-- `flashsale.png` - Trang Flash Sale
-- `voucher.png` - Kho voucher
-- `chatbot.png` - AI Chatbot
-- `profile.png` - Trang tài khoản
-
-**Trang Admin:**
-- `admin-dashboard.png` - Dashboard admin
-- `admin-products.png` - Quản lý sản phẩm
-- `admin-orders.png` - Quản lý đơn hàng
-- `admin-flashsale.png` - Quản lý Flash Sale
-- `admin-voucher.png` - Quản lý voucher
-- `admin-inventory.png` - Quản lý kho
-
-**Trang Shipper:**
-- `shipper-orders.png` - Danh sách đơn hàng shipper
-- `shipper-detail.png` - Chi tiết đơn hàng shipper
-
-**Mobile:**
-- `mobile-responsive.png` - Responsive design
-
-> **Lưu ý**: Ảnh nên có định dạng PNG hoặc JPG, kích thước tối đa 1920x1080px để tối ưu hiển thị trên GitHub.
 
 ---
 
@@ -969,9 +964,7 @@ Chúng tôi rất hoan nghênh mọi đóng góp! Nếu bạn muốn đóng góp
 
 ## Liên Hệ & Hỗ Trợ
 
-- **Email**: deegshop.support@gmail.com
-- **Website**: [Sắp ra mắt]
-- **Facebook**: [DeeG Shoe Shop Official]
+- **Email**: tnhatnguyen.dev2805@gmail.com
 - **GitHub**: [Nnguyen-dev2805/shoe_shop_web](https://github.com/Nnguyen-dev2805/shoe_shop_web)
 
 Nếu gặp vấn đề hoặc có câu hỏi, vui lòng tạo [Issue](https://github.com/Nnguyen-dev2805/shoe_shop_web/issues) trên GitHub.
@@ -989,26 +982,6 @@ Dự án này được phân phối dưới **Giấy phép MIT** - xem file [LIC
 - ✅ Sử dụng cá nhân
 - ❌ Không chịu trách nhiệm
 - ❌ Không bảo hành
-
----
-
-## Lời Cảm Ơn
-
-Chúng tôi xin gửi lời cảm ơn đến:
-
-- **Spring Boot Team** - Framework Java mạnh mẽ và dễ sử dụng
-- **PayOS** - Cổng thanh toán Việt Nam hỗ trợ thanh toán QR Code
-- **Google** - Gemini AI API và OAuth2 authentication
-- **Goong Maps** - Dịch vụ bản đồ Việt Nam và tính phí vận chuyển theo GPS
-- **Cloudinary** - Lưu trữ đám mây cho hình ảnh
-- **Bootstrap** - Framework UI responsive
-- **Font Awesome & Lucide** - Thư viện icon
-- **MySQL** - Hệ quản trị CSDL mã nguồn mở
-- **Docker** - Nền tảng containerization
-- **GitHub** - Quản lý phiên bản và CI/CD
-- **Render** - Nền tảng đám mây cho triển khai
-
-Và tất cả các thư viện mã nguồn mở đã được sử dụng trong dự án này!
 
 ---
 
