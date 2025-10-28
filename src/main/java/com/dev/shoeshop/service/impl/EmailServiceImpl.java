@@ -2,6 +2,8 @@ package com.dev.shoeshop.service.impl;
 
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.OrderDetail;
+import com.dev.shoeshop.entity.Product;
+import com.dev.shoeshop.entity.ReturnRequest;
 import com.dev.shoeshop.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -190,6 +192,227 @@ public class EmailServiceImpl implements EmailService {
         }
         
         return sb.length() > 0 ? sb.toString() : "N/A";
+    }
+    
+    @Override
+    @Async
+    public void sendReturnApprovedEmail(ReturnRequest returnRequest) {
+        try {
+            log.info("📧 Preparing to send return approved email for return request #{}", returnRequest.getId());
+            
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setTo(returnRequest.getUser().getEmail());
+            helper.setSubject("✅ Yêu cầu trả hàng #" + returnRequest.getId() + " đã được chấp nhận");
+            
+            // Get product name
+            String productName = "Sản phẩm";
+            if (returnRequest.getOrder() != null && 
+                returnRequest.getOrder().getOrderDetailSet() != null && 
+                !returnRequest.getOrder().getOrderDetailSet().isEmpty()) {
+                OrderDetail firstDetail = returnRequest.getOrder().getOrderDetailSet().iterator().next();
+                if (firstDetail != null && firstDetail.getProduct() != null && 
+                    firstDetail.getProduct().getProduct() != null) {
+                    Product product = firstDetail.getProduct().getProduct();
+                    productName = product.getTitle() != null ? product.getTitle() : "Sản phẩm";
+                }
+            }
+            
+            // Map return reason to Vietnamese
+            String returnReason = mapReturnReasonToVietnamese(returnRequest.getReason().name());
+            
+            // Build user address
+            String userAddress = returnRequest.getUser().getEmail(); // Fallback
+            if (returnRequest.getOrder() != null && returnRequest.getOrder().getAddress() != null) {
+                userAddress = buildAddressString(returnRequest.getOrder().getAddress());
+            }
+            
+            // Render HTML template với Thymeleaf
+            Context context = new Context();
+            context.setVariable("userName", returnRequest.getUser().getFullname());
+            context.setVariable("returnRequestId", returnRequest.getId());
+            context.setVariable("orderId", returnRequest.getOrder().getId());
+            context.setVariable("productName", productName);
+            context.setVariable("refundAmount", returnRequest.getOrder().getTotalPrice());
+            context.setVariable("returnReason", returnReason);
+            context.setVariable("userPhone", returnRequest.getUser().getPhone());
+            context.setVariable("userAddress", userAddress);
+            context.setVariable("trackingUrl", "http://localhost:8081/user/order-view");
+            
+            String htmlContent = templateEngine.process("email/return-approved", context);
+            helper.setText(htmlContent, true);
+            
+            // Set sender
+            helper.setFrom("noreply@deegshoeshop.com", "DeeG Shoe Shop");
+            
+            // Attach logo
+            try {
+                ClassPathResource logoResource = new ClassPathResource("static/img/logo-1.png");
+                if (logoResource.exists()) {
+                    helper.addInline("logo", logoResource);
+                }
+            } catch (Exception logoException) {
+                log.warn("Failed to attach logo: {}", logoException.getMessage());
+            }
+            
+            mailSender.send(mimeMessage);
+            log.info("✅ Return approved email sent successfully to: {}", returnRequest.getUser().getEmail());
+            
+        } catch (Exception e) {
+            log.error("❌ Failed to send return approved email for return request #{}: {}", 
+                      returnRequest.getId(), e.getMessage(), e);
+            // Don't throw exception - email failure shouldn't break approval process
+        }
+    }
+    
+    /**
+     * Map return reason enum to Vietnamese
+     */
+    private String mapReturnReasonToVietnamese(String reason) {
+        return switch (reason) {
+            case "WRONG_SIZE" -> "Size không đúng";
+            case "DAMAGED" -> "Hàng bị hỏng";
+            case "WRONG_PRODUCT" -> "Sai sản phẩm";
+            case "NOT_AS_DESCRIBED" -> "Không giống mô tả";
+            case "QUALITY_ISSUE" -> "Vấn đề chất lượng";
+            case "CHANGE_MIND" -> "Đổi ý";
+            case "OTHER" -> "Lý do khác";
+            default -> reason;
+        };
+    }
+    
+    @Override
+    @Async
+    public void sendRefundCompletedEmail(ReturnRequest returnRequest) {
+        try {
+            log.info("💰 Preparing to send refund completed email for return request #{}", returnRequest.getId());
+            
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setTo(returnRequest.getUser().getEmail());
+            helper.setSubject("💰 Hoàn xu thành công cho đơn trả hàng #" + returnRequest.getId());
+            
+            // Get product name
+            String productName = "Sản phẩm";
+            if (returnRequest.getOrder() != null && 
+                returnRequest.getOrder().getOrderDetailSet() != null && 
+                !returnRequest.getOrder().getOrderDetailSet().isEmpty()) {
+                OrderDetail firstDetail = returnRequest.getOrder().getOrderDetailSet().iterator().next();
+                if (firstDetail != null && firstDetail.getProduct() != null && 
+                    firstDetail.getProduct().getProduct() != null) {
+                    Product product = firstDetail.getProduct().getProduct();
+                    productName = product.getTitle() != null ? product.getTitle() : "Sản phẩm";
+                }
+            }
+            
+            // Get user's new balance
+            Long newBalance = returnRequest.getUser().getCoins() != null ? returnRequest.getUser().getCoins() : 0L;
+            
+            // Render HTML template với Thymeleaf
+            Context context = new Context();
+            context.setVariable("userName", returnRequest.getUser().getFullname());
+            context.setVariable("returnRequestId", returnRequest.getId());
+            context.setVariable("orderId", returnRequest.getOrder().getId());
+            context.setVariable("productName", productName);
+            context.setVariable("refundAmount", formatCurrency(returnRequest.getRefundAmount().doubleValue()));
+            context.setVariable("refundCoins", returnRequest.getRefundAmount().longValue());
+            context.setVariable("newBalance", newBalance);
+            context.setVariable("newBalanceFormatted", formatCurrency(newBalance.doubleValue()));
+            context.setVariable("completedDate", returnRequest.getCompletedDate());
+            context.setVariable("accountUrl", "http://localhost:8081/user/my_account");
+            
+            String htmlContent = templateEngine.process("email/refund-completed", context);
+            helper.setText(htmlContent, true);
+            
+            // Set sender
+            helper.setFrom("noreply@deegshoeshop.com", "DeeG Shoe Shop");
+            
+            // Attach logo
+            try {
+                ClassPathResource logoResource = new ClassPathResource("static/img/logo-1.png");
+                if (logoResource.exists()) {
+                    helper.addInline("logo", logoResource);
+                }
+            } catch (Exception logoException) {
+                log.warn("Failed to attach logo: {}", logoException.getMessage());
+            }
+            
+            mailSender.send(mimeMessage);
+            log.info("✅ Refund completed email sent successfully to: {}", returnRequest.getUser().getEmail());
+            
+        } catch (Exception e) {
+            log.error("❌ Failed to send refund completed email for return request #{}: {}", 
+                      returnRequest.getId(), e.getMessage(), e);
+            // Don't throw exception - email failure shouldn't break refund process
+        }
+    }
+    
+    @Override
+    @Async
+    public void sendReturnRejectedEmail(ReturnRequest returnRequest) {
+        try {
+            log.info("❌ Preparing to send return rejected email for return request #{}", returnRequest.getId());
+            
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            
+            helper.setTo(returnRequest.getUser().getEmail());
+            helper.setSubject("❌ Yêu cầu trả hàng #" + returnRequest.getId() + " đã bị từ chối");
+            
+            // Get product name
+            String productName = "Sản phẩm";
+            if (returnRequest.getOrder() != null && 
+                returnRequest.getOrder().getOrderDetailSet() != null && 
+                !returnRequest.getOrder().getOrderDetailSet().isEmpty()) {
+                OrderDetail firstDetail = returnRequest.getOrder().getOrderDetailSet().iterator().next();
+                if (firstDetail != null && firstDetail.getProduct() != null && 
+                    firstDetail.getProduct().getProduct() != null) {
+                    Product product = firstDetail.getProduct().getProduct();
+                    productName = product.getTitle() != null ? product.getTitle() : "Sản phẩm";
+                }
+            }
+            
+            // Map return reason to Vietnamese
+            String returnReason = mapReturnReasonToVietnamese(returnRequest.getReason().name());
+            
+            // Render HTML template với Thymeleaf
+            Context context = new Context();
+            context.setVariable("userName", returnRequest.getUser().getFullname());
+            context.setVariable("returnRequestId", returnRequest.getId());
+            context.setVariable("orderId", returnRequest.getOrder().getId());
+            context.setVariable("productName", productName);
+            context.setVariable("returnReason", returnReason);
+            context.setVariable("adminNote", returnRequest.getAdminNote() != null ? returnRequest.getAdminNote() : "Không có ghi chú");
+            context.setVariable("supportEmail", "support@deegshoeshop.com");
+            context.setVariable("supportPhone", "1900-xxxx");
+            context.setVariable("contactUrl", "http://localhost:8081/user/order-view");
+            
+            String htmlContent = templateEngine.process("email/return-rejected", context);
+            helper.setText(htmlContent, true);
+            
+            // Set sender
+            helper.setFrom("noreply@deegshoeshop.com", "DeeG Shoe Shop");
+            
+            // Attach logo
+            try {
+                ClassPathResource logoResource = new ClassPathResource("static/img/logo-1.png");
+                if (logoResource.exists()) {
+                    helper.addInline("logo", logoResource);
+                }
+            } catch (Exception logoException) {
+                log.warn("Failed to attach logo: {}", logoException.getMessage());
+            }
+            
+            mailSender.send(mimeMessage);
+            log.info("✅ Return rejected email sent successfully to: {}", returnRequest.getUser().getEmail());
+            
+        } catch (Exception e) {
+            log.error("❌ Failed to send return rejected email for return request #{}: {}", 
+                      returnRequest.getId(), e.getMessage(), e);
+            // Don't throw exception - email failure shouldn't break rejection process
+        }
     }
 
 }

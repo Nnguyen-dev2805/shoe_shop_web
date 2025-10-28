@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoàn Xu Thành Công</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header img {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+        .email-header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 30px;
+        }
+        .success-icon {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .success-icon svg {
+            width: 80px;
+            height: 80px;
+            fill: #28a745;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .content-section {
+            background-color: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+            text-align: right;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .highlight-box .amount {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .highlight-box .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .balance-box {
+            background-color: #e8f5e9;
+            border: 2px solid #28a745;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .balance-box .new-balance {
+            font-size: 28px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 5px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white !important;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <img th:src="'cid:logo'" alt="DeeG Shoe Shop" />
+            <h1>💰 Hoàn Xu Thành Công</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="email-body">
+            <!-- Success Icon -->
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+
+            <!-- Greeting -->
+            <p class="greeting">
+                Xin chào <strong th:text="${userName}">Khách hàng</strong>,
+            </p>
+
+            <p>
+                Chúng tôi vui mừng thông báo rằng yêu cầu trả hàng của bạn đã được xử lý thành công và 
+                <strong>DeeG Xu đã được hoàn vào tài khoản</strong> của bạn! 🎉
+            </p>
+
+            <!-- Refund Amount Highlight -->
+            <div class="highlight-box">
+                <div class="label">Số xu đã hoàn</div>
+                <div class="amount">
+                    +<span th:text="${#numbers.formatDecimal(refundCoins, 0, 'COMMA', 0, 'POINT')}">50,000</span> xu
+                </div>
+                <div class="label">≈ <span th:text="${refundAmount}">50,000₫</span></div>
+            </div>
+
+            <!-- Return Request Details -->
+            <div class="content-section">
+                <h3 style="margin-top: 0; color: #333;">📋 Chi tiết đơn trả hàng</h3>
+                <div class="info-row">
+                    <span class="info-label">Mã yêu cầu:</span>
+                    <span class="info-value">#<span th:text="${returnRequestId}">1</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Đơn hàng gốc:</span>
+                    <span class="info-value">#<span th:text="${orderId}">17</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Sản phẩm:</span>
+                    <span class="info-value" th:text="${productName}">Nike Air Max</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Ngày hoàn tiền:</span>
+                    <span class="info-value" th:text="${#temporals.format(completedDate, 'dd/MM/yyyy HH:mm')}">28/10/2025 08:00</span>
+                </div>
+            </div>
+
+            <!-- New Balance -->
+            <div class="balance-box">
+                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">💳 Số dư DeeG Xu mới của bạn</div>
+                <div class="new-balance">
+                    <span th:text="${#numbers.formatDecimal(newBalance, 0, 'COMMA', 0, 'POINT')}">1,259,600</span> xu
+                </div>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    ≈ <span th:text="${newBalanceFormatted}">1,259,600₫</span>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Note -->
+            <div class="note">
+                <strong>📌 Lưu ý:</strong><br>
+                • Xu có thể được sử dụng để thanh toán cho đơn hàng tiếp theo<br>
+                • 1 xu = 1 đồng<br>
+                • Xu không có thời hạn sử dụng<br>
+                • Bạn có thể kiểm tra lịch sử giao dịch trong trang tài khoản
+            </div>
+
+            <!-- CTA Button -->
+            <div class="button-container">
+                <a th:href="${accountUrl}" class="cta-button">
+                    Xem Tài Khoản & Lịch Sử Giao Dịch
+                </a>
+            </div>
+
+            <p style="margin-top: 30px; color: #666; font-size: 14px;">
+                Cảm ơn bạn đã tin tưởng và mua sắm tại DeeG Shoe Shop. 
+                Chúng tôi hy vọng được phục vụ bạn trong những đơn hàng tiếp theo! ❤️
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p style="margin: 0 0 10px 0;">
+                <strong>DeeG Shoe Shop</strong><br>
+                Email: support@deegshoeshop.com | Hotline: 1900-xxxx
+            </p>
+            <p style="margin: 0; color: #999;">
+                © 2025 DeeG Shoe Shop. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

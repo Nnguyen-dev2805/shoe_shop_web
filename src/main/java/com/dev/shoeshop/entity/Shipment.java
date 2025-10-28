@@ -13,8 +13,8 @@ public class Shipment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false,  unique = true)
+    @ManyToOne  // Changed from @OneToOne to allow multiple shipments per order
+    @JoinColumn(name = "order_id", referencedColumnName = "id", nullable = false)
 //    @NotNull(message = "Order cannot be null")
     private Order order;
 

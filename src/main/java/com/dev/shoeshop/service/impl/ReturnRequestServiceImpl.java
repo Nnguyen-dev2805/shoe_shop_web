@@ -1,14 +1,21 @@
 package com.dev.shoeshop.service.impl;
 
+import com.dev.shoeshop.entity.CoinTransaction;
 import com.dev.shoeshop.entity.Order;
 import com.dev.shoeshop.entity.ReturnRequest;
+import com.dev.shoeshop.entity.ReturnShipment;
 import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.enums.CoinTransactionType;
 import com.dev.shoeshop.enums.ShipmentStatus;
 import com.dev.shoeshop.enums.ReturnReason;
 import com.dev.shoeshop.enums.ReturnStatus;
+import com.dev.shoeshop.repository.CoinTransactionRepository;
 import com.dev.shoeshop.repository.OrderRepository;
 import com.dev.shoeshop.repository.ReturnRequestRepository;
+import com.dev.shoeshop.repository.ReturnShipmentRepository;
 import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.EmailService;
+import com.dev.shoeshop.service.MembershipService;
 import com.dev.shoeshop.service.ReturnRequestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +37,10 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
     private final ReturnRequestRepository returnRequestRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final ReturnShipmentRepository returnShipmentRepository;
+    private final CoinTransactionRepository coinTransactionRepository;
+    private final EmailService emailService;
+    private final MembershipService membershipService;
     
     @Override
     public ReturnRequest createReturnRequest(Long orderId, Long userId, ReturnReason reason, 
@@ -132,6 +143,15 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         ReturnRequest saved = returnRequestRepository.save(returnRequest);
         log.info("Return request rejected: {}", returnId);
         
+        // Send email notification to user
+        try {
+            emailService.sendReturnRejectedEmail(saved);
+            log.info("Rejection email notification sent to user: {}", saved.getUser().getEmail());
+        } catch (Exception emailEx) {
+            log.error("Failed to send rejection email notification: {}", emailEx.getMessage());
+            // Don't fail the rejection process if email fails
+        }
+        
         return saved;
     }
     
@@ -187,13 +207,33 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
             // Cập nhật coins cho user
             Long currentCoins = user.getCoins() != null ? user.getCoins() : 0L;
             Long refundCoins = refundAmount.longValue();
-            user.setCoins(currentCoins + refundCoins);
+            Long newBalance = currentCoins + refundCoins;
+            user.setCoins(newBalance);
             userRepository.save(user);
             
-            log.info("Refunded {} coins to user {}, new balance: {}", refundCoins, user.getId(), user.getCoins());
+            log.info("Refunded {} coins to user {}, new balance: {}", refundCoins, user.getId(), newBalance);
             
-            // TODO: Create CoinTransaction record for tracking
-            // coinTransactionRepository.save(new CoinTransaction(...));
+            // Create CoinTransaction record for tracking
+            CoinTransaction coinTransaction = CoinTransaction.builder()
+                    .user(user)
+                    .transactionType(CoinTransactionType.EARNED)
+                    .amount(refundCoins)
+                    .balanceAfter(newBalance)  // ← Set balance after transaction
+                    .referenceType("RETURN_REQUEST")
+                    .referenceId(returnRequest.getId())
+                    .description("Hoàn xu từ trả hàng đơn #" + order.getId())
+                    .build();
+            coinTransactionRepository.save(coinTransaction);
+            log.info("Created coin transaction record for refund: {} coins to user {}, balance after: {}", refundCoins, user.getId(), newBalance);
+            
+            // 🪙 REFUND LOYALTY POINTS for returned order (same logic as cancel)
+            try {
+                membershipService.refundPointsFromCancelledOrder(user, order);
+                log.info("🪙 Refunded loyalty points for returned order {}", order.getId());
+            } catch (Exception e) {
+                log.error("❌ Error refunding loyalty points for returned order: {}", e.getMessage());
+                // Don't fail the refund process if points refund fails
+            }
             
             // Update return request
             returnRequest.setStatus(ReturnStatus.REFUNDED);
@@ -202,6 +242,15 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
             
             ReturnRequest saved = returnRequestRepository.save(returnRequest);
             log.info("Refund processed successfully for return request: {}", returnId);
+            
+            // Send email notification to user
+            try {
+                emailService.sendRefundCompletedEmail(saved);
+                log.info("Refund email notification sent to user: {}", user.getEmail());
+            } catch (Exception emailEx) {
+                log.error("Failed to send refund email notification: {}", emailEx.getMessage());
+                // Don't fail the refund process if email fails
+            }
             
             return saved;
         } catch (Exception e) {
@@ -268,6 +317,58 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
         return returnRequestRepository.countPendingRequests();
     }
     
+    @Override
+    @Transactional(readOnly = true)
+    public long countByStatus(ReturnStatus status) {
+        return returnRequestRepository.countByStatus(status);
+    }
+
+    @Override
+    public ReturnRequest assignShipper(Long returnRequestId, Long shipperId) {
+        log.info("Assigning shipper {} to return request {}", shipperId, returnRequestId);
+        
+        // 1. Validate return request exists
+        ReturnRequest returnRequest = returnRequestRepository.findById(returnRequestId)
+                .orElseThrow(() -> new RuntimeException("Return request not found: " + returnRequestId));
+        
+        // 2. Check status - only APPROVED can assign shipper
+        if (returnRequest.getStatus() != ReturnStatus.APPROVED) {
+            throw new RuntimeException("Chỉ có thể gán shipper cho yêu cầu đã được chấp nhận");
+        }
+        
+        // 3. Validate shipper (user with role shipper) exists
+        Users shipper = userRepository.findById(shipperId)
+                .orElseThrow(() -> new RuntimeException("Shipper not found: " + shipperId));
+        
+        // Verify user is actually a shipper
+        if (shipper.getRole() == null || !"shipper".equals(shipper.getRole().getRoleName())) {
+            log.error("User {} has role: {}, expected 'shipper'", 
+                     shipperId, 
+                     shipper.getRole() != null ? shipper.getRole().getRoleName() : "NULL");
+            throw new RuntimeException("User is not a shipper");
+        }
+        
+        // 4. Create ReturnShipment for return pickup
+        ReturnShipment returnShipment = ReturnShipment.builder()
+                .returnRequest(returnRequest)
+                .shipper(shipper)
+                .pickupAddress(returnRequest.getOrder().getAddress())
+                .status("PENDING")  // Waiting for shipper to pickup from customer
+                .build();
+        
+        ReturnShipment savedReturnShipment = returnShipmentRepository.save(returnShipment);
+        log.info("Created ReturnShipment {} for return request {}", savedReturnShipment.getId(), returnRequestId);
+        
+        // 5. Update return request status
+        returnRequest.setStatus(ReturnStatus.SHIPPING);
+        
+        ReturnRequest saved = returnRequestRepository.save(returnRequest);
+        log.info("Shipper {} assigned to return request {}, ReturnShipment created, status changed to SHIPPING", 
+                 shipperId, returnRequestId);
+        
+        return saved;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public boolean canCreateReturnRequest(Long orderId, Long userId) {

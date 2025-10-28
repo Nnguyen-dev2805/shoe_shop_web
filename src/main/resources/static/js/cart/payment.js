@@ -30,6 +30,11 @@ let pointsDiscount = 0; // Giá trị giảm từ điểm (VNĐ)
 let pointsWillEarn = 0; // Điểm sẽ nhận được từ đơn này
 let membershipTier = 'SILVER'; // Hạng thành viên
 
+// ========== DEEG XU TRACKING ==========
+let userCoins = 0; // Số xu hiện tại của user
+let coinsToUse = 0; // Số xu user muốn dùng
+let coinsDiscount = 0; // Giá trị giảm từ xu (VNĐ)
+
 /**
  * Format currency to Vietnamese format
  */
@@ -45,6 +50,7 @@ $(document).ready(function() {
     loadDataFromSession();
     loadVouchers();
     loadUserPoints(); // ✅ Load loyalty points
+    loadUserCoins(); // ✅ Load DeeG Xu
     // loadShippingCompanies(); // ❌ Đã bỏ chọn shipping company
     bindEventHandlers();
 });
@@ -785,6 +791,110 @@ function formatPoints(points) {
     return `${points.toLocaleString('vi-VN')} điểm`;
 }
 
+// ========== DEEG XU FUNCTIONS ==========
+
+/**
+ * Load user DeeG Xu balance
+ */
+function loadUserCoins() {
+    $.ajax({
+        url: '/api/user/coins/balance',
+        method: 'GET',
+        success: function(response) {
+            if (response && response.coins !== undefined) {
+                userCoins = response.coins || 0;
+                
+                // Update UI
+                $('#user-coins-balance').text(formatCoins(userCoins));
+                $('#coins-value').text(formatCurrency(userCoins)); // 1 xu = 1đ
+                
+                console.log('✅ Loaded coins balance:', userCoins);
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ Could not load coins balance:', error);
+            // Hide section if failed to load
+            $('#coins-section').hide();
+        }
+    });
+}
+
+/**
+ * Apply coins redemption
+ */
+function applyCoinsRedeem() {
+    const inputCoins = parseInt($('#coins-to-use-input').val()) || 0;
+    
+    // Validation
+    if (inputCoins <= 0) {
+        alert('⚠️ Vui lòng nhập số xu hợp lệ');
+        return;
+    }
+    
+    if (inputCoins > userCoins) {
+        alert(`⚠️ Bạn chỉ có ${formatCoins(userCoins)}. Vui lòng nhập số xu nhỏ hơn.`);
+        return;
+    }
+    
+    // Calculate order total before coins
+    const shippingDiscount = window.appliedShippingDiscount || 0;
+    const finalShippingFee = shippingFee - shippingDiscount;
+    const orderTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount;
+    
+    if (orderTotal <= 0) {
+        alert('⚠️ Không thể sử dụng xu cho đơn hàng này');
+        return;
+    }
+    
+    // Coins can cover up to 100% of order total
+    const maxCoinsAllowed = Math.floor(orderTotal);
+    
+    if (inputCoins > maxCoinsAllowed) {
+        alert(`⚠️ Số xu tối đa có thể dùng là ${formatCoins(maxCoinsAllowed)} (100% giá trị đơn)`);
+        return;
+    }
+    
+    // Apply coins
+    coinsToUse = inputCoins;
+    coinsDiscount = inputCoins; // 1 xu = 1đ
+    
+    // Update UI
+    $('#coins-applied-amount').text(formatCoins(coinsToUse));
+    $('#coins-discount-value').text(formatCurrency(coinsDiscount));
+    $('#coins-redeemed-row').show();
+    
+    // Update counter
+    $('#coins-selected-count').text(coinsToUse > 0 ? '1' : '0');
+    
+    // Recalculate total
+    calculatePrices();
+    
+    // Show success message
+    showToast('✅ Đã áp dụng ' + formatCoins(coinsToUse), 'success');
+}
+
+/**
+ * Clear applied coins
+ */
+function clearAppliedCoins() {
+    coinsToUse = 0;
+    coinsDiscount = 0;
+    
+    $('#coins-to-use-input').val('');
+    $('#coins-redeemed-row').hide();
+    $('#coins-selected-count').text('0');
+    
+    // Recalculate
+    calculatePrices();
+}
+
+/**
+ * Format coins
+ */
+function formatCoins(coins) {
+    return `${coins.toLocaleString('vi-VN')} xu`;
+}
+
 /**
  * Calculate all prices
  */
@@ -816,8 +926,8 @@ function calculatePrices() {
     const shippingDiscount = window.appliedShippingDiscount || 0;
     const finalShippingFee = shippingFee - shippingDiscount;
     
-    // Calculate final total (with points discount)
-    const finalTotal = subtotal + finalShippingFee - discountAmount - pointsDiscount;
+    // Calculate final total (with points and coins discount)
+    const finalTotal = Math.max(0, subtotal + finalShippingFee - discountAmount - pointsDiscount - coinsDiscount);
     
     // Update UI
     $('#subtotal-price').text(formatPrice(subtotal));
@@ -987,10 +1097,20 @@ function bindEventHandlers() {
     $('#btn-apply-points').on('click', applyPointsRedeem);
     $('#btn-clear-points').on('click', clearAppliedPoints);
     
+    // ✅ DeeG Xu handlers
+    $('#btn-apply-coins').on('click', applyCoinsRedeem);
+    $('#btn-clear-coins').on('click', clearAppliedCoins);
+    
     // Update counter when user types points
     $('#points-to-use-input').on('input', function() {
         const inputPoints = parseInt($(this).val()) || 0;
         $('#points-selected-count').text(inputPoints > 0 ? inputPoints.toLocaleString('vi-VN') : '0');
+    });
+    
+    // Update counter when user types coins
+    $('#coins-to-use-input').on('input', function() {
+        const inputCoins = parseInt($(this).val()) || 0;
+        $('#coins-selected-count').text(inputCoins > 0 ? inputCoins.toLocaleString('vi-VN') : '0');
     });
     
     // ✅ Address modal handlers
@@ -1561,6 +1681,7 @@ function handlePayment() {
         orderDiscountAmount: discountAmount, // ✅ THÊM discount amount
         shippingDiscountAmount: shippingDiscount, // ✅ THÊM shipping discount
         pointsRedeemed: pointsToRedeem, // 🪙 THÊM POINTS REDEEMED
+        coinsUsed: coinsToUse, // 🪙 THÊM COINS USED
         selectedItemIds: selectedItemIds,
         selectedItemsData: selectedItemsData
     };

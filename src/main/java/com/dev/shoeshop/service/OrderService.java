@@ -54,7 +54,7 @@ public interface OrderService {
                                  java.util.List<Integer> selectedItemIds,
                                  java.util.Map<Integer, Integer> itemQuantities,
                                  Double subtotal, Double shippingFee, Double orderDiscountAmount, Double shippingDiscountAmount,
-                                 Integer pointsRedeemed);
+                                 Integer pointsRedeemed, Long coinsUsed);
     
     /**
      * Đánh dấu đơn hàng đã giao thành công

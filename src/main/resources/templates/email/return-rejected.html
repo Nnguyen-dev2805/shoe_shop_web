@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yêu Cầu Trả Hàng Bị Từ Chối</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .email-header img {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+        .email-header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        .email-body {
+            padding: 30px;
+        }
+        .alert-icon {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .alert-icon svg {
+            width: 80px;
+            height: 80px;
+            fill: #dc3545;
+        }
+        .greeting {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .content-section {
+            background-color: #f8f9fa;
+            border-left: 4px solid #dc3545;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #666;
+        }
+        .info-value {
+            color: #333;
+            text-align: right;
+        }
+        .rejection-box {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .rejection-box .title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #721c24;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        .rejection-box .title svg {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            fill: #dc3545;
+        }
+        .rejection-box .reason {
+            color: #721c24;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        .support-box {
+            background-color: #e8f4fd;
+            border: 2px solid #0d6efd;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .support-box .title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #084298;
+            margin-bottom: 15px;
+        }
+        .support-box .contact-info {
+            color: #084298;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .support-box .contact-info a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .support-box .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #0d6efd 0%, #0842a0 100%);
+            color: white !important;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+            transition: transform 0.2s;
+        }
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+        }
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #ddd, transparent);
+            margin: 20px 0;
+        }
+        .note {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="email-header">
+            <img th:src="'cid:logo'" alt="DeeG Shoe Shop" />
+            <h1>❌ Yêu Cầu Trả Hàng Bị Từ Chối</h1>
+        </div>
+
+        <!-- Body -->
+        <div class="email-body">
+            <!-- Alert Icon -->
+            <div class="alert-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                </svg>
+            </div>
+
+            <!-- Greeting -->
+            <p class="greeting">
+                Xin chào <strong th:text="${userName}">Khách hàng</strong>,
+            </p>
+
+            <p>
+                Chúng tôi rất tiếc phải thông báo rằng yêu cầu trả hàng của bạn 
+                <strong>đã không được chấp nhận</strong> sau khi xem xét kỹ lưỡng.
+            </p>
+
+            <!-- Return Request Details -->
+            <div class="content-section">
+                <h3 style="margin-top: 0; color: #333;">📋 Thông tin yêu cầu</h3>
+                <div class="info-row">
+                    <span class="info-label">Mã yêu cầu:</span>
+                    <span class="info-value">#<span th:text="${returnRequestId}">1</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Đơn hàng:</span>
+                    <span class="info-value">#<span th:text="${orderId}">17</span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Sản phẩm:</span>
+                    <span class="info-value" th:text="${productName}">Nike Air Max</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Lý do trả hàng:</span>
+                    <span class="info-value" th:text="${returnReason}">Size không đúng</span>
+                </div>
+            </div>
+
+            <!-- Rejection Reason -->
+            <div class="rejection-box">
+                <div class="title">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/>
+                    </svg>
+                    Lý do từ chối
+                </div>
+                <div class="reason" th:text="${adminNote}">
+                    Sản phẩm không đủ điều kiện để trả hàng theo chính sách của shop.
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Support Section -->
+            <div class="support-box">
+                <div class="title">💬 Cần hỗ trợ thêm?</div>
+                <div class="contact-info">
+                    Nếu bạn có bất kỳ thắc mắc nào hoặc muốn được giải thích chi tiết hơn,<br>
+                    vui lòng liên hệ với chúng tôi qua:<br><br>
+                    📧 Email: <a th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}">support@deegshoeshop.com</a><br>
+                    📞 Hotline: <strong th:text="${supportPhone}">1900-xxxx</strong><br>
+                    ⏰ Thời gian làm việc: 8:00 - 22:00 (Thứ 2 - Chủ nhật)
+                </div>
+            </div>
+
+            <!-- Note -->
+            <div class="note">
+                <strong>📌 Lưu ý quan trọng:</strong><br>
+                • Đơn hàng của bạn vẫn giữ nguyên trạng thái ban đầu<br>
+                • Không có thay đổi nào về thanh toán hoặc điểm thưởng<br>
+                • Bạn có thể tiếp tục sử dụng sản phẩm đã mua<br>
+                • Nếu có vấn đề về chất lượng, vui lòng liên hệ bảo hành
+            </div>
+
+            <!-- CTA Button -->
+            <div class="button-container">
+                <a th:href="${contactUrl}" class="cta-button">
+                    Xem Chi Tiết Đơn Hàng
+                </a>
+            </div>
+
+            <p style="margin-top: 30px; color: #666; font-size: 14px;">
+                Chúng tôi xin lỗi vì sự bất tiện này và hy vọng có thể phục vụ bạn tốt hơn trong tương lai. 
+                Cảm ơn bạn đã hiểu và tiếp tục ủng hộ DeeG Shoe Shop! 🙏
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="email-footer">
+            <p style="margin: 0 0 10px 0;">
+                <strong>DeeG Shoe Shop</strong><br>
+                Email: support@deegshoeshop.com | Hotline: 1900-xxxx
+            </p>
+            <p style="margin: 0; color: #999;">
+                © 2025 DeeG Shoe Shop. All rights reserved.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

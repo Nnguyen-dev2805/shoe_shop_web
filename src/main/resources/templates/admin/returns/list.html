@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" data-menu-color="dark">
 <head>
     <meta charset="utf-8" />
     <title>Quản lý Trả hàng | DeeG Shop Admin</title>
@@ -7,7 +7,6 @@
     
     <!-- App favicon -->
     <link rel="shortcut icon" href="/assets/images/favicon.ico">
-    
     <!-- Vendor css -->
     <link href="/assets/css/vendor.min.css" rel="stylesheet" type="text/css" />
     
@@ -377,7 +376,7 @@
                         </div>
                         <div class="stat-info">
                             <h4>Đã chấp nhận</h4>
-                            <p id="stat-approved">0</p>
+                            <p th:text="${approvedCount ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
@@ -389,7 +388,7 @@
                         </div>
                         <div class="stat-info">
                             <h4>Đang gửi về</h4>
-                            <p id="stat-shipping">0</p>
+                            <p th:text="${shippingCount ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
@@ -401,7 +400,7 @@
                         </div>
                         <div class="stat-info">
                             <h4>Đã hoàn xu</h4>
-                            <p id="stat-refunded">0</p>
+                            <p th:text="${refundedCount ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
@@ -413,7 +412,7 @@
                         </div>
                         <div class="stat-info">
                             <h4>Đã từ chối</h4>
-                            <p id="stat-rejected">0</p>
+                            <p th:text="${rejectedCount ?: 0}">0</p>
                         </div>
                     </div>
                 </div>
@@ -429,19 +428,19 @@
                         Chờ duyệt <span class="tab-badge" th:text="${pendingCount}">0</span>
                     </a>
                     <a href="/admin/returns?status=APPROVED" class="filter-tab" th:classappend="${currentStatus == 'APPROVED' ? 'active' : ''}">
-                        Đã chấp nhận
+                        Đã chấp nhận <span class="tab-badge" th:text="${approvedCount}">0</span>
                     </a>
                     <a href="/admin/returns?status=SHIPPING" class="filter-tab" th:classappend="${currentStatus == 'SHIPPING' ? 'active' : ''}">
-                        Đang gửi về
+                        Đang gửi về <span class="tab-badge" th:text="${shippingCount}">0</span>
                     </a>
                     <a href="/admin/returns?status=RECEIVED" class="filter-tab" th:classappend="${currentStatus == 'RECEIVED' ? 'active' : ''}">
-                        Đã nhận hàng
+                        Đã nhận hàng <span class="tab-badge" th:text="${receivedCount}">0</span>
                     </a>
                     <a href="/admin/returns?status=REFUNDED" class="filter-tab" th:classappend="${currentStatus == 'REFUNDED' ? 'active' : ''}">
-                        Đã hoàn xu
+                        Đã hoàn xu <span class="tab-badge" th:text="${refundedCount}">0</span>
                     </a>
                     <a href="/admin/returns?status=REJECTED" class="filter-tab" th:classappend="${currentStatus == 'REJECTED' ? 'active' : ''}">
-                        Đã từ chối
+                        Đã từ chối <span class="tab-badge" th:text="${rejectedCount}">0</span>
                     </a>
                 </div>
             </div>
@@ -460,7 +459,17 @@
                             Yêu cầu #<span th:text="${returnRequest.id}">1</span> - 
                             Đơn hàng #<span th:text="${returnRequest.order.id}">17</span>
                         </span>
-                        <span class="return-badge" th:classappend="${returnRequest.status}" th:text="${#strings.replace(returnRequest.status, '_', ' ')}">PENDING</span>
+                        <span class="return-badge" th:classappend="${returnRequest.status}">
+                            <span th:switch="${returnRequest.status.name()}">
+                                <span th:case="'PENDING'">Chờ duyệt</span>
+                                <span th:case="'APPROVED'">Đã chấp nhận</span>
+                                <span th:case="'SHIPPING'">Đang gửi về</span>
+                                <span th:case="'RECEIVED'">Đã nhận hàng</span>
+                                <span th:case="'REFUNDED'">Đã hoàn xu</span>
+                                <span th:case="'REJECTED'">Đã từ chối</span>
+                                <span th:case="*">[[${returnRequest.status}]]</span>
+                            </span>
+                        </span>
                     </div>
                     
                     <div class="return-content">
@@ -471,7 +480,10 @@
                             <div class="return-info-row">
                                 <span><i class='bx bx-user'></i><strong th:text="${returnRequest.user.fullname}">User</strong></span>
                                 <span><i class='bx bx-calendar'></i><span th:text="${#temporals.format(returnRequest.createdDate, 'dd/MM/yyyy HH:mm')}">27/10/2025 20:00</span></span>
-                                <span class="return-reason"><i class='bx bx-error-circle'></i><span th:text="${#strings.replace(returnRequest.reason, '_', ' ')}">WRONG_SIZE</span></span>
+                                <span class="return-reason">
+                                    <i class='bx bx-error-circle'></i>
+                                    <span th:text="${returnRequest.reason.description}">Lý do trả hàng</span>
+                                </span>
                             </div>
                             <div style="font-size: 13px; color: #666; margin-top: 8px;">
                                 <strong>Mô tả:</strong> <span th:text="${#strings.abbreviate(returnRequest.description, 100)}">Size quá nhỏ...</span>

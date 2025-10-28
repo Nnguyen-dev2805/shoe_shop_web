@@ -4,19 +4,18 @@ import com.dev.shoeshop.dto.OrderDTO;
 import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.RatingRequestDTO;
 import com.dev.shoeshop.dto.UserDTO;
-import com.dev.shoeshop.entity.Users;
+import com.dev.shoeshop.entity.*;
 import com.dev.shoeshop.enums.ShipmentStatus;
-import com.dev.shoeshop.service.OrderService;
-import com.dev.shoeshop.service.RatingService;
-import com.dev.shoeshop.service.UserService;
-import com.dev.shoeshop.service.StorageService;
-import com.dev.shoeshop.service.CloudinaryService;
+import com.dev.shoeshop.repository.CoinTransactionRepository;
 import com.dev.shoeshop.repository.OrderDetailRepository;
 import com.dev.shoeshop.repository.RatingRepository;
-import com.dev.shoeshop.entity.OrderDetail;
-import com.dev.shoeshop.entity.Rating;
-import com.dev.shoeshop.entity.Order;
-import java.util.ArrayList;
+import com.dev.shoeshop.repository.ReturnRequestRepository;
+import com.dev.shoeshop.repository.UserRepository;
+import com.dev.shoeshop.service.CloudinaryService;
+import com.dev.shoeshop.service.OrderService;
+import com.dev.shoeshop.service.RatingService;
+import com.dev.shoeshop.service.StorageService;
+import com.dev.shoeshop.service.UserService;
 import com.dev.shoeshop.utils.Constant;
 import org.springframework.web.multipart.MultipartFile;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +47,9 @@ public class UserHomeController {
     private final CloudinaryService cloudinaryService;
     private final OrderDetailRepository orderDetailRepository;
     private final RatingRepository ratingRepository;
+    private final UserRepository userRepository;
+    private final CoinTransactionRepository coinTransactionRepository;
+    private final ReturnRequestRepository returnRequestRepository;
 
     @GetMapping("/shop")
     public String userShop(HttpSession session) {
@@ -80,32 +83,24 @@ public class UserHomeController {
     public String myAccount(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
         Users u = (Users) session.getAttribute(Constant.SESSION_USER);
         if (u != null) {
-//            List<Long> viewedProductIds = (List<Long>) session.getAttribute(Constant.VIEW_PRODUCT);
-//            if (viewedProductIds == null || viewedProductIds.isEmpty()) {
-//                redirectAttributes.addFlashAttribute("message", "No products viewed yet.");
-//            }else {
-//                // Lọc ra các sản phẩm hợp lệ từ danh sách ID đã xem và loại bỏ sản phẩm đã bị xóa
-//                List<Product> viewedProducts = productService.getProductsByIds(viewedProductIds);
-//                // Lọc các sản phẩm đã bị xóa (isDelete == true) và loại bỏ chúng khỏi danh sách
-//                viewedProducts = viewedProducts.stream()
-//                        .filter(product -> product != null && !product.isDelete())  // Loại bỏ sản phẩm null và đã xóa
-//                        .collect(Collectors.toList());
-//
-//                // Cập nhật lại sản phẩm đã xem trong session
-//                viewedProductIds = viewedProducts.stream()
-//                        .map(Product::getId)  // Lấy ID của các sản phẩm còn lại
-//                        .collect(Collectors.toList());
-//
-//                // Lưu lại danh sách các sản phẩm hợp lệ vào session
-//                session.setAttribute(Constant.VIEW_PRODUCT, viewedProductIds);
-//                model.addAttribute("viewedProducts", viewedProducts);
-//            }
-//            // Lấy thông tin sản phẩm từ danh sách ID đã xem
-//            List<Product> viewedProducts = productService.getProductsByIds(viewedProductIds);
-//            model.addAttribute("viewedProducts", viewedProducts);
-//            model.addAttribute("user", u);
-//            List<Address> adr = addressService.getAddressesByID(u.getId());
-//            model.addAttribute("adr", adr);
+            // Reload user từ database để get coins balance mới nhất
+            Users user = userRepository.findById(u.getId()).orElse(u);
+            model.addAttribute("user", user);
+            model.addAttribute("walletBalance", user.getCoins() != null ? user.getCoins() : 0L);
+            
+            // Load coin statistics
+            Long totalSpent = coinTransactionRepository.getTotalSpentByUserId(user.getId());
+            Long totalEarned = coinTransactionRepository.getTotalEarnedByUserId(user.getId());
+            model.addAttribute("totalSpent", Math.abs(totalSpent != null ? totalSpent : 0L));
+            model.addAttribute("totalEarned", totalEarned != null ? totalEarned : 0L);
+            
+            // Load recent coin transactions (top 10)
+            List<CoinTransaction> recentTransactions = coinTransactionRepository.findByUserIdOrderByCreatedDateDesc(
+                user.getId(), 
+                org.springframework.data.domain.PageRequest.of(0, 10)
+            );
+            model.addAttribute("coinTransactions", recentTransactions);
+            
             return "user/my-account";
         } else {
             return "redirect:/login";
@@ -171,6 +166,13 @@ public class UserHomeController {
                     }
                 }
             }
+            
+            // Load return request if exists
+            returnRequestRepository.findByOrderIdAndUserId(orderId, u.getId())
+                    .ifPresent(returnRequest -> {
+                        model.addAttribute("returnRequest", returnRequest);
+                        System.out.println("✅ Found return request #" + returnRequest.getId() + " with status: " + returnRequest.getStatus());
+                    });
             
             model.addAttribute("order", orderDetail);
             model.addAttribute("user", u);
