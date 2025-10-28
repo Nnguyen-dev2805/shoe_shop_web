@@ -4,8 +4,10 @@ import com.dev.shoeshop.dto.OrderDetailDTO;
 import com.dev.shoeshop.dto.OrderPaymentDTO;
 import com.dev.shoeshop.dto.ShipmentDTO;
 import com.dev.shoeshop.entity.Order;
+import com.dev.shoeshop.entity.UserAddress;
 import com.dev.shoeshop.entity.Users;
 import com.dev.shoeshop.enums.ShipmentStatus;
+import com.dev.shoeshop.repository.UserAddressRepository;
 import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.OrderDetailService;
 import com.dev.shoeshop.service.OrderService;
@@ -39,6 +41,7 @@ public class ShipperController {
     private final ShipmentService shipmentService;
     private final OrderDetailService orderDetailService;
     private final UserRepository userRepository;
+    private final UserAddressRepository userAddressRepository;
     private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/order/list")
@@ -128,12 +131,31 @@ public class ShipperController {
             // Shipment not found, ignore
         }
 
+        // Get recipient info from UserAddress
+        UserAddress userAddress = null;
+        String recipientName = null;
+        String recipientPhone = null;
+        
+        if (order.getUser() != null && order.getAddress() != null) {
+            userAddress = userAddressRepository.findByUserIdAndAddressId(
+                order.getUser().getId(), 
+                order.getAddress().getId()
+            ).orElse(null);
+            
+            if (userAddress != null) {
+                recipientName = userAddress.getRecipientName();
+                recipientPhone = userAddress.getRecipientPhone();
+            }
+        }
+
         model.addAttribute("title", "Chi Tiết Đơn Hàng #" + orderId);
         model.addAttribute("order", order);
         model.addAttribute("list", orderDetails);
         model.addAttribute("payment", payment);
         model.addAttribute("shipper", shipment);
         model.addAttribute("user", order.getUser());
+        model.addAttribute("recipientName", recipientName);
+        model.addAttribute("recipientPhone", recipientPhone);
 
         return "shipper/order-detail";
     }

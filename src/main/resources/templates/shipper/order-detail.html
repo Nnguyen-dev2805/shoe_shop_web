@@ -276,10 +276,9 @@
                                              <h5 class="">Số Điện Thoại</h5>
                                         </div>
                                         <p class="mb-1">
-                                             <span th:if="${user.phone != null}" th:text="${user.phone}"></span>
-                                             <span th:if="${user.phone == null}" class="text-muted">Chưa có số điện thoại</span>
+                                             <span th:if="${recipientPhone != null}" th:text="${recipientPhone}"></span>
+<span th:if="${recipientPhone == null}" class="text-muted">Chưa có số điện thoại</span>
                                         </p>
-
                                         <div class="d-flex justify-content-between mt-3">
                                              <h5 class="">Địa Chỉ Giao Hàng</h5>
                                         </div>

@@ -188,6 +188,17 @@ public class ReturnRequestServiceImpl implements ReturnRequestService {
             throw new RuntimeException("Return request must be RECEIVED before refunding");
         }
         
+        // ✅ RÀNG BUỘC: Kiểm tra shipper đã giao hàng về kho chưa
+        ReturnShipment returnShipment = returnShipmentRepository.findByReturnRequest(returnRequest).orElse(null);
+        if (returnShipment == null) {
+            throw new RuntimeException("Chưa có shipper được gán cho yêu cầu trả hàng này");
+        }
+        if (returnShipment.getDeliveryDate() == null) {
+            throw new RuntimeException("Shipper chưa xác nhận giao hàng về kho. Vui lòng yêu cầu shipper cập nhật trạng thái 'Đã giao về kho' trước khi hoàn tiền");
+        }
+        log.info("✅ Validation passed: Shipper {} has delivered return to warehouse at {}", 
+                 returnShipment.getShipper().getFullname(), returnShipment.getDeliveryDate());
+        
         // Validate refund amount
         if (refundAmount == null || refundAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RuntimeException("Invalid refund amount");

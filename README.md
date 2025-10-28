@@ -1,15 +1,193 @@
-# 👟 DeeG Shoe Shop - Online Shoe Store Management System
+<div align="center">
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen" alt="Spring Boot">
-  <img src="https://img.shields.io/badge/Java-21-orange" alt="Java">
-  <img src="https://img.shields.io/badge/MySQL-8.0-blue" alt="MySQL">
-  <img src="https://img.shields.io/badge/License-MIT-yellow" alt="License">
-</p>
+# 👟 DeeG Shoe Shop
+### Hệ Thống Quản Lý Cửa Hàng Giày Dép Trực Tuyến
+
+<!-- Thêm logo/banner ở đây -->
+![DeeG Shoe Shop Banner](./docs/images/banner.png)
+
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.6-brightgreen?logo=springboot)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)](https://openjdk.org/)
+[![MySQL](https://img.shields.io/badge/MySQL-8.0-blue?logo=mysql)](https://www.mysql.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+[🎥 Demo Video](#-demo-video) • [✨ Tính Năng](#-tính-năng-nổi-bật) • [🚀 Cài Đặt](#-hướng-dẫn-cài-đặt) • [📸 Screenshots](#-screenshots) • [📚 API Docs](#-api-documentation)
+
+</div>
+
+---
+
+## 📋 Mục Lục
+
+- [📝 Giới Thiệu](#-giới-thiệu)
+- [🎥 Demo Video](#-demo-video)
+- [📸 Screenshots](#-screenshots)
+- [✨ Tính Năng Nổi Bật](#-tính-năng-nổi-bật)
+- [🛠 Công Nghệ Sử Dụng](#-công-nghệ-sử-dụng)
+- [📦 Cấu Trúc Dự Án](#-cấu-trúc-dự-án)
+- [🗄 Database Schema](#-database-schema)
+- [🚀 Hướng Dẫn Cài Đặt](#-hướng-dẫn-cài-đặt)
+- [🐳 Deploy với Docker](#-deploy-với-docker)
+- [☁️ Deploy lên Cloud](#️-deploy-lên-render)
+- [📚 API Documentation](#-api-documentation)
+- [🔐 Phân Quyền](#-phân-quyền-roles)
+- [👥 Tác Giả](#-tác-giả)
+- [📄 License](#-license)
+
+---
 
 ## 📝 Giới Thiệu
 
-**DeeG Shoe Shop** là hệ thống website bán hàng và quản lý cửa hàng giày dép, được xây dựng bằng Spring Boot 3.5.6 và các công nghệ hiện đại. Hệ thống cung cấp đầy đủ tính năng từ quản lý sản phẩm, đặt hàng, thanh toán trực tuyến, đến các tính năng nâng cao như Flash Sale, Voucher System, AI Chatbot và tích hợp bản đồ để phục vụ khách hàng mua sắm trực tuyến.
+**DeeG Shoe Shop** là hệ thống website bán hàng và quản lý cửa hàng giày dép toàn diện, được xây dựng bằng **Spring Boot 3.5.6** và các công nghệ hiện đại. Hệ thống cung cấp đầy đủ tính năng từ quản lý sản phẩm, đặt hàng, thanh toán trực tuyến, đến các tính năng nâng cao như **Flash Sale**, **Voucher System**, **AI Chatbot** (Gemini AI), và tích hợp **Goong Maps** để tính phí ship tự động.
+
+### 🎯 Mục Tiêu Dự Án
+
+- ✅ Xây dựng hệ thống e-commerce hoàn chỉnh với đầy đủ tính năng mua sắm trực tuyến
+- ✅ Tích hợp các công nghệ hiện đại: AI Chatbot, Payment Gateway, Cloud Storage
+- ✅ Hỗ trợ đa vai trò: Admin, Manager, Shipper, User
+- ✅ Tối ưu trải nghiệm người dùng với UI/UX thân thiện
+- ✅ Sẵn sàng deploy production với Docker và Cloud Platform
+
+---
+
+## 🎥 Demo Video
+
+<!-- Thêm link YouTube demo video ở đây -->
+<div align="center">
+
+[![Demo Video](./docs/images/video-thumbnail.png)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+
+**[▶️ Xem Video Demo Đầy Đủ Trên YouTube](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
+
+*Video demo hướng dẫn sử dụng hệ thống từ góc nhìn User, Admin, Manager và Shipper*
+
+</div>
+
+---
+
+## 📸 Screenshots
+
+### 🏠 Trang Người Dùng
+
+#### Homepage & Shop
+<div align="center">
+  
+![Homepage](./docs/images/homepage.png)
+*Trang chủ với banner, sản phẩm nổi bật và Flash Sale*
+
+![Shop Page](./docs/images/shop.png)
+*Trang danh sách sản phẩm với bộ lọc thông minh*
+
+</div>
+
+#### Chi Tiết Sản Phẩm & Giỏ Hàng
+<div align="center">
+
+![Product Detail](./docs/images/product-detail.png)
+*Chi tiết sản phẩm với hình ảnh, mô tả, size và đánh giá*
+
+![Shopping Cart](./docs/images/cart.png)
+*Giỏ hàng với chọn nhiều sản phẩm và áp dụng voucher*
+
+</div>
+
+#### Checkout & Thanh Toán
+<div align="center">
+
+![Checkout](./docs/images/checkout.png)
+*Trang thanh toán với chọn địa chỉ và phương thức thanh toán*
+
+![PayOS Payment](./docs/images/payment.png)
+*Thanh toán qua PayOS với QR Code*
+
+</div>
+
+#### Flash Sale & Voucher
+<div align="center">
+
+![Flash Sale](./docs/images/flashsale.png)
+*Trang Flash Sale với countdown timer và stock realtime*
+
+![Voucher Collection](./docs/images/voucher.png)
+*Kho voucher giảm giá đơn hàng và phí ship*
+
+</div>
+
+#### AI Chatbot & Thông Báo
+<div align="center">
+
+![AI Chatbot](./docs/images/chatbot.png)
+*AI Chatbot hỗ trợ 24/7 powered by Gemini AI*
+
+![User Profile](./docs/images/profile.png)
+*Trang quản lý tài khoản và đơn hàng*
+
+</div>
+
+---
+
+### 👨‍💼 Trang Quản Trị
+
+#### Admin Dashboard
+<div align="center">
+
+![Admin Dashboard](./docs/images/admin-dashboard.png)
+*Dashboard với thống kê doanh thu, đơn hàng và biểu đồ*
+
+![Product Management](./docs/images/admin-products.png)
+*Quản lý sản phẩm với CRUD và upload ảnh*
+
+</div>
+
+#### Quản Lý Đơn Hàng & Flash Sale
+<div align="center">
+
+![Order Management](./docs/images/admin-orders.png)
+*Quản lý đơn hàng với lọc trạng thái và xuất Excel*
+
+![Flash Sale Management](./docs/images/admin-flashsale.png)
+*Tạo và quản lý Flash Sale với thêm sản phẩm*
+
+</div>
+
+#### Quản Lý Voucher & Kho Hàng
+<div align="center">
+
+![Voucher Management](./docs/images/admin-voucher.png)
+*Quản lý voucher với điều kiện và giới hạn sử dụng*
+
+![Inventory Management](./docs/images/admin-inventory.png)
+*Quản lý tồn kho và nhập xuất hàng*
+
+</div>
+
+---
+
+### 🚚 Trang Shipper
+
+<div align="center">
+
+![Shipper Orders](./docs/images/shipper-orders.png)
+*Danh sách đơn hàng cần giao với bộ lọc trạng thái*
+
+![Shipper Order Detail](./docs/images/shipper-detail.png)
+*Chi tiết đơn hàng với thông tin người nhận và cập nhật trạng thái*
+
+</div>
+
+---
+
+### 📱 Responsive Design
+
+<div align="center">
+
+![Mobile Responsive](./docs/images/mobile-responsive.png)
+*Giao diện responsive hoàn hảo trên mọi thiết bị*
+
+</div>
+
+---
 
 ### ✨ Tính Năng Nổi Bật
 
@@ -356,21 +534,131 @@ Dự án được phát triển bởi nhóm sinh viên:
 **Môn học**: Công nghệ Web  
 **Năm học**: 2024-2025
 
-### 📄 License
+### 🖼️ Hướng Dẫn Thêm Screenshots
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Để thêm ảnh demo vào README, tạo cấu trúc thư mục sau:
 
-### 🙏 Acknowledgments
+```bash
+mkdir -p docs/images
+```
 
-- Spring Boot Team cho framework tuyệt vời
-- PayOS cho payment gateway
-- Google cho Gemini AI & OAuth2
-- Goong cho Maps API
-- Cloudinary cho image storage
-- Tất cả open-source libraries được sử dụng trong dự án
+Sau đó thêm các file ảnh với tên tương ứng:
+
+**Trang User:**
+- `banner.png` - Banner/Logo project
+- `video-thumbnail.png` - Thumbnail video demo
+- `homepage.png` - Trang chủ
+- `shop.png` - Trang danh sách sản phẩm
+- `product-detail.png` - Chi tiết sản phẩm
+- `cart.png` - Giỏ hàng
+- `checkout.png` - Trang thanh toán
+- `payment.png` - Màn hình thanh toán PayOS
+- `flashsale.png` - Trang Flash Sale
+- `voucher.png` - Kho voucher
+- `chatbot.png` - AI Chatbot
+- `profile.png` - Trang tài khoản
+
+**Trang Admin:**
+- `admin-dashboard.png` - Dashboard admin
+- `admin-products.png` - Quản lý sản phẩm
+- `admin-orders.png` - Quản lý đơn hàng
+- `admin-flashsale.png` - Quản lý Flash Sale
+- `admin-voucher.png` - Quản lý voucher
+- `admin-inventory.png` - Quản lý kho
+
+**Trang Shipper:**
+- `shipper-orders.png` - Danh sách đơn hàng shipper
+- `shipper-detail.png` - Chi tiết đơn hàng shipper
+
+**Mobile:**
+- `mobile-responsive.png` - Responsive design
+
+> **Lưu ý**: Ảnh nên có định dạng PNG hoặc JPG, kích thước tối đa 1920x1080px để tối ưu hiển thị trên GitHub.
 
 ---
 
-<p align="center">
-  Made with ❤️ by HCMUTE Students
-</p>
+## 🤝 Contributing
+
+Chúng tôi rất hoan nghênh mọi đóng góp! Nếu bạn muốn contribute:
+
+1. Fork repository này
+2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
+3. Commit thay đổi (`git commit -m 'Add some AmazingFeature'`)
+4. Push lên branch (`git push origin feature/AmazingFeature`)
+5. Tạo Pull Request
+
+---
+
+## 📞 Liên Hệ & Hỗ Trợ
+
+- 📧 **Email**: deegshop.support@gmail.com
+- 🌐 **Website**: [Coming Soon]
+- 📱 **Facebook**: [DeeG Shoe Shop Official]
+- 💬 **Discord**: [Join our community]
+
+Nếu gặp vấn đề hoặc có câu hỏi, vui lòng tạo [Issue](https://github.com/your-repo/shoe_shop_web/issues) trên GitHub.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+### MIT License Summary
+- ✅ Commercial use
+- ✅ Modification
+- ✅ Distribution
+- ✅ Private use
+- ❌ Liability
+- ❌ Warranty
+
+---
+
+## 🙏 Acknowledgments
+
+Chúng tôi xin gửi lời cảm ơn đến:
+
+- **Spring Boot Team** - Framework Java mạnh mẽ và dễ sử dụng
+- **PayOS** - Payment gateway hỗ trợ thanh toán QR Code
+- **Google** - Gemini AI API và OAuth2 authentication
+- **Goong Maps** - Maps API và tính phí ship theo GPS
+- **Cloudinary** - Cloud storage cho hình ảnh
+- **Bootstrap** - UI framework responsive
+- **Font Awesome & Lucide** - Icon libraries
+- **MySQL** - Hệ quản trị CSDL mã nguồn mở
+- **Docker** - Containerization platform
+- **GitHub** - Version control và CI/CD
+- **Render** - Cloud platform cho deployment
+
+Và tất cả các thư viện open-source đã được sử dụng trong dự án này! 🎉
+
+---
+
+## 📊 Project Statistics
+
+![GitHub repo size](https://img.shields.io/github/repo-size/your-username/shoe_shop_web)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/your-username/shoe_shop_web)
+![GitHub language count](https://img.shields.io/github/languages/count/your-username/shoe_shop_web)
+![GitHub top language](https://img.shields.io/github/languages/top/your-username/shoe_shop_web)
+
+---
+
+<div align="center">
+
+### 🌟 Nếu thấy project hữu ích, hãy cho chúng tôi một Star! ⭐
+
+---
+
+**Made with ❤️ by HCMUTE Students**
+
+**Trường Đại học Sư phạm Kỹ thuật TP. Hồ Chí Minh**
+
+**© 2024-2025 DeeG Shoe Shop. All Rights Reserved.**
+
+---
+
+[![GitHub followers](https://img.shields.io/github/followers/your-username?style=social)](https://github.com/your-username)
+[![GitHub stars](https://img.shields.io/github/stars/your-username/shoe_shop_web?style=social)](https://github.com/your-username/shoe_shop_web)
+[![GitHub forks](https://img.shields.io/github/forks/your-username/shoe_shop_web?style=social)](https://github.com/your-username/shoe_shop_web/fork)
+
+</div>

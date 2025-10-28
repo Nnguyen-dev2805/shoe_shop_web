@@ -107,12 +107,11 @@ function loadCartCountOnly() {
  * @param {boolean} isAuthenticated - User đã đăng nhập chưa
  */
 function updateCartBadge(count, isAuthenticated) {
-    // Tìm cart icon - support cả href="#" và href chứa "/cart"
-    const cartIcon = $('.cart-menu a');
+    // Tìm CHÍNH XÁC cart icon (chỉ lấy link href="/cart/view", không lấy chat icon)
+    const cartIcon = $('.cart-menu a[href*="/cart/view"]');
     
-    // Xóa badge cũ nếu có
+    // Xóa badge cũ nếu có (CHỈ trong cart icon)
     cartIcon.find('.cart-badge').remove();
-    $('.cart-badge').remove(); // Xóa tất cả badge cũ
     
     // Chỉ hiển thị badge nếu có items
     if (count > 0) {

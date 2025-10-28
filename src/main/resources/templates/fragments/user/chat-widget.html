@@ -124,7 +124,7 @@
 
     <!-- Chat Widget CSS -->
     <style>
-        /* Chat Button - Enlarged & Enhanced & Draggable */
+        /* Chat Button - Fixed Position */
         .shoe_shop_chat_button {
             position: fixed;
             bottom: 30px;
@@ -134,7 +134,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
             border-radius: 50%;
-            cursor: grab;
+            cursor: pointer;
             box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1000;
@@ -143,15 +143,6 @@
             justify-content: center;
             overflow: hidden;
             animation: pulse 2s ease-in-out infinite;
-            user-select: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            touch-action: none;
-        }
-
-        .shoe_shop_chat_button:active {
-            cursor: grabbing;
         }
 
         @keyframes pulse {
@@ -577,230 +568,22 @@
         class ShoeShopChatWidget {
             constructor() {
                 this.isOpen = false;
-                this.isDragging = false;
-                this.dragOffset = { x: 0, y: 0 };
-                this.buttonPosition = this.loadButtonPosition();
                 this.init();
             }
 
             init() {
-                this.applyButtonPosition();
                 this.bindEvents();
-                this.initDraggable();
-            }
-
-            loadButtonPosition() {
-                // Load saved position from localStorage
-                const saved = localStorage.getItem('shoe_shop_chat_button_position');
-                if (saved) {
-                    try {
-                        return JSON.parse(saved);
-                    } catch (e) {
-                        console.error('Failed to load button position:', e);
-                    }
-                }
-                // Default position (bottom-right)
-                return { bottom: 30, right: 30 };
-            }
-
-            saveButtonPosition() {
-                localStorage.setItem('shoe_shop_chat_button_position', JSON.stringify(this.buttonPosition));
-            }
-
-            applyButtonPosition() {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                if (!chatButton) return;
-
-                // Remove default positioning
-                chatButton.style.bottom = '';
-                chatButton.style.right = '';
-                chatButton.style.top = '';
-                chatButton.style.left = '';
-
-                // Apply saved position
-                if (this.buttonPosition.bottom !== undefined && this.buttonPosition.right !== undefined) {
-                    chatButton.style.bottom = this.buttonPosition.bottom + 'px';
-                    chatButton.style.right = this.buttonPosition.right + 'px';
-                } else if (this.buttonPosition.top !== undefined && this.buttonPosition.left !== undefined) {
-                    chatButton.style.top = this.buttonPosition.top + 'px';
-                    chatButton.style.left = this.buttonPosition.left + 'px';
-                }
-            }
-
-            initDraggable() {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                if (!chatButton) return;
-
-                let startX, startY, startTime;
-                const dragThreshold = 5; // pixels to move before considering it a drag
-
-                // Mouse events
-                chatButton.addEventListener('mousedown', (e) => {
-                    if (e.button !== 0) return; // Only left click
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    startTime = Date.now();
-                    this.startDrag(e);
-                });
-
-                document.addEventListener('mousemove', (e) => {
-                    if (this.isDragging) {
-                        e.preventDefault();
-                        this.drag(e);
-                    }
-                });
-
-                document.addEventListener('mouseup', (e) => {
-                    if (this.isDragging) {
-                        this.endDrag();
-                        
-                        // Check if it was a click (not a drag)
-                        const distance = Math.hypot(e.clientX - startX, e.clientY - startY);
-                        const duration = Date.now() - startTime;
-                        
-                        if (distance < dragThreshold && duration < 300) {
-                            // It was a click, toggle chat
-                            setTimeout(() => this.toggleChat(), 10);
-                        }
-                    }
-                });
-
-                // Touch events for mobile
-                chatButton.addEventListener('touchstart', (e) => {
-                    const touch = e.touches[0];
-                    startX = touch.clientX;
-                    startY = touch.clientY;
-                    startTime = Date.now();
-                    this.startDrag(touch);
-                }, { passive: false });
-
-                document.addEventListener('touchmove', (e) => {
-                    if (this.isDragging) {
-                        e.preventDefault();
-                        const touch = e.touches[0];
-                        this.drag(touch);
-                    }
-                }, { passive: false });
-
-                document.addEventListener('touchend', (e) => {
-                    if (this.isDragging) {
-                        const touch = e.changedTouches[0];
-                        this.endDrag();
-                        
-                        // Check if it was a tap (not a drag)
-                        const distance = Math.hypot(touch.clientX - startX, touch.clientY - startY);
-                        const duration = Date.now() - startTime;
-                        
-                        if (distance < dragThreshold && duration < 300) {
-                            // It was a tap, toggle chat
-                            setTimeout(() => this.toggleChat(), 10);
-                        }
-                    }
-                });
-            }
-
-            startDrag(e) {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                if (!chatButton) return;
-
-                this.isDragging = true;
-                chatButton.style.cursor = 'grabbing';
-                chatButton.style.transition = 'none'; // Disable transition while dragging
-
-                const rect = chatButton.getBoundingClientRect();
-                this.dragOffset = {
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
-                };
-            }
-
-            drag(e) {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                if (!chatButton) return;
-
-                const buttonWidth = chatButton.offsetWidth;
-                const buttonHeight = chatButton.offsetHeight;
-
-                // Calculate new position
-                let left = e.clientX - this.dragOffset.x;
-                let top = e.clientY - this.dragOffset.y;
-
-                // Constrain to viewport
-                const maxLeft = window.innerWidth - buttonWidth;
-                const maxTop = window.innerHeight - buttonHeight;
-
-                left = Math.max(0, Math.min(left, maxLeft));
-                top = Math.max(0, Math.min(top, maxTop));
-
-                // Apply position
-                chatButton.style.left = left + 'px';
-                chatButton.style.top = top + 'px';
-                chatButton.style.right = 'auto';
-                chatButton.style.bottom = 'auto';
-            }
-
-            endDrag() {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                if (!chatButton) return;
-
-                this.isDragging = false;
-                chatButton.style.cursor = 'pointer';
-                chatButton.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
-
-                // Save position
-                const rect = chatButton.getBoundingClientRect();
-                this.buttonPosition = {
-                    top: rect.top,
-                    left: rect.left
-                };
-                this.saveButtonPosition();
-
-                // Update chat window position to match button
-                this.updateChatWindowPosition();
-            }
-
-            updateChatWindowPosition() {
-                const chatButton = document.getElementById('shoe_shop_chat_button');
-                const chatWindow = document.getElementById('shoe_shop_chat_window');
-                if (!chatButton || !chatWindow) return;
-
-                const buttonRect = chatButton.getBoundingClientRect();
-                const windowWidth = chatWindow.offsetWidth;
-                const windowHeight = chatWindow.offsetHeight;
-
-                // Determine best position for chat window
-                const spaceRight = window.innerWidth - buttonRect.right;
-                const spaceLeft = buttonRect.left;
-                const spaceTop = buttonRect.top;
-                const spaceBottom = window.innerHeight - buttonRect.bottom;
-
-                // Reset positioning
-                chatWindow.style.left = 'auto';
-                chatWindow.style.right = 'auto';
-                chatWindow.style.top = 'auto';
-                chatWindow.style.bottom = 'auto';
-
-                // Position chat window intelligently
-                if (spaceRight >= windowWidth + 20) {
-                    // Enough space on the right
-                    chatWindow.style.right = (window.innerWidth - buttonRect.right - 10) + 'px';
-                    chatWindow.style.bottom = Math.max(10, spaceBottom + buttonRect.height + 10) + 'px';
-                } else if (spaceLeft >= windowWidth + 20) {
-                    // Enough space on the left
-                    chatWindow.style.left = Math.max(10, buttonRect.left - windowWidth - 10) + 'px';
-                    chatWindow.style.bottom = Math.max(10, spaceBottom + buttonRect.height + 10) + 'px';
-                } else {
-                    // Default: try to keep it visible
-                    chatWindow.style.right = '10px';
-                    chatWindow.style.bottom = Math.max(10, buttonRect.height + 20) + 'px';
-                }
             }
 
             bindEvents() {
+                const chatButton = document.getElementById('shoe_shop_chat_button');
                 const chatWindow = document.getElementById('shoe_shop_chat_window');
                 const chatInput = document.getElementById('shoe_shop_chat_input');
                 const chatSendBtn = document.getElementById('shoe_shop_chat_send');
                 const chatCloseBtn = document.getElementById('shoe_shop_chat_close');
+
+                // Toggle chat on button click
+                chatButton.addEventListener('click', () => this.toggleChat());
 
                 // Send message
                 chatSendBtn.addEventListener('click', () => this.sendMessage());
@@ -855,9 +638,6 @@
                 const chatInput = document.getElementById('shoe_shop_chat_input');
                 
                 if (chatWindow) {
-                    // Update window position based on button location
-                    this.updateChatWindowPosition();
-                    
                     chatWindow.classList.add('show');
                     this.isOpen = true;
                     

@@ -162,7 +162,25 @@
                             <span class="info-label">Số tiền cần hoàn:</span>
                             <span class="info-value" th:text="${#numbers.formatDecimal(returnRequest.order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'">1,890,000 đ</span>
                         </div>
-                        <button class="btn btn-refund" th:data-id="${returnRequest.id}" th:data-amount="${returnRequest.order.totalPrice}" onclick="processRefund(this.getAttribute('data-id'), this.getAttribute('data-amount'))" style="margin-top: 16px;">
+                        
+                        <!-- Kiểm tra shipper đã giao về kho chưa -->
+                        <div th:if="${returnShipment == null or returnShipment.deliveryDate == null}" style="margin-top: 16px; padding: 12px; background: #fff7e6; border-left: 4px solid #ffa500; border-radius: 4px;">
+                            <div style="display: flex; align-items: center; gap: 8px; color: #d48806;">
+                                <i class='bx bx-info-circle' style="font-size: 20px;"></i>
+                                <strong>Chưa thể hoàn tiền</strong>
+                            </div>
+                            <p style="margin: 8px 0 0 0; color: #666; font-size: 13px;">
+                                Shipper chưa xác nhận giao hàng về kho. Vui lòng yêu cầu shipper cập nhật trạng thái "Đã giao về kho" trước khi hoàn tiền.
+                            </p>
+                        </div>
+                        
+                        <button class="btn btn-refund" 
+                                th:data-id="${returnRequest.id}" 
+                                th:data-amount="${returnRequest.order.totalPrice}"
+                                th:data-delivered="${returnShipment != null and returnShipment.deliveryDate != null}"
+                                onclick="processRefund(this.getAttribute('data-id'), this.getAttribute('data-amount'), this.getAttribute('data-delivered'))" 
+                                th:disabled="${returnShipment == null or returnShipment.deliveryDate == null}"
+                                th:style="${returnShipment == null or returnShipment.deliveryDate == null ? 'margin-top: 16px; opacity: 0.5; cursor: not-allowed;' : 'margin-top: 16px;'}">
                             <i class='bx bx-money'></i> Hoàn xu cho khách hàng
                         </button>
                     </div>
@@ -299,10 +317,17 @@ function markReceived(id) {
     });
 }
 
-function processRefund(id, amount) {
+function processRefund(id, amount, delivered) {
+    // Kiểm tra shipper đã giao về kho chưa
+    if (delivered !== 'true') {
+        alert('❌ Không thể hoàn tiền!\n\nShipper chưa xác nhận giao hàng về kho.\nVui lòng yêu cầu shipper cập nhật trạng thái "Đã giao về kho" trước.');
+        return;
+    }
+    
     // Parse amount to number
     const refundAmount = parseFloat(amount);
-    if (!confirm(`Hoàn ${refundAmount.toLocaleString('vi-VN')} xu cho khách hàng?`)) return;
+    if (!confirm(`✅ Xác nhận hoàn ${refundAmount.toLocaleString('vi-VN')} xu cho khách hàng?\n\n⚠️ Hành động này không thể hoàn tác!`)) return;
+    
     $.ajax({
         url: `/admin/returns/${id}/refund`,
         type: 'POST',

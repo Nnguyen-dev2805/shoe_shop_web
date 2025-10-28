@@ -126,11 +126,16 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
     private void initCategories() {
         String[][] categories = {
-            {"Giày Thể Thao", "Giày dành cho hoạt động thể thao, chạy bộ, gym, training"},
-            {"Giày Sneaker", "Giày sneaker phong cách streetwear, thời trang đường phố"},
-            {"Giày Bóng Đá", "Giày chuyên dụng cho cầu thủ bóng đá, hỗ trợ bám sân và di chuyển nhanh"},
-            {"Giày Bóng Rổ", "Giày thể thao chuyên cho bóng rổ, hỗ trợ bật nhảy và bảo vệ cổ chân"},
-            {"Sandals & Dép", "Dép, sandals thoáng mát, tiện dụng hàng ngày"}
+                {"Giày Thể Thao", "Giày dành cho hoạt động thể thao, chạy bộ, gym, training"},
+                {"Giày Sneaker", "Giày sneaker phong cách streetwear, thời trang đường phố"},
+                {"Giày Bóng Đá", "Giày chuyên dụng cho cầu thủ bóng đá, hỗ trợ bám sân và di chuyển nhanh"},
+                {"Giày Bóng Rổ", "Giày thể thao chuyên cho bóng rổ, hỗ trợ bật nhảy và bảo vệ cổ chân"},
+                {"Sandals & Dép", "Dép, sandals thoáng mát, tiện dụng hàng ngày"},
+                {"Giày Cao Gót", "Giày cao gót thời trang, sang trọng cho nữ giới"},
+                {"Giày Boot", "Giày boot phong cách, bảo vệ tốt, phù hợp mùa đông"},
+                {"Giày Lười", "Giày lười tiện lợi, dễ mang, phù hợp đi làm"},
+                {"Giày Chạy Bộ", "Giày chạy bộ chuyên nghiệp, công nghệ đệm tiên tiến"},
+                {"Giày Đá Cầu", "Giày cầu lông, đá cầu, bóng chuyền chuyên dụng"}
         };
 
         for (int i = 0; i < categories.length; i++) {
@@ -140,7 +145,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
             categoryRepository.save(category);
         }
 
-        System.out.println("  → Đã tạo 5 categories");
+        System.out.println("  → Đã tạo 10 categories");
     }
 
     private void initBrands() {
@@ -174,7 +179,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
 
         // Product 4-6: Sneakers
         Product p4 = createProduct("Sneaker Street Style Đỏ", 
-            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sneaker-1_ibssp8.jpg");
+            "Sneaker phong cách đường phố, màu đỏ nổi bật", 2L, 4L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638308/giay-21_sbvuog.jpg");
         createProductDetails(p4);
 
         Product p5 = createProduct("Sneaker Low-Top Trắng", 
@@ -224,7 +229,198 @@ public class ApplicationInitConfig implements ApplicationRunner {
             "Sandal dã ngoại, đi phượt, leo núi", 5L, 9L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
         createProductDetails(p15);
 
-        System.out.println("  → Đã tạo 15 products với 120 product details");
+        // Product 16-21: Giày Cao Gót (Category 6)
+        Product p16 = createProduct("Giày Cao Gót Công Sở",
+                "Giày cao gót thanh lịch cho công sở", 6L, 1L, 890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638301/giay-1_pazzqv.jpg");
+        createProductDetails(p16);
+
+        Product p17 = createProduct("Giày Cao Gót Đi Tiệc",
+                "Giày cao gót sang trọng cho dự tiệc", 6L, 2L, 1290000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-4_b1irsx.jpg");
+        createProductDetails(p17);
+
+        Product p18 = createProduct("Giày Cao Gót Quai Mảnh",
+                "Thiết kế quai mảnh quyến rũ", 6L, 3L, 950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-8_vs95cq.jpg");
+        createProductDetails(p18);
+
+        Product p19 = createProduct("Giày Cao Gót Mũi Nhọn",
+                "Mũi nhọn thời trang, tôn dáng", 6L, 4L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638302/giay-3_csufqn.jpg");
+        createProductDetails(p19);
+
+        Product p20 = createProduct("Giày Cao Gót Nữ Đẹp",
+                "Giày cao gót nữ thiết kế đẹp", 6L, 5L, 990000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1761638303/giay-6_rxzop5.jpg");
+        createProductDetails(p20);
+
+        Product p21 = createProduct("Giày Cao Gót Gót Nhọn",
+                "Gót nhọn cao 9cm sang trọng", 6L, 6L, 1350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p21);
+
+        // Product 22-27: Giày Boot (Category 7)
+        Product p22 = createProduct("Boot Cổ Cao Da Thật",
+                "Boot cổ cao da thật cao cấp", 7L, 7L, 2490000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p22);
+
+        Product p23 = createProduct("Boot Chelsea Cổ Điển",
+                "Boot Chelsea phong cách Anh Quốc", 7L, 8L, 1890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p23);
+
+        Product p24 = createProduct("Boot Chiến Binh Nam",
+                "Boot chiến binh mạnh mẽ", 7L, 9L, 2190000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p24);
+
+        Product p25 = createProduct("Boot Nữ Cổ Ngắn",
+                "Boot nữ cổ ngắn thời trang", 7L, 10L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p25);
+
+        Product p26 = createProduct("Boot Martin Cá Tính",
+                "Boot Martin đế cao su", 7L, 1L, 1790000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p26);
+
+        Product p27 = createProduct("Boot Cao Cổ Mùa Đông",
+                "Boot giữ ấm mùa đông", 7L, 2L, 2290000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p27);
+
+        // Product 28-33: Giày Lười (Category 8)
+        Product p28 = createProduct("Giày Lười Nam Da Bò",
+                "Giày lười da bò cao cấp", 8L, 3L, 1250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p28);
+
+        Product p29 = createProduct("Giày Lười Công Sở",
+                "Giày lười thanh lịch đi làm", 8L, 4L, 950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p29);
+
+        Product p30 = createProduct("Giày Lười Moccasin",
+                "Giày lười kiểu Moccasin", 8L, 5L, 890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p30);
+
+        Product p31 = createProduct("Giày Lười Nữ Đế Bệt",
+                "Giày lười nữ thoải mái", 8L, 6L, 750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p31);
+
+        Product p32 = createProduct("Giày Lười Đế Cao Su",
+                "Giày lười đế cao su bền bỉ", 8L, 7L, 850000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p32);
+
+        Product p33 = createProduct("Giày Lười Phong Cách",
+                "Giày lười thiết kế độc đáo", 8L, 8L, 1150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p33);
+
+        // Product 34-39: Giày Chạy Bộ (Category 9)
+        Product p34 = createProduct("Giày Chạy Bộ Marathon",
+                "Giày chạy marathon chuyên nghiệp", 9L, 9L, 2890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p34);
+
+        Product p35 = createProduct("Giày Chạy Bộ Nike React",
+                "Công nghệ React Foam êm ái", 9L, 1L, 3250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p35);
+
+        Product p36 = createProduct("Giày Chạy Bộ Ultraboost",
+                "Adidas Ultraboost tối ưu năng lượng", 9L, 2L, 4150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p36);
+
+        Product p37 = createProduct("Giày Chạy Bộ Puma Velocity",
+                "Puma Velocity cho tốc độ", 9L, 3L, 2650000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p37);
+
+        Product p38 = createProduct("Giày Chạy Bộ Nữ Hafele",
+                "Giày chạy bộ nữ nhẹ nhàng", 9L, 10L, 1990000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p38);
+
+        Product p39 = createProduct("Giày Chạy Bộ Under Armour",
+                "Under Armour Charged hỗ trợ tốt", 9L, 9L, 2450000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p39);
+
+        // Product 40-45: Giày Đá Cầu (Category 10)
+        Product p40 = createProduct("Giày Cầu Lông Yonex",
+                "Giày cầu lông Yonex chuyên nghiệp", 10L, 4L, 1890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p40);
+
+        Product p41 = createProduct("Giày Cầu Lông Lining",
+                "Lining chống trơn tuyệt vời", 10L, 5L, 1650000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p41);
+
+        Product p42 = createProduct("Giày Bóng Chuyền Mizuno",
+                "Mizuno hỗ trợ bật nhảy", 10L, 6L, 2150000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p42);
+
+        Product p43 = createProduct("Giày Cầu Lông Victor",
+                "Victor siêu nhẹ, di chuyển nhanh", 10L, 7L, 1750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p43);
+
+        Product p44 = createProduct("Giày Đá Cầu Kawasaki",
+                "Kawasaki bền bỉ, giá tốt", 10L, 8L, 950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p44);
+
+        Product p45 = createProduct("Giày Bóng Chuyền Asics",
+                "Asics Gel công nghệ đệm", 10L, 10L, 2350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p45);
+
+        // Product 46-51: Thêm cho các danh mục 1-5 (mỗi danh mục thêm 3 sản phẩm nữa)
+        // Category 1: Giày Thể Thao
+        Product p46 = createProduct("Giày Gym Training Pro",
+                "Giày tập gym đa năng", 1L, 6L, 1950000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p46);
+
+        Product p47 = createProduct("Giày Thể Thao CrossFit",
+                "Giày CrossFit chuyên nghiệp", 1L, 7L, 2250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p47);
+
+        Product p48 = createProduct("Giày Tập Aerobic Nữ",
+                "Giày aerobic nhẹ nhàng", 1L, 8L, 1650000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p48);
+
+        // Category 2: Sneaker
+        Product p49 = createProduct("Sneaker Old School Vans",
+                "Vans Old School classic", 2L, 5L, 1850000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p49);
+
+        Product p50 = createProduct("Sneaker Retro Style",
+                "Sneaker phong cách retro", 2L, 6L, 1590000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p50);
+
+        Product p51 = createProduct("Sneaker Platform Nữ",
+                "Sneaker đế cao năng động", 2L, 7L, 1750000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p51);
+
+        // Category 3: Bóng Đá
+        Product p52 = createProduct("Giày Bóng Đá Copa Mundial",
+                "Copa Mundial huyền thoại", 3L, 2L, 3550000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p52);
+
+        Product p53 = createProduct("Giày Bóng Đá Tiempo",
+                "Nike Tiempo da kangaroo", 3L, 1L, 3890000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p53);
+
+        Product p54 = createProduct("Giày Bóng Đá Puma Future",
+                "Puma Future công nghệ mới", 3L, 3L, 3350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p54);
+
+        // Category 4: Bóng Rổ
+        Product p55 = createProduct("Giày Bóng Rổ LeBron",
+                "Nike LeBron series cao cấp", 4L, 1L, 4990000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p55);
+
+        Product p56 = createProduct("Giày Bóng Rổ Dame Series",
+                "Adidas Dame hỗ trợ tốt", 4L, 2L, 4250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p56);
+
+        Product p57 = createProduct("Giày Bóng Rổ Kyrie",
+                "Nike Kyrie linh hoạt", 4L, 1L, 4450000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p57);
+
+        // Category 5: Sandals & Dép
+        Product p58 = createProduct("Dép Flip Flop Classic",
+                "Dép xỏ ngón thoải mái", 5L, 8L, 350000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p58);
+
+        Product p59 = createProduct("Sandal Trekking Nam",
+                "Sandal đi phượt chắc chắn", 5L, 9L, 1250000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p59);
+
+        Product p60 = createProduct("Dép Massage Chân",
+                "Dép massage giúp thư giãn", 5L, 10L, 450000, "https://res.cloudinary.com/dpsj19dsn/image/upload/v1760893896/sandal-2_qztleo.jpg");
+        createProductDetails(p60);
+
+        System.out.println("  → Đã tạo 60 products với 480 product details (60 products x 8 sizes)");
     }
 
     private Product createProduct(String title, String description, 
@@ -389,6 +585,106 @@ public class ApplicationInitConfig implements ApplicationRunner {
         customer5.setProvider("LOCAL");
         userRepository.save(customer5);
 
+        Users customer6 = new Users();
+        customer6.setEmail("customer6@test.com");
+        customer6.setPassword(encodedPassword);
+        customer6.setFullname("Đặng Thị Hoa");
+        customer6.setPhone("0910123456");
+        customer6.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer6.setIsActive(true);
+        customer6.setProvider("LOCAL");
+        userRepository.save(customer6);
+
+        Users customer7 = new Users();
+        customer7.setEmail("customer7@test.com");
+        customer7.setPassword(encodedPassword);
+        customer7.setFullname("Võ Minh Khang");
+        customer7.setPhone("0911234567");
+        customer7.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer7.setIsActive(true);
+        customer7.setProvider("LOCAL");
+        userRepository.save(customer7);
+
+        Users customer8 = new Users();
+        customer8.setEmail("customer8@test.com");
+        customer8.setPassword(encodedPassword);
+        customer8.setFullname("Bùi Thị Lan");
+        customer8.setPhone("0912345678");
+        customer8.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer8.setIsActive(true);
+        customer8.setProvider("LOCAL");
+        userRepository.save(customer8);
+
+        Users customer9 = new Users();
+        customer9.setEmail("customer9@test.com");
+        customer9.setPassword(encodedPassword);
+        customer9.setFullname("Đinh Văn Nam");
+        customer9.setPhone("0913456789");
+        customer9.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer9.setIsActive(true);
+        customer9.setProvider("LOCAL");
+        userRepository.save(customer9);
+
+        Users customer10 = new Users();
+        customer10.setEmail("customer10@test.com");
+        customer10.setPassword(encodedPassword);
+        customer10.setFullname("Mai Thị Phương");
+        customer10.setPhone("0914567890");
+        customer10.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer10.setIsActive(true);
+        customer10.setProvider("LOCAL");
+        userRepository.save(customer10);
+
+        Users customer11 = new Users();
+        customer11.setEmail("customer11@test.com");
+        customer11.setPassword(encodedPassword);
+        customer11.setFullname("Ngô Văn Quân");
+        customer11.setPhone("0915678901");
+        customer11.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer11.setIsActive(true);
+        customer11.setProvider("LOCAL");
+        userRepository.save(customer11);
+
+        Users customer12 = new Users();
+        customer12.setEmail("customer12@test.com");
+        customer12.setPassword(encodedPassword);
+        customer12.setFullname("Dương Thị Thảo");
+        customer12.setPhone("0916789012");
+        customer12.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer12.setIsActive(true);
+        customer12.setProvider("LOCAL");
+        userRepository.save(customer12);
+
+        Users customer13 = new Users();
+        customer13.setEmail("customer13@test.com");
+        customer13.setPassword(encodedPassword);
+        customer13.setFullname("Phan Văn Sơn");
+        customer13.setPhone("0917890123");
+        customer13.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer13.setIsActive(true);
+        customer13.setProvider("LOCAL");
+        userRepository.save(customer13);
+
+        Users customer14 = new Users();
+        customer14.setEmail("customer14@test.com");
+        customer14.setPassword(encodedPassword);
+        customer14.setFullname("Lý Thị Tuyết");
+        customer14.setPhone("0918901234");
+        customer14.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer14.setIsActive(true);
+        customer14.setProvider("LOCAL");
+        userRepository.save(customer14);
+
+        Users customer15 = new Users();
+        customer15.setEmail("customer15@test.com");
+        customer15.setPassword(encodedPassword);
+        customer15.setFullname("Trịnh Văn Vũ");
+        customer15.setPhone("0919012345");
+        customer15.setRole(roleRepository.findByRoleName("user").orElseThrow());
+        customer15.setIsActive(true);
+        customer15.setProvider("LOCAL");
+        userRepository.save(customer15);
+
         // ⭐ Thêm 2 shippers nữa
         Users shipper2 = new Users();
         shipper2.setEmail("shipper2@test.com");
@@ -410,11 +706,11 @@ public class ApplicationInitConfig implements ApplicationRunner {
         shipper3.setProvider("LOCAL");
         userRepository.save(shipper3);
 
-        System.out.println("  → Đã tạo 11 users: 1 admin, 1 manager, 6 customers, 3 shippers (password: 123456)");
+        System.out.println("  → Đã tạo 21 users: 1 admin, 1 manager, 16 customers, 3 shippers (password: 123456)");
     }
 
     private void initTestAddresses() {
-        // Tạo 1 địa chỉ chung để test cho users 3-8 (6 customers)
+        // Tạo 1 địa chỉ chung để test cho users 3-18 (16 customers)
         Address sharedAddress = new Address();
         sharedAddress.setAddress_line("38 Hẻm 268 Nguyễn Văn Quá, Đông Hưng Thuận, Quận 12");
         sharedAddress.setCity("Hồ Chí Minh");
@@ -424,10 +720,10 @@ public class ApplicationInitConfig implements ApplicationRunner {
         sharedAddress.setAddressType("HOME");
         addressRepository.save(sharedAddress);
 
-        // Liên kết địa chỉ với users 3-8
+        // Liên kết địa chỉ với users 3-18
         // User 3: user@user
-        // User 4-8: customer1-5
-        for (int userId = 3; userId <= 8; userId++) {
+        // User 4-18: customer1-15
+        for (int userId = 3; userId <= 18; userId++) {
             Users user = userRepository.findById((long) userId).orElse(null);
             if (user != null) {
                 UserAddress userAddress = new UserAddress();
@@ -443,7 +739,7 @@ public class ApplicationInitConfig implements ApplicationRunner {
             }
         }
 
-        System.out.println("  → Đã tạo 1 địa chỉ chung và liên kết với 6 users (ID 3-8)");
+        System.out.println("  → Đã tạo 1 địa chỉ chung và liên kết với 16 users (ID 3-18)");
     }
 
     private void initShippingCompanies() {

@@ -1,5 +1,6 @@
 package com.dev.shoeshop.repository;
 
+import com.dev.shoeshop.entity.ReturnRequest;
 import com.dev.shoeshop.entity.ReturnShipment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,11 @@ public interface ReturnShipmentRepository extends JpaRepository<ReturnShipment, 
      * Tìm return shipment theo return request ID
      */
     Optional<ReturnShipment> findByReturnRequestId(Long returnRequestId);
+    
+    /**
+     * Tìm return shipment theo return request entity
+     */
+    Optional<ReturnShipment> findByReturnRequest(ReturnRequest returnRequest);
     
     /**
      * Tìm tất cả return shipments của shipper
