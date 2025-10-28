@@ -331,289 +331,289 @@ DeeG Shoe Shop là website bán và quản lý cửa hàng giày dép trực tuy
 - Trung tâm thông báo
 - Đánh dấu đã đọc
 
-### Tính Năng Quản Trị (Admin Features)
+### Tính Năng Quản Trị
 
-**1. Admin Dashboard & Analytics**
-- Real-time statistics:
-  - Total revenue (today, this month, this year)
-  - Total orders by status
-  - New customers count
-  - Total products và low stock alerts
-- Revenue charts:
-  - Line chart: Revenue over time
-  - Bar chart: Revenue by category
-  - Pie chart: Order status distribution
-- Top selling products (with images và sold count)
-- Recent orders list
-- Quick actions: Add Product, Create Flash Sale, View Reports
+**1. Dashboard & Phân Tích**
+- Thống kê realtime:
+  - Tổng doanh thu (hôm nay, tháng này, năm nay)
+  - Tổng đơn hàng theo trạng thái
+  - Số lượng khách hàng mới
+  - Tổng sản phẩm và cảnh báo sắp hết hàng
+- Biểu đồ doanh thu:
+  - Biểu đồ đường: Doanh thu theo thời gian
+  - Biểu đồ cột: Doanh thu theo danh mục
+  - Biểu đồ tròn: Phân bố trạng thái đơn hàng
+- Sản phẩm bán chạy nhất (với hình ảnh và số lượng đã bán)
+- Danh sách đơn hàng gần đây
+- Thao tác nhanh: Thêm sản phẩm, Tạo Flash Sale, Xem báo cáo
 
-**2. Product Management**
-- Product listing với pagination và search
-- CRUD operations:
-  - Create product với multiple sizes
-  - Edit product information
-  - Delete product (soft delete)
-  - Activate/deactivate product
-- Bulk operations:
-  - Bulk price update
-  - Bulk category assignment
-  - Bulk delete
-- Product variant management (sizes):
-  - Add/remove sizes
-  - Set price per size
-  - Set stock per size
-- Image management:
-  - Upload multiple images to Cloudinary
-  - Set primary image
-  - Delete images
-  - Image CDN optimization
-- Product import/export (Excel)
+**2. Quản Lý Sản Phẩm**
+- Danh sách sản phẩm với phân trang và tìm kiếm
+- Thao tác CRUD:
+  - Tạo sản phẩm với nhiều size
+  - Sửa thông tin sản phẩm
+  - Xóa sản phẩm (xóa mềm)
+  - Kích hoạt/vô hiệu hóa sản phẩm
+- Thao tác hàng loạt:
+  - Cập nhật giá hàng loạt
+  - Gán danh mục hàng loạt
+  - Xóa hàng loạt
+- Quản lý biến thể sản phẩm (sizes):
+  - Thêm/xóa size
+  - Đặt giá theo size
+  - Đặt tồn kho theo size
+- Quản lý hình ảnh:
+  - Upload nhiều ảnh lên Cloudinary
+  - Đặt ảnh chính
+  - Xóa ảnh
+  - Tối ưu ảnh qua CDN
+- Import/Export sản phẩm (Excel)
 
-**3. Category & Brand Management**
-- Category CRUD:
-  - Create/edit/delete categories
-  - Category hierarchy (parent-child)
-  - Category image upload
-  - SEO settings (slug, meta description)
-- Brand CRUD:
-  - Add/edit/delete brands
-  - Brand logo upload
-  - Brand description
+**3. Quản Lý Danh Mục & Thương Hiệu**
+- CRUD Danh mục:
+  - Tạo/sửa/xóa danh mục
+  - Phân cấp danh mục (cha-con)
+  - Upload ảnh danh mục
+  - Cài đặt SEO (slug, meta description)
+- CRUD Thương hiệu:
+  - Thêm/sửa/xóa thương hiệu
+  - Upload logo thương hiệu
+  - Mô tả thương hiệu
 
-**4. Order Management**
-- Order listing với advanced filters:
-  - Status (IN_STOCK, SHIPPED, DELIVERED, CANCEL, RETURN)
-  - Payment method (COD, PayOS)
-  - Date range
-  - Customer search
-  - Order ID search
-- Order details view:
-  - Customer information
-  - Order items với pricing
-  - Delivery address
-  - Payment status
-  - Timeline history
-- Order operations:
-  - Update order status
-  - Assign shipper
-  - Print invoice
-  - Cancel order (with reason)
-  - Process refund
-- Order export to Excel:
-  - Custom date range
-  - Filter by status
-  - Include order details
-- Bulk operations:
-  - Bulk status update
-  - Bulk shipper assignment
+**4. Quản Lý Đơn Hàng**
+- Danh sách đơn hàng với bộ lọc nâng cao:
+  - Trạng thái (Chờ xử lý, Đang giao, Đã giao, Hủy, Trả hàng)
+  - Phương thức thanh toán (COD, PayOS)
+  - Khoảng thời gian
+  - Tìm kiếm khách hàng
+  - Tìm kiếm mã đơn hàng
+- Xem chi tiết đơn hàng:
+  - Thông tin khách hàng
+  - Sản phẩm trong đơn với giá
+  - Địa chỉ giao hàng
+  - Trạng thái thanh toán
+  - Lịch sử dòng thời gian
+- Thao tác đơn hàng:
+  - Cập nhật trạng thái đơn hàng
+  - Phân công shipper
+  - In hóa đơn
+  - Hủy đơn hàng (kèm lý do)
+  - Xử lý hoàn tiền
+- Xuất đơn hàng ra Excel:
+  - Tùy chỉnh khoảng thời gian
+  - Lọc theo trạng thái
+  - Bao gồm chi tiết đơn hàng
+- Thao tác hàng loạt:
+  - Cập nhật trạng thái hàng loạt
+  - Phân công shipper hàng loạt
 
-**5. Flash Sale Management**
-- Flash sale creation wizard:
-  - Set name, description
-  - Upload banner image
-  - Set time range (start - end)
-  - Select products to include
-- Add products to flash sale:
-  - Search và select products
-  - Set discount percentage per product
-  - Set stock limit per product
-- Flash sale listing:
-  - Active flash sales
-  - Scheduled flash sales
-  - Ended flash sales
-- Flash sale operations:
-  - Edit flash sale details
-  - Add/remove products
-  - End flash sale early
-  - Clone flash sale
-  - Delete flash sale
-- Real-time monitoring:
-  - Total items sold
-  - Revenue generated
-  - Stock remaining
-  - User participation
+**5. Quản Lý Flash Sale**
+- Màn hình tạo Flash Sale:
+  - Đặt tên, mô tả
+  - Upload ảnh banner
+  - Đặt khoảng thời gian (bắt đầu - kết thúc)
+  - Chọn sản phẩm tham gia
+- Thêm sản phẩm vào Flash Sale:
+  - Tìm kiếm và chọn sản phẩm
+  - Đặt phần trăm giảm giá cho từng sản phẩm
+  - Đặt giới hạn tồn kho cho từng sản phẩm
+- Danh sách Flash Sale:
+  - Flash Sale đang hoạt động
+  - Flash Sale đã lên lịch
+  - Flash Sale đã kết thúc
+- Thao tác Flash Sale:
+  - Sửa chi tiết Flash Sale
+  - Thêm/xóa sản phẩm
+  - Kết thúc Flash Sale sớm
+  - Sao chép Flash Sale
+  - Xóa Flash Sale
+- Giám sát realtime:
+  - Tổng số lượng đã bán
+  - Doanh thu tạo ra
+  - Tồn kho còn lại
+  - Số người tham gia
 
-**6. Discount/Voucher Management**
-- Voucher creation form:
-  - Voucher name và code
-  - Discount type (ORDER or SHIPPING)
-  - Value type (PERCENTAGE or FIXED_AMOUNT)
-  - Discount value
-  - Minimum order value requirement
-  - User tier requirement
-  - Usage limit per user
-  - Total quantity
-  - Validity period (start - end date)
-  - Status (ACTIVE, INACTIVE, EXPIRED)
-- Voucher listing với filters
-- Voucher operations:
-  - Edit voucher details
-  - Activate/deactivate
-  - Delete voucher
-  - Extend validity period
-- Usage statistics:
-  - Total uses
-  - Total discount amount given
-  - Users who used
-  - Revenue impact analysis
+**6. Quản Lý Voucher/Giảm Giá**
+- Form tạo voucher:
+  - Tên và mã voucher
+  - Loại giảm giá (Đơn hàng hoặc Vận chuyển)
+  - Kiểu giá trị (Phần trăm hoặc Số tiền cố định)
+  - Giá trị giảm giá
+  - Yêu cầu giá trị đơn hàng tối thiểu
+  - Yêu cầu hạng thành viëa
+  - Giới hạn sử dụng mỗi người
+  - Tổng số lượng
+  - Thời hạn hiệu lực (ngày bắt đầu - kết thúc)
+  - Trạng thái (Hoạt động, Ngừng, Hết hạn)
+- Danh sách voucher với bộ lọc
+- Thao tác voucher:
+  - Sửa chi tiết voucher
+  - Kích hoạt/vô hiệu hóa
+  - Xóa voucher
+  - Gia hạn thời hạn hiệu lực
+- Thống kê sử dụng:
+  - Tổng số lần sử dụng
+  - Tổng số tiền giảm giá đã cho
+  - Người dùng đã sử dụng
+  - Phân tích tác động doanh thu
 
-**7. Inventory & Warehouse Management**
-- Warehouse configuration:
-  - Add/edit warehouses
-  - Set GPS coordinates
-  - Set operating hours
-- Stock level monitoring:
-  - Current stock per product detail
-  - Low stock alerts (<10 items)
-  - Out of stock products
-- Inventory operations:
-  - Stock adjustment (increase/decrease)
-  - Stock import (receiving)
-  - Stock transfer between warehouses
-- Inventory history:
-  - Movement logs
-  - Import/export records
-  - Adjustment reasons
-  - Performed by user tracking
-- Stock reports:
-  - Current stock levels
-  - Stock movement history
-  - Low stock report
+**7. Quản Lý Tồn Kho & Kho Hàng**
+- Cấu hình kho hàng:
+  - Thêm/sửa kho hàng
+  - Đặt tọa độ GPS
+  - Đặt giờ hoạt động
+- Giám sát mức tồn kho:
+  - Tồn kho hiện tại theo chi tiết sản phẩm
+  - Cảnh báo sắp hết hàng (<10 sản phẩm)
+  - Sản phẩm hết hàng
+- Thao tác tồn kho:
+  - Điều chỉnh tồn kho (tăng/giảm)
+  - Nhập kho (tiếp nhận hàng)
+  - Chuyển kho giữa các kho
+- Lịch sử tồn kho:
+  - Nhật ký di chuyển
+  - Bản ghi nhập/xuất
+  - Lý do điều chỉnh
+  - Theo dõi người thực hiện
+- Báo cáo tồn kho:
+  - Mức tồn kho hiện tại
+  - Lịch sử di chuyển tồn kho
+  - Báo cáo sắp hết hàng
 
-**8. Shipping Management**
-- Shipping company configuration:
-  - Add/edit shipping providers
-  - Upload company logo
-  - Set base rates
-  - Set per-km rates
-  - Define distance tiers với different rates
-- Shipping rate calculator:
-  - Test distance calculation
-  - Verify pricing
-- Shipper assignment:
-  - Assign orders to shippers
-  - Shipper performance tracking
-  - Delivery completion rates
+**8. Quản Lý Vận Chuyển**
+- Cấu hình đơn vị vận chuyển:
+  - Thêm/sửa nhà cung cấp vận chuyển
+  - Upload logo công ty
+  - Đặt mức giá cơ bản
+  - Đặt giá theo km
+  - Định nghĩa bậc khoảng cách với mức giá khác nhau
+- Công cụ tính phí vận chuyển:
+  - Kiểm tra tính khoảng cách
+  - Xác minh giá
+- Phân công shipper:
+  - Phân công đơn hàng cho shipper
+  - Theo dõi hiệu suất shipper
+  - Tỷ lệ hoàn thành giao hàng
 
-**9. User Management**
-- User listing với search và filters:
-  - Role filter
-  - Registration date
-  - Membership tier
-  - Active/inactive status
-- User operations:
-  - View user profile
-  - Edit user information
-  - Change user role
-  - Activate/deactivate account
-  - View user orders
-  - View user activity log
-- Membership management:
-  - Upgrade/downgrade tier
-  - Adjust loyalty points
-  - Adjust DeeG Xu balance
-- Bulk operations:
-  - Send email to users
-  - Export user list
+**9. Quản Lý Người Dùng**
+- Danh sách người dùng với tìm kiếm và bộ lọc:
+  - Lọc vai trò
+  - Ngày đăng ký
+  - Hạng thành viên
+  - Trạng thái hoạt động/ngừng
+- Thao tác người dùng:
+  - Xem hồ sơ người dùng
+  - Sửa thông tin người dùng
+  - Thay đổi vai trò người dùng
+  - Kích hoạt/vô hiệu hóa tài khoản
+  - Xem đơn hàng của người dùng
+  - Xem nhật ký hoạt động
+- Quản lý thành viên:
+  - Nâng/hạ hạng
+  - Điều chỉnh điểm thành viên
+  - Điều chỉnh số dư DeeG Xu
+- Thao tác hàng loạt:
+  - Gửi email cho người dùng
+  - Xuất danh sách người dùng
 
-**10. Return Request Management**
-- Return request listing
-- Return request details:
-  - Order information
-  - Return reason
-  - Return images
-  - Customer notes
-- Return operations:
-  - Approve return
-  - Reject return (with reason)
-  - Process refund
-  - Arrange return shipment
-- Return statistics:
-  - Total returns
-  - Return rate
-  - Common return reasons
+**10. Quản Lý Yêu Cầu Trả Hàng**
+- Danh sách yêu cầu trả hàng
+- Chi tiết yêu cầu trả hàng:
+  - Thông tin đơn hàng
+  - Lý do trả hàng
+  - Hình ảnh trả hàng
+  - Ghi chú của khách hàng
+- Thao tác trả hàng:
+  - Phê duyệt trả hàng
+  - Từ chối trả hàng (kèm lý do)
+  - Xử lý hoàn tiền
+  - Sắp xếp vận chuyển trả hàng
+- Thống kê trả hàng:
+  - Tổng số trả hàng
+  - Tỷ lệ trả hàng
+  - Lý do trả hàng phổ biến
 
-**11. Permission & Role Management**
-- Role-based access control (RBAC)
-- Four main roles:
-  - ADMIN: Full system access
-  - MANAGER: Product, order, report access
-  - SHIPPER: Delivery management only
-  - USER: Customer features only
-- Permission assignment per role
-- Custom permission creation (optional)
+**11. Quản Lý Phân Quyền & Vai Trò**
+- Kiểm soát truy cập dựa trên vai trò (RBAC)
+- Bốn vai trò chính:
+  - QUẢN TRỊ VIÊN: Truy cập toàn bộ hệ thống
+  - QUẢN LÝ: Truy cập sản phẩm, đơn hàng, báo cáo
+  - SHIPPER: Chỉ quản lý giao hàng
+  - KHÁCH HÀNG: Chỉ các tính năng khách hàng
+- Phân quyền cho từng vai trò
+- Tạo quyền tùy chỉnh (tùy chọn)
 
-**12. System Configuration**
-- General settings:
-  - Site name, logo, favicon
-  - Contact information
-  - Social media links
-- Email templates:
-  - Order confirmation
-  - Shipping notification
-  - Password reset
-- Payment gateway settings:
-  - PayOS credentials
-  - Test/production mode
-- API key management:
+**12. Cấu Hình Hệ Thống**
+- Cài đặt chung:
+  - Tên website, logo, favicon
+  - Thông tin liên hệ
+  - Liên kết mạng xã hội
+- Mẫu email:
+  - Xác nhận đơn hàng
+  - Thông báo vận chuyển
+  - Đặt lại mật khẩu
+- Cài đặt cổng thanh toán:
+  - Thông tin xác thực PayOS
+  - Chế độ test/production
+- Quản lý API key:
   - Cloudinary
   - Goong Maps
   - Gemini AI
 
-### Tính Năng Shipper (Shipper Features)
+### Tính Năng Shipper
 
-**1. Shipper Dashboard**
-- Today's delivery statistics:
-  - Total assigned orders
-  - Completed deliveries
-  - Pending deliveries
-  - Failed deliveries
-- Performance metrics:
-  - Success rate
-  - Average delivery time
-  - Customer ratings
+**1. Dashboard Shipper**
+- Thống kê giao hàng hôm nay:
+  - Tổng đơn hàng được phân công
+  - Đơn hàng đã giao thành công
+  - Đơn hàng chờ giao
+  - Đơn hàng giao thất bại
+- Chỉ số hiệu suất:
+  - Tỷ lệ thành công
+  - Thời gian giao hàng trung bình
+  - Đánh giá của khách hàng
 
-**2. Order Assignment & Management**
-- Assigned orders listing với filters:
-  - Status (SHIPPED, DELIVERED)
-  - Delivery date
-  - Area/district
-- Order details:
-  - Customer information
-  - Phone number (call directly)
-  - Delivery address với map
-  - Order items
-  - Payment method (COD amount)
-  - Delivery notes
-- Map integration:
-  - View delivery location on map
-  - Get directions (Goong Maps)
-  - Optimal route planning (optional)
+**2. Phân Công & Quản Lý Đơn Hàng**
+- Danh sách đơn hàng được phân công với bộ lọc:
+  - Trạng thái (Đang giao, Đã giao)
+  - Ngày giao hàng
+  - Khu vực/quận
+- Chi tiết đơn hàng:
+  - Thông tin khách hàng
+  - Số điện thoại (gọi trực tiếp)
+  - Địa chỉ giao hàng với bản đồ
+  - Sản phẩm trong đơn
+  - Phương thức thanh toán (số tiền COD)
+  - Ghi chú giao hàng
+- Tích hợp bản đồ:
+  - Xem vị trí giao hàng trên bản đồ
+  - Lấy hướng dẫn (Goong Maps)
+  - Lên lộ trình tối ưu (tùy chọn)
 
-**3. Delivery Operations**
-- Update delivery status:
-  - Mark as SHIPPED (picked up)
-  - Mark as DELIVERED (with confirmation)
-  - Mark as FAILED (with reason)
-- Failed delivery reasons:
-  - Customer not available
-  - Wrong address
-  - Customer refused
-  - Other (custom reason)
-- COD collection:
-  - Confirm cash received
-  - Record payment
-- Delivery proof:
-  - Upload delivery photo
-  - Customer signature (optional)
+**3. Thao Tác Giao Hàng**
+- Cập nhật trạng thái giao hàng:
+  - Đánh dấu đang giao (đã lấy hàng)
+  - Đánh dấu đã giao (với xác nhận)
+  - Đánh dấu giao thất bại (kèm lý do)
+- Lý do giao thất bại:
+  - Khách hàng không có sẵn
+  - Địa chỉ sai
+  - Khách hàng từ chối nhận
+  - Lý do khác (tùy chỉnh)
+- Thu tiền COD:
+  - Xác nhận đã nhận tiền mặt
+  - Ghi nhận thanh toán
+- Bằng chứng giao hàng:
+  - Upload ảnh giao hàng
+  - Chữ ký khách hàng (tùy chọn)
 
-**4. Performance Tracking**
-- Delivery history
-- Customer feedback
-- Rating và reviews from customers
-- Earnings tracking (if commission-based)
+**4. Theo Dõi Hiệu Suất**
+- Lịch sử giao hàng
+- Phản hồi của khách hàng
+- Đánh giá và nhận xét từ khách hàng
+- Theo dõi thu nhập (nếu trả hoa hồng)
 
-### 📦 Cấu Trúc Dự Án
+## Cấu Trúc Dự Án
 
 ```
 shoe_shop_web/
@@ -655,48 +655,54 @@ shoe_shop_web/
 └── pom.xml                          # Maven dependencies
 ```
 
-### 🗄 Database Schema
+## Database Schema
 
-Hệ thống sử dụng **27 entities** chính:
+Hệ thống sử dụng **33 entities** chính:
 
-**Core Entities:**
-- `Users`, `Role`, `Address`, `UserAddress`
+**Entities Cốt Lõi:**
+- `Users`, `Role`, `Address`, `UserAddress`, `PasswordResetToken`
 - `Product`, `ProductDetail`, `Brand`, `Category`
-- `Inventory`, `Cart`, `CartDetail`, `WishList`
+- `Inventory`, `InventoryHistory`, `Cart`, `CartDetail`, `WishList`
 - `Order`, `OrderDetail`, `Rating`
 
-**Discount & Flash Sale:**
+**Giảm Giá & Flash Sale:**
 - `Discount`, `DiscountUsed`
 - `FlashSale`, `FlashSaleItem`
 
-**Shipping:**
+**Vận Chuyển:**
 - `ShippingCompany`, `ShippingRate`, `Shipment`, `Shipper`
 - `ShopWarehouse`, `DistanceCache`
 
-**Others:**
-- `PasswordResetToken`
+**Trả Hàng:**
+- `ReturnRequest`, `ReturnShipment`
 
-### 🚀 Hướng Dẫn Cài Đặt
+**Giao Tiếp:**
+- `ChatConversation`, `ChatMessage`
 
-#### Yêu Cầu Hệ Thống
+**Thành Viên:**
+- `CoinTransaction`
+
+## Hướng Dẫn Cài Đặt
+
+### Yêu Cầu Hệ Thống
 - **Java**: 21 trở lên
 - **Maven**: 3.9+
 - **MySQL**: 8.0+
 - **IDE**: IntelliJ IDEA / Eclipse / VSCode
 
-#### Bước 1: Clone Repository
+### Bước 1: Clone Repository
 ```bash
-git clone https://github.com/your-repo/shoe_shop_web.git
+git clone https://github.com/Nnguyen-dev2805/shoe_shop_web.git
 cd shoe_shop_web
 ```
 
-#### Bước 2: Cấu Hình Database
+### Bước 2: Cấu Hình Database
 Tạo database MySQL:
 ```sql
-CREATE DATABASE shoe_shop_basic CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE shoe_shop_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
-#### Bước 3: Cấu Hình Environment Variables
+### Bước 3: Cấu Hình Biến Môi Trường
 Copy file `.env.example` thành `.env` hoặc cấu hình trong `application-uat.properties`:
 
 ```properties
@@ -730,12 +736,12 @@ payos.api-key=your_api_key
 payos.checksum-key=your_checksum_key
 ```
 
-#### Bước 4: Build & Run
+#### Bước 4: Build & Chạy Ứng Dụng
 ```bash
 # Build project
 mvn clean install -DskipTests
 
-# Run application
+# Chạy ứng dụng
 mvn spring-boot:run
 
 # Hoặc chạy file JAR
@@ -744,25 +750,27 @@ java -jar target/shoe_shop_web-0.0.1-SNAPSHOT.jar
 
 Ứng dụng sẽ chạy tại: `http://localhost:8081`
 
-#### Bước 5: Truy Cập Hệ Thống
+### Bước 5: Truy Cập Hệ Thống
 
-**User Page:**
-- Homepage: `http://localhost:8081/`
-- Shop: `http://localhost:8081/product/list`
-- Login: `http://localhost:8081/login`
+**Trang Khách Hàng:**
+- Trang chủ: `http://localhost:8081/`
+- Cửa hàng: `http://localhost:8081/product/list`
+- Đăng nhập: `http://localhost:8081/login`
 
-**Admin Dashboard:**
+**Trang Quản Trị:**
 - URL: `http://localhost:8081/admin`
-- Default account: admin/admin (tạo trong database)
+- Tài khoản mặc định: admin/admin (tạo trong database)
 
-### 🐳 Deploy với Docker
+---
 
-#### Build Docker Image
+## Triển Khai Với Docker
+
+### Build Docker Image
 ```bash
 docker build -t shoe-shop-web:latest .
 ```
 
-#### Run Container
+### Chạy Container
 ```bash
 docker run -d \
   -p 8080:8080 \
@@ -774,18 +782,20 @@ docker run -d \
   shoe-shop-web:latest
 ```
 
-### ☁️ Deploy lên Render
+## Triển Khai Lên Render
 
 1. **Tạo Web Service** trên Render Dashboard
-2. **Connect Repository** từ GitHub
-3. **Configure Environment Variables** trong Render Dashboard (theo `.env.example`)
-4. **Deploy**: Render sẽ tự động build từ `Dockerfile` và deploy
+2. **Kết nối Repository** từ GitHub
+3. **Cấu hình biến môi trường** trong Render Dashboard (theo `.env.example`)
+4. **Deploy**: Render sẽ tự động build từ `Dockerfile` và triển khai
 
-**Health Check**: `/actuator/health`
+**Endpoint kiểm tra sức khỏe**: `/actuator/health`
 
-### 📚 API Documentation
+---
 
-#### REST APIs
+## Tài Liệu API
+
+### REST APIs
 
 **Voucher APIs:**
 ```
@@ -821,53 +831,63 @@ GET  /api/address/user/{userId}       # Danh sách địa chỉ
 POST /api/address/add                 # Thêm địa chỉ mới
 ```
 
-### 🔐 Phân Quyền (Roles)
+---
 
-| Role | Quyền Truy Cập |
+## Phân Quyền Hệ Thống
+
+| Vai Trò | Quyền Truy Cập |
 |------|----------------|
-| **ADMIN** | Full quyền: Dashboard, quản lý sản phẩm, đơn hàng, voucher, flash sale, kho, user, phân quyền |
-| **MANAGER** | Quản lý sản phẩm, danh mục, đơn hàng, xem báo cáo |
+| **QUẢN TRỊ VIÊN** | Toàn quyền: Dashboard, quản lý sản phẩm, đơn hàng, voucher, flash sale, kho, người dùng, phân quyền |
+| **QUẢN LÝ** | Quản lý sản phẩm, danh mục, đơn hàng, xem báo cáo |
 | **SHIPPER** | Xem và cập nhật đơn hàng cần giao |
-| **USER** | Mua sắm, quản lý tài khoản, đặt hàng, đánh giá |
+| **KHÁCH HÀNG** | Mua sắm, quản lý tài khoản, đặt hàng, đánh giá |
 
-### 🧪 Testing
+---
+
+## Kiểm Thử
 
 ```bash
-# Run all tests
+# Chạy tất cả test
 mvn test
 
-# Run specific test
+# Chạy test cụ thể
 mvn test -Dtest=ServiceTest
 ```
 
-### 📊 Performance & Optimization
+---
+
+## Hiệu Suất & Tối Ư u Hóa
 
 - **Lazy Loading**: Entity relationships sử dụng `LAZY` fetch
-- **Connection Pooling**: HikariCP (Spring Boot default)
-- **Caching**: Distance Cache (Goong API), 30 days TTL
-- **Image Optimization**: Cloudinary auto-optimization
-- **Database Indexing**: Index trên foreign keys và search columns
-- **Transaction Management**: `@Transactional` cho operations quan trọng
-- **Pessimistic Locking**: Flash Sale to prevent overselling
+- **Connection Pooling**: HikariCP (mặc định của Spring Boot)
+- **Caching**: Distance Cache (Goong API), thời gian sống 30 ngày
+- **Tối ưu hóa ảnh**: Cloudinary tự động tối ưu hóa
+- **Database Indexing**: Index trên foreign keys và cột tìm kiếm
+- **Quản lý transaction**: `@Transactional` cho các thao tác quan trọng
+- **Pessimistic Locking**: Flash Sale để tránh bán quá hàng
 
-### 🐛 Troubleshooting
+---
 
-#### Lỗi kết nối Database
-```
+## Khắc Phục Sự Cố
+
+### Lỗi kết nối Database
+```properties
 spring.jpa.hibernate.ddl-auto=update
 ```
-Đảm bảo MySQL đang chạy và credentials đúng.
+Đảm bảo MySQL đang chạy và thông tin xác thực đúng.
 
-#### Lỗi OAuth2 Google Login
+### Lỗi Đăng Nhập Google OAuth2
 - Kiểm tra redirect URI trong Google Console
 - Production: `https://yourdomain.com/login/oauth2/code/google`
 - Local: `http://localhost:8081/login/oauth2/code/google`
 
-#### Lỗi PayOS Webhook
+### Lỗi PayOS Webhook
 - Webhook URL phải là HTTPS (production)
-- Local testing: Dùng ngrok hoặc skip webhook
+- Kiểm thử local: Sử dụng ngrok hoặc bỏ qua webhook
 
-### 📖 Tài Liệu Tham Khảo
+---
+
+## Tài Liệu Tham Khảo
 
 - [Spring Boot Documentation](https://spring.io/projects/spring-boot)
 - [Spring Security OAuth2](https://spring.io/guides/tutorials/spring-boot-oauth2)
@@ -875,7 +895,9 @@ spring.jpa.hibernate.ddl-auto=update
 - [Goong Maps API](https://docs.goong.io)
 - [Cloudinary Upload API](https://cloudinary.com/documentation)
 
-### 👥 Tác Giả
+---
+
+## Tác Giả
 
 Dự án được phát triển bởi nhóm sinh viên:
 
@@ -888,7 +910,9 @@ Dự án được phát triển bởi nhóm sinh viên:
 **Môn học**: Công nghệ Web  
 **Năm học**: 2024-2025
 
-### 🖼️ Hướng Dẫn Thêm Screenshots
+---
+
+## Hướng Dẫn Thêm Screenshots
 
 Để thêm ảnh demo vào README, tạo cấu trúc thư mục sau:
 
@@ -931,88 +955,80 @@ Sau đó thêm các file ảnh với tên tương ứng:
 
 ---
 
-## 🤝 Contributing
+## Đóng Góp
 
-Chúng tôi rất hoan nghênh mọi đóng góp! Nếu bạn muốn contribute:
+Chúng tôi rất hoan nghênh mọi đóng góp! Nếu bạn muốn đóng góp:
 
 1. Fork repository này
-2. Tạo branch mới (`git checkout -b feature/AmazingFeature`)
-3. Commit thay đổi (`git commit -m 'Add some AmazingFeature'`)
-4. Push lên branch (`git push origin feature/AmazingFeature`)
+2. Tạo branch mới (`git checkout -b feature/TinhNangMoi`)
+3. Commit thay đổi (`git commit -m 'Thêm tính năng mới'`)
+4. Push lên branch (`git push origin feature/TinhNangMoi`)
 5. Tạo Pull Request
 
 ---
 
-## 📞 Liên Hệ & Hỗ Trợ
+## Liên Hệ & Hỗ Trợ
 
-- 📧 **Email**: deegshop.support@gmail.com
-- 🌐 **Website**: [Coming Soon]
-- 📱 **Facebook**: [DeeG Shoe Shop Official]
-- 💬 **Discord**: [Join our community]
+- **Email**: deegshop.support@gmail.com
+- **Website**: [Sắp ra mắt]
+- **Facebook**: [DeeG Shoe Shop Official]
+- **GitHub**: [Nnguyen-dev2805/shoe_shop_web](https://github.com/Nnguyen-dev2805/shoe_shop_web)
 
-Nếu gặp vấn đề hoặc có câu hỏi, vui lòng tạo [Issue](https://github.com/your-repo/shoe_shop_web/issues) trên GitHub.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
-### MIT License Summary
-- ✅ Commercial use
-- ✅ Modification
-- ✅ Distribution
-- ✅ Private use
-- ❌ Liability
-- ❌ Warranty
+Nếu gặp vấn đề hoặc có câu hỏi, vui lòng tạo [Issue](https://github.com/Nnguyen-dev2805/shoe_shop_web/issues) trên GitHub.
 
 ---
 
-## 🙏 Acknowledgments
+## Giấy Phép
+
+Dự án này được phân phối dưới **Giấy phép MIT** - xem file [LICENSE](LICENSE) để biết thêm chi tiết.
+
+### Tóm Tắt Giấy Phép MIT
+- ✅ Sử dụng thương mại
+- ✅ Sửa đổi
+- ✅ Phân phối
+- ✅ Sử dụng cá nhân
+- ❌ Không chịu trách nhiệm
+- ❌ Không bảo hành
+
+---
+
+## Lời Cảm Ơn
 
 Chúng tôi xin gửi lời cảm ơn đến:
 
 - **Spring Boot Team** - Framework Java mạnh mẽ và dễ sử dụng
-- **PayOS** - Payment gateway hỗ trợ thanh toán QR Code
+- **PayOS** - Cổng thanh toán Việt Nam hỗ trợ thanh toán QR Code
 - **Google** - Gemini AI API và OAuth2 authentication
-- **Goong Maps** - Maps API và tính phí ship theo GPS
-- **Cloudinary** - Cloud storage cho hình ảnh
-- **Bootstrap** - UI framework responsive
-- **Font Awesome & Lucide** - Icon libraries
+- **Goong Maps** - Dịch vụ bản đồ Việt Nam và tính phí vận chuyển theo GPS
+- **Cloudinary** - Lưu trữ đám mây cho hình ảnh
+- **Bootstrap** - Framework UI responsive
+- **Font Awesome & Lucide** - Thư viện icon
 - **MySQL** - Hệ quản trị CSDL mã nguồn mở
-- **Docker** - Containerization platform
-- **GitHub** - Version control và CI/CD
-- **Render** - Cloud platform cho deployment
+- **Docker** - Nền tảng containerization
+- **GitHub** - Quản lý phiên bản và CI/CD
+- **Render** - Nền tảng đám mây cho triển khai
 
-Và tất cả các thư viện open-source đã được sử dụng trong dự án này! 🎉
+Và tất cả các thư viện mã nguồn mở đã được sử dụng trong dự án này!
 
 ---
 
-## 📊 Project Statistics
+## Thống Kê Dự Án
 
-![GitHub repo size](https://img.shields.io/github/repo-size/your-username/shoe_shop_web)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/your-username/shoe_shop_web)
-![GitHub language count](https://img.shields.io/github/languages/count/your-username/shoe_shop_web)
-![GitHub top language](https://img.shields.io/github/languages/top/your-username/shoe_shop_web)
+![GitHub repo size](https://img.shields.io/github/repo-size/Nnguyen-dev2805/shoe_shop_web)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Nnguyen-dev2805/shoe_shop_web)
+![GitHub language count](https://img.shields.io/github/languages/count/Nnguyen-dev2805/shoe_shop_web)
+![GitHub top language](https://img.shields.io/github/languages/top/Nnguyen-dev2805/shoe_shop_web)
 
 ---
 
 <div align="center">
 
-### 🌟 Nếu thấy project hữu ích, hãy cho chúng tôi một Star! ⭐
-
----
+### Nếu thấy dự án hữu ích, hãy cho chúng tôi một Star!
 
 **Made with ❤️ by HCMUTE Students**
 
 **Trường Đại học Sư phạm Kỹ thuật TP. Hồ Chí Minh**
 
 **© 2024-2025 DeeG Shoe Shop. All Rights Reserved.**
-
----
-
-[![GitHub followers](https://img.shields.io/github/followers/your-username?style=social)](https://github.com/your-username)
-[![GitHub stars](https://img.shields.io/github/stars/your-username/shoe_shop_web?style=social)](https://github.com/your-username/shoe_shop_web)
-[![GitHub forks](https://img.shields.io/github/forks/your-username/shoe_shop_web?style=social)](https://github.com/your-username/shoe_shop_web/fork)
 
 </div>
