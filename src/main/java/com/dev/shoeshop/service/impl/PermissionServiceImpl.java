@@ -10,6 +10,8 @@ import com.dev.shoeshop.repository.UserRepository;
 import com.dev.shoeshop.service.PermissionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,19 +35,29 @@ public class PermissionServiceImpl implements PermissionService {
     private final PermissionMapper permissionMapper;
     private final PasswordEncoder passwordEncoder;
     
+    /**
+     * ⚡ CACHED: Get all users with pagination
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<PermissionResponse> getAllUsers(Pageable pageable) {
-        log.info("Getting all users with pagination: page={}, size={}", pageable.getPageNumber(), pageable.getPageSize());
+        log.info("📦 Loading all users with pagination (page: {}, size: {})", pageable.getPageNumber(), pageable.getPageSize());
         
         Page<Users> usersPage = userRepository.findAll(pageable);
         return usersPage.map(permissionMapper::toResponse);
     }
     
+    /**
+     * ⚡ CACHED: Get all users (non-paginated)
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", key = "'all'")
     public List<PermissionResponse> getAllUsers() {
-        log.info("Getting all users");
+        log.info("📦 Loading all users from database");
         
         List<Users> users = userRepository.findAll();
         return users.stream()
@@ -52,10 +65,14 @@ public class PermissionServiceImpl implements PermissionService {
                 .collect(Collectors.toList());
     }
     
+    /**
+     * ⚡ CACHED: Get user by ID
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", key = "'user:' + #id")
     public PermissionResponse getUserById(Long id) {
-        log.info("Getting user by id: {}", id);
+        log.info("📦 Loading user {} from database", id);
         
         Users user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
@@ -74,10 +91,14 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionMapper.toResponse(user);
     }
     
+    /**
+     * ⚡ CACHED: Get all roles
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", key = "'roles:all'")
     public List<Role> getAllRoles() {
-        log.info("Getting all roles");
+        log.info("📦 Loading all roles from database");
         return roleRepository.findAll();
     }
     
@@ -96,16 +117,24 @@ public class PermissionServiceImpl implements PermissionService {
         return roleRepository.findByRoleName(roleName).orElse(null);
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear permissions cache when updating user role
+     */
     @Override
+    @CacheEvict(value = "permissions", allEntries = true)
     public PermissionResponse updateUserRole(PermissionUpdateRequest request) {
-        log.info("Updating user role: userId={}, roleId={}", request.getUserId(), request.getRoleId());
+        log.info("✏️ Updating user role: userId={}, roleId={}, clearing cache", request.getUserId(), request.getRoleId());
         
         return updateUserRole(request.getUserId(), request.getRoleId());
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear permissions cache when updating user role
+     */
     @Override
+    @CacheEvict(value = "permissions", allEntries = true)
     public PermissionResponse updateUserRole(Long userId, Long roleId) {
-        log.info("Updating user role: userId={}, roleId={}", userId, roleId);
+        log.info("✏️ Updating user role: userId={}, roleId={}, clearing cache", userId, roleId);
         
         // Get user
         Users user = userRepository.findById(userId)
@@ -123,10 +152,14 @@ public class PermissionServiceImpl implements PermissionService {
         return permissionMapper.toResponse(savedUser);
     }
     
+    /**
+     * ⚡ CACHED: Count users by role
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", key = "'count:role:' + #roleName")
     public long countUsersByRole(String roleName) {
-        log.info("Counting users by role: {}", roleName);
+        log.info("📦 Counting users by role: {}", roleName);
         
         Role role = roleRepository.findByRoleName(roleName).orElse(null);
         if (role == null) {
@@ -166,10 +199,16 @@ public class PermissionServiceImpl implements PermissionService {
         return new PageImpl<>(pageContent, pageable, filteredUsers.size());
     }
     
+    /**
+     * ⚡ CACHED: Get users by role with pagination
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "permissions", 
+               key = "'role:' + #roleName + ':page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<PermissionResponse> getUsersByRole(String roleName, Pageable pageable) {
-        log.info("Getting users by role: {}", roleName);
+        log.info("📦 Loading users by role {} (page: {}, size: {})", roleName, pageable.getPageNumber(), pageable.getPageSize());
         
         // Get all users first, then filter by role
         List<Users> allUsers = userRepository.findAll();
@@ -193,8 +232,14 @@ public class PermissionServiceImpl implements PermissionService {
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear permissions cache when creating user
+     */
     @Override
+    @CacheEvict(value = "permissions", allEntries = true)
     public Users createUser(java.util.Map<String, Object> userData) {
+        log.info("➕ Creating new user, clearing permissions cache");
+        
         // Validate input data
         validateUserData(userData, true);
         
@@ -226,8 +271,14 @@ public class PermissionServiceImpl implements PermissionService {
         return userRepository.save(user);
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear permissions cache when updating user
+     */
     @Override
+    @CacheEvict(value = "permissions", allEntries = true)
     public Users updateUser(Long id, java.util.Map<String, Object> userData) {
+        log.info("✏️ Updating user {}, clearing permissions cache", id);
+        
         Users user = getUserEntityById(id);
         
         // Validate input data

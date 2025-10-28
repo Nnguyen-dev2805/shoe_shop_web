@@ -9,6 +9,9 @@ import com.dev.shoeshop.repository.ProductDetailRepository;
 import com.dev.shoeshop.service.InventoryHistoryService;
 import com.dev.shoeshop.service.InventoryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +25,21 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InventoryServiceImpl implements InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final ProductDetailRepository productDetailRepository;
     private final InventoryHistoryService inventoryHistoryService;
 
+    /**
+     * 🗑️ CACHE EVICT: Clear inventory cache when adding new inventory
+     */
     @Override
     @Transactional
+    @CacheEvict(value = "inventory", allEntries = true)
     public void addInventory(InventoryRequest request) {
+        log.info("➕ Adding new inventory, clearing inventory cache");
         List<ProductDetail> details = productDetailRepository.findByProductId(request.getProductId());
 
         for (Map.Entry<Integer, Integer> entry : request.getSizes().entrySet()) {
@@ -58,8 +67,17 @@ public class InventoryServiceImpl implements InventoryService {
         }
     }
     
+    /**
+     * ⚡ CACHED: Get all inventory with pagination and filters
+     */
     @Override
+    @Cacheable(value = "inventory", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize + ':' + (#search != null ? #search : 'none') + ':' + (#warehouseId != null ? #warehouseId : 'none') + ':' + (#productSize != null ? #productSize : 'none')",
+               unless = "#result == null")
     public Page<InventoryResponse> getAllInventory(Pageable pageable, String search, Long warehouseId, Integer productSize) {
+        log.info("📦 Loading inventory (page: {}, search: {}, warehouse: {}, size: {})", 
+                 pageable.getPageNumber(), search, warehouseId, productSize);
+        
         // Get all inventory
         List<Inventory> allInventories = inventoryRepository.findAll();
         
@@ -112,9 +130,15 @@ public class InventoryServiceImpl implements InventoryService {
         return new PageImpl<>(pageContent, pageable, responses.size());
     }
     
+    /**
+     * 🗑️ CACHE EVICT: Clear inventory cache when deleting
+     */
     @Override
     @Transactional
+    @CacheEvict(value = "inventory", allEntries = true)
     public void deleteInventory(Long id) {
+        log.info("🗑️ Deleting inventory {}, clearing inventory cache", id);
+        
         Inventory inventory = inventoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy tồn kho với ID: " + id));
         

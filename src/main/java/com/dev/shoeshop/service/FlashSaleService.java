@@ -12,6 +12,8 @@ import com.dev.shoeshop.enums.FlashSaleStatus;
 import com.dev.shoeshop.repository.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,7 @@ public class FlashSaleService {
     private final OrderRepository orderRepository;
     
     /**
-     * Lấy flash sale đang ACTIVE (đang diễn ra)
+     * ⚡ CACHED: Lấy flash sale đang ACTIVE (đang diễn ra)
      * 
      * @return FlashSaleResponse hoặc null nếu không có flash sale active
      * 
@@ -50,8 +52,9 @@ public class FlashSaleService {
      * 3. Convert entity → DTO
      * 4. Return response
      */
+    @Cacheable(value = "flashSales", key = "'active'")
     public FlashSaleResponse getActiveFlashSale() {
-        log.info("Getting active flash sale");
+        log.info("📦 Loading active flash sale from database");
         
         FlashSale flashSale = flashSaleRepo.findActiveFlashSale(
             FlashSaleStatus.ACTIVE,
@@ -123,9 +126,13 @@ public class FlashSaleService {
      * ⚠️ Transaction: Method này chạy trong transaction
      * ⚠️ Lock: Dùng pessimistic lock để tránh race condition
      */
+    /**
+     * 🗑️ CACHE EVICT: Clear flash sale cache when purchasing item
+     */
     @Transactional
+    @CacheEvict(value = "flashSales", allEntries = true)
     public Order purchaseFlashSaleItem(PurchaseFlashSaleRequest request, Long userId) {
-        log.info("User {} purchasing flash sale item {}, quantity: {}", 
+        log.info("🛒 User {} purchasing flash sale item {}, quantity: {}, clearing flash sale cache", 
                  userId, request.getFlashSaleItemId(), request.getQuantity());
         
         // BƯỚC 1: LOCK flash sale item (QUAN TRỌNG - Tránh overselling)
@@ -411,9 +418,13 @@ public class FlashSaleService {
      * 4. Save tất cả FlashSaleItems
      * 5. Update flash sale total_items
      */
+    /**
+     * 🗑️ CACHE EVICT: Clear flash sale cache when adding product
+     */
     @Transactional
+    @CacheEvict(value = "flashSales", allEntries = true)
     public int addProductToFlashSale(Long flashSaleId, Long productId, Double discountPercent) {
-        log.info("Adding product {} to flash sale {} with {}% discount", 
+        log.info("➕ Adding product {} to flash sale {} with {}% discount, clearing cache", 
                  productId, flashSaleId, discountPercent);
         
         // 1. Validate flash sale tồn tại

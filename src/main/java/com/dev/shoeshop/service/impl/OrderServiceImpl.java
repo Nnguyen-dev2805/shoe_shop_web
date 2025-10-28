@@ -20,6 +20,9 @@ import java.nio.charset.StandardCharsets;
 
 import com.dev.shoeshop.repository.*;
 import com.dev.shoeshop.service.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
@@ -40,6 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -117,8 +121,13 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    /**
+     * ⚡ CACHED: Get all orders (non-paginated)
+     */
     @Override
+    @Cacheable(value = "orders", key = "'all'")
     public List<OrderDTO> getAllOrders() {
+        log.info("📦 Loading all orders from database");
         // Sắp xếp theo ngày tạo mới nhất (giống shipper)
         return orderRepository.findAllByOrderByCreatedDateDesc()
                 .stream()
@@ -126,15 +135,31 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
     
+    /**
+     * ⚡ CACHED: Get all orders with pagination
+     */
     // ✅ Pagination methods implementation
     @Override
+    @Cacheable(value = "orders", 
+               key = "'page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<OrderDTO> getAllOrdersWithPagination(Pageable pageable) {
+        log.info("📦 Loading orders (page: {}, size: {})", 
+                 pageable.getPageNumber(), pageable.getPageSize());
         Page<Order> orderPage = orderRepository.findAll(pageable);
         return orderPage.map(orderDTOConverter::toOrderDTO);
     }
     
+    /**
+     * ⚡ CACHED: Get orders by status with pagination
+     */
     @Override
+    @Cacheable(value = "orders", 
+               key = "'status:' + #status + ':page:' + #pageable.pageNumber + ':' + #pageable.pageSize",
+               unless = "#result == null")
     public Page<OrderDTO> getOrderByStatusWithPagination(ShipmentStatus status, Pageable pageable) {
+        log.info("📦 Loading orders by status {} (page: {}, size: {})", 
+                 status, pageable.getPageNumber(), pageable.getPageSize());
         Page<Order> orderPage = orderRepository.findByStatus(status, pageable);
         return orderPage.map(orderDTOConverter::toOrderDTO);
     }
@@ -155,9 +180,15 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
     
+    /**
+     * ⚡ CACHED: Get order detail by ID
+     */
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "orderDetails", key = "'detail:' + #orderId + ':user:' + #userId")
     public OrderDTO getOrderDetailById(Long orderId, Long userId) {
+        log.info("📦 Loading order detail {} for user {}", orderId, userId);
+        
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         
@@ -184,9 +215,14 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findOrderById(id);
     }
 
+    /**
+     * 🗑️ CACHE EVICT: Clear order caches when cancelling order
+     */
     @Override
     @Transactional
+    @CacheEvict(value = {"orders", "orderDetails", "dashboardStats"}, allEntries = true)
     public void cancelOrder(Long orderId) {
+        log.info("❌ Cancelling order {}, clearing order caches", orderId);
         Order order = findById(orderId);
 
         // ✅ Nếu order có flash sale, giảm totalSold
@@ -964,9 +1000,15 @@ public class OrderServiceImpl implements OrderService {
     
     // ========== MVC Pattern: Methods cho Controller ==========
     
+    /**
+     * 🗑️ CACHE EVICT: Clear order caches when updating order status
+     */
     @Override
     @Transactional
+    @CacheEvict(value = {"orders", "orderDetails", "dashboardStats"}, allEntries = true)
     public void updateOrderStatus(Long orderId, ShipmentStatus newStatus) {
+        log.info("🔄 Updating order {} status to {}, clearing order caches", orderId, newStatus);
+        
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng với ID: " + orderId));
         

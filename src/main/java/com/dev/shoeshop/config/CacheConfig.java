@@ -37,9 +37,26 @@ public class CacheConfig {
     @Bean
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+            // ===== Dashboard Caches =====
             "dashboardStats",        // Cache cho dashboard chính
             "dashboardProducts",     // Cache cho top products
-            "dashboardCustomers"     // Cache cho top customers
+            "dashboardCustomers",    // Cache cho top customers
+            
+            // ===== Admin Page Caches (List Pages) =====
+            "brands",                // Cache danh sách brands
+            "categories",            // Cache danh sách categories
+            "products",              // Cache danh sách products
+            "productDetails",        // Cache chi tiết product
+            "discounts",             // Cache danh sách discounts
+            "flashSales",            // Cache danh sách flash sales
+            "inventory",             // Cache danh sách inventory
+            "orders",                // Cache danh sách orders
+            "orderDetails",          // Cache chi tiết order
+            "shippingCompanies",     // Cache danh sách shipping companies
+            "warehouses",            // Cache danh sách warehouses
+            "shippingRates",         // Cache phí ship
+            "returnRequests",        // Cache yêu cầu trả hàng
+            "permissions"            // Cache permissions/users
         );
         
         cacheManager.setCaffeine(caffeineCacheBuilder());
