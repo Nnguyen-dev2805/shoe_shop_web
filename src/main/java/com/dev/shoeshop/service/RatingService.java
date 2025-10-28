@@ -63,4 +63,11 @@ public interface RatingService {
      * @return Number of products updated
      */
     int updateAllProductRatingStatistics();
+    
+    /**
+     * Get random ratings for homepage testimonials
+     * Always returns exactly 6 ratings (repeats if less than 6 available)
+     * @return List of 6 rating DTOs
+     */
+    List<RatingResponseDTO> getRandomRatingsForHomepage();
 }

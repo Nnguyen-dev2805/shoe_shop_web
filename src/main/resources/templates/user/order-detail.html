@@ -719,7 +719,7 @@
         <!-- Product Section -->
         <div class="white-card" style="padding: 0;">
             <!-- Shop Header -->
-            <div class="shop-header">
+            <div class="shop-header" onclick="openChatWithShop(event)" style="cursor: pointer;">
                 <p class="shop-name">DeeG Shop</p>
                 <i class="fa fa-chevron-right shop-arrow"></i>
             </div>
@@ -970,7 +970,7 @@
         <div class="white-card support-section">
             <p class="support-title">Bạn cần hỗ trợ?</p>
             
-            <div class="support-option">
+            <div class="support-option" onclick="openChatWithShop(event)" style="cursor: pointer;">
                 <i class="fa fa-comment-o support-icon"></i>
                 <span class="support-text">Liên hệ Shop</span>
                 <i class="fa fa-chevron-right support-arrow"></i>
@@ -1223,5 +1223,43 @@
                 }
             });
         });
+    </script>
+    
+    <!-- Open Chat Function -->
+    <script>
+    function openChatWithShop(event) {
+        // Ngăn event bubbling
+        if (event) {
+            event.stopPropagation();
+            event.preventDefault();
+        }
+        
+        console.log('🔵 Opening chat with shop...');
+        
+        // Kiểm tra xem toggleChatWidget có tồn tại không
+        if (typeof toggleChatWidget === 'function') {
+            toggleChatWidget();
+        } else {
+            console.error('❌ toggleChatWidget function not found! Waiting...');
+            // Retry sau 500ms nếu script chưa load
+            setTimeout(function() {
+                if (typeof toggleChatWidget === 'function') {
+                    toggleChatWidget();
+                } else {
+                    console.error('❌ Still not found. Opening manually...');
+                    // Fallback: mở chat widget trực tiếp
+                    const chatWidget = document.getElementById('chatWidget');
+                    if (chatWidget) {
+                        chatWidget.style.display = 'block';
+                        // Scroll to bottom
+                        const messagesContainer = document.getElementById('chatWidgetMessages');
+                        if (messagesContainer) {
+                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                        }
+                    }
+                }
+            }, 500);
+        }
+    }
     </script>
 </body>
