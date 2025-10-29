@@ -999,6 +999,6 @@ Dự án này được phân phối dưới **Giấy phép MIT** - xem file [LIC
 
 **Trường Đại học Sư phạm Kỹ thuật TP. Hồ Chí Minh**
 
-**© 2024-2025 DeeG Shoe Shop. All Rights Reserved.**
+**© 2025-2026 DeeG Shoe Shop. All Rights Reserved.**
 
 </div>
