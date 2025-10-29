@@ -943,7 +943,7 @@ Dự án được phát triển bởi nhóm sinh viên:
 
 **Trường**: Trường Đại học Sư phạm Kỹ thuật TP. Hồ Chí Minh (HCMUTE)  
 **Môn học**: Lập trình Web  
-**Năm học**: 2024-2025
+**Năm học**: 2025-2026
 
 ---
 
